@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sandbox.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sandbox.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of Domotz Agent.
+ *
+ * @license
+ * Domotz Agent is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Domotz Agent is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
+ *
+ * @module sandbox/sandbox
+ * @copyright Copyright (C) Domotz Inc
+ * @author Iacopo Papalini &lt;iacopo@domotz.com>
+ */
+
+/** @constant */
+const vm = require('vm');
+const logger = require('./library/logger').logger;
+const util = require('util');
+const rttOffset = 5000;
+
+var newConsole = null;
+var errorTypes = null;
+var startTime = null;
+var agentDriverSettings = null;
+
+function failure(errorType) {
+    if (!errorType || !(errorType in errorTypes)) {
+        newConsole.warning("Error type %s is not recognized, converting to generic error", errorType);
+        errorType = errorTypes.GENERIC_ERROR;
+    }
+    process.send({
+        outcome: 'failure',
+        errorType: errorType,
+        log: newConsole.get(),
+        elapsed: new Date() - startTime
+    });
+}
+
+function success(variables) {
+    newConsole.debug("Success called")
+    var maxVarPerDevice = agentDriverSettings.max_var_per_device;
+    if (variables &amp;&amp; variables.length > maxVarPerDevice &amp;&amp; Array.isArray(variables)) {
+        newConsole.warning("Too many declared variables (%s) - slicing to %s",
+            variables.length,
+            maxVarPerDevice);
+        variables = variables.slice(0, maxVarPerDevice);
+    }
+    process.send({
+        outcome: 'success',
+        variables: variables,
+        log: newConsole.get(),
+        elapsed: new Date() - startTime
+    });
+}
+
+function timeoutReached() {
+    newConsole.warning("Timeout expired\n");
+    failure(errorTypes.TIMEOUT_ERROR);
+}
+
+
+process.on('message', function (message) {
+    agentDriverSettings = message.agentDriverSettings;
+    errorTypes = message.errorTypes;
+    newConsole = logger(message.logLevel || 'info', agentDriverSettings.max_log_entries);
+    var context = vm.createContext({
+        D: {
+            success: success,
+            failure: failure,
+            errorTypes: errorTypes,
+            htmlParse: require('cheerio').load,
+            math: {
+                percent: function (actual, maximum) {
+                    return Math.round(10000.0 * parseInt(actual, 10) / (parseInt(maximum, 10))) / 100;
+                }
+            },
+            _: require('lodash'),
+            q: require('q')
+        },
+        import: function () {
+            newConsole.error("Error: Import not possible in sandbox");
+            failure(errorTypes.IMPORT_NOT_ALLOWED);
+        },
+        require: function () {
+            newConsole.error("Error: Require not possible in sandbox");
+            failure(errorTypes.REQUIRE_NOT_ALLOWED);
+        },
+        console: newConsole
+    });
+
+    if (message.device) {
+        context.D.device = require('./library/device').device(message.device, agentDriverSettings, newConsole);
+        newConsole.debug("Created new device for script execution: %s", util.inspect(message.device));
+    }
+
+    const script = new vm.Script(message.script);
+    var timeout = message.timeout || 5000;
+    setTimeout(timeoutReached, timeout) + rttOffset;
+
+    startTime = new Date();
+    script.runInContext(context, {
+        displayErrors: true,
+        fileName: 'custom script',
+        lineOffset: 0
+    });
+});
+
+process.on('uncaughtException', function (err) {
+    newConsole.error('Caught exception: ' + err.toString() + '\n' + err.stack);
+    failure(errorTypes.GENERIC_ERROR);
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-sandbox_runner.html">sandbox/runner</a></li><li><a href="module-sandbox_sandbox.html">sandbox/sandbox</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Nov 12 2021 16:11:42 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
