@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: library/device.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: library/device.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of Domotz Agent.
+ *
+ * @license
+ * Domotz Agent is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Domotz Agent is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
+ *
+ * @module sandbox/library/device
+ * @requires module:sandbox/library/ssh
+ * @requires module:sandbox/library/snmp
+ * @copyright Copyright (C)  Domotz Inc
+ */
+
+var request = require('request');
+var ssh = require('./ssh');
+const util = require('util');
+
+/**
+ * Starts an SNMP Session with the device
+ * @typedef {function} createSNMPSession
+ */
+
+/**
+ * @typedef  {Object} Device
+ * @property {function} ip                - The IP Address of the Device
+ * @property {function} createSNMPSession - Creates an SNMP Session
+ * @property {function} sendSSHCommands   - Sends a sequence of ssh commands 
+ * @property {object}   http              - Http Request Library
+ * @property {function} createVariable    - Creates a device variable // TODO consider putting this in the D context
+ */
+
+/**
+ * Creates the Device Object Context
+ * @constructor
+ * @private
+ * @param   {Object}   device                 - The Device Data
+ * @param   {Object}   agentDriverSettings    - Agent Settings constants
+ * @param   {Object}   myConsole              - Sandbox Console
+ * @returns {Device}                          - The Device Context Object
+ */
+function createDevice(device, agentDriverSettings, myConsole) {
+    function buildSSHOptions(options) {
+        options.host = device.ip;
+        if (!options.username &amp;&amp; device.credentials) {
+            options.username = device.credentials.username;
+            options.password = new Buffer(device.credentials.password, 'base64').toString();
+        }
+        myConsole.debug(util.inspect(options));
+        return options;
+    }
+    function buildRequest(options) {
+        if (typeof options !== 'object') {
+            options = { url: 'http://' + device.ip + options };
+        } else {
+            var port = '';
+            if (options.port) {
+                port = ':' + options.port;
+            }
+            var password = '';
+            if (device.credentials) {
+                password = new Buffer(device.credentials.password, 'base64').toString();
+                options.url = options.url.replace('${username}', device.credentials.username);
+                options.url = options.url.replace('${password}', password);
+            }
+
+            if (options.auth === 'basic' &amp;&amp; device.credentials) {
+                myConsole.debug(device.credentials);
+                options.auth = {
+                    'user': device.credentials.username,
+                    'pass': password,
+                    'sendImmediately': true
+                };
+            } else {
+                options.auth = undefined;
+            }
+            options.url = 'http://' + device.ip + port + options.url;
+        }
+        myConsole.debug(util.inspect(options));
+        return options;
+    }
+
+    return {
+        ip: function () {
+            return device.ip;
+        },
+        createSNMPSession: function () {
+            return require('./snmp').createSessionForDevice(device);
+        },
+        sendSSHCommands: function (options, callback) {
+            myConsole.info("Performing SSH Commands: %s", options.commands);
+            options = buildSSHOptions(options);
+            return ssh.sendSSHShellSequence(myConsole, options, callback);
+        },
+        http: {
+            get: function (options, callback) {
+                myConsole.info("Performing GET towards:" + options.url);
+                options = buildRequest(options);
+                request.get(options, callback);
+            },
+            post: function (options, callback) {
+                myConsole.info("Performing POST towards:" + options.url);
+                options = buildRequest(options);
+                request.post(options, callback);
+            }
+        },
+        createVariable: function (uid, name, value, unit) {
+            if (uid === null || uid === undefined || uid.length &lt; 1 || uid.length > agentDriverSettings.max_var_id_len) {
+                throw Error("Invalid variable uid: " + uid);
+            }
+            if (unit) {
+                unit = unit.substr(0, agentDriverSettings.max_var_unit_len);
+            } else {
+                unit = null;
+            }
+            if (value == undefined) {
+                value = null;
+            } else {
+                value = String(value);
+            }
+            return {
+                "uid": uid,
+                "unit": unit,
+                "value": value,
+                "label": name
+            };
+        }
+    };
+}
+
+module.exports.device = createDevice;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-sandbox_library_device.html">sandbox/library/device</a></li><li><a href="module-sandbox_sandbox.html">sandbox/sandbox</a></li></ul><h3>Externals</h3><ul><li><a href="-_%2520-%2520Accessed%2520via%2520D.external__.html">_</a></li><li><a href="external-CheerioAPI.html">CheerioAPI</a></li><li><a href="external-CheerioOptions.html">CheerioOptions</a></li><li><a href="q%2520-%2520Accessed%2520via%2520D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-sandbox_sandbox.html#~console">console</a></li><li><a href="module-sandbox_sandbox-D.html">D</a></li></ul><h3>Classes</h3><ul><li><a href="module-sandbox_library_logger-logger.html">logger</a></li><li><a href="module-sandbox_library_snmp-createSessionForDevice.html">createSessionForDevice</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Nov 19 2021 18:38:45 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
