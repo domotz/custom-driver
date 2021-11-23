@@ -43,40 +43,51 @@
  * You should have received a copy of the GNU General Public License
  * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
  *
- * @module sandbox/sandbox
  * @requires sandbox/library/device
+ * @requires sandbox/library/logger
  * @copyright Copyright (C) Domotz Inc
  */
-
 /**
  * The Domotz Context Library
  * @namespace D
  */
 /**
- * A Custom Driver variable
+ * Custom Driver variable
+ * Created via D.device.createVariable
  * @typedef {Object} Variable
+ * @readonly
  * @property {string} uid   - The identifier of the variable. Must be Unique. Max 50 characters
  * @property {string} name  - The Name/Label of the variable
  * @property {string} value - The Value of the variable
  * @property {string} unit  - The Unit of measurement of the variable (eg %). Max 10 characters
  */
 /**
- * Custom Driver Sandbox Console
- * @namespace console
- * @property {function} info    - Adds an info level log messages
- * @property {function} warning - Adds a warning level log message
- * @property {function} error   - Adds a error level log message
- * @property {function} debug   - Adds a debug level log message
+ * Known Domotz Context Error types
+ * Acessed via D.errorTypes
+ * @typedef ErrorType
+ * @property {string} MISSING_DEVICE_ERROR  - No device was found for execution
+ * @property {string} RESOURCE_UNAVAILABLE  - The Resource you are trying to access is not available
+ * @property {string} AUTHENTICATION_ERROR  - Authentication with the device has failed
+ * @property {string} PARSING_ERROR         - Failed to parse the response
+ * @property {string} TIMEOUT_ERROR         - The remote call has resulted in a timeout
+ * @property {string} IMPORT_NOT_ALLOWED    - Import statements are not allowed in the sandbox enviroment
+ * @property {string} REQUIRE_NOT_ALLOWED   - Require statements are not allowed in the sandbox enviroment
+ * @property {string} GENERIC_ERROR         - A Generic/Unknown error has occurred
  */
 /**
  * The Cheerio Library Accepted Options
- * @external CheerioOptions
+ * @typedef {Object} CheerioOptions
  * @see {@link https://cheerio.js.org/interfaces/CheerioOptions.html}
  */
 /**
  * The Cheerio Library Loaded Document
- * @external CheerioAPI
+ * @typedef {Object} CheerioAPI
  * @see {@link https://cheerio.js.org/interfaces/CheerioAPI.html}
+ */
+/**
+ * Used when the result of a call towards a device is in an erroneous state
+ * @typedef  {Object} ErrorResult
+ * @property {string} message - The Error Message
  */
 
 const vm = require('vm');
@@ -143,36 +154,33 @@ process.on('message', function (message) {
         D: {
             /**
              * Known Domotz Context Error types
+             * Usage is via D.ErrorTypes.
+             * @memberof D
              * @readonly
-             * @enum
-             * @property {string} MISSING_DEVICE_ERROR  - Device to execute the code was not found
-             * @property {string} RESOURCE_UNAVAILABLE  - The Resource you are trying to access is not available
-             * @property {string} AUTHENTICATION_ERROR  - Authentication with the device has failed
-             * @property {string} PARSING_ERROR         - Failed to parse the response
-             * @property {string} TIMEOUT_ERROR         - The remote call has resulted in a timeout
-             * @property {string} IMPORT_NOT_ALLOWED    - Import statements are not allowed in the sandbox enviroment
-             * @property {string} REQUIRE_NOT_ALLOWED   - Require statements are not allowed in the sandbox enviroment
-             * @property {string} GENERIC_ERROR         - A Geneeric/Unknown error has occurred
+             * @enum  {ErrorType}
              */            
             errorTypes: errorTypes,            
             /**
              * Success callback in D (D.success)
-             * It must be present in validate, get_status or all custom action functions code (or callbacks) 
+             * It must be present in validate, get_status or all custom action functions code (or their callbacks)  
              * in order to indicate their successful execution
+             * Accessed via D.success
              * @function
              * @param   {Array.&lt;Variable>} [variables] - The variables to return (dry run) or store
              */
             success: success,
             /**
              * Failure callback in D (D.failure)
-             * It can be present in validate, get_status or all custom action functions code (or callbacks)
+             * It can be present in validate, get_status or all custom action functions code (or their callbacks)
              * in order to indicate a failure in the execution
+             * Accessed via D.failure
              * @function
-             * @param   {errorTypes} [errorType] - The type of error that caused the failure callback. Must be a member of D.errorTypes
+             * @param   {ErrorType} [errorType] - The type of error that caused the failure callback. Must be a member of D.errorTypes
              */
             failure: failure,
             /**
              * Html Parser
+             * Accessed via D.htmlParse
              * @function
              * @param {string|Node|Node[]|Buffer} content           - Markup to be loaded.
              * @param {CheerioOptions}            [options]         - Options for the created instance.
@@ -181,12 +189,15 @@ process.on('message', function (message) {
              */
             htmlParse: require('cheerio').load,
             /**
-             * Mathematical Utilities
-             * @property {function} percent - Returns a percentage
+             * Mathematical Utilities library
+             * Accesed via D.math
+             * @namespace D.math
+             * @memberof D
              */
             math: {
                 /**
                  * Percentage Calculating Function
+                 * @function
                  * @param {number} actual   - The actual number
                  * @param {number} maximum  - The maximum number
                  * @returns {number}        - The Percentage
@@ -197,15 +208,18 @@ process.on('message', function (message) {
             },
             /**
              * Nodejs Lodash Module
-             * @module
-             * @external _ - Accessed via D._
+             * JavaScript utility library delivering modularity, performance &amp; extras.
+             * Accessed via D._
+             * @memberof D
+             * @external _
              * @see {@link https://lodash.com/docs/4.17.15}
             */
             _: require('lodash'),
             /**
              * Nodejs q Module
-             * @module
-             * @external q - Accessed via D.q
+             * Accessed via D.q
+             * @memberof D
+             * @external q 
              * @see {@link https://devdocs.io/q/}
             */
             q: require('q')
@@ -218,7 +232,6 @@ process.on('message', function (message) {
             newConsole.error("Error: Require not possible in sandbox");
             failure(errorTypes.REQUIRE_NOT_ALLOWED);
         },
-        /** @type {console} */
         console: newConsole
     });
 
@@ -252,13 +265,13 @@ process.on('uncaughtException', function (err) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-sandbox_library_device.html">sandbox/library/device</a></li><li><a href="module-sandbox_sandbox.html">sandbox/sandbox</a></li></ul><h3>Externals</h3><ul><li><a href="-_%2520-%2520Accessed%2520via%2520D.external__.html">_</a></li><li><a href="external-CheerioAPI.html">CheerioAPI</a></li><li><a href="external-CheerioOptions.html">CheerioOptions</a></li><li><a href="q%2520-%2520Accessed%2520via%2520D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-sandbox_sandbox.html#~console">console</a></li><li><a href="module-sandbox_sandbox-D.html">D</a></li></ul><h3>Classes</h3><ul><li><a href="module-sandbox_library_logger-logger.html">logger</a></li><li><a href="module-sandbox_library_snmp-createSessionForDevice.html">createSessionForDevice</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Nov 19 2021 18:38:45 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:27:31 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>

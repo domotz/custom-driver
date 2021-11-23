@@ -43,39 +43,43 @@
  * You should have received a copy of the GNU General Public License
  * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
  *
- * @module sandbox/library/device
  * @requires module:sandbox/library/ssh
  * @requires module:sandbox/library/snmp
+ * @requires module:request
+ * @requires module:util
  * @copyright Copyright (C)  Domotz Inc
  */
-
+/**
+ * The Domotz Device object.&lt;p>
+ * Usage: D.device
+ * @namespace device
+ * @memberof D
+*/
 var request = require('request');
 var ssh = require('./ssh');
 const util = require('util');
 
 /**
- * Starts an SNMP Session with the device
- * @typedef {function} createSNMPSession
+ * The Http library Options
+ * @typedef  {object}        HttpOptions
+ * @property {string}        url             - The url suffix of the request target
+ * @property {object}        [headers]       - The Request HTTP Headers
+ * @property {string}        [body]          - The Request HTTP Body
+ * @property {integer}       [port=80]       - The port to use for the request
+ * @property {string|object} [auth]          - The authentication to use. Eg 'basic'
+ * @property {string}        [username]      - The device username. If not set the device username is used for custom driver mangement purpose
+ * @property {string}        [password]      - The device password. If not set the device password is used for custom driver mangement purpose
+ * @property {string}        [protocol=http] - The protocol to use in the request
+ */
+ 
+/**
+ * The Http library callback
+ * @typedef  {callback} HttpCallback
+ * @property {string} [error]      - The HTTP response error
+ * @property {object} response     - The HTTP response object
+ * @property {string} [body]       - The HTTP response body
  */
 
-/**
- * @typedef  {Object} Device
- * @property {function} ip                - The IP Address of the Device
- * @property {function} createSNMPSession - Creates an SNMP Session
- * @property {function} sendSSHCommands   - Sends a sequence of ssh commands 
- * @property {object}   http              - Http Request Library
- * @property {function} createVariable    - Creates a device variable // TODO consider putting this in the D context
- */
-
-/**
- * Creates the Device Object Context
- * @constructor
- * @private
- * @param   {Object}   device                 - The Device Data
- * @param   {Object}   agentDriverSettings    - Agent Settings constants
- * @param   {Object}   myConsole              - Sandbox Console
- * @returns {Device}                          - The Device Context Object
- */
 function createDevice(device, agentDriverSettings, myConsole) {
     function buildSSHOptions(options) {
         options.host = device.ip;
@@ -118,29 +122,90 @@ function createDevice(device, agentDriverSettings, myConsole) {
     }
 
     return {
+        /**
+         * Returns the IP address of the device object.&lt;p>
+         * Usage: D.device.ip()
+         * @memberof D.device
+         * @readonly
+         * @function
+         * @return    {string}
+         */
         ip: function () {
             return device.ip;
         },
+        /**
+         * Starts an SNMP session with the device.&lt;p>
+         * Usage: D.device.createSNMPSession()
+         * @memberof D.device
+         * @readonly
+         * @function
+         * @return    {snmpSession}
+         */
         createSNMPSession: function () {
             return require('./snmp').createSessionForDevice(device);
         },
+        /**
+         * Sends a sequence of commands via SSH to the device.&lt;p>
+         * Usage: D.device.sendSSHCommands(options, callback)
+         * @memberof D.device
+         * @readonly
+         * @param {SshOptions}  options    - The SSH Commands exection options
+         * @param {SshCallback}  callback  - The SSH Commands exection callback function
+         * @function
+         */
         sendSSHCommands: function (options, callback) {
             myConsole.info("Performing SSH Commands: %s", options.commands);
             options = buildSSHOptions(options);
-            return ssh.sendSSHShellSequence(myConsole, options, callback);
+            ssh.sendSSHShellSequence(myConsole, options, callback);
         },
+        /**
+         * The Device HTTP library.&lt;p>
+         * Usage: D.device.http
+         * @memberof D.device
+         * @namespace http
+        */
         http: {
+            /**
+             * Executes an HTTP GET towards the device.&lt;p>
+             * Usage: D.device.http.get(options, callback)
+             * @memberof D.device.http
+             * @readonly
+             * @param {HttpOptions}  options   - The HTTP request exection options
+             * @param {HttpCallback} callback  - The HTTP request exection callback
+             * @function
+             */
             get: function (options, callback) {
                 myConsole.info("Performing GET towards:" + options.url);
                 options = buildRequest(options);
                 request.get(options, callback);
             },
+            /**
+             * Executes an HTTP POST towards the device.&lt;p>
+             * Usage: D.device.http.post(options, callback)
+             * @memberof D.device.http
+             * @readonly
+             * @param {HttpOptions}  options   - The HTTP request exection options
+             * @param {HttpCallback} callback  - The HTTP request exection callback
+             * @function
+             */            
             post: function (options, callback) {
                 myConsole.info("Performing POST towards:" + options.url);
                 options = buildRequest(options);
                 request.post(options, callback);
             }
         },
+        /**
+         * Creates a custom driver variable
+         * Usage: D.device.createVariable(uid, name, value, unit)
+         * @memberof D.device
+         * @function
+         * @readonly
+         * @param {string} uid   - The identifier of the variable. Must be Unique. Max 50 characters
+         * @param {string} name  - The Name/Label of the variable
+         * @param {string} value - The Value of the variable
+         * @param {string} unit  - The Unit of measurement of the variable (eg %). Max 10 characters
+         * @return {Variable}
+         */        
         createVariable: function (uid, name, value, unit) {
             if (uid === null || uid === undefined || uid.length &lt; 1 || uid.length > agentDriverSettings.max_var_id_len) {
                 throw Error("Invalid variable uid: " + uid);
@@ -175,13 +240,13 @@ module.exports.device = createDevice;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-sandbox_library_device.html">sandbox/library/device</a></li><li><a href="module-sandbox_sandbox.html">sandbox/sandbox</a></li></ul><h3>Externals</h3><ul><li><a href="-_%2520-%2520Accessed%2520via%2520D.external__.html">_</a></li><li><a href="external-CheerioAPI.html">CheerioAPI</a></li><li><a href="external-CheerioOptions.html">CheerioOptions</a></li><li><a href="q%2520-%2520Accessed%2520via%2520D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-sandbox_sandbox.html#~console">console</a></li><li><a href="module-sandbox_sandbox-D.html">D</a></li></ul><h3>Classes</h3><ul><li><a href="module-sandbox_library_logger-logger.html">logger</a></li><li><a href="module-sandbox_library_snmp-createSessionForDevice.html">createSessionForDevice</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Nov 19 2021 18:38:45 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:27:31 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>

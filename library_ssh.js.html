@@ -43,12 +43,40 @@
  * You should have received a copy of the GNU General Public License
  * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
  *
- * @module sandbox/library/ssh
- * @private
+ * @requires module:async
+ * @requires module:events
+ * @requires module:ssh2
+ * @requires module:q
+ * @requires module:lodash
  * @copyright Copyright (C) Domotz Inc
  */
+/**
+ * The SSH authentication algorithm parameters
+ * @typedef  {Object} SshAlgorithms
+ * @property {Array.&lt;string>} kex               - A List of SSH key exchange methods to use
+ * @property {Array.&lt;string>} cipher            - A List of SSH ciphers to use
+ */
 
-// Internally used modules
+/**
+ * The SSH library Options
+ * @typedef  {Object} SshOptions
+ * @property {Array.&lt;string>} commands             - The ssh commands to execute against the device
+ * @property {string} [username]                   - The device username. If not set the device username is used for custom driver mangement purpose
+ * @property {string} [password]                   - The device password. If not set the device password is used for custom driver mangement purpose
+ * @property {string} [prompt==]                   - The device ssh prompt expected. If not set correctly it may result in a timeout
+ * @property {string} [prompt_regex]               - The device ssh prompt regular expression expected. Used if a device prompt changes during ssh sequence execution
+ * @property {string} [error_prompt]               - The device error prompt expected. Used when there is an expected error prompt string to halt the execution
+ * @property {int} [inter_command_timeout_ms=1000] - Timeout to wait between ssh sequence commands executions
+ * @property {int} [global_timeout_ms=30000]       - The global ssh shell sequence execution timeout. When expired results in TIMEOUT_ERROR
+ * @property {SshAlgorithms} [algorithms]          - The SSH Kex and Ciphers to use
+ */
+
+/**
+ * The SSH library callback
+ * @typedef  {callback} SshCallback
+ * @property {Array.&lt;string>} output   - The output list of of the SSH Commands executions
+ * @property {ErrorResult}    [error]  - Will be present if the execution resulted in an error
+ */
 var async = require('async');
 var events = require('events')
 var ssh2 = require('ssh2');
@@ -59,12 +87,9 @@ var sandboxConsole;
 
 /**
  * SSH Library Resource Locator object 
- * @requires module:async
- * @requires module:events
- * @requires module:ssh2
- * @requires module:q
- * @requires module:lodash
-*/
+ * @private
+ * @readonly
+ */
 var sandboxResourceLocator = {
     log: {
         decorateLogs: function (){
@@ -79,6 +104,7 @@ var sandboxResourceLocator = {
 }
 /**
  * Default SSH Options algorithms parameter
+ * @private
  * @constant {Object} 
  * @property {Array}  cipher      - Default algorithm ciphers
  * @property {Array}  kex         - Default algorithm kex
@@ -100,13 +126,13 @@ const DEFAULT_ALGORITHMS = {
 
 }
 
-
 /**
  * Sends a sequence of SSH commands
  * @function
- * @param {Object} myConsole      - sandbox console
- * @param {Object} options        - ssh options
- * @returns {object|null} - new instance of the same variable if it is valid, null otherwise.
+ * @private
+ * @readonly
+ * @param {Object} myConsole      - The Domotz Sandbox console
+ * @param {SshOptions} options    - The SSH Commands exection options
 */
 function sendSSHShellSequence(myConsole, options, callback) {
     sandboxConsole = myConsole
@@ -136,13 +162,13 @@ module.exports.sendSSHShellSequence = sendSSHShellSequence;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-sandbox_library_device.html">sandbox/library/device</a></li><li><a href="module-sandbox_sandbox.html">sandbox/sandbox</a></li></ul><h3>Externals</h3><ul><li><a href="-_%2520-%2520Accessed%2520via%2520D.external__.html">_</a></li><li><a href="external-CheerioAPI.html">CheerioAPI</a></li><li><a href="external-CheerioOptions.html">CheerioOptions</a></li><li><a href="q%2520-%2520Accessed%2520via%2520D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-sandbox_sandbox.html#~console">console</a></li><li><a href="module-sandbox_sandbox-D.html">D</a></li></ul><h3>Classes</h3><ul><li><a href="module-sandbox_library_logger-logger.html">logger</a></li><li><a href="module-sandbox_library_snmp-createSessionForDevice.html">createSessionForDevice</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Nov 19 2021 18:38:45 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:27:31 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
