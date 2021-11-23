@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: library/ssh.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: library/ssh.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of Domotz Agent.
+ *
+ * @license
+ * Domotz Agent is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Domotz Agent is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
+ *
+ * @requires module:async
+ * @requires module:events
+ * @requires module:ssh2
+ * @requires module:q
+ * @requires module:lodash
+ * @copyright Copyright (C) Domotz Inc
+ */
+/**
+ * The SSH authentication algorithm parameters
+ * @typedef  {Object} SshAlgorithms
+ * @property {Array.&lt;string>} kex               - A List of SSH key exchange methods to use
+ * @property {Array.&lt;string>} cipher            - A List of SSH ciphers to use
+ */
+
+/**
+ * The SSH library Options
+ * @typedef  {Object} SshOptions
+ * @property {Array.&lt;string>} commands             - The ssh commands to execute against the device
+ * @property {string} [username]                   - The device username. If not set the device username is used for custom driver mangement purpose
+ * @property {string} [password]                   - The device password. If not set the device password is used for custom driver mangement purpose
+ * @property {string} [prompt==]                   - The device ssh prompt expected. If not set correctly it may result in a timeout
+ * @property {string} [prompt_regex]               - The device ssh prompt regular expression expected. Used if a device prompt changes during ssh sequence execution
+ * @property {string} [error_prompt]               - The device error prompt expected. Used when there is an expected error prompt string to halt the execution
+ * @property {int} [inter_command_timeout_ms=1000] - Timeout to wait between ssh sequence commands executions
+ * @property {int} [global_timeout_ms=30000]       - The global ssh shell sequence execution timeout. When expired results in TIMEOUT_ERROR
+ * @property {SshAlgorithms} [algorithms]          - The SSH Kex and Ciphers to use
+ */
+
+/**
+ * The SSH library callback
+ * @typedef  {callback} SshCallback
+ * @property {Array.&lt;string>} output   - The output list of of the SSH Commands executions
+ * @property {ErrorResult}    [error]  - Will be present if the execution resulted in an error
+ */
+var async = require('async');
+var events = require('events')
+var ssh2 = require('ssh2');
+var q = require('q');
+var lodash = require('lodash');
+
+var sandboxConsole;
+
+/**
+ * SSH Library Resource Locator object 
+ * @private
+ * @readonly
+ */
+var sandboxResourceLocator = {
+    log: {
+        decorateLogs: function (){
+            return sandboxConsole;
+        }
+    },
+    ssh2: ssh2,
+    q: q,
+    async: async,
+    lodash: lodash,
+    events: events,
+}
+/**
+ * Default SSH Options algorithms parameter
+ * @private
+ * @constant {Object} 
+ * @property {Array}  cipher      - Default algorithm ciphers
+ * @property {Array}  kex         - Default algorithm kex
+*/
+const DEFAULT_ALGORITHMS = {
+    cipher: [
+        'aes128-gcm',
+        'aes128-gcm@openssh.com',
+        'aes256-gcm',
+        'aes256-gcm@openssh.com'
+    ],
+    kex: [
+        'diffie-hellman-group-exchange-sha1',
+        'diffie-hellman-group-exchange-sha256',
+        'ecdh-sha2-nistp256',
+        'ecdh-sha2-nistp384',
+        'ecdh-sha2-nistp521'
+    ]
+
+}
+
+/**
+ * Sends a sequence of SSH commands
+ * @function
+ * @private
+ * @readonly
+ * @param {Object} myConsole      - The Domotz Sandbox console
+ * @param {SshOptions} options    - The SSH Commands exection options
+*/
+function sendSSHShellSequence(myConsole, options, callback) {
+    sandboxConsole = myConsole
+    options.algorithms = options.algorithms || DEFAULT_ALGORITHMS
+    function outputTransformer(result){
+        var error = result.error
+        var output = [];
+        if (result.output) {
+            result.output.forEach(function (item) {
+                output.push(Buffer(item, 'base64').toString());
+            })
+        }
+        callback(output, error)
+    }
+    var sshNode = require('../../network_tools/sshNode').factory(sandboxResourceLocator);
+    return sshNode.sshShellSequence(options, outputTransformer);
+}
+
+module.exports.sendSSHShellSequence = sendSSHShellSequence;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:19:20 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

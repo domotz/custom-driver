@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: runner.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: runner.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ *  This file is part of Domotz Agent.
+ * 
+ * @license
+ * Domotz Agent is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Domotz Agent is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
+ *
+ * @module sandbox/runner
+ * @private
+ * @copyright Copyright (C) Domotz Inc
+ */
+
+/**
+ * @constant {number}
+ * @type {number}
+ * @default
+*/
+const DEFAULT_TIMEOUT = 5000;
+
+/**
+ * @readonly
+ * @enum {number}
+ */
+const DEFAULT_CUSTOM_DRIVER_SETTINGS = {
+    max_log_entries: 100,
+    max_var_id_len: 50,
+    max_var_per_device: 100,
+    max_var_unit_len: 10,
+    max_data_len: 4096
+};
+// TODO remove this
+/**
+ * @readonly
+ *  @enum {string}
+ */
+const errorTypes = {
+    MISSING_DEVICE_ERROR: "MISSING_DEVICE_ERROR",
+    RESOURCE_UNAVAILABLE: "RESOURCE_UNAVAILABLE",
+    AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
+    PARSING_ERROR: "PARSING_ERROR",
+    TIMEOUT_ERROR: "TIMEOUT_ERROR",
+    IMPORT_NOT_ALLOWED: "IMPORT_NOT_ALLOWED",
+    REQUIRE_NOT_ALLOWED: "REQUIRE_NOT_ALLOWED",
+    GENERIC_ERROR: "GENERIC_ERROR"
+};
+
+var path = require('path');
+
+var agentDriverSettings = null;
+var dryRun = null;
+
+
+/**
+ * Checks if a variable is valid
+ * @param {*} variable - a custom variable
+ * @returns {object|null} - new instance of the same variable if it is valid, null otherwise.
+ */
+function checkVariable(variable) {
+    if (variable === null || variable === undefined) {
+        return null;
+    }
+    if (
+        variable.uid === null ||
+        variable.uid === undefined ||
+        variable.uid.length &lt; 1 ||
+        variable.uid.length > agentDriverSettings.max_var_id_len
+    ) {
+        return null;
+    }
+    if (variable.value === undefined) { // must be null or string; anything else means createVariable hasn't been used;
+        return null;
+    }
+    return {
+        uid: variable.uid,
+        label: variable.label,
+        unit: variable.unit,
+        value: variable.value
+    };
+}
+
+function handleSuccessfulResponseData(response) {
+    // this function is executed in the sandboxRunner process, so no chance of corruption of the checks if the driver escapes the vm
+    if (dryRun !== true) {
+        response.log = null;
+    }
+    if (response.variables) {
+        var checkedVariables = [];
+        for (var i = 0; i &lt; response.variables.length; i++) {
+            var checkedVariable = checkVariable(response.variables[i]);
+            if (checkedVariable !== null || checkedVariable !== undefined) {
+                checkedVariables.push(checkedVariable);
+            }
+        }
+        response.variables = checkedVariables;
+    }
+    return response;
+}
+
+function handleFailedResponse(response) {
+    if (!(response.errorType in errorTypes)) {
+        response.errorType = errorTypes.GENERIC_ERROR;
+    }
+    return response;
+}
+
+function createMessageListener(subProcess, onError, onSuccess, myConsole) {
+    return function (response) {
+        myConsole.debug("Response outcome: ", response.outcome);
+        myConsole.debug("Response log:" + response.log);
+        if (response.variables) {
+            myConsole.debug("Response variables: " + JSON.stringify(response.variables));
+        }
+
+        subProcess.kill();
+        subProcess = null;
+        if (response.outcome === 'success') {
+            response = handleSuccessfulResponseData(response);
+            return onSuccess(response);
+        } else {
+            response = handleFailedResponse(response);
+            return onError(response);
+        }
+    };
+}
+
+function createErrorListener(subProcess, onError, myConsole) {
+    return function () {
+        myConsole.debug("Process exited");
+        if (subProcess !== null &amp;&amp; subProcess.killed !== true) {
+            myConsole.error("Sandbox exited without sending back message - error");
+            return onError(Error("Sandbox exited without sending back message"));
+        }
+    };
+}
+
+function sandboxRunner(data, resourceLocator, cid, onError, onSuccess) {
+    var subProcess = require('child_process').fork(__dirname + path.sep + 'sandbox.js');
+    var scriptText = data.code;
+    var device = data.device;
+    var timeout = data.timeout || DEFAULT_TIMEOUT;
+    var logLevel = data.logLevel || 'warning';
+    var myConsole = resourceLocator.log.decorateLogs().decorate("(" + cid + ")");
+
+    // Set values to Global Variables
+    dryRun = data.dry_run;
+    agentDriverSettings = resourceLocator.configuration.settings.custom_driver || DEFAULT_CUSTOM_DRIVER_SETTINGS;
+    if (!scriptText || !device) {
+        return onError(Error("Missing script text or device: " + JSON.stringify(data)));
+    }
+    if (!device.ip) {
+        device.ip = resourceLocator.interfacesBindingStorage.getIpsFromMac(device.hw_address)[0];
+    }
+
+    myConsole.debug("Script %s", scriptText);
+    myConsole.debug("Device: %s", JSON.stringify(device));
+
+    subProcess.on('message', createMessageListener(subProcess, onError, onSuccess, myConsole));
+    subProcess.on('exit', createErrorListener(subProcess, onError, myConsole));
+    subProcess.send({
+        script: scriptText.toString(),
+        device: device,
+        timeout: timeout,
+        logLevel: logLevel,
+        agentDriverSettings: agentDriverSettings,
+        errorTypes: errorTypes
+    });
+}
+
+
+module.exports.sandboxRunner = sandboxRunner;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:19:20 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sandbox.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sandbox.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of Domotz Agent.
+ *
+ * @license
+ * Domotz Agent is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Domotz Agent is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Domotz Agent.  If not, see &lt;http://www.gnu.org/licenses/>.
+ *
+ * @requires sandbox/library/device
+ * @requires sandbox/library/logger
+ * @copyright Copyright (C) Domotz Inc
+ */
+/**
+ * The Domotz Context Library
+ * @namespace D
+ */
+/**
+ * Custom Driver variable
+ * Created via D.device.createVariable
+ * @typedef {Object} Variable
+ * @readonly
+ * @property {string} uid   - The identifier of the variable. Must be Unique. Max 50 characters
+ * @property {string} name  - The Name/Label of the variable
+ * @property {string} value - The Value of the variable
+ * @property {string} unit  - The Unit of measurement of the variable (eg %). Max 10 characters
+ */
+/**
+ * Known Domotz Context Error types
+ * Acessed via D.errorTypes
+ * @typedef ErrorType
+ * @property {string} MISSING_DEVICE_ERROR  - No device was found for execution
+ * @property {string} RESOURCE_UNAVAILABLE  - The Resource you are trying to access is not available
+ * @property {string} AUTHENTICATION_ERROR  - Authentication with the device has failed
+ * @property {string} PARSING_ERROR         - Failed to parse the response
+ * @property {string} TIMEOUT_ERROR         - The remote call has resulted in a timeout
+ * @property {string} IMPORT_NOT_ALLOWED    - Import statements are not allowed in the sandbox enviroment
+ * @property {string} REQUIRE_NOT_ALLOWED   - Require statements are not allowed in the sandbox enviroment
+ * @property {string} GENERIC_ERROR         - A Generic/Unknown error has occurred
+ */
+/**
+ * The Cheerio Library Accepted Options
+ * @typedef {Object} CheerioOptions
+ * @see {@link https://cheerio.js.org/interfaces/CheerioOptions.html}
+ */
+/**
+ * The Cheerio Library Loaded Document
+ * @typedef {Object} CheerioAPI
+ * @see {@link https://cheerio.js.org/interfaces/CheerioAPI.html}
+ */
+/**
+ * Used when the result of a call towards a device is in an erroneous state
+ * @typedef  {Object} ErrorResult
+ * @property {string} message - The Error Message
+ */
+
+const vm = require('vm');
+const logger = require('./library/logger').logger;
+const util = require('util');
+const rttOffset = 5000;
+
+var newConsole = null;
+var startTime = null;
+var agentDriverSettings = null;
+
+const errorTypes = {
+    MISSING_DEVICE_ERROR: "MISSING_DEVICE_ERROR",
+    RESOURCE_UNAVAILABLE: "RESOURCE_UNAVAILABLE",
+    AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
+    PARSING_ERROR: "PARSING_ERROR",
+    TIMEOUT_ERROR: "TIMEOUT_ERROR",
+    IMPORT_NOT_ALLOWED: "IMPORT_NOT_ALLOWED",
+    REQUIRE_NOT_ALLOWED: "REQUIRE_NOT_ALLOWED",
+    GENERIC_ERROR: "GENERIC_ERROR"
+};
+
+
+function failure(errorType) {
+    if (!errorType || !(errorType in errorTypes)) {
+        newConsole.warning("Error type %s is not recognized, converting to generic error", errorType);
+        errorType = errorTypes.GENERIC_ERROR;
+    }
+    process.send({
+        outcome: 'failure',
+        errorType: errorType,
+        log: newConsole.get(),
+        elapsed: new Date() - startTime
+    });
+}
+
+function success(variables) {
+    newConsole.debug("Success called");
+    var maxVarPerDevice = agentDriverSettings.max_var_per_device;
+    if (variables &amp;&amp; variables.length > maxVarPerDevice &amp;&amp; Array.isArray(variables)) {
+        newConsole.warning("Too many declared variables (%s) - slicing to %s",
+            variables.length,
+            maxVarPerDevice);
+        variables = variables.slice(0, maxVarPerDevice);
+    }
+    process.send({
+        outcome: 'success',
+        variables: variables,
+        log: newConsole.get(),
+        elapsed: new Date() - startTime
+    });
+}
+
+function timeoutReached() {
+    newConsole.warning("Timeout expired");
+    failure(errorTypes.TIMEOUT_ERROR);
+}
+
+
+process.on('message', function (message) {
+    agentDriverSettings = message.agentDriverSettings;
+    newConsole = logger(message.logLevel || 'info', agentDriverSettings.max_log_entries);
+    var context = vm.createContext({
+        D: {
+            /**
+             * Known Domotz Context Error types
+             * Usage is via D.ErrorTypes.
+             * @memberof D
+             * @readonly
+             * @enum  {ErrorType}
+             */            
+            errorTypes: errorTypes,            
+            /**
+             * Success callback in D (D.success)
+             * It must be present in validate, get_status or all custom action functions code (or their callbacks)  
+             * in order to indicate their successful execution
+             * Accessed via D.success
+             * @function
+             * @param   {Array.&lt;Variable>} [variables] - The variables to return (dry run) or store
+             */
+            success: success,
+            /**
+             * Failure callback in D (D.failure)
+             * It can be present in validate, get_status or all custom action functions code (or their callbacks)
+             * in order to indicate a failure in the execution
+             * Accessed via D.failure
+             * @function
+             * @param   {ErrorType} [errorType] - The type of error that caused the failure callback. Must be a member of D.errorTypes
+             */
+            failure: failure,
+            /**
+             * Html Parser
+             * Accessed via D.htmlParse
+             * @function
+             * @param {string|Node|Node[]|Buffer} content           - Markup to be loaded.
+             * @param {CheerioOptions}            [options]         - Options for the created instance.
+             * @param {boolean}                   [isDocument=true] - Allows parser to be switched to fragment mode.
+             * @returns {CheerioAPI}                                - The loaded document
+             */
+            htmlParse: require('cheerio').load,
+            /**
+             * Mathematical Utilities library
+             * Accesed via D.math
+             * @namespace D.math
+             * @memberof D
+             */
+            math: {
+                /**
+                 * Percentage Calculating Function
+                 * @function
+                 * @param {number} actual   - The actual number
+                 * @param {number} maximum  - The maximum number
+                 * @returns {number}        - The Percentage
+                */
+                percent: function (actual, maximum) {
+                    return Math.round(10000.0 * parseInt(actual, 10) / parseInt(maximum, 10)) / 100;
+                }
+            },
+            /**
+             * Nodejs Lodash Module
+             * JavaScript utility library delivering modularity, performance &amp; extras.
+             * Accessed via D._
+             * @memberof D
+             * @external _
+             * @see {@link https://lodash.com/docs/4.17.15}
+            */
+            _: require('lodash'),
+            /**
+             * Nodejs q Module
+             * Accessed via D.q
+             * @memberof D
+             * @external q 
+             * @see {@link https://devdocs.io/q/}
+            */
+            q: require('q')
+        },
+        import: function () {
+            newConsole.error("Error: Import not possible in sandbox");
+            failure(errorTypes.IMPORT_NOT_ALLOWED);
+        },
+        require: function () {
+            newConsole.error("Error: Require not possible in sandbox");
+            failure(errorTypes.REQUIRE_NOT_ALLOWED);
+        },
+        console: newConsole
+    });
+
+    if (message.device) {
+        context.D.device = require('./library/device').device(message.device, agentDriverSettings, newConsole);
+        newConsole.debug("Created new device for script execution: %s", util.inspect(message.device));
+    }
+
+    const script = new vm.Script(message.script);
+    var timeout = message.timeout || 5000;
+    setTimeout(timeoutReached, timeout) + rttOffset;
+
+    startTime = new Date();
+    script.runInContext(context, {
+        displayErrors: true,
+        fileName: 'custom script',
+        lineOffset: 0
+    });
+});
+
+process.on('uncaughtException', function (err) {
+    newConsole.error('Caught exception: ' + err.toString() + '\n' + err.stack);
+    failure(errorTypes.GENERIC_ERROR);
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:19:20 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
