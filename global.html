@@ -391,7 +391,6 @@
 
 <div class="description">
     Known Domotz Context Error types
-Acessed via D.errorTypes
 </div>
 
 
@@ -657,6 +656,11 @@ Acessed via D.errorTypes
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>D.errorType.TIMEOUT_ERROR</code></pre>
+
+
 
             
                 
@@ -836,7 +840,7 @@ Acessed via D.errorTypes
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_device.js.html">library/device.js</a>, <a href="library_device.js.html#line47">line 47</a>
+        <a href="library_device.js.html">library/device.js</a>, <a href="library_device.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -860,7 +864,7 @@ Acessed via D.errorTypes
 
 
 <div class="description">
-    The Http library Options
+    The Http Library Options
 </div>
 
 
@@ -970,7 +974,7 @@ Acessed via D.errorTypes
                 </td>
             
 
-            <td class="description last">The Request HTTP Headers</td>
+            <td class="description last">The Request HTTP Headers defined as key value pairs. Eg {'Accept': 'text/html'}</td>
         </tr>
 
     
@@ -1080,7 +1084,7 @@ Acessed via D.errorTypes
                 </td>
             
 
-            <td class="description last">The authentication to use. Eg 'basic'</td>
+            <td class="description last">The authentication to use. Eg 'basic' / {'bearer': 'the token'}</td>
         </tr>
 
     
@@ -1115,7 +1119,7 @@ Acessed via D.errorTypes
                 </td>
             
 
-            <td class="description last">The device username. If not set the device username is used for custom driver mangement purpose</td>
+            <td class="description last">The device username. If not set the device username is used for custom driver management purpose</td>
         </tr>
 
     
@@ -1150,7 +1154,7 @@ Acessed via D.errorTypes
                 </td>
             
 
-            <td class="description last">The device password. If not set the device password is used for custom driver mangement purpose</td>
+            <td class="description last">The device password. If not set the device password is used for custom driver management purpose</td>
         </tr>
 
     
@@ -1191,6 +1195,43 @@ Acessed via D.errorTypes
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>jar</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, remember cookies for future use</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1226,7 +1267,7 @@ Acessed via D.errorTypes
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_device.js.html">library/device.js</a>, <a href="library_device.js.html#line34">line 34</a>
+        <a href="library_device.js.html">library/device.js</a>, <a href="library_device.js.html#line36">line 36</a>
     </li></ul></dd>
     
 
@@ -1298,7 +1339,7 @@ Acessed via D.errorTypes
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_snmp.js.html">library/snmp.js</a>, <a href="library_snmp.js.html#line25">line 25</a>
+        <a href="library_snmp.js.html">library/snmp.js</a>, <a href="library_snmp.js.html#line26">line 26</a>
     </li></ul></dd>
     
 
@@ -1316,160 +1357,13 @@ Acessed via D.errorTypes
 
             
                 
-<h4 class="name" id="SshAlgorithms">SshAlgorithms</h4>
+<h4 class="name" id="TelnetCallback">TelnetCallback</h4>
 
 
 
 
 <div class="description">
-    The SSH authentication algorithm parameters
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>kex</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">A List of SSH key exchange methods to use</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>cipher</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">A List of SSH ciphers to use</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_ssh.js.html">library/ssh.js</a>, <a href="library_ssh.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
-<h4 class="name" id="SshCallback">SshCallback</h4>
-
-
-
-
-<div class="description">
-    The SSH library callback
+    The Telnet library callback
 </div>
 
 
@@ -1522,7 +1416,7 @@ Acessed via D.errorTypes
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
+<span class="param-type">string</span>
 
 
             
@@ -1538,7 +1432,7 @@ Acessed via D.errorTypes
 
             
 
-            <td class="description last">The output list of of the SSH Commands executions</td>
+            <td class="description last">The Result from the telnet command execution</td>
         </tr>
 
     
@@ -1608,7 +1502,7 @@ Acessed via D.errorTypes
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_ssh.js.html">library/ssh.js</a>, <a href="library_ssh.js.html#line46">line 46</a>
+        <a href="library_telnet.js.html">library/telnet.js</a>, <a href="library_telnet.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -1626,13 +1520,13 @@ Acessed via D.errorTypes
 
             
                 
-<h4 class="name" id="SshOptions">SshOptions</h4>
+<h4 class="name" id="TelnetOptions">TelnetOptions</h4>
 
 
 
 
 <div class="description">
-    The SSH library Options
+    The Telnet library Options
 </div>
 
 
@@ -1681,40 +1575,7 @@ Acessed via D.errorTypes
 
         <tr>
             
-                <td class="name"><code>commands</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">The ssh commands to execute against the device</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>username</code></td>
+                <td class="name"><code>command</code></td>
             
 
             <td class="type">
@@ -1729,8 +1590,6 @@ Acessed via D.errorTypes
             
                 <td class="attributes">
                 
-                    &lt;optional><br>
-                
 
                 
                 </td>
@@ -1742,20 +1601,20 @@ Acessed via D.errorTypes
                 </td>
             
 
-            <td class="description last">The device username. If not set the device username is used for custom driver mangement purpose</td>
+            <td class="description last">The telnet command to execute against the device</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>password</code></td>
+                <td class="name"><code>port</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">number</span>
 
 
             
@@ -1774,23 +1633,25 @@ Acessed via D.errorTypes
             
                 <td class="default">
                 
+                    23
+                
                 </td>
             
 
-            <td class="description last">The device password. If not set the device password is used for custom driver mangement purpose</td>
+            <td class="description last">The telnet port to connect to</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>prompt</code></td>
+                <td class="name"><code>timeout</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">number</span>
 
 
             
@@ -1809,25 +1670,25 @@ Acessed via D.errorTypes
             
                 <td class="default">
                 
-                    =
+                    500
                 
                 </td>
             
 
-            <td class="description last">The device ssh prompt expected. If not set correctly it may result in a timeout</td>
+            <td class="description last">The time the telnet session will persist for (in milisenconds)</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>prompt_regex</code></td>
+                <td class="name"><code>negotiationMandatory</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -1846,23 +1707,25 @@ Acessed via D.errorTypes
             
                 <td class="default">
                 
+                    false
+                
                 </td>
             
 
-            <td class="description last">The device ssh prompt regular expression expected. Used if a device prompt changes during ssh sequence execution</td>
+            <td class="description last">Set this to true if the telnet session requires authentication</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>error_prompt</code></td>
+                <td class="name"><code>shellPrompt</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">number</span>
 
 
             
@@ -1881,23 +1744,25 @@ Acessed via D.errorTypes
             
                 <td class="default">
                 
+                    /(?:\/ )?#\s/
+                
                 </td>
             
 
-            <td class="description last">The device error prompt expected. Used when there is an expected error prompt string to halt the execution</td>
+            <td class="description last">The expected shell prompt regular expression for the telnet session</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>inter_command_timeout_ms</code></td>
+                <td class="name"><code>loginPrompt</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">int</span>
+<span class="param-type">number</span>
 
 
             
@@ -1916,25 +1781,25 @@ Acessed via D.errorTypes
             
                 <td class="default">
                 
-                    1000
+                    /login[: ]*$/i
                 
                 </td>
             
 
-            <td class="description last">Timeout to wait between ssh sequence commands executions</td>
+            <td class="description last">The expected username prompt regular expression for the telnet session</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>global_timeout_ms</code></td>
+                <td class="name"><code>passwordPrompt</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">int</span>
+<span class="param-type">number</span>
 
 
             
@@ -1953,47 +1818,12 @@ Acessed via D.errorTypes
             
                 <td class="default">
                 
-                    30000
+                    /Password: /i
                 
                 </td>
             
 
-            <td class="description last">The global ssh shell sequence execution timeout. When expired results in TIMEOUT_ERROR</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>algorithms</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#SshAlgorithms">SshAlgorithms</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">The SSH Kex and Ciphers to use</td>
+            <td class="description last">The expected password prompt regular expression for the telnet session</td>
         </tr>
 
     
@@ -2032,7 +1862,7 @@ Acessed via D.errorTypes
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_ssh.js.html">library/ssh.js</a>, <a href="library_ssh.js.html#line32">line 32</a>
+        <a href="library_telnet.js.html">library/telnet.js</a>, <a href="library_telnet.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -2256,13 +2086,13 @@ Created via D.device.createVariable
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:27:31 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Nov 29 2021 13:56:00 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
