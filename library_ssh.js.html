@@ -50,20 +50,54 @@
  * @requires module:lodash
  * @copyright Copyright (C) Domotz Inc
  */
+
 /**
  * The SSH authentication algorithm parameters
  * @typedef  {Object} SshAlgorithms
+ * @example {
+    cipher: [
+        'aes128-gcm',
+        'aes128-gcm@openssh.com',
+        'aes256-gcm',
+        'aes256-gcm@openssh.com'
+    ],
+    kex: [
+        'diffie-hellman-group-exchange-sha1',
+        'diffie-hellman-group-exchange-sha256',
+        'ecdh-sha2-nistp256',
+        'ecdh-sha2-nistp384',
+        'ecdh-sha2-nistp521'
+    ]
+
+}
  * @property {Array.&lt;string>} kex               - A List of SSH key exchange methods to use
  * @property {Array.&lt;string>} cipher            - A List of SSH ciphers to use
  */
 
 /**
- * The SSH library Options
+ * The SSH Command Options
  * @typedef  {Object} SshOptions
+ * @property {string} command     - The ssh command to execute against the device
+ * @property {int}    [timeout]   - The time to wait for the command execution
+ * @property {string} [username]  - The device username. If not set the custom driver management purpose one is used
+ * @property {string} [password]  - The device password. IIf not set the custom driver management purpose one is used
+ */
+
+/**
+ * The SSH Command Execution Result
+ * @typedef  {callback} SshCallback
+ * @property {string}      output    - The stdout from the SSH Command execution
+ * @property {ErrorResult} [error]   - Will be present if the execution resulted in an error
+ */
+
+/**
+ * The SSH Shell Sequence Options
+ * @typedef  {Object} SshShellSequenceOptions
+ * @private
  * @property {Array.&lt;string>} commands             - The ssh commands to execute against the device
- * @property {string} [username]                   - The device username. If not set the device username is used for custom driver mangement purpose
- * @property {string} [password]                   - The device password. If not set the device password is used for custom driver mangement purpose
- * @property {string} [prompt==]                   - The device ssh prompt expected. If not set correctly it may result in a timeout
+ * @property {string} [username]                   - The device username. If not set the custom driver management purpose one is used
+ * @property {string} [password]                   - The device password. If not set the custom driver management purpose one is used
+ * @property {string} [prompt=#]                   - The device ssh prompt expected. If not set correctly it may result in a timeout
  * @property {string} [prompt_regex]               - The device ssh prompt regular expression expected. Used if a device prompt changes during ssh sequence execution
  * @property {string} [error_prompt]               - The device error prompt expected. Used when there is an expected error prompt string to halt the execution
  * @property {int} [inter_command_timeout_ms=1000] - Timeout to wait between ssh sequence commands executions
@@ -72,10 +106,11 @@
  */
 
 /**
- * The SSH library callback
- * @typedef  {callback} SshCallback
- * @property {Array.&lt;string>} output   - The output list of of the SSH Commands executions
- * @property {ErrorResult}    [error]  - Will be present if the execution resulted in an error
+ * The SSH Shell Sequence callback
+ * @typedef  {callback} SshShellSequenceCallback
+ * @private
+ * @property {Array.&lt;string>} outputs   - The output list of of the SSH Commands executions
+ * @property {ErrorResult}    [error]   - Will be present if the execution resulted in an error
  */
 var async = require('async');
 var events = require('events')
@@ -92,7 +127,7 @@ var sandboxConsole;
  */
 var sandboxResourceLocator = {
     log: {
-        decorateLogs: function (){
+        decorateLogs: function () {
             return sandboxConsole;
         }
     },
@@ -101,56 +136,59 @@ var sandboxResourceLocator = {
     async: async,
     lodash: lodash,
     events: events,
-}
-/**
- * Default SSH Options algorithms parameter
- * @private
- * @constant {Object} 
- * @property {Array}  cipher      - Default algorithm ciphers
- * @property {Array}  kex         - Default algorithm kex
-*/
-const DEFAULT_ALGORITHMS = {
-    cipher: [
-        'aes128-gcm',
-        'aes128-gcm@openssh.com',
-        'aes256-gcm',
-        'aes256-gcm@openssh.com'
-    ],
-    kex: [
-        'diffie-hellman-group-exchange-sha1',
-        'diffie-hellman-group-exchange-sha256',
-        'ecdh-sha2-nistp256',
-        'ecdh-sha2-nistp384',
-        'ecdh-sha2-nistp521'
-    ]
-
-}
+};
 
 /**
  * Sends a sequence of SSH commands
  * @function
  * @private
  * @readonly
- * @param {Object} myConsole      - The Domotz Sandbox console
- * @param {SshOptions} options    - The SSH Commands exection options
+ * @param {Object} myConsole                   - The Domotz Sandbox console
+ * @param {SshShellSequenceOptions} options    - The SSH Commands execution options
 */
 function sendSSHShellSequence(myConsole, options, callback) {
-    sandboxConsole = myConsole
-    options.algorithms = options.algorithms || DEFAULT_ALGORITHMS
-    function outputTransformer(result){
-        var error = result.error
-        var output = [];
+    sandboxConsole = myConsole;
+    function outputTransformer(result) {
+        var error = result.error;
+        var outputs = [];
         if (result.output) {
             result.output.forEach(function (item) {
-                output.push(Buffer(item, 'base64').toString());
-            })
+                outputs.push(Buffer(item, 'base64').toString());
+            });
         }
-        callback(output, error)
+        callback(outputs, error);
     }
     var sshNode = require('../../network_tools/sshNode').factory(sandboxResourceLocator);
     return sshNode.sshShellSequence(options, outputTransformer);
 }
+/**
+ * Sends an SSH command
+ * @function
+ * @private
+ * @readonly
+ * @param {Object} myConsole      - The Domotz Sandbox console
+ * @param {SshOptions} options    - The SSH Command exection options
+*/
+function sendSSHCommand(myConsole, options, callback) {
+    sandboxConsole = myConsole;
+    var command = options.command;
+    if (options.command) {
+        delete options.command;
+    } else {
+        throw Error("D.sendSSHCommand requires a 'command' in its options parameter");
+    }
+    sandboxConsole.info('Sending SSH Command ' + command);
+    var sshNode = require('../../network_tools/sshNode').factory(sandboxResourceLocator);
+    var promise = sshNode.exec(command, options, '');
+    return promise.then(function (stdout) {
+            callback(stdout, null);
+        }).catch(function (stderr) {
+            sandboxConsole.error("SSH Command execution Error: " + JSON.stringify(stderr));
+            callback(null, stderr);
+        });
+}
 
+module.exports.sendSSHCommand = sendSSHCommand;
 module.exports.sendSSHShellSequence = sendSSHShellSequence;
 </code></pre>
         </article>
@@ -162,13 +200,13 @@ module.exports.sendSSHShellSequence = sendSSHShellSequence;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li><li><a href="D.external_q.html">q</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 23 2021 17:27:31 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Nov 29 2021 19:37:31 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
