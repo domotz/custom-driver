@@ -12,10 +12,12 @@ var lastLoginUnit = 'line';
 
 /**
  * The SSH Command Options
- * @property {string} [prompt] - The SSH prompt must be set if different than # 
+ * @property {string} [prompt]  - The SSH prompt must be set if different than # 
+ * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
-    'prompt': ']'
+    'prompt': ']',
+    'timeout': 5000
 };
 
 /**
@@ -30,35 +32,6 @@ function checkForPasswordError(error) {
         D.failure(D.errorType.GENERIC_ERROR);
     }
 }
-/**
- * Helper callback function to create the Variables for the device
- * Calls D.success to indicate successful run and setting variable values
-*/
-function resultCallback(output, error) {
-    if (error) {
-        checkForPasswordError(error)
-    };
-    var lines = output.split('\n');
-    var lastLoginValue = null;
-
-    var lastLoginRegex = new RegExp('.*sshd\\[[\\d]+\\]:(.*) port.*');
-    lines.forEach(function (line) {
-        var match = line.match(lastLoginRegex);
-        if (match) {
-            lastLoginValue = match[1];
-        }
-    });
-    if (!lastLoginValue) {
-        console.error("Could not parse variable in output", output)
-        D.failure(D.errorType.PARSING_ERROR)
-    } else {
-        var lastLoginVariable = D.device.createVariable(
-            lastLoginUID, lastLoginLabel, lastLoginValue, lastLoginUnit
-        );
-        // D.success accepts an Array of variable objects
-        D.success([lastLoginVariable]);
-    }
-};
 
 /**
  * Excuting a simple command to test access to device:
@@ -69,10 +42,18 @@ function resultCallback(output, error) {
 */
 function validate() {
     var commandValidate = 'ls'
-    console.info("Verifying credentials ... ", commandValidate)
+    console.info("Verifying credentials ... ", commandValidate);
     sshCommandOptions['command'] = commandValidate;
-    D.device.sendSSHCommands(
-        sshCommandOptions, resultCallback
+    function loginCallback(output, error) {
+        variables = [];
+        if (error) {
+            checkForPasswordError(error);
+        } else {
+            D.success();
+        };
+    };
+    D.device.sendSSHCommand(
+        sshCommandOptions, loginCallback
     );
 }
 
@@ -105,6 +86,35 @@ function get_status() {
     */
     var commandLastLogin = 'grep -i -e login -e accepted /var/log/auth.log | grep -v "grep" | tail -n2 | head -n1';
     sshCommandOptions['command'] = commandLastLogin;
+    /**
+     * Helper callback function to create the Variables for the device
+     * Calls D.success to indicate successful run and setting variable values
+    */
+    function resultCallback(output, error) {
+        if (error) {
+            checkForPasswordError(error);
+        };
+        var lines = output.split('\n');
+        var lastLoginValue = null;
+
+        var lastLoginRegex = new RegExp('.*sshd\\[[\\d]+\\]:(.*) port.*');
+        lines.forEach(function (line) {
+            var match = line.match(lastLoginRegex);
+            if (match) {
+                lastLoginValue = match[1];
+            }
+        });
+        if (!lastLoginValue) {
+            console.error("Could not parse variable in output", output);
+            D.failure(D.errorType.PARSING_ERROR);
+        } else {
+            var lastLoginVariable = D.device.createVariable(
+                lastLoginUID, lastLoginLabel, lastLoginValue, lastLoginUnit
+            );
+            // D.success accepts an Array of variable objects
+            D.success([lastLoginVariable]);
+        }
+    };
     D.device.sendSSHCommand(
         sshCommandOptions, resultCallback
     );
