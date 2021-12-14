@@ -71,13 +71,15 @@ function get_status() {
         var variables = [];
         for (var key in leases) {
             var deviceMac = leases[key].mac;
+            var unit = 'date'
             var uid = deviceMac.replace(/:/g, '');
             var label = key;
             var value = leases[key]['expiration'];
             var variable = D.device.createVariable(
                 uid,
                 label,
-                value
+                value,
+                unit
             );
             variables.push(variable);
         }
