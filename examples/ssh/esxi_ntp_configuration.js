@@ -10,10 +10,12 @@ var ntpUnit = 'line';
 
 /**
  * The SSH Command Options
- * @property {string} [prompt] - The SSH prompt must be set if different than # 
+ * @property {string} [prompt]  - The SSH prompt must be set if different than # 
+ * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
-    'prompt': ']'
+    'prompt': ']',
+    'timeout': 5000
 };
 
 /**
@@ -45,8 +47,7 @@ function validate() {
             checkForPasswordError(error);
         } else {
             D.success();
-        }
-
+        };
     };
     sshCommandOptions['command'] = commandValidate;
     D.device.sendSSHCommand(
