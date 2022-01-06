@@ -155,11 +155,6 @@ Can be used to traverse and manipulate the loaded document.
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sandbox.js.html">sandbox.js</a>, <a href="sandbox.js.html#line56">line 56</a>
-    </li></ul></dd>
-    
 
     
 
@@ -233,11 +228,6 @@ Can be used to traverse and manipulate the loaded document.
 
     
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sandbox.js.html">sandbox.js</a>, <a href="sandbox.js.html#line51">line 51</a>
-    </li></ul></dd>
     
 
     
@@ -364,11 +354,6 @@ Can be used to traverse and manipulate the loaded document.
 
     
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sandbox.js.html">sandbox.js</a>, <a href="sandbox.js.html#line62">line 62</a>
-    </li></ul></dd>
     
 
     
@@ -640,11 +625,6 @@ Can be used to traverse and manipulate the loaded document.
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sandbox.js.html">sandbox.js</a>, <a href="sandbox.js.html#line38">line 38</a>
-    </li></ul></dd>
-    
 
     
 
@@ -838,11 +818,6 @@ Can be used to traverse and manipulate the loaded document.
 
     
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_device.js.html">library/device.js</a>, <a href="library_device.js.html#line52">line 52</a>
-    </li></ul></dd>
     
 
     
@@ -1269,11 +1244,6 @@ Can be used to traverse and manipulate the loaded document.
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_device.js.html">library/device.js</a>, <a href="library_device.js.html#line38">line 38</a>
-    </li></ul></dd>
-    
 
     
 
@@ -1289,13 +1259,13 @@ Can be used to traverse and manipulate the loaded document.
 
             
                 
-<h4 class="name" id="SnmpOptions">SnmpOptions</h4>
+<h4 class="name" id="snmpCallback">snmpCallback</h4>
 
 
 
 
 <div class="description">
-    The SNMP library Options
+    The SNMP query callback
 </div>
 
 
@@ -1304,12 +1274,103 @@ Can be used to traverse and manipulate the loaded document.
     <ul>
         <li>
             
-<span class="param-type">Object</span>
+<span class="param-type">callback</span>
 
 
         </li>
     </ul>
 
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>output</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;string, string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The output object from the snmp query execution as a key-value pair for each oid and it corresponding value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ErrorResult">ErrorResult</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Will be present if the snmp query resulted in an error.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -1341,10 +1402,216 @@ Can be used to traverse and manipulate the loaded document.
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_snmp.js.html">library/snmp.js</a>, <a href="library_snmp.js.html#line26">line 26</a>
-    </li></ul></dd>
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="snmpSessionOptions">snmpSessionOptions</h4>
+
+
+
+
+<div class="description">
+    The SNMP Session Options
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    161
+                
+                </td>
+            
+
+            <td class="description last">UDP port to send requests to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    5000
+                
+                </td>
+            
+
+            <td class="description last">The time the snmp session queries will persist for (in milisenconds).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRepetitions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    24
+                
+                </td>
+            
+
+            <td class="description last">How many rows of a table are to be retrieved in a single GetBulk operation. Used in SNMP Walk</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1487,11 +1754,6 @@ Can be used to traverse and manipulate the loaded document.
 
     
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_ssh.js.html">library/ssh.js</a>, <a href="library_ssh.js.html#line27">line 27</a>
-    </li></ul></dd>
     
 
     
@@ -1670,11 +1932,6 @@ Can be used to traverse and manipulate the loaded document.
 
     
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_ssh.js.html">library/ssh.js</a>, <a href="library_ssh.js.html#line60">line 60</a>
-    </li></ul></dd>
     
 
     
@@ -1927,11 +2184,6 @@ Can be used to traverse and manipulate the loaded document.
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_ssh.js.html">library/ssh.js</a>, <a href="library_ssh.js.html#line50">line 50</a>
-    </li></ul></dd>
-    
 
     
 
@@ -2090,11 +2342,6 @@ Can be used to traverse and manipulate the loaded document.
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_telnet.js.html">library/telnet.js</a>, <a href="library_telnet.js.html#line33">line 33</a>
-    </li></ul></dd>
-    
 
     
 
@@ -2204,7 +2451,7 @@ Can be used to traverse and manipulate the loaded document.
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">int</span>
 
 
             
@@ -2241,7 +2488,7 @@ Can be used to traverse and manipulate the loaded document.
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">int</span>
 
 
             
@@ -2315,7 +2562,7 @@ Can be used to traverse and manipulate the loaded document.
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -2352,7 +2599,7 @@ Can be used to traverse and manipulate the loaded document.
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -2389,7 +2636,7 @@ Can be used to traverse and manipulate the loaded document.
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -2449,11 +2696,6 @@ Can be used to traverse and manipulate the loaded document.
 
     
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="library_telnet.js.html">library/telnet.js</a>, <a href="library_telnet.js.html#line21">line 21</a>
-    </li></ul></dd>
     
 
     
@@ -2644,11 +2886,6 @@ Created via D.device.createVariable
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sandbox.js.html">sandbox.js</a>, <a href="sandbox.js.html#line28">line 28</a>
-    </li></ul></dd>
-    
 
     
 
@@ -2676,13 +2913,13 @@ Created via D.device.createVariable
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Dec 14 2021 11:48:35 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Dec 29 2021 15:42:39 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
