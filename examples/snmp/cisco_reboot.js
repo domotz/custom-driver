@@ -35,7 +35,6 @@ function get_status(){
     var variables = []
     var sysUptimeOid = '1.3.6.1.2.1.1.3.0';
     function getCallback(output, error){
-        console.info("asd", output[sysUptimeOid]);
         if (error || output[sysUptimeOid].error){
             console.error("Received an error during the SNMP Get ", error || output[sysUptimeOid].error);
             D.failure(D.errorType.PARSING_ERROR);
