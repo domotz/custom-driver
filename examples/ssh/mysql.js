@@ -110,7 +110,7 @@ function reportData(data) {
         variables.push(_var("queriesS", "Average Queries/s", data.queriesS, "query/s"))
     }
 
-    variables.push(_var("errors", "Errors", data.errors))
+    variables.push(_var("errors", "Errors", data.errors || " "))
     D.success(variables)
 }
 
