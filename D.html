@@ -194,6 +194,390 @@ Exposes the device namespace for any device related operations, utility librarie
     
 
     
+    <h4 class="name" id=".createExternalDevice"><span class="type-signature">(static) </span>createExternalDevice<span class="signature">(deviceHost, deviceCredentials<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {device}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates an External IP device object
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceHost</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The IP or Hostname of the external device</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceCredentials</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#DeviceCredentials">DeviceCredentials</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The credentials for the external device</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The External Device object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">device</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>D.createExternalDevice("1.1.1.1", {"username": "root", "password": D.device.password()})</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createTable"><span class="type-signature">(static) </span>createTable<span class="signature">(label, columnHeaders)</span><span class="type-signature"> &rarr; {<a href="driverTable.html">driverTable</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates a driver table for variable values visualization in a table format
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The Table Label</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>columnHeaders</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="global.html#ColumnHeader">ColumnHeader</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The List of column header definitions</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The Custom Driver Table object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="driverTable.html">driverTable</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>D.createTable("My Table", [{"label": "Column A"}, {"label": "Column B", "unit": "%"}])</code></pre>
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id=".failure"><span class="type-signature">(static) </span>failure<span class="signature">(errorType<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
@@ -605,7 +989,7 @@ in order to indicate a failure in the execution
     
 
     
-    <h4 class="name" id=".success"><span class="type-signature">(static) </span>success<span class="signature">(variables<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".success"><span class="type-signature">(static) </span>success<span class="signature">(variables<span class="signature-attributes">opt</span>, table<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -683,6 +1067,39 @@ in order to indicate their successful execution
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>table</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="driverTable.html">driverTable</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The custom driver table to return (dry run) or store</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -748,7 +1165,11 @@ in order to indicate their successful execution
     
     <pre class="prettyprint"><code>D.success()</code></pre>
 
+    <pre class="prettyprint"><code>D.success(table)</code></pre>
+
     <pre class="prettyprint"><code>D.success(variables)</code></pre>
+
+    <pre class="prettyprint"><code>D.success(variables, table)</code></pre>
 
 
 
@@ -768,13 +1189,13 @@ in order to indicate their successful execution
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Dec 29 2021 15:42:39 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Jun 02 2022 11:33:33 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
