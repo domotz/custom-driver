@@ -1,3 +1,15 @@
+/**
+ * This Driver Extracts Philips Hue Lights information from a Hue Bridge.
+ * Communication protocol is HTTPS.
+ * Creates a Custom Driver Table with the following columns and values for each light connected:
+ *   - Id
+ *   - Name
+ *   - State
+ *   - Brightness
+ *   - Software Version
+ *   - Update Available
+ */
+
 // The HTTP options for the API request
 var httpOptions = {
     url: '/api/' + D.device.password() + '/lights',
