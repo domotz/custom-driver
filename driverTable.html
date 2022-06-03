@@ -214,7 +214,7 @@ Contains Column definition related information for the Table object</div>
     
 
     
-    <h4 class="name" id=".insertRecord"><span class="type-signature">(static) </span>insertRecord<span class="signature">(id, values, updateOnDuplicate<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".insertRecord"><span class="type-signature">(static) </span>insertRecord<span class="signature">(id, values)</span><span class="type-signature"></span></h4>
     
 
     
@@ -222,7 +222,7 @@ Contains Column definition related information for the Table object</div>
 
 
 <div class="description">
-    Inserts a row inside the Custom Driver table object. 
+    Inserts a record inside the Custom Driver table object. 
 The final table and values will be send to the cloud with the D.success() callback implicitly
 </div>
 
@@ -247,11 +247,7 @@ The final table and values will be send to the cloud with the D.success() callba
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -276,19 +272,7 @@ The final table and values will be send to the cloud with the D.success() callba
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last">The unique identifier for the table record. Added as value for column "Id". Max 50 characters</td>
@@ -311,61 +295,10 @@ The final table and values will be send to the cloud with the D.success() callba
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last">A list of values to be added in the table for that record</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>updateOnDuplicate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">Bolean flag to set the logic for updating records already inserted (duplicate id)</td>
         </tr>
 
     
@@ -432,7 +365,168 @@ The final table and values will be send to the cloud with the D.success() callba
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>driverTable.insertRecord("myId", ["val 1", "val 2"], true)</code></pre>
+    <pre class="prettyprint"><code>driverTable.insertRecord("myId", ["val 1", "val 2"])</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".upsertRecord"><span class="type-signature">(static) </span>upsertRecord<span class="signature">(id, values)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Inserts or Updates a record inside the Custom Driver table object. 
+The final table and values will be send to the cloud with the D.success() callback implicitly
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The unique identifier for the table record. Added as value for column "Id". Max 50 characters</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>values</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;any></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A list of values to be added in the table for that record</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>driverTable.insertRecord("myId", ["val 1", "val 2"])</code></pre>
 
 
 
@@ -458,7 +552,7 @@ The final table and values will be send to the cloud with the D.success() callba
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Jun 02 2022 11:33:33 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jun 03 2022 10:48:33 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
