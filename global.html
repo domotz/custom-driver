@@ -251,6 +251,164 @@ Can be used to traverse and manipulate the loaded document.
 
             
                 
+<h4 class="name" id="ColumnHeader">ColumnHeader</h4>
+
+
+
+
+<div class="description">
+    Custom Driver table Column Header
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The table column label. Max 30 Characters</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>unit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The Unit of measurement of the column values (eg %). Max 10 characters</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
 <h4 class="name" id="DeviceCredentials">DeviceCredentials</h4>
 
 
@@ -342,6 +500,171 @@ Can be used to traverse and manipulate the loaded document.
             
 
             <td class="description last">The device password</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="DriverTableResult">DriverTableResult</h4>
+
+
+
+
+<div class="description">
+    Custom Driver table Result
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The table Label. Max 50 characters</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>columnHeaders</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="global.html#ColumnHeader">ColumnHeader</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The column headers list</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rows</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Array.&lt;any>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The table rows</td>
         </tr>
 
     
@@ -549,6 +872,29 @@ Can be used to traverse and manipulate the loaded document.
     </thead>
 
     <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>TOO_MANY_VARIABLES_ERROR</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Too many variables have been defined in this driver execution</td>
+        </tr>
+
     
 
         <tr>
@@ -2133,6 +2479,8 @@ Can be used to traverse and manipulate the loaded document.
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -2163,6 +2511,10 @@ Can be used to traverse and manipulate the loaded document.
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">The ssh command to execute against the device</td>
@@ -2195,6 +2547,10 @@ Can be used to traverse and manipulate the loaded document.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The time to wait for the command execution</td>
         </tr>
@@ -2225,6 +2581,10 @@ Can be used to traverse and manipulate the loaded document.
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">The device username. If not set the custom driver management purpose one is used</td>
@@ -2257,8 +2617,49 @@ Can be used to traverse and manipulate the loaded document.
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The device password. If not set the custom driver management purpose one is used</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    22
+                
+                </td>
+            
+
+            <td class="description last">The SSH port</td>
         </tr>
 
     
@@ -2287,6 +2688,10 @@ Can be used to traverse and manipulate the loaded document.
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">The SSH Kex and Ciphers to use</td>
@@ -3055,13 +3460,13 @@ Created via D.device.createVariable
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Mar 15 2022 12:39:19 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jun 03 2022 10:48:33 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
