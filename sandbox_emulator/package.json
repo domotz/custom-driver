@@ -1,0 +1,37 @@
+{
+  "name": "domotz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "npm run build",
+    "prebuild": "rimraf dist; npm run lint",
+    "postbuild": "node dist/main.min.js",
+    "build": "grunt --source=${npm_config_source} --action=${npm_config_action}",
+    "generate": "cp -i lib/template.js src/${npm_config_source}",
+    "lint": "eslint --fix ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "net-snmp": "^1.2.1",
+    "request": "2.74.0",
+    "lodash": "^4.17.4",
+    "telnet-client": "0.9.4",
+    "q": "^1.5.1",
+    "events": "^1.1.1",
+    "ssh2": "1.9.0",
+    "async": "^2.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.18.0",
+    "eslint-plugin-es5": "^1.5.0",
+    "grunt": "^1.5.3",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^5.2.1",
+    "nodemon": "^2.0.16"
+  }
+}
