@@ -9,7 +9,7 @@ Create the custom driver under src folder and execute it using
 ```bash
 $ npm start --source=driver1.js
 ```
-This previous call will execute `get_status` function in the driver source code
+The previous call will execute `get_status` function in the driver source code
 To execute `validate` function
 ```bash
 $ npm start --source=driver1.js --action=validate
