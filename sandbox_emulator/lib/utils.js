@@ -41,3 +41,17 @@ function execute_seq(arrayFn, callback) {
 	}
 	executeNext.apply(_this, [0]);
 }
+
+/**
+ * 
+ * @param {*} init object initialisation
+ * @param {*} object object to clone
+ * @returns cloned object
+ */
+function clone(init, object){
+	var toReturn = JSON.parse(JSON.stringify(object));
+	Object.keys(init).forEach(function(key){
+		toReturn[key] = init[key];
+	});
+	return toReturn;
+}

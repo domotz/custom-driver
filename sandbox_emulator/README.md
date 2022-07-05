@@ -19,5 +19,12 @@ To create a new custom driver source file under src folder
 ```bash
 $ npm run generate --source=driver1.js
 ```
+To configure the device ip, username and password create .env file or define thoses variables under your environment variable
+```bash
+DEVICE_IP: the target device ip address or domain name
+DEVICE_USERNAME: the target device username
+DEVICE_PASSWORD: the target device password
+DEVICE_SNMP_COMMUNITY_STRING: community string used for snmp protocol
+```
 
 

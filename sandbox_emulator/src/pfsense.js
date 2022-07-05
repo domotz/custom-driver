@@ -2,6 +2,68 @@ var createSNMPSession = D.device.createSNMPSession;
 var _var = D.device.createVariable;
 
 
+var ssh_config = {
+	username: D.device.username(),
+	password: D.device.password(),
+	port: 22,
+	timeout: 10000
+};
+
+function snmp_walk(last, callback) {
+	createSNMPSession().walk(this.walk_root, function (result, error) {
+		if(error){
+			console.error('walk error for oid: ' + this.walk_root);
+			return callback(null);
+		}
+		callback(result);
+	});
+}
+
+function update_oid_1(walk_result, callback){
+	if(!walk_result) return callback(null);
+	for (var key in walk_result) {
+		if (walk_result[key] == this.walk_param_name) {
+			var oidArray = key.split('.');
+			var index = oidArray[oidArray.length - 1];
+			this.oid = this.walk_root + '.' + index;
+			break;
+		}
+	}
+	callback(this.oid);
+}
+
+function snmp_get(last, callback) {
+	if (this.oid) {
+		createSNMPSession().get([param.oid], function (result, error) {
+			if (error) {
+				console.error(error);
+				return callback(null);
+			}
+			if (!result) {
+				result = {};
+				result[this.oid] = 'error';
+			}
+			this.result = result[this.oid];
+			callback(this.result);
+
+		});
+	} else {
+		callback(null);
+	}
+}
+
+function snmp_generate_variable(result, callback){
+	if(!this.result) return callback([]);
+	if (this.unit) {
+		this.label += ' (' + this.unit + ')';
+	}
+	this.uid = this.oid;
+	if (!this.uid) {
+		this.uid = this.walk_root + '.' + this.walk_param_name;
+	}
+	callback(_var(this.uid, this.label, '' + this.result, this.unit));
+}
+
 var snmp_parameters = [
 	{
 		walk: {
@@ -82,7 +144,7 @@ var snmp_parameters = [
 		oid: '__calculated_swap_percentage',
 		label: 'Swap usage',
 		unit: '%',
-		postProcess: [function(last, next){
+		postProcess: [function (last, next) {
 			var total = get_result('1.3.6.1.4.1.2021.4.4.0');
 			var avail = get_result('1.3.6.1.4.1.2021.4.4.0');
 			this.result = parseInt(100 - (avail / total) * 100);
@@ -104,7 +166,7 @@ var snmp_parameters = [
 		oid: '__calculated_used_memory',
 		label: 'Memory usage',
 		unit: '%',
-		postProcess: [function(last, next){
+		postProcess: [function (last, next) {
 			var total = get_result('1.3.6.1.4.1.2021.4.5.0');
 			var avail = get_result('1.3.6.1.4.1.2021.4.6.0');
 			this.result = parseInt(100 - (avail / total) * 100);
@@ -665,6 +727,8 @@ var snmp_parameters = [
 	},
 ];
 
+
+
 function execute_all(arrayFn, callback) {
 	if (arrayFn.length == 0) {
 		callback([]);
@@ -773,7 +837,7 @@ function generate_variable(p, result, first_execution_date, callback) {
 	if (p.unit) {
 		p.label += ' (' + p.unit + ')';
 	}
-	if(result[p.oid]){
+	if (result[p.oid]) {
 		p.result = result[p.oid];
 	}
 	if (p.convert && typeof (p.convert) == 'function') {
@@ -802,7 +866,12 @@ function execute_get(param) {
 				createSNMPSession().get([param.oid], function (result, error) {
 					if (error) {
 						console.error(error);
-						D.failure(D.errorType.GENERIC_ERROR);
+						// D.failure(D.errorType.GENERIC_ERROR);
+
+					}
+					if (!result) {
+						result = {};
+						result[param.oid] = 'error';
 					}
 
 					generate_variable(param, result, new Date(), function (variable) {
