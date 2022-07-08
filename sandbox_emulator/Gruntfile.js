@@ -24,7 +24,7 @@ module.exports = function (grunt) {
                     mangle: false
                 },
                 files: {
-                    "dist/main.min.js": ["lib/d.js", "src/" + source, `lib/${action}.js`]
+                    "dist/main.min.js": ["lib/d.js", source, `lib/${action}.js`]
                 }
             }
         }

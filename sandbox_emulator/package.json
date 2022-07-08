@@ -11,7 +11,7 @@
     "prebuild": "rimraf dist; npm run lint",
     "postbuild": "node dist/main.min.js",
     "build": "grunt --source=${npm_config_source} --action=${npm_config_action}",
-    "generate": "cp -i lib/template.js src/${npm_config_source}",
+    "generate": "mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
     "lint": "eslint --fix ."
   },
   "author": "",
