@@ -19,29 +19,29 @@
  */
 
 module.exports.execute = function (path, message, resourceLocator, callback) {
-	var cmd = require(path).command(message, resourceLocator);
-	cmd.describe();
-	cmd.execute(callback ? callback : function (_, err) {
-		if (err) {
-			console.warn('Error on execution: ' + JSON.stringify(err));
-		}
-	});
+    var cmd = require(path).command(message, resourceLocator);
+    cmd.describe();
+    cmd.execute(callback ? callback : function (_, err) {
+        if (err) {
+            console.warn("Error on execution: " + JSON.stringify(err));
+        }
+    });
 };
 
 module.exports.extractFromOptions = function (options, field, defaultValue) {
-	var value;
-	if (options[field]) {
-		value = options[field];
-		delete options[field];
-	} else {
-		value = defaultValue;
-	}
-	return value;
+    var value;
+    if (options[field]) {
+        value = options[field];
+        delete options[field];
+    } else {
+        value = defaultValue;
+    }
+    return value;
 };
 
 module.exports.getResponse = function (response, error) {
-	return {
-		response: response,
-		error: error
-	};
+    return {
+        response: response,
+        error: error
+    };
 };

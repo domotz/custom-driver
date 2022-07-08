@@ -6,20 +6,20 @@
  */
 
 function execute_all(arrayFn, callback) {
-	if (arrayFn.length == 0) {
-		callback([]);
-	}
-	var length = arrayFn.length;
-	var results = new Array(length);
-	var finished = 0;
-	arrayFn.forEach(function (fn, index) {
-		fn(function (result) {
-			results[index] = result;
-			if (++finished == length) {
-				callback(results);
-			}
-		});
-	});
+    if (arrayFn.length == 0) {
+        callback([]);
+    }
+    var length = arrayFn.length;
+    var results = new Array(length);
+    var finished = 0;
+    arrayFn.forEach(function (fn, index) {
+        fn(function (result) {
+            results[index] = result;
+            if (++finished == length) {
+                callback(results);
+            }
+        });
+    });
 }
 
 /**
@@ -30,16 +30,16 @@ function execute_all(arrayFn, callback) {
  * @param {function} This function is called when all functions in arrayFn are done
  */
 function execute_seq(arrayFn, callback) {
-	var _this = this;
-	var callbackResult = null;
-	function executeNext(functionIndex) {
-		if (functionIndex == arrayFn.length) return callback.apply(_this, [callbackResult]);
-		arrayFn[functionIndex].apply(_this, [callbackResult, function (result) {
-			callbackResult = result;
-			executeNext.apply(_this, [++functionIndex]);
-		}]);
-	}
-	executeNext.apply(_this, [0]);
+    var _this = this;
+    var callbackResult = null;
+    function executeNext(functionIndex) {
+        if (functionIndex == arrayFn.length) return callback.apply(_this, [callbackResult]);
+        arrayFn[functionIndex].apply(_this, [callbackResult, function (result) {
+            callbackResult = result;
+            executeNext.apply(_this, [++functionIndex]);
+        }]);
+    }
+    executeNext.apply(_this, [0]);
 }
 
 /**
@@ -49,9 +49,9 @@ function execute_seq(arrayFn, callback) {
  * @returns cloned object
  */
 function clone(init, object){
-	var toReturn = JSON.parse(JSON.stringify(object));
-	Object.keys(init).forEach(function(key){
-		toReturn[key] = init[key];
-	});
-	return toReturn;
+    var toReturn = JSON.parse(JSON.stringify(object));
+    Object.keys(init).forEach(function(key){
+        toReturn[key] = init[key];
+    });
+    return toReturn;
 }

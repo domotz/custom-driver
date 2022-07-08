@@ -54,6 +54,7 @@
  * @property {int}    [timeout]           - The time to wait for the command execution
  * @property {string} [username]          - The device username. If not set the custom driver management purpose one is used
  * @property {string} [password]          - The device password. If not set the custom driver management purpose one is used
+ * @property {string} [port=22]           - The SSH port
  * @property {SshAlgorithms} [algorithms] - The SSH Kex and Ciphers to use
  */
 
@@ -76,6 +77,7 @@
  * @property {string} [error_prompt]               - The device error prompt expected. Used when there is an expected error prompt string to halt the execution
  * @property {int} [inter_command_timeout_ms=1000] - Timeout to wait between ssh sequence commands executions
  * @property {int} [global_timeout_ms=30000]       - The global ssh shell sequence execution timeout. When expired results in TIMEOUT_ERROR
+ * @property {string} [port=22]                    - The SSH port
  * @property {SshAlgorithms} [algorithms]          - The SSH Kex and Ciphers to use
  */
 
@@ -86,11 +88,11 @@
  * @property {Array.<string>} outputs   - The output list of the SSH Commands executions
  * @property {ErrorResult}    [error]   - Will be present if the execution resulted in an error
  */
-var async = require('async');
-var events = require('events');
-var ssh2 = require('ssh2');
-var q = require('q');
-var lodash = require('lodash');
+var async = require("async");
+var events = require("events");
+var ssh2 = require("ssh2");
+var q = require("q");
+var lodash = require("lodash");
 
 var sandboxConsole;
 
@@ -100,16 +102,16 @@ var sandboxConsole;
  * @readonly
  */
 var sandboxResourceLocator = {
-	log: {
-		decorateLogs: function () {
-			return sandboxConsole;
-		}
-	},
-	ssh2: ssh2,
-	q: q,
-	async: async,
-	lodash: lodash,
-	events: events,
+    log: {
+        decorateLogs: function () {
+            return sandboxConsole;
+        }
+    },
+    ssh2: ssh2,
+    q: q,
+    async: async,
+    lodash: lodash,
+    events: events,
 };
 
 /**
@@ -120,20 +122,20 @@ var sandboxResourceLocator = {
  * @param {Object} myConsole                   - The Domotz Sandbox console
  * @param {SshShellSequenceOptions} options    - The SSH Commands execution options
 */
-function sendSSHShellSequence(options, callback) {
-	sandboxConsole = console;
-	function outputTransformer(result) {
-		var error = result.error;
-		var outputs = [];
-		if (result.output) {
-			result.output.forEach(function (item) {
-				outputs.push(Buffer(item, 'base64').toString());
-			});
-		}
-		callback(outputs, error);
-	}
-	var sshNode = require('./sshNode').factory(sandboxResourceLocator);
-	return sshNode.sshShellSequence(options, outputTransformer);
+function sendSSHShellSequence(myConsole, options, callback) {
+    sandboxConsole = myConsole;
+    function outputTransformer(result) {
+        var error = result.error;
+        var outputs = [];
+        if (result.output) {
+            result.output.forEach(function (item) {
+                outputs.push(Buffer(item, "base64").toString());
+            });
+        }
+        callback(outputs, error);
+    }
+    var sshNode = require("./sshNode").factory(sandboxResourceLocator);
+    return sshNode.sshShellSequence(options, outputTransformer);
 }
 /**
  * Sends an SSH command
@@ -143,22 +145,22 @@ function sendSSHShellSequence(options, callback) {
  * @param {Object} myConsole      - The Domotz Sandbox console
  * @param {SshOptions} options    - The SSH Command execution options
 */
-function sendSSHCommand(options, callback) {
-	sandboxConsole = console;
-	var command = options.command;
-	if (options.command) {
-		delete options.command;
-	} else {
-		throw Error('D.sendSSHCommand requires a \'command\' in its options parameter');
-	}
-	var sshNode = require('./sshNode').factory(sandboxResourceLocator);
-	var promise = sshNode.exec(command, options, '');
-	return promise.then(function (stdout) {
-		callback(stdout, null);
-	}).catch(function (stderr) {
-		sandboxConsole.error('SSH Command execution Error: ' + JSON.stringify(stderr));
-		callback(null, stderr);
-	});
+function sendSSHCommand(myConsole, options, callback) {
+    sandboxConsole = myConsole;
+    var command = options.command;
+    if (options.command) {
+        delete options.command;
+    } else {
+        throw Error("D.sendSSHCommand requires a 'command' in its options parameter");
+    }
+    var sshNode = require("./sshNode").factory(sandboxResourceLocator);
+    var promise = sshNode.exec(command, options, "");
+    return promise.then(function (stdout) {
+        callback(stdout, null);
+    }).catch(function (stderr) {
+        sandboxConsole.error("SSH Command execution Error: " + JSON.stringify(stderr));
+        callback(null, stderr);
+    });
 }
 
 module.exports.sendSSHCommand = sendSSHCommand;

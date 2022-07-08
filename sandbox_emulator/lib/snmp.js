@@ -37,38 +37,43 @@
  * @property {ErrorResult}              [error]  - Will be present if the snmp query resulted in an error.
  */
 
-var snmp = require('net-snmp');
-var lodash = require('lodash');
+var fs = require("fs");
+var snmp = require("net-snmp");
+var lodash = require("lodash");
+var snmpCommon = require("./snmpCommon").factory(snmp);
+
 
 function getOutputFromVarbinds(varbinds) {
-	var output = {};
-	for (var i = 0; i < varbinds.length; i++) {
-		if (snmp.isVarbindError(varbinds[i])) {
-			output[varbinds[i].oid] = { 'error': snmp.varbindError(varbinds[i]) };
-		} else if (varbinds[i].type == 4) {
-			output[varbinds[i].oid] = varbinds[i].value.toString();
-		} else if (Buffer.isBuffer(varbinds[i].value)) {
-			output[varbinds[i].oid] = parseInt(varbinds[i].value.toString('hex'), 16);
-		} else {
-			output[varbinds[i].oid] = varbinds[i].value.toString();
-		}
-	}
-	return output;
+    var output = {};
+    for (var i = 0; i < varbinds.length; i++) {
+        if (snmp.isVarbindError(varbinds[i])) {
+            output[varbinds[i].oid] = { "error": snmp.varbindError(varbinds[i]) };
+        } else {
+            output[varbinds[i].oid] = varbinds[i].value.toString();
+        }
+    }
+    return output;
 }
 
 /**
  * Creates an SNMP session for your device
+ * @constructor
+ * @private
+ * @readonly
+ * @param {Object} myConsole           - The Domotz Sandbox console
+ * @param {Device} device              - The Device object
+ * @param {Object} snmpSessionOptions  - The SNMP Session Options
  */
-function createSessionForDevice(snmpOptions) {
-	/** 
+function createSessionForDevice(myConsole, device, snmpOptions) {
+    /** 
      * Session initialization
      * @private
      * @readonly
     */
-	var realSession = snmp.createSession(process.env.DEVICE_IP, process.env.DEVICE_SNMP_COMMUNITY_STRING);
-	var myConsole = console;
-	return {
-		/**
+    var authProviderOptions = snmpCommon.getAuthProviderOptions(device.snmp_authentication);
+    var realSession = snmpCommon.getSession(device.ip, snmpOptions, authProviderOptions);
+    return {
+        /**
          * Executes an SNMP Walk for an OID towards the device
          * @example
          * D.device.createSNMPSession().walk('1.3.6.1.2.1.1', cb)
@@ -79,19 +84,19 @@ function createSessionForDevice(snmpOptions) {
          * @readonly
          * @function
          */
-		walk: function (oid, callback) {
-			myConsole.info('Performing SNMP Walk: %s', oid);
-			var output = {};
-			function feedCallback(varbinds) {
-				var feedOids = getOutputFromVarbinds(varbinds);
-				lodash.extend(output, feedOids);
-			}
-			function doneCallback(error) {
-				callback(output, error);
-			}
-			realSession.subtree(oid, snmpOptions.maxRepetitions, feedCallback, doneCallback);
-		},
-		/**
+        walk: function (oid, callback) {
+            myConsole.info("Performing SNMP Walk: %s", oid);
+            var output = {};
+            function feedCallback(varbinds) {
+                var feedOids = getOutputFromVarbinds(varbinds);
+                lodash.extend(output, feedOids);
+            }
+            function doneCallback(error) {
+                callback(output, error);
+            }
+            realSession.subtree(oid, snmpOptions.maxRepetitions, feedCallback, doneCallback);
+        },
+        /**
          * Executes SNMP Get for a list of OIDs towards the device
          * @example
          * D.device.createSNMPSession().get(['1.3.6.1.2.1.1.5.0', '1.3.6.1.2.1.1.7.0'], cb)
@@ -102,18 +107,18 @@ function createSessionForDevice(snmpOptions) {
          * @readonly
          * @function
          */
-		get: function (oids, callback) {
-			myConsole.info('Performing SNMP Get: %s', oids);
-			function outputTransformerSnmpGet(error, varbinds) {
-				var output = null;
-				if (!error) {
-					output = getOutputFromVarbinds(varbinds);
-				}
-				callback(output, error);
-			}
-			realSession.get(oids, outputTransformerSnmpGet);
-		},
-		/**
+        get: function (oids, callback) {
+            myConsole.info("Performing SNMP Get: %s", oids);
+            function outputTransformerSnmpGet(error, varbinds) {
+                var output = null;
+                if (!error) {
+                    output = getOutputFromVarbinds(varbinds);
+                }
+                callback(output, error);
+            }
+            realSession.get(oids, outputTransformerSnmpGet);
+        },
+        /**
          * Executes SNMP Set for an OID with its respective value and OID type defined.
          * @example
          * D.device.createSNMPSession().set('1.3.6.1.2.1.1.5.0', 'new-snmp-name', cb)
@@ -125,30 +130,30 @@ function createSessionForDevice(snmpOptions) {
          * @readonly
          * @function
          */
-		set: function (oid, value, callback) {
-			myConsole.info('Performing SNMP Set: %s --> %s', oid, value);
-			realSession.community = process.env.SNMP_COMMUNITY_STRING;
-			function outputTransformerSnmpSet(error, varbinds) {
-				var output = {};
-				if (!error) {
-					output = getOutputFromVarbinds(varbinds);
-				}
-				callback(output, error);
-			}
-			var snmpType;
-			if (typeof value === 'number') {
-				snmpType = snmp.ObjectType.Integer32;
-			} else {
-				snmpType = snmp.ObjectType.OctetString;
-			}
-			var oids = [{
-				oid: oid,
-				value: value,
-				type: snmpType
-			}];
-			realSession.set(oids, outputTransformerSnmpSet);
-		}
-	};
+        set: function (oid, value, callback) {
+            myConsole.info("Performing SNMP Set: %s --> %s", oid, value);
+            realSession.community = device.snmp_authentication && device.snmp_authentication.snmp_write_community;
+            function outputTransformerSnmpSet(error, varbinds) {
+                var output = {};
+                if (!error) {
+                    output = getOutputFromVarbinds(varbinds);
+                }
+                callback(output, error);
+            }
+            var snmpType;
+            if (typeof value === "number") {
+                snmpType = snmp.ObjectType.Integer32;
+            } else {
+                snmpType = snmp.ObjectType.OctetString;
+            }
+            var oids = [{
+                oid: oid,
+                value: value,
+                type: snmpType
+            }];
+            realSession.set(oids, outputTransformerSnmpSet);
+        }
+    };
 }
 
 module.exports.createSessionForDevice = createSessionForDevice;

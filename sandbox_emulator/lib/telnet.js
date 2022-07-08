@@ -36,8 +36,8 @@
  * @property {string}      output   - The Result from the telnet command execution
  * @property {ErrorResult} [error]  - Will be present if the execution resulted in an error
  */
-var telnetClient = require('telnet-client');
-var commandUtils = require('./command');
+var telnetClient = require("telnet-client");
+var commandUtils = require("./command");
 var sandboxConsole;
 
 /**
@@ -46,15 +46,15 @@ var sandboxConsole;
  * @readonly
  */
 var sandboxResourceLocator = {
-	log: {
-		decorateLogs: function () {
-			return sandboxConsole;
-		}
-	},
-	telnet: telnetClient,
-	utils: {
-		command: commandUtils
-	}
+    log: {
+        decorateLogs: function () {
+            return sandboxConsole;
+        }
+    },
+    telnet: telnetClient,
+    utils: {
+        command: commandUtils
+    }
 };
 
 /**
@@ -62,21 +62,21 @@ var sandboxResourceLocator = {
  * @function
  * @private
  * @readonly
+ * @param {Object} myConsole         - The Domotz Sandbox console
  * @param {TelnetOptions} options    - The Telnet Command execution options
 */
-function sendTelnetCommand(options, callback) {
-
-	sandboxConsole = console;
-	var message = {
-		payload: options
-	};
-	function outputTransformer(result) {
-		var error = result.error;
-		var output = result.response;
-		callback(output, error);
-	}
-	var telnetSend = require('./telnetSend').command(message, sandboxResourceLocator);
-	return telnetSend.execute(outputTransformer);
+function sendTelnetCommand(myConsole, options, callback) {
+    sandboxConsole = myConsole;
+    var message = {
+        payload: options
+    };
+    function outputTransformer(result) {
+        var error = result.error;
+        var output = result.response;
+        callback(output, error);
+    }
+    var telnetSend = require("./telnetSend").command(message, sandboxResourceLocator);
+    return telnetSend.execute(outputTransformer);
 }
 
 module.exports.sendTelnetCommand = sendTelnetCommand;

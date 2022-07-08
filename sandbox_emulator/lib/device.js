@@ -19,7 +19,7 @@
  * @requires module:sandbox/library/snmp
  * @requires module:sandbox/library/telnet
  * @requires module:request
- * @requires module:util
+//  * @requires module:util
  * @copyright Copyright (C)  Domotz Inc
  */
 /**
@@ -30,11 +30,11 @@
  * @namespace device
  * @memberof D
 */
-var request = require('request');
-var ssh = require('./ssh');
-var telnet = require('./telnet');
-var snmp = require('./snmp');
-var util = require('util');
+var request = require("request");
+var ssh = require("./ssh");
+var telnet = require("./telnet");
+var snmp = require("./snmp");
+// const util = require("util");
 
 /**
  * The Http Library Options
@@ -49,7 +49,7 @@ var util = require('util');
  * @property {boolean}       [jar=false]     - if true, remember cookies for future use
  * @property {http|https}    [protocol=http] - The protocol to use in the request
  */
-
+ 
 /**
  * The Http library callback
  * @typedef  {callback} HttpCallback
@@ -58,78 +58,77 @@ var util = require('util');
  * @property {string} [body]       - The HTTP response body
  */
 
-function createDevice(agentDriverSettings) {
-	var myConsole = console;
-	function buildSnmpOptions(options) {
-		if (!options) {
-			options = {};
-		}
-		options.maxRepetitions = options.maxRepetitions || 24;
-		options.timeout = options.timeout || 5000;
-		myConsole.debug(util.inspect(options));
-		return options;
-	}
-	function buildTelnetOptions(options) {
-		options.host = process.env.DEVICE_IP;
-		if (options.command !== undefined) {
-			options.cmd = options.command + '\r';
-			delete options.command;
-		} else {
-			throw Error('D.sendTelnetCommand requires a \'command\' in its options parameter');
-		}
-		myConsole.debug(util.inspect(options));
-		return options;
-	}
-	function buildSSHOptions(options) {
-		options.host = process.env.DEVICE_IP;
-		if (!options.username) {
-			options.username = process.env.DEVICE_USERNAME;
-			options.password = process.env.DEVICE_PASSWORD;
-		}
-		return options;
-	}
-	function buildRequest(options) {
-		if (typeof options !== 'object') {
-			options = { url: 'http://' + process.env.DEVICE_IP + options };
-		} else {
-			var protocol = 'http';
-			var port = '';
-			var password = '';
-			if (options.port) {
-				port = ':' + options.port;
-				delete options.port;
-			}
-			if (options.protocol === 'https') {
-				protocol = options.protocol;
-				port = port || ':443';
-				delete options.protocol;
-			}
-			if (process.env.DEVICE_USERNAME) {
-				password = process.env.DEVICE_PASSWORD;
-				options.url = options.url.replace('${username}', process.env.DEVICE_USERNAME);
-				options.url = options.url.replace('${password}', password);
-			}
+function createDevice(device, agentDriverSettings, myConsole) {
+    function buildSnmpOptions(options) {
+        if (!options) {
+            options = {};
+        }
+        options.maxRepetitions = options.maxRepetitions || 24;
+        options.timeout = options.timeout || 5000;
+        // myConsole.debug(util.inspect(options));
+        return options;
+    }
+    function buildTelnetOptions(options) {
+        options.host = device.ip;
+        if (options.command !== undefined) {
+            options.cmd = options.command + "\r";
+            delete options.command;
+        } else {
+            throw Error("D.sendTelnetCommand requires a 'command' in its options parameter");
+        }
+        // myConsole.debug(util.inspect(options));
+        return options;
+    }
+    function buildSSHOptions(options) {
+        options.host = device.ip;
+        if (!options.username && device.credentials) {
+            options.username = device.credentials.username;
+            options.password = new Buffer(device.credentials.password, "base64").toString();
+        }
+        return options;
+    }
+    function buildRequest(options) {
+        if (typeof options !== "object") {
+            options = { url: "http://" + device.ip + options };
+        } else {
+            var protocol = "http";
+            var port = "";
+            var password = "";
+            if (options.port) {
+                port = ":" + options.port;
+                delete options.port;
+            }
+            if( options.protocol === "https") {
+                protocol = options.protocol;
+                port = port || ":443";
+                delete options.protocol;
+            }
+            if (device.credentials) {
+                password = new Buffer(device.credentials.password, "base64").toString();
+                options.url = options.url.replace("${username}", device.credentials.username);
+                options.url = options.url.replace("${password}", password);
+            }
 
-			if (options.auth === 'basic' && process.env.DEVICE_USERNAME) {
-				options.auth = {
-					'user': process.env.DEVICE_USERNAME,
-					'pass': password,
-					'sendImmediately': true
-				};
-			} else {
-				options.auth = undefined;
-			}
-			if (protocol !== 'http' && protocol !== 'https') {
-				throw Error('Invalid protocol: ' + protocol);
-			}
-			options.url = protocol + '://' + process.env.DEVICE_IP + port + options.url;
-		}
-		myConsole.debug(util.inspect(options));
-		return options;
-	}
+            if (options.auth === "basic" && device.credentials) {
+                options.auth = {
+                    "user": device.credentials.username,
+                    "pass": password,
+                    "sendImmediately": true
+                };
+            } else {
+                options.auth = undefined;
+            }
+            if (protocol !== "http" && protocol !== "https") {
+                throw Error("Invalid protocol: " + protocol);
+            }
+            options.url = protocol + "://" + device.ip + port + options.url;
+        }
+        // myConsole.debug(util.inspect(options));
+        return options;
+    }
 
-	return {
-		/**
+    return {
+        /**
          * Returns stored username of a device.
          * @example 
          * // returns 'the device username'
@@ -139,10 +138,10 @@ function createDevice(agentDriverSettings) {
          * @function
          * @return    {string}
          */
-		username: function () {
-			return process.env.DEVICE_USERNAME;
-		},
-		/**
+        username: function () {
+            return device.credentials.username;
+        },
+        /**
          * Returns the stored password of a device.
          * @example 
          * // returns 'the device password'
@@ -152,10 +151,10 @@ function createDevice(agentDriverSettings) {
          * @function
          * @return    {string}
          */
-		password: function () {
-			return process.env.DEVICE_PASSWORD;
-		},
-		/**
+        password: function () {
+            return new Buffer(device.credentials.password, "base64").toString();
+        },        
+        /**
          * Returns the IP address of the device object.
          * @example 
          * // returns '192.168.1.1' for a device with this local IP address
@@ -165,10 +164,10 @@ function createDevice(agentDriverSettings) {
          * @function
          * @return    {string}
          */
-		ip: function () {
-			return process.env.DEVICE_IP;
-		},
-		/**
+        ip: function () {
+            return device.ip;
+        },
+        /**
          * Starts an SNMP session with the device.
          * @example 
          * // returns an snmpSession object to use for snmp related queries
@@ -180,12 +179,12 @@ function createDevice(agentDriverSettings) {
          * @function
          * @return    {snmpSession}
          */
-		createSNMPSession: function (options) {
-			myConsole.info('Creating SNMP session for device: %s', process.env.DEVICE_IP);
-			options = buildSnmpOptions(options);
-			return snmp.createSessionForDevice(options);
-		},
-		/**
+        createSNMPSession: function (options) {
+            myConsole.info("Creating SNMP session for device: %s", device.ip);
+            options = buildSnmpOptions(options);
+            return snmp.createSessionForDevice(myConsole, device, options);
+        },
+        /**
          * Sends a command to the device via Telnet.
          * @example  
          * D.device.sendTelnetCommand(options, callback)
@@ -196,12 +195,12 @@ function createDevice(agentDriverSettings) {
          * @param {TelnetCallback} callback   - The Telnet Command execution callback function
          * @function
          */
-		sendTelnetCommand: function (options, callback) {
-			myConsole.info('Performing Telnet Command: %s', options.command);
-			options = buildTelnetOptions(options);
-			telnet.sendTelnetCommand(options, callback);
-		},
-		/**        
+        sendTelnetCommand: function (options, callback) {
+            myConsole.info("Performing Telnet Command: %s", options.command);
+            options = buildTelnetOptions(options);
+            telnet.sendTelnetCommand(myConsole, options, callback);
+        },
+        /**        
         * Sends a command to the device via SSH.
         * @example D.device.sendSSHCommand(options, callback)
         * @example 
@@ -212,11 +211,11 @@ function createDevice(agentDriverSettings) {
         * @param {SshCallback}  callback  - The SSH Command execution callback function
         * @function
         */
-		sendSSHCommand: function (options, callback) {
-			options = buildSSHOptions(options);
-			return ssh.sendSSHCommand(options, callback);
-		},
-		/**
+        sendSSHCommand: function (options, callback) {
+            options = buildSSHOptions(options);
+            return ssh.sendSSHCommand(myConsole, options, callback);
+        },               
+        /**
          * Sends a sequence of commands to the device via SSH.
          * @private
          * @example D.device.sendSSHCommands(options, callback)
@@ -226,11 +225,11 @@ function createDevice(agentDriverSettings) {
          * @param {SshShellSequenceCallback}  callback  - The SSH Commands execution callback function
          * @function
          */
-		sendSSHCommands: function (options, callback) {
-			options = buildSSHOptions(options);
-			ssh.sendSSHShellSequence(options, callback);
-		},
-		/**
+        sendSSHCommands: function (options, callback) {
+            options = buildSSHOptions(options);
+            ssh.sendSSHShellSequence(myConsole, options, callback);
+        },
+        /**
          * The Device HTTP library.
          * Allows drivers to execute HTTP(s) requests towards the device.
          * @example D.device.http
@@ -238,8 +237,8 @@ function createDevice(agentDriverSettings) {
          * @memberof D.device
          * @namespace http
         */
-		http: {
-			/**
+        http: {
+            /**
              * Executes an HTTP GET request towards the device.
              * @example  D.device.http.get(options, callback)
              * @memberof D.device.http
@@ -248,12 +247,12 @@ function createDevice(agentDriverSettings) {
              * @param {HttpCallback} callback  - The HTTP request execution callback
              * @function
              */
-			get: function (options, callback) {
-				myConsole.info('Performing GET towards:' + options.url);
-				options = buildRequest(options);
-				request.get(options, callback);
-			},
-			/**
+            get: function (options, callback) {
+                myConsole.info("Performing GET towards:" + options.url);
+                options = buildRequest(options);
+                request.get(options, callback);
+            },
+            /**
              * Executes an HTTP POST request towards the device.
              * @example D.device.http.post(options, callback)
              * @memberof D.device.http
@@ -261,13 +260,13 @@ function createDevice(agentDriverSettings) {
              * @param {HttpOptions}  options   - The HTTP request execution options
              * @param {HttpCallback} callback  - The HTTP request execution callback
              * @function
-             */
-			post: function (options, callback) {
-				myConsole.info('Performing POST towards:' + options.url);
-				options = buildRequest(options);
-				request.post(options, callback);
-			},
-			/**
+             */            
+            post: function (options, callback) {
+                myConsole.info("Performing POST towards:" + options.url);
+                options = buildRequest(options);
+                request.post(options, callback);
+            },
+            /**
              * Executes an HTTP PUT request towards the device.
              * @example D.device.http.put(options, callback)
              * @memberof D.device.http
@@ -275,13 +274,13 @@ function createDevice(agentDriverSettings) {
              * @param {HttpOptions}  options   - The HTTP request execution options
              * @param {HttpCallback} callback  - The HTTP request execution callback
              * @function
-             */
-			put: function (options, callback) {
-				myConsole.info('Performing PUT towards:' + options.url);
-				options = buildRequest(options);
-				request.put(options, callback);
-			},
-			/**
+             */            
+            put: function (options, callback) {
+                myConsole.info("Performing PUT towards:" + options.url);
+                options = buildRequest(options);
+                request.put(options, callback);
+            },
+            /**
              * Executes an HTTP DELETE request towards the device.
              * @example D.device.http.delete(options, callback)
              * @memberof D.device.http
@@ -289,14 +288,14 @@ function createDevice(agentDriverSettings) {
              * @param {HttpOptions}  options   - The HTTP request execution options
              * @param {HttpCallback} callback  - The HTTP request execution callback
              * @function
-             */
-			delete: function (options, callback) {
-				myConsole.info('Performing DELETE towards:' + options.url);
-				options = buildRequest(options);
-				request.delete(options, callback);
-			}
-		},
-		/**
+             */            
+            delete: function (options, callback) {
+                myConsole.info("Performing DELETE towards:" + options.url);
+                options = buildRequest(options);
+                request.delete(options, callback);
+            }            
+        },
+        /**
          * Creates a custom driver variable to be sent in the D.success callback.
          * @example 
          * // returns {"uid": "1a", "unit": "C", "value": 60, "label": "CPU Temperature"}
@@ -309,29 +308,29 @@ function createDevice(agentDriverSettings) {
          * @param {string} value - The Value of the variable
          * @param {string} unit  - The Unit of measurement of the variable (eg %). Max 10 characters
          * @return {Variable}
-         */
-		createVariable: function (uid, name, value, unit) {
-			if (uid === null || uid === undefined || uid.length < 1 || uid.length > agentDriverSettings.max_var_id_len) {
-				throw Error('Invalid variable uid: ' + uid);
-			}
-			if (unit) {
-				unit = unit.substr(0, agentDriverSettings.max_var_unit_len);
-			} else {
-				unit = null;
-			}
-			if (value !== null) {
-				value = String(value);
-			} else {
-				value = null;
-			}
-			return {
-				'uid': uid,
-				'unit': unit,
-				'value': value,
-				'label': name
-			};
-		}
-	};
+         */        
+        createVariable: function (uid, name, value, unit) {
+            if (uid === null || uid === undefined || uid.length < 1 || uid.length > agentDriverSettings.max_var_id_len) {
+                throw Error("Invalid variable uid: " + uid);
+            }
+            if (unit) {
+                unit = unit.substr(0, agentDriverSettings.max_var_unit_len);
+            } else {
+                unit = null;
+            }
+            if (value) {
+                value = String(value);
+            } else {
+                value = null;
+            }
+            return {
+                "uid": uid,
+                "unit": unit,
+                "value": value,
+                "label": name
+            };
+        }
+    };
 }
 
 module.exports.device = createDevice;

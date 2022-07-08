@@ -20,65 +20,65 @@
  */
 
 var telnetSend = function (message, resourceLocator) {
-	var myConsole = resourceLocator.log.decorateLogs();
+    var myConsole = resourceLocator.log.decorateLogs();
 
-	var telnet = resourceLocator.telnet;
-	var cmdUtils = resourceLocator.utils.command;
+    var telnet = resourceLocator.telnet;
+    var cmdUtils = resourceLocator.utils.command;
 
-	var responseOut = '';
-	var responseErr = '';
+    var responseOut = "";
+    var responseErr = "";
 
-	var payload = message.payload;
+    var payload = message.payload;
 
-	var host = payload.host;
-	var port = payload.port;
-	var command = payload.cmd;
-	var onConnectCommand = payload.onConnectCommand;
+    var host = payload.host;
+    var port = payload.port;
+    var command = payload.cmd;
+    var onConnectCommand = payload.onConnectCommand;
 
-	delete payload.onConnectCommand;
-	delete payload.cmd;
+    delete payload.onConnectCommand;
+    delete payload.cmd;
 
-	return {
-		execute: function (callback) {
+    return {
+        execute: function (callback) {
 
-			var connection = new telnet();
+            var connection = new telnet();
 
-			connection.connect(payload)
-				.then(function() {
-					myConsole.debug('Connection successful to %s:%d', host, port);
-					connection.exec(command);
-				});
+            connection.connect(payload)
+                .then(function() {
+                    myConsole.debug("Connection successful to %s:%d", host, port);
+                    connection.exec(command);
+                });
 
-			connection.on('timeout', function() {
-				connection.end();
-			});
+            connection.on("timeout", function() {
+                connection.end();
+            });
 
-			connection.on('error', function(error) {
-				responseErr = error;
-				connection.end();
-			});
+            connection.on("error", function(error) {
+                responseErr = error;
+                connection.end();
+            });
 
-			connection.telnetSocket.on('data', function(data) {
-				responseOut += data.toString();
-			});
+            connection.telnetSocket.on("data", function(data) {
+                responseOut += data.toString();
+            });
 
-			connection.on('connect', function() {
-				if (onConnectCommand!==null && onConnectCommand!==undefined) {
-					connection.telnetSocket.write(onConnectCommand);
-				}
-			});
+            connection.on("connect", function() {
+                if (onConnectCommand!==null && onConnectCommand!==undefined) {
+                    connection.telnetSocket.write(onConnectCommand);
+                }
+            });
 
-			connection.on('close', function() {
-				myConsole.debug('Received telnet response ' + responseOut);
-				callback(cmdUtils.getResponse(responseOut, responseErr));
-			});
+            connection.on("close", function() {
+                myConsole.debug("Received telnet response " + responseOut);
+                callback(cmdUtils.getResponse(responseOut, responseErr));
+            });
 
-		},
-		describe: function () {
-			return message.correlationId + ' - telnetSend - ' + host +
-              ':' + port + ' - ' + command.length + ' bytes';
-		}
-	};
+        },
+        describe: function () {
+            return message.correlationId + " - telnetSend - " + host +
+              ":" + port + " - " + command.length + " bytes";
+        }
+    };
 };
 
 module.exports.command = telnetSend;
