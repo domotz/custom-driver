@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "npm run build",
-    "prebuild": "rimraf dist; npm run lint",
+    "prebuild": "rimraf dist",
     "postbuild": "node dist/main.min.js",
     "build": "grunt --source=${npm_config_source} --action=${npm_config_action}",
     "generate": "mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
