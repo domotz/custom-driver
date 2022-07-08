@@ -42,17 +42,20 @@ var snmp = require("net-snmp");
 var lodash = require("lodash");
 var snmpCommon = require("./snmpCommon").factory(snmp);
 
-
 function getOutputFromVarbinds(varbinds) {
-    var output = {};
-    for (var i = 0; i < varbinds.length; i++) {
-        if (snmp.isVarbindError(varbinds[i])) {
-            output[varbinds[i].oid] = { "error": snmp.varbindError(varbinds[i]) };
-        } else {
-            output[varbinds[i].oid] = varbinds[i].value.toString();
-        }
-    }
-    return output;
+	var output = {};
+	for (var i = 0; i < varbinds.length; i++) {
+		if (snmp.isVarbindError(varbinds[i])) {
+			output[varbinds[i].oid] = { 'error': snmp.varbindError(varbinds[i]) };
+		} else if (varbinds[i].type == 4) {
+			output[varbinds[i].oid] = varbinds[i].value.toString();
+		} else if (Buffer.isBuffer(varbinds[i].value)) {
+			output[varbinds[i].oid] = parseInt(varbinds[i].value.toString('hex'), 16);
+		} else {
+			output[varbinds[i].oid] = varbinds[i].value.toString();
+		}
+	}
+	return output;
 }
 
 /**

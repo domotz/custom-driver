@@ -1,31 +1,86 @@
 var createSNMPSession = D.device.createSNMPSession;
 var _var = D.device.createVariable;
 
+/** ssh init */
 
 var ssh_config = {
     username: D.device.username(),
     password: D.device.password(),
     port: 22,
-    timeout: 10000
+    timeout: 30000
 };
 
+var ntp_status_cmd = "ntpq -p | awk '{print $1 \";\" $2 \";\" $7}'";
+var dns_servers_cmd = "grep \"nameserver\" /etc/resolv.conf | awk '{system(\"dig +tries=1 @\" $2 \" google.com > /dev/null; echo \" $2 \":$?\")}'";
+
+function exec_command(command, callback) {
+    var config = clone({ command: command }, ssh_config);
+    D.device.sendSSHCommand(config, function (out, err) {
+        if (err) {
+            console.error("error while executing command: " + command);
+            console.error(err);
+            return callback([]);
+        }
+        callback(out.split("\n"));
+    });
+}
+
+function to_bin(n) {
+    return n && parseInt(n).toString(2) || "";
+}
+
+
+function get_ntp_status(last, next) {
+    var _this = this;
+    exec_command(ntp_status_cmd, function (results) {
+        _this._var = [];
+        for (var i = 2; i < results.length; i++) {
+            var result = results[i].split(";");
+            var uid = result[0];
+            var label = "NTP: " + result[0] + " (" + result[1] + ")";
+            var success = result[2];
+            var binSuccess = to_bin(success[2]) + to_bin(success[1]) + to_bin(success[0]);
+            var successPrencent = (binSuccess.split("1").length - 1) / 8;
+            _this._var.push(_var(uid, label, successPrencent * 100, "%"));
+        }
+        next(_this._var);
+    });
+}
+
+function get_dns_servers(last, next) {
+    var _this = this;
+    exec_command(dns_servers_cmd, function (results) {
+        _this._var = [];
+        results.forEach(function (r) {
+            var dns_status = r.split(":");
+            _this._var.push(_var("dns_" + dns_status[0], "DNS(" + dns_status[0] + ")", dns_status[1] == 0 ? "on" : "off"));
+        });
+        next(_this._var);
+    });
+
+}
+
+/** snmp init */
+
 function snmp_walk(last, callback) {
-    createSNMPSession().walk(this.walk_root, function (result, error) {
-        if(error){
-            console.error("walk error for oid: " + this.walk_root);
+    var _this = this;
+    createSNMPSession().walk(_this.walk_root, function (result, error) {
+        if (error) {
+            console.log("walk error for oid: " + _this.walk_root);
+            console.log(error);
             return callback(null);
         }
         callback(result);
     });
 }
 
-function update_oid_1(walk_result, callback){
-    if(!walk_result) return callback(null);
+function update_oid(walk_result, callback) {
+    if (!walk_result) return callback(null);
     for (var key in walk_result) {
         if (walk_result[key] == this.walk_param_name) {
             var oidArray = key.split(".");
             var index = oidArray[oidArray.length - 1];
-            this.oid = this.walk_root + "." + index;
+            this.oid = this.walk_oid + "." + index;
             break;
         }
     }
@@ -33,18 +88,19 @@ function update_oid_1(walk_result, callback){
 }
 
 function snmp_get(last, callback) {
-    if (this.oid) {
-        createSNMPSession().get([param.oid], function (result, error) {
+    var _this = this;
+    if (_this.oid) {
+        createSNMPSession().get([_this.oid], function (result, error) {
             if (error) {
                 console.error(error);
                 return callback(null);
             }
             if (!result) {
                 result = {};
-                result[this.oid] = "error";
+                result[_this.oid] = "error";
             }
-            this.result = result[this.oid];
-            callback(this.result);
+            _this.result = result[_this.oid];
+            callback(_this.result);
 
         });
     } else {
@@ -52,682 +108,826 @@ function snmp_get(last, callback) {
     }
 }
 
-function snmp_generate_variable(result, callback){
-    if(!this.result) return callback([]);
+function snmp_generate_variable(result, callback) {
     if (this.unit) {
         this.label += " (" + this.unit + ")";
     }
-    this.uid = this.oid;
-    if (!this.uid) {
-        this.uid = this.walk_root + "." + this.walk_param_name;
-    }
-    callback(_var(this.uid, this.label, "" + this.result, this.unit));
+    this._var = _var(this.uid, this.label, this.result, this.unit);
+    callback(this._var);
 }
 
-var snmp_parameters = [
+function divide_by_cpu_count(last, next) {
+    var nCPU = get_result("1.3.6.1.2.1.25.3.3.1.2.cpus");
+    this.result = this.result / nCPU;
+    next(this);
+}
+
+function multiply_result(number) {
+    return function (last, next) {
+        this.result = this.result * number;
+        next(this);
+    };
+}
+
+var snmp_get_exec = [snmp_get, snmp_generate_variable];
+var snmp_get_by_cpu_exec = [snmp_get, divide_by_cpu_count, snmp_generate_variable];
+var snmp_walk_get_exec = [snmp_walk, update_oid, snmp_get, snmp_generate_variable];
+var snmp_get_multiply_8_exec = [snmp_get, multiply_result(8), snmp_generate_variable];
+var snmp_walk_get_multiply_8_exec = [snmp_walk, update_oid, snmp_get, multiply_result(8), snmp_generate_variable];
+
+var config_paramters = [
     {
-        walk: {
-            ref: "1.3.6.1.2.1.25.3.3.1.2", name: "cpus",
-            callback: function (param, res) {
-                param.result = Object.keys(res).length;
-                param.oid = param.walk.ref + "." + param.walk.name;
-            }
-        },
+        exec: [get_ntp_status]
+    },
+    {
+        exec: [get_dns_servers]
+    },
+
+    {
+        walk_root: "1.3.6.1.2.1.25.3.3.1.2",
+        walk_param_name: "cpus",
+        exec: [snmp_walk, function (result, callback) {
+            this.result = Object.keys(result).length;
+            this.oid = this.walk_root + "." + this.walk_param_name;
+            callback(this);
+        }, snmp_generate_variable],
+        uid: "cpu_count",
         label: "Number of CPUs",
         unit: "",
-        snmpget: false,
         order: 0,
     },
     {
+        uid: "user_cpu_time",
         oid: "1.3.6.1.4.1.2021.11.9.0",
         label: "User CPU time",
-        unit: "%"
+        unit: "%",
+        exec: snmp_get_exec
     },
     {
+        uid: "system_cpu_time",
         oid: "1.3.6.1.4.1.2021.11.10.0",
         label: "System CPU time",
-        unit: "%"
+        unit: "%",
+        exec: snmp_get_exec
     },
     {
+        uid: "idle_cpu_time",
         oid: "1.3.6.1.4.1.2021.11.11.0",
         label: "Idle CPU time",
-        unit: "%"
+        unit: "%",
+        exec: snmp_get_exec
     },
     {
+        uid: "cpu_interrupt_time",
         oid: "1.3.6.1.4.1.2021.11.56.0",
         label: "CPU interrupt time",
         unit: "%",
-        postProcess: [divide_by_cpu_count]
+        exec: snmp_get_by_cpu_exec
     },
     {
+        uid: "cpu_iowait_time",
         oid: "1.3.6.1.4.1.2021.11.54.0",
         label: "CPU iowait time",
         unit: "%",
-        postProcess: [divide_by_cpu_count]
+        exec: snmp_get_by_cpu_exec
     },
     {
+        uid: "cpu_nice_time",
         oid: "1.3.6.1.4.1.2021.11.51.0",
         label: "CPU nice time",
         unit: "%",
-        postProcess: [divide_by_cpu_count]
+        exec: snmp_get_by_cpu_exec
     },
     {
+        uid: "cpu_system_time",
         oid: "1.3.6.1.4.1.2021.11.52.0",
         label: "CPU system time",
         unit: "%",
-        postProcess: [divide_by_cpu_count]
+        exec: snmp_get_by_cpu_exec
     },
     {
+        uid: "cpu_user_time",
         oid: "1.3.6.1.4.1.2021.11.50.0",
         label: "CPU user time",
         unit: "%",
-        postProcess: [divide_by_cpu_count]
+        exec: snmp_get_by_cpu_exec
     },
     {
+	
+        uid: "context_switches_per_second",
         oid: "1.3.6.1.4.1.2021.11.60.0",
         label: "Context switches per second",
         unit: "",
+        exec: snmp_get_exec
     },
     {
+        uid: "total_swap_size",
         oid: "1.3.6.1.4.1.2021.4.3.0",
         label: "Total Swap Size",
         unit: "Kb",
-        order: 0
+        order: 0,
+        exec: snmp_get_exec
     },
     {
+        uid: "available_swap_space",
         oid: "1.3.6.1.4.1.2021.4.4.0",
         label: "Available Swap Space",
         unit: "Kb",
-        order: 0
+        order: 0,
+        exec: snmp_get_exec
     },
     {
-        oid: "__calculated_swap_percentage",
+        uid: "swap_usage",
         label: "Swap usage",
         unit: "%",
-        postProcess: [function (last, next) {
-            var total = get_result("1.3.6.1.4.1.2021.4.4.0");
+        exec: [function (last, next) {
+            var total = get_result("1.3.6.1.4.1.2021.4.3.0");
             var avail = get_result("1.3.6.1.4.1.2021.4.4.0");
             this.result = parseInt(100 - (avail / total) * 100);
             next(this);
-        }],
-        snmpget: false
+        }, snmp_generate_variable]
     },
     {
+        uid: "total_ram_in_machine",
         oid: "1.3.6.1.4.1.2021.4.5.0",
         label: "Total RAM in machine",
-        unit: "Kb"
+        unit: "Kb",
+        order: 0,
+        exec: snmp_get_exec
     },
     {
+        uid: "total_ram_available",
         oid: "1.3.6.1.4.1.2021.4.6.0",
         label: "Total RAM Available",
-        unit: "Kb"
+        unit: "Kb",
+        order: 0,
+        exec: snmp_get_exec
     },
     {
-        oid: "__calculated_used_memory",
+        uid: "memory_usage",
         label: "Memory usage",
         unit: "%",
-        postProcess: [function (last, next) {
+        exec: [function (last, next) {
             var total = get_result("1.3.6.1.4.1.2021.4.5.0");
             var avail = get_result("1.3.6.1.4.1.2021.4.6.0");
             this.result = parseInt(100 - (avail / total) * 100);
             next(this);
-        }],
-        snmpget: false
+        }, snmp_generate_variable]
     },
     {
-        walk: {
-            ref: "1.3.6.1.2.1.25.4.2.1.2", name: "dhcpd", oid: "1.3.6.1.2.1.25.4.2.1.7",
-            callback: update_oid
-        },
+	
+        uid: "dhcp_server_status",
+        walk_root: "1.3.6.1.2.1.25.4.2.1.2",
+        walk_param_name: "dhcpd",
+        walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
+        exec: snmp_walk_get_exec,
         label: "DHCP server status",
         unit: ""
     },
     {
-        walk: {
-            ref: "1.3.6.1.2.1.25.4.2.1.2", name: "unbound", oid: "1.3.6.1.2.1.25.4.2.1.7",
-            callback: update_oid
-        },
+        uid: "dns_server_status",
+        walk_root: "1.3.6.1.2.1.25.4.2.1.2",
+        walk_param_name: "unbound",
+        walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
+        exec: snmp_walk_get_exec,
         label: "DNS server status",
         unit: ""
     },
     {
+        uid: "firewall_rules_count",
         oid: "1.3.6.1.4.1.12325.1.200.1.11.1.0",
         label: "Firewall rules count",
-        unit: ""
+        unit: "",
+        exec: snmp_get_exec
     },
     {
+        uid: "fragmented_packets",
         oid: "1.3.6.1.4.1.12325.1.200.1.2.3.0",
         label: "Fragmented packets",
-        unit: "pps"
+        unit: "pps",
+        exec: snmp_get_exec
     },
     {
-        walk: {
-            ref: "1.3.6.1.2.1.25.4.2.1.2", name: "unbound", oid: "1.3.6.1.2.1.25.4.2.1.7",
-            callback: update_oid
-        },
-        label: "DNS server status",
-        unit: ""
-    },
-    {
+        uid: "interface_em0_bits_received",
         oid: "1.3.6.1.2.1.31.1.1.1.6.1",
         label: "Interface [em0()]: Bits received",
         unit: "bps",
-        postProcess: [multiply_result(8)]
+        exec: snmp_get_multiply_8_exec
     },
     {
+        uid: "Interface_em0_bits_sent",
         oid: "1.3.6.1.2.1.31.1.1.1.10.1",
         label: "Interface [em0()]: Bits sent",
         unit: "bps",
-        postProcess: [multiply_result(8)]
+        exec: snmp_get_multiply_8_exec
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.12",
-            callback: update_oid
-        },
+	
+        uid: "interface_em0_inbound_ipv4_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.12",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv4 packets blocked",
         unit: "pps",
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.11",
-            callback: update_oid
-        },
+	
+        uid: "interface_em0_inbound_ipv4_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.11",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv4 packets passed",
         unit: "pps",
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.8",
-            callback: update_oid
-        },
+        uid: "interface_em0_inbound_ipv4_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.8",
+        exec: snmp_walk_get_multiply_8_exec,
         label: "Interface [em0()]: Inbound IPv4 traffic blocked",
-        unit: "bps",
-        postProcess: [multiply_result(8)]
+        unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.7",
-            callback: update_oid
-        },
+        uid: "interface_em0_inbound_ipv4_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.7",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv4 traffic passed",
         unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.20",
-            callback: update_oid
-        },
+        uid: "interface_em0_inbound_ipv6_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.20",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv6 packets blocked",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.19",
-            callback: update_oid
-        },
+        uid: "interface_em0_inbound_ipv6_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.19",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv6 packets passed",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.16",
-            callback: update_oid
-        },
+        uid: "interface_em0_inbound_ipv6_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.16",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv6 traffic blocked",
         unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.15",
-            callback: update_oid
-        },
+        uid: "interface_em0_inbound_ipv6_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.15",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Inbound IPv6 traffic passed",
         unit: "bps"
     },
     {
+        uid: "interface_em0_inbound_packets_discarded",
         oid: "1.3.6.1.2.1.2.2.1.13.1",
         label: "Interface [em0()]: Inbound packets discarded",
-        unit: ""
+        unit: "",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em0_inbound_packets_with_errors",
         oid: "1.3.6.1.2.1.2.2.1.14.1",
         label: "Interface [em0()]: Inbound packets with errors",
-        unit: ""
+        unit: "",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em0_interface_type",
         oid: "1.3.6.1.2.1.2.2.1.3.1",
         label: "Interface [em0()]: Interface type",
-        unit: ""
+        unit: "",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em0_operational_status",
         oid: "1.3.6.1.2.1.2.2.1.8.1",
         label: "Interface [em0()]: Operational status",
-        unit: ""
+        unit: "",
+        exec: snmp_get_exec
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.14",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv4_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.14",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv4 packets blocked",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.13",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv4_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.13",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv4 packets passed",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.10",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv4_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.10",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv4 traffic blocked",
         unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.9",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv4_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.9",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv4 traffic passed",
         unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.22",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv6_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.22",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv6 packets blocked",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.21",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv6_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.21",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv6 packets passed",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.18",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv6_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.18",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv6 traffic blocked",
         unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.17",
-            callback: update_oid
-        },
+        uid: "interface_em0_outbound_ipv6_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.17",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Outbound IPv6 traffic passed",
         unit: "bps"
     },
     {
+        uid: "interface_em0_outbound_packets_discarded",
         oid: "1.3.6.1.2.1.2.2.1.19.1",
         label: "Interface [em0()]: Outbound packets discarded",
-        unit: ""
+        unit: "",
+        exec: snmp_get_exec,
     },
     {
+        uid: "interface_em0_outbound_packets_with_errors",
         oid: "1.3.6.1.2.1.2.2.1.20.1",
         label: "Interface [em0()]: Outbound packets with errors",
+        exec: snmp_get_exec,
         unit: ""
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
-            callback: update_oid
-        },
+        uid: "interface_em0_rules_references_count",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em0",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
+        exec: snmp_walk_get_exec,
         label: "Interface [em0()]: Rules references count",
         unit: ""
     },
     {
+        uid: "interface_em0_speed",
         oid: "1.3.6.1.2.1.31.1.1.1.15.1",
         label: "Interface [em0()]: Speed",
+        exec: snmp_get_exec,
         unit: "bps"
     },
     {
+        uid: "interface_em1_bits_received",
         oid: "1.3.6.1.2.1.31.1.1.1.6.2",
         label: "Interface [em1()]: Bits received",
+        exec: snmp_get_exec,
         unit: "bps"
     },
     {
+        uid: "interface_em1_bits_sent",
         oid: "1.3.6.1.2.1.31.1.1.1.10.2",
         label: "Interface [em1()]: Bits sent",
+        exec: snmp_get_exec,
         unit: "bps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.12",
-            callback: update_oid
-        },
+        uid: "interface_em1_inbound_ipv4_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.12",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv4 packets blocked",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.11",
-            callback: update_oid
-        },
+        uid: "interface_em1_inbound_ipv4_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.11",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv4 packets passed",
         unit: "pps"
     },
     {
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em0", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.8",
-            callback: update_oid
-        },
+        uid: "interface_em1_inbound_ipv4_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.8",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv4 traffic blocked",
         unit: "bps"
     },
     {
+        uid: "interface_em1_inbound_ipv4_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.7",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv4 traffic passed",
         unit: "bps",
-        walk: { ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em1", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.7", callback: update_oid }
     },
     {
+        uid: "interface_em1_inbound_ipv6_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.20",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv6 packets blocked",
         unit: "pps",
-        walk: { ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em1", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.20", callback: update_oid }
     },
     {
+        uid: "interface_em1_inbound_ipv6_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.19",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv6 packets passed",
         unit: "pps",
-        walk: { ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em1", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.19", callback: update_oid }
     },
     {
+        uid: "interface_em1_inbound_ipv6_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.16",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv6 traffic blocked",
         unit: "bps",
-        walk: { ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em1", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.16", callback: update_oid }
     },
     {
+        uid: "interface_em1_inbound_ipv6_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.15",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Inbound IPv6 traffic passed",
         unit: "bps",
-        walk: { ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2", name: "em1", oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.15", callback: update_oid }
     },
     {
+        uid: "interface_em1_inbound_packets_discarded",
         label: "Interface [em1()]: Inbound packets discarded",
-        unit: "", oid: "1.3.6.1.2.1.2.2.1.13.2"
+        unit: "", oid: "1.3.6.1.2.1.2.2.1.13.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em1_inbound_packets_with_errors",
         label: "Interface [em1()]: Inbound packets with errors",
-        unit: "", oid: "1.3.6.1.2.1.2.2.1.14.2"
+        unit: "", oid: "1.3.6.1.2.1.2.2.1.14.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em1_interface_type",
         label: "Interface [em1()]: Interface type",
-        unit: "", oid: "1.3.6.1.2.1.2.2.1.3.2"
+        unit: "", oid: "1.3.6.1.2.1.2.2.1.3.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em1_operational_status",
         label: "Interface [em1()]: Operational status",
-        unit: "", oid: "1.3.6.1.2.1.2.2.1.8.2"
+        unit: "", oid: "1.3.6.1.2.1.2.2.1.8.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em1_outbound_ipv4_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.14",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv4 packets blocked",
         unit: "pps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.14",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv4_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.13",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv4 packets passed",
         unit: "pps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.13",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv4_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.10",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv4 traffic blocked",
         unit: "bps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.10",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv4_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.9",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv4 traffic passed",
         unit: "bps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.9",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv6_packets_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.22",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv6 packets blocked",
         unit: "pps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.22",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv6_packets_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.21",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv6 packets passed",
         unit: "pps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.21",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv6_traffic_blocked",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.18",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv6 traffic blocked",
         unit: "bps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.18",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_ipv6_traffic_passed",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.17",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Outbound IPv6 traffic passed",
         unit: "bps",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.17",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_outbound_packets_discarded",
         label: "Interface [em1()]: Outbound packets discarded",
         unit: "",
-        oid: "1.3.6.1.2.1.2.2.1.19.2"
+        oid: "1.3.6.1.2.1.2.2.1.19.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em1_outbound_packets_with_errors",
         label: "Interface [em1()]: Outbound packets with errors",
         unit: "",
-        oid: "1.3.6.1.2.1.2.2.1.20.2"
+        oid: "1.3.6.1.2.1.2.2.1.20.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interface_em1_rules_references_count",
+        walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
+        walk_param_name: "em1",
+        walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
+        exec: snmp_walk_get_exec,
         label: "Interface [em1()]: Rules references count",
         unit: "",
-        walk: {
-            ref: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
-            name: "em1",
-            oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
-            callback: update_oid
-        }
     },
     {
+        uid: "interface_em1_speed",
         label: "Interface [em1()]: Speed",
         unit: "Mbps",
-        oid: "1.3.6.1.2.1.31.1.1.1.15.2"
+        oid: "1.3.6.1.2.1.31.1.1.1.15.2",
+        exec: snmp_get_exec
     },
     {
+        uid: "interrupts_per_second",
         label: "Interrupts per second",
         unit: "",
         oid: "1.3.6.1.4.1.2021.11.59.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "load_average_1m_avg",
+        walk_root: "1.3.6.1.4.1.2021.10.1.2",
+        walk_param_name: "Load-1",
+        walk_oid: "1.3.6.1.4.1.2021.10.1.3",
+        exec: snmp_walk_get_exec,
         label: "Load average (1m avg)",
         unit: "",
-        walk: {
-            ref: "1.3.6.1.4.1.2021.10.1.2",
-            name: "Load-1",
-            oid: "1.3.6.1.4.1.2021.10.1.3",
-            callback: update_oid
-        }
     },
     {
+        uid: "load_average_5m_avg",
+        walk_root: "1.3.6.1.4.1.2021.10.1.2",
+        walk_param_name: "Load-5",
+        walk_oid: "1.3.6.1.4.1.2021.10.1.3",
+        exec: snmp_walk_get_exec,
         label: "Load average (5m avg)",
         unit: "",
-        walk: {
-            ref: "1.3.6.1.4.1.2021.10.1.2",
-            name: "Load-5",
-            oid: "1.3.6.1.4.1.2021.10.1.3",
-            callback: update_oid
-        }
     },
     {
+        uid: "load_average_15m_avg",
+        walk_root: "1.3.6.1.4.1.2021.10.1.2",
+        walk_param_name: "Load-15",
+        walk_oid: "1.3.6.1.4.1.2021.10.1.3",
+        exec: snmp_walk_get_exec,
         label: "Load average (15m avg)",
         unit: "",
-        walk: {
-            ref: "1.3.6.1.4.1.2021.10.1.2",
-            name: "Load-15",
-            oid: "1.3.6.1.4.1.2021.10.1.3",
-            callback: update_oid
-        }
     },
     {
+        uid: "normalized_packets",
         label: "Normalized packets",
         unit: "pps",
-        oid: "1.3.6.1.4.1.12325.1.200.1.2.5.0"
+        oid: "1.3.6.1.4.1.12325.1.200.1.2.5.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "packet_filter_running_status",
         label: "Packet filter running status",
         unit: "",
-        oid: "1.3.6.1.4.1.12325.1.200.1.1.1.0"
+        oid: "1.3.6.1.4.1.12325.1.200.1.1.1.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "packets_dropped_due_to_memory_limitation",
         label: "Packets dropped due to memory limitation",
         unit: "pps",
-        oid: "1.3.6.1.4.1.12325.1.200.1.2.6.0"
+        oid: "1.3.6.1.4.1.12325.1.200.1.2.6.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "packets_matched_a_filter_rule",
         label: "Packets matched a filter rule",
         unit: "pps",
-        oid: "1.3.6.1.4.1.12325.1.200.1.2.1.0"
+        oid: "1.3.6.1.4.1.12325.1.200.1.2.1.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "packets_with_bad_offset",
         label: "Packets with bad offset",
         unit: "pps",
-        oid: "1.3.6.1.4.1.12325.1.200.1.2.2.0"
+        oid: "1.3.6.1.4.1.12325.1.200.1.2.2.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "short_packets",
         label: "Short packets",
         unit: "pps",
-        oid: "1.3.6.1.4.1.12325.1.200.1.2.4.0"
+        oid: "1.3.6.1.4.1.12325.1.200.1.2.4.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "source_tracking_table_current",
         label: "Source tracking table current",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.4.1.0",
-        order: 0
+        order: 0,
+        exec: snmp_get_exec
     },
     {
+        uid: "source_tracking_table_limit",
         label: "Source tracking table limit",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.5.2.0",
-        order: 0
+        order: 0,
+        exec: snmp_get_exec
     },
     {
+        uid: "source_tracking_table_utilization",
         label: "Source tracking table utilization",
         unit: "%",
-        oid: "__calculated_tracking_table_usage",
-        postProcess: [function (last, next) {
+        exec: [function (last, next) {
             var count = get_result("1.3.6.1.4.1.12325.1.200.1.4.1.0");
             var limit = get_result("1.3.6.1.4.1.12325.1.200.1.5.2.0");
             this.result = (count * 100) / limit;
             next(this);
-        }],
-        snmpget: false
+        }, snmp_generate_variable],
     },
     {
+        uid: "state_of_nginx_process",
+        walk_root: "1.3.6.1.2.1.25.4.2.1.2",
+        walk_param_name: "nginx",
+        walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
+        exec: snmp_walk_get_exec,
         label: "State of nginx process",
         unit: "",
-        walk: {
-            ref: "1.3.6.1.2.1.25.4.2.1.2",
-            name: "nginx",
-            oid: "1.3.6.1.2.1.25.4.2.1.7",
-            callback: update_oid
-        }
     },
     {
+        uid: "states_table_current",
         label: "States table current",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.3.1.0",
-        order: 0
+        order: 0,
+        exec: snmp_get_exec
     },
     {
+        uid: "states_table_limit",
         label: "States table limit",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.5.1.0",
-        order: 0
+        order: 0,
+        exec: snmp_get_exec
     },
     {
+        uid: "states_table_utilization",
         label: "States table utilization",
         unit: "%",
-        oid: "__calculated_states_table_usage",
-        postProcess: [function (last, next) {
+        exec: [function (last, next) {
             var count = get_result("1.3.6.1.4.1.12325.1.200.1.3.1.0");
             var limit = get_result("1.3.6.1.4.1.12325.1.200.1.5.1.0");
             this.result = (count * 100) / limit;
             next(this);
-        }],
-        snmpget: false
+        }, snmp_generate_variable],
     },
     {
+        uid: "system_contact_details",
         label: "System contact details",
         unit: "",
-        oid: "1.3.6.1.2.1.1.4.0"
+        oid: "1.3.6.1.2.1.1.4.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "system_description",
         label: "System description",
         unit: "",
-        oid: "1.3.6.1.2.1.1.1.0"
+        oid: "1.3.6.1.2.1.1.1.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "system_location",
         label: "System location",
         unit: "",
-        oid: "1.3.6.1.2.1.1.6.0"
+        oid: "1.3.6.1.2.1.1.6.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "system_name",
         label: "System name",
         unit: "",
-        oid: "1.3.6.1.2.1.1.5.0"
+        oid: "1.3.6.1.2.1.1.5.0",
+        exec: snmp_get_exec
     },
     {
+        uid: "system_object_id",
         label: "System object ID",
         unit: "",
-        oid: "1.3.6.1.2.1.1.2.0"
+        oid: "1.3.6.1.2.1.1.2.0",
+        exec: snmp_get_exec
     },
     {
-        "label": "Uptime",
-        "unit": "uptime",
-        "oid": "1.3.6.1.2.1.25.1.1.0"
-    },
+        uid: "uptime",
+        label: "Uptime",
+        unit: "uptime",
+        oid: "1.3.6.1.2.1.25.1.1.0",
+        exec: snmp_get_exec
+    }
 ];
 
 
+function clone(init, object) {
+    var toReturn = JSON.parse(JSON.stringify(object));
+    Object.keys(init).forEach(function (key) {
+        toReturn[key] = init[key];
+    });
+    return toReturn;
+}
 
 function execute_all(arrayFn, callback) {
     if (arrayFn.length == 0) {
@@ -760,145 +960,54 @@ function execute_seq(functions, callback) {
 }
 
 function get_result(oid) {
-    return snmp_parameters.filter(function (p) {
+    return config_paramters.filter(function (p) {
         return p.oid == oid;
     }).map(function (p) {
         return p.result;
     })[0];
 }
 
-function update_oid(param, res) {
-    for (var key in res) {
-        if (res[key] == param.walk.name) {
-            var oidArray = key.split(".");
-            var index = oidArray[oidArray.length - 1];
-            param.oid = param.walk.oid + "." + index;
-            break;
-        }
-    }
-}
+function execute_config(config, callback){
+    var order_groups = [];
+    var orders = config
+        .filter(function (p) { return p.order != null; })
+        .map(function (p) { return p.order; })
+        .reduce(function (a, b) {
+            if (a.indexOf(b) < 0) a.push(b);
+            return a;
+        }, []).sort();
 
-function change_per_second(last, next) {
-    var old_time = this.first_execution_date;
-    var old_value = this.result;
-    var _this = this;
-    setTimeout(function () {
-        var new_time = new Date();
-        createSNMPSession().get([_this.oid], function (result, error) {
-            if (error) {
-                console.error(error);
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            var new_value = result[_this.oid];
-            var time_diff = (new_time - old_time) / 1000;
-            _this.result = (new_value - old_value) / time_diff;
-            next(_this);
+    orders.forEach(function (order) {
+        var group = config.filter(function (p) { return p.order == order; });
+        order_groups.push(group);
+    });
+    var final_group = config.filter(function (p) { return p.order == null; });
+    order_groups.push(final_group);
+
+    var ordred_fns = order_groups.map(function (params) {
+        var fns = params.map(function (p) {
+            return function (callback) {
+                execute_seq.apply(p, [p.exec, callback]);
+            };
         });
-    }, 5000);
-}
-
-function divide_by_cpu_count(last, next) {
-    var nCPU = get_result("1.3.6.1.2.1.25.3.3.1.2.cpus");
-    this.result = this.result / nCPU;
-    next(this);
-}
-
-function multiply_result(number) {
-    return function (last, next) {
-        this.result = this.result * number;
-        next(this);
-    };
-}
-
-
-
-
-function preprocess_params(cb) {
-    var arrayFn = [];
-    snmp_parameters.forEach(function (p) {
-        if (p.walk) {
-            arrayFn.push(function (callback) {
-                createSNMPSession().walk(p.walk.ref, function (result, error) {
-                    p.walk.callback(p, result);
-                    callback(p);
-                });
-            });
-
-        }
+        return function (last, next) {
+            execute_all(fns, next);
+        };
     });
-
-    execute_all(arrayFn, function (result) {
-        cb();
-    });
-}
-
-
-function generate_variable(p, result, first_execution_date, callback) {
-    if (p.unit) {
-        p.label += " (" + p.unit + ")";
-    }
-    if (result[p.oid]) {
-        p.result = result[p.oid];
-    }
-    if (p.convert && typeof (p.convert) == "function") {
-        p.result = p.convert();
-    }
-    p.uid = p.oid;
-    if (!p.uid) {
-        p.uid = p.walk.ref + "." + p.walk.name;
-    }
-    p.first_execution_date = first_execution_date;
-    if (p.postProcess && p.postProcess.length) {
-        console.log("Postprocessing " + p.label);
-        return execute_seq.apply(p, [p.postProcess, function (result) {
-            console.log("Postprocessing done " + p.label);
-            callback(p);
-        }]);
-    }
-    callback(p);
-}
-
-function execute_get(param) {
-    return function (callback) {
-        // console.log("excuting for parameter: " + param.label)
-        function run() {
-            if (param.oid && param.snmpget !== false) {
-                createSNMPSession().get([param.oid], function (result, error) {
-                    if (error) {
-                        console.error(error);
-                        // D.failure(D.errorType.GENERIC_ERROR);
-
-                    }
-                    if (!result) {
-                        result = {};
-                        result[param.oid] = "error";
-                    }
-
-                    generate_variable(param, result, new Date(), function (variable) {
-                        callback(variable);
-                    });
-
+    execute_seq(ordred_fns, function () {
+        var result = [];
+        config_paramters.forEach(function (param) {
+            if (Array.isArray(param._var)) {
+                param._var.forEach(function (_var) {
+                    result.push(_var);
                 });
             } else {
-                generate_variable(param, {}, new Date(), function (variable) {
-                    callback(variable);
-                });
+                result.push(param._var);
             }
-        }
-        if (param.preProcess && param.preProcess.length) {
-            console.log("Preprocessing " + param.label);
-            return execute_seq.apply(param, [param.preProcess, function () {
-                console.log("Preprocessing done " + param.label);
-                run();
-            }]);
-        } else {
-            run();
-        }
-
-    };
+        });
+        callback(result);
+    });
 }
-
-
 
 /**
 * @remote_procedure
@@ -923,36 +1032,7 @@ function validate() {
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    var order_groups = [];
-    var orders = snmp_parameters
-        .filter(function (p) { return p.order != null; })
-        .map(function (p) { return p.order; })
-        .reduce(function (a, b) {
-            if (a.indexOf(b) < 0) a.push(b);
-            return a;
-        }, []).sort();
-
-    orders.forEach(function (order) {
-        var group = snmp_parameters.filter(function (p) { return p.order == order; });
-        order_groups.push(group);
-    });
-    var final_group = snmp_parameters.filter(function (p) { return p.order == null; });
-    order_groups.push(final_group);
-
-    var ordred_fns = order_groups.map(function (params) {
-        var fns = params.map(function (p) {
-            return execute_get(p);
-        });
-        return function (last, next) {
-            execute_all(fns, next);
-        };
-    });
-    preprocess_params(function () {
-        execute_seq(ordred_fns, function () {
-            var result = snmp_parameters.map(function (p) {
-                return _var(p.uid, p.label, "" + p.result, p.unit);
-            });
-            D.success(result);
-        });
+    execute_config(config_paramters, function(result){
+        D.success(result);
     });
 }
