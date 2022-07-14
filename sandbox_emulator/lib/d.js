@@ -29,12 +29,51 @@ function format(str, charcount) {
     return result.substring(0, charcount);
 }
 
-global.D = {
+global.D = { /**
+* Mathematical Utilities library
+* @example D.math
+* @namespace D.math
+* @memberof D
+*/
+    math: {
+        /**
+         * Percentage Calculating Function
+         * @function
+         * @example 
+         * // returns 70
+         * D.math.percent(7, 10)
+         * @param {number} actual   - The actual number
+         * @param {number} maximum  - The maximum number
+         * @returns {number}        - The Percentage
+        */
+        percent: function (actual, maximum) {
+            return Math.round(10000.0 * parseInt(actual, 10) / parseInt(maximum, 10)) / 100;
+        }
+    },
+    /**
+    * NodeJS Lodash Module 
+    * Javascript utility library that delivers modularity, performance and some extra features.
+    * @example D._
+    * @memberof D
+    * @external _
+    * @see {@link https://lodash.com/docs/4.17.15}
+    */
+    _: require('lodash'),
+    /**
+    * Nodejs q Module
+    * @private
+    * @example  D.q
+    * @memberof D
+    * @external q 
+    * @see {@link https://devdocs.io/q/}
+    */
+    q: require('q'),
+    htmlParse: require('cheerio').load,
     success: function (...args) {
         if (!args || !args.length) return;
         args = [args[0], args[1]]
         args.forEach(function (vars, index) {
-            if(!vars) return;
+            if (!vars) return;
             if (vars && vars.getResult) {
                 var result = vars.getResult();
                 console.log(result.label)
@@ -50,8 +89,8 @@ global.D = {
                 var splitter = "-".repeat(tableHeader.length)
                 console.log(tableHeader);
                 console.log(splitter);
-                var tableBody = result.rows.map(function(row){
-                    return row.map(function(col, index){
+                var tableBody = result.rows.map(function (row) {
+                    return row.map(function (col, index) {
                         return format(col, maxLengths[index])
                     }).join("|")
                 }).join('\n')
@@ -59,7 +98,7 @@ global.D = {
             } else {
                 var maxLength = 0;
                 vars.forEach(function (v) {
-                    var label = v.label + (v.unit ? " ("+v.unit+")" : "")
+                    var label = v.label + (v.unit ? " (" + v.unit + ")" : "")
                     v.l = label
                     maxLength = Math.max(maxLength, label.length)
                 })
