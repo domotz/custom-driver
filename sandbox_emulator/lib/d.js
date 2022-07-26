@@ -126,5 +126,22 @@ global.D = { /**
     device: createDevice(device, { max_var_id_len: 50 }, console),
     createTable: function (label, headers) {
         return createTable(label, headers, console)
-    }
+    },
+
+    /**
+     * Creates an External IP device object
+     * @example D.createExternalDevice("1.1.1.1", {"username": "root", "password": D.device.password()})
+     * @param {string}                    deviceHost          - The IP or Hostname of the external device
+     * @param {DeviceCredentials}         [deviceCredentials] - The credentials for the external device
+     * @memberof D
+     * @readonly
+     * @return {device}                                       - The External Device object
+     */
+    createExternalDevice: function (deviceHost, deviceCredentials) {
+        var externalDevice = {
+            ip: deviceHost,
+            credentials: deviceCredentials
+        }
+        return createDevice(externalDevice, { max_var_id_len: 50 }, console);
+    },
 };
