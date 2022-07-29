@@ -89,3 +89,6 @@ function validate() {
 function get_status() {
     D.device.sendSSHCommand(options, commandExecutionCallback);
 }
+D.device.sendSSHCommand(, function (out, err) {
+    
+}
