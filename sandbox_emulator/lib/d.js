@@ -29,6 +29,8 @@ function format(str, charcount) {
     return result.substring(0, charcount);
 }
 
+console.log("\n############################ LOGS ############################\n")
+
 global.D = { /**
 * Mathematical Utilities library
 * @example D.math
@@ -76,24 +78,25 @@ global.D = { /**
             if (!vars) return;
             if (vars && vars.getResult) {
                 var result = vars.getResult();
-                console.log(result.label)
                 var maxLengths = new Array(result.columnHeaders.length).fill(0)
                 for (var i = 0; i < result.rows.length; i++) {
                     for (var j = 0; j < result.columnHeaders.length; j++) {
-                        maxLengths[j] = Math.max(Math.max(maxLengths[j], result.rows[i][j].toString().length), result.columnHeaders[j].label.length)
+                        maxLengths[j] = Math.max(Math.max(maxLengths[j], result.rows[i][j] ? result.rows[i][j].toString().length : 0), result.columnHeaders[j].label.length)
                     }
                 }
                 var tableHeader = result.columnHeaders.map(function (header, index) {
                     return format(header.label, maxLengths[index])
                 }).join("|")
                 var splitter = "-".repeat(tableHeader.length)
-                console.log(tableHeader);
-                console.log(splitter);
                 var tableBody = result.rows.map(function (row) {
                     return row.map(function (col, index) {
                         return format(col, maxLengths[index])
                     }).join("|")
                 }).join('\n')
+                console.log("\n######################## TABLE RESULT ########################\n")
+                console.log(result.label)
+                console.log(tableHeader);
+                console.log(splitter);
                 console.log(tableBody)
             } else {
                 var maxLength = 0;
@@ -102,6 +105,7 @@ global.D = { /**
                     v.l = label
                     maxLength = Math.max(maxLength, label.length)
                 })
+                console.log("\n####################### VARIABLE RESULT ######################\n")
                 vars.forEach(function (v) {
                     console.log(format(v.l, maxLength), "=", v.value);
                 });
@@ -126,5 +130,22 @@ global.D = { /**
     device: createDevice(device, { max_var_id_len: 50 }, console),
     createTable: function (label, headers) {
         return createTable(label, headers, console)
-    }
+    },
+
+    /**
+     * Creates an External IP device object
+     * @example D.createExternalDevice("1.1.1.1", {"username": "root", "password": D.device.password()})
+     * @param {string}                    deviceHost          - The IP or Hostname of the external device
+     * @param {DeviceCredentials}         [deviceCredentials] - The credentials for the external device
+     * @memberof D
+     * @readonly
+     * @return {device}                                       - The External Device object
+     */
+    createExternalDevice: function (deviceHost, deviceCredentials) {
+        var externalDevice = {
+            ip: deviceHost,
+            credentials: deviceCredentials
+        }
+        return createDevice(externalDevice, { max_var_id_len: 50 }, console);
+    },
 };

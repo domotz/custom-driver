@@ -320,7 +320,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
             } else {
                 unit = null;
             }
-            if (value) {
+            if (value != null) {
                 value = String(value);
             } else {
                 value = null;
