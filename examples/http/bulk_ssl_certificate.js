@@ -1,5 +1,11 @@
 
 
+/**
+ * This driver checks the status of https certificate for a list of devices specified in servers_to_check var
+ * Communication protocol is https
+ * return a table contains the certificate [Issuer, Expiry, Remaining days, Is valid, Certificate authorisation error] for each server listed
+ */
+
 var table = D.createTable(
     "SSL Certificates",
     [
@@ -11,16 +17,26 @@ var table = D.createTable(
     ]
 );
 
+// list of servers to check the status of their https certificate
 var servers_to_check = ["domotz.com", "google.com", "twitter.com"];
 
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+/**
+ * 
+ * @returns Promise wait until all https calls are done to the target servers
+ */
 function get_all_certficate_data() {
     return D.q.all(
         servers_to_check.map(get_certificate_data)
     );
 }
 
+/**
+ * 
+ * @param {*} target_server server to check its https certificate status
+ * @returns Promise that wait for the https call to the target_server and parse the needed data
+ */
 function get_certificate_data(target_server) {
     var d = D.q.defer();
     var website = D.createExternalDevice(target_server);
@@ -55,10 +71,21 @@ function get_certificate_data(target_server) {
     return d.promise;
 }
 
+/**
+ * 
+ * @param {*} data_list https parsed data for each server in the servers_to_check
+ * @returns same data_list with added remaining_days attribute for each data in the list
+ */
 function parse_dates(data_list) {
     return data_list.map(parse_date);
 }
 
+
+/**
+ * 
+ * @param {*} data contains the data passed by get_certificate_data function to calculate remaining days for the certificate
+ * @returns the same data in the input with added remaining_days attribute
+ */
 function parse_date(data) {
     if(!data) return null;
     var expiry_parsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
