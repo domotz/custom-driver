@@ -29,7 +29,10 @@ function getRedisInfo() {
             console.error(err);
             D.failure();
         }
-        if (out.indexOf("-NOAUTH") >= 0) {
+        if(!out){
+            console.error("No info returned");
+            D.failure(D.errorType.PARSING_ERROR);
+        }else if (out.indexOf("-NOAUTH") >= 0) {
             console.error("Authentication required");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else {
