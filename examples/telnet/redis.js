@@ -1,5 +1,7 @@
 /**
- * 
+ * This driver extracts many informations for redis process
+ * Communication using telnet over the redis port
+ * Create a dynamic list of variables containing all redis monitoring informations
  */
 
 var _var = D.device.createVariable;
@@ -7,14 +9,17 @@ var telnet = D.device.sendTelnetCommand;
 
 
 var redis_telnet_params = {
-    port: 6379,
+    port: 6379, // redis remote port
     negotiationMandatory: false,
     timeout: 10000,
     command: "info",
-    onConnectCommand: "auth password\n"
+    onConnectCommand: "auth password\n" // if no password let it empty
 };
 
-
+/**
+ * 
+ * @returns Promise execute telnet command to redis server and ask for redis informations
+ */
 function get_redis_info() {
     var d = D.q.defer();
     telnet(redis_telnet_params, function (out, err) {
@@ -29,14 +34,11 @@ function get_redis_info() {
     return d.promise;
 }
 
-function convertToK(value, unit) {
-    switch (unit) {
-    case "G": return value * 1000000;
-    case "M": return value * 1000;
-    default: return value;
-    }
-}
-
+/**
+ * 
+ * @param {*} results a list of informations for redis
+ * @returns monitoring variables
+ */
 function parse_info(results) {
     var vars = results.map(function (line) {
         return line.split(":");
@@ -49,6 +51,14 @@ function parse_info(results) {
         var value = info[1].trim();
         return _var(key, key.split("_").join(" "), value);
     });
+    return vars;
+}
+
+/**
+ * 
+ * @param {*} vars monitoring bariables
+ */
+function success(vars){
     D.success(vars);
 }
 
@@ -60,7 +70,7 @@ function parse_info(results) {
 function validate() {
     get_redis_info()
         .then(function(){
-            D.success();
+            success();
         });
 }
 
@@ -73,6 +83,7 @@ function validate() {
 function get_status() {
     get_redis_info()
         .then(parse_info)
+        .then(success)
         .catch(function (error) {
             console.error(error);
             D.failure();
