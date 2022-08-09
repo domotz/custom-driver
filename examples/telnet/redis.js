@@ -6,23 +6,24 @@
 
 var _var = D.device.createVariable;
 var telnet = D.device.sendTelnetCommand;
+var password = D.device.password();
 
 
-var redis_telnet_params = {
+var redisTelnetParams = {
     port: 6379, // redis remote port
     negotiationMandatory: false,
     timeout: 10000,
     command: "info",
-    onConnectCommand: "auth password\n" // if no password let it empty
+    onConnectCommand: (password ? "auth "+password+"\n" : null)
 };
 
 /**
  * 
  * @returns Promise execute telnet command to redis server and ask for redis informations
  */
-function get_redis_info() {
+function getRedisInfo() {
     var d = D.q.defer();
-    telnet(redis_telnet_params, function (out, err) {
+    telnet(redisTelnetParams, function (out, err) {
         if (err) {
             console.error("error while executing command: " + command);
             console.error(err);
@@ -39,7 +40,7 @@ function get_redis_info() {
  * @param {*} results a list of informations for redis
  * @returns monitoring variables
  */
-function parse_info(results) {
+function parseInfo(results) {
     var vars = results.map(function (line) {
         return line.split(":");
     }).filter(function (info) {
@@ -68,7 +69,7 @@ function success(vars){
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    get_redis_info()
+    getRedisInfo()
         .then(function(){
             success();
         });
@@ -81,8 +82,8 @@ function validate() {
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    get_redis_info()
-        .then(parse_info)
+    getRedisInfo()
+        .then(parseInfo)
         .then(success)
         .catch(function (error) {
             console.error(error);
