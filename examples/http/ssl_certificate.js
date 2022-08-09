@@ -1,8 +1,17 @@
 
-var _var = D.device.createVariable;
+/**
+ * This driver checks the status of https certificate for the target device
+ * Communication protocol is https
+ * return the certificate Issuer, Expiry, Remaining days, Is valid, Certificate authorisation error
+ */
 
+var _var = D.device.createVariable;
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+/**
+ * 
+ * @returns Promise that wait for the https call to the target machine and parse the needed data
+ */
 function get_certificate_data() {
     var d = D.q.defer();
     D.device.http.get(
@@ -30,6 +39,11 @@ function get_certificate_data() {
     return d.promise;
 }
 
+/**
+ * 
+ * @param {*} data contains the data passed by get_certificate_data function to calculate remaining days for the certificate
+ * @returns the same data in the input with added remaining_days attribute
+ */
 function parse_date(data){
     var expiry_parsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
     var month = months.indexOf(expiry_parsed[1]);
@@ -47,6 +61,11 @@ function parse_date(data){
     
 }
 
+/**
+ * 
+ * @param {*} data 
+ * @returns list of variables to be monitored
+ */
 function create_vars(data){
     return [
         _var("issuer", "Issuer", data.issuer),
