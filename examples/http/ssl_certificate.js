@@ -12,13 +12,13 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
  * 
  * @returns Promise that wait for the https call to the target machine and parse the needed data
  */
-function get_certificate_data() {
+function getCertificateData() {
     var d = D.q.defer();
     D.device.http.get(
         {
             url: "/",
             headers: {
-                // connection: "keep-alive",
+                connection: "keep-alive",
             },
             rejectUnauthorized: false,
             protocol: "https"
@@ -32,7 +32,7 @@ function get_certificate_data() {
                 issuer: cert.issuer.O,
                 expiry: cert.valid_to,
                 valid: !resp.connection.authorizationError,
-                cert_error: resp.connection.authorizationError
+                certError: resp.connection.authorizationError
             });
         });
 
@@ -41,22 +41,22 @@ function get_certificate_data() {
 
 /**
  * 
- * @param {*} data contains the data passed by get_certificate_data function to calculate remaining days for the certificate
- * @returns the same data in the input with added remaining_days attribute
+ * @param {*} data contains the data passed by getCertificateData function to calculate remaining days for the certificate
+ * @returns the same data in the input with added remainingDays attribute
  */
-function parse_date(data){
-    var expiry_parsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
-    var month = months.indexOf(expiry_parsed[1]);
-    var day = expiry_parsed[2];
-    var hour = expiry_parsed[3];
-    var min = expiry_parsed[4];
-    var sec = expiry_parsed[5];
-    var year = expiry_parsed[6];
+function parseDate(data){
+    var expiryParsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
+    var month = months.indexOf(expiryParsed[1]);
+    var day = expiryParsed[2];
+    var hour = expiryParsed[3];
+    var min = expiryParsed[4];
+    var sec = expiryParsed[5];
+    var year = expiryParsed[6];
     var date = new Date();
     date.setUTCFullYear(year, month, day);
     date.setUTCHours(hour, min, sec, 0);
     var diff = Math.floor((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-    data.remaining_days = diff <= 0 ? 0 : diff;
+    data.remainingDays = diff <= 0 ? 0 : diff;
     return data;
     
 }
@@ -66,13 +66,13 @@ function parse_date(data){
  * @param {*} data 
  * @returns list of variables to be monitored
  */
-function create_vars(data){
+function createVars(data){
     return [
         _var("issuer", "Issuer", data.issuer),
         _var("expiry", "Expiry", data.expiry),
-        _var("remaining_days", "Remaining days", data.remaining_days, "day"),
+        _var("remainingDays", "Remaining days", data.remainingDays, "day"),
         _var("valid", "Is valid", data.valid),
-        _var("cert_error", "Certificate authorisation error", data.cert_error),
+        _var("certError", "Certificate authorisation error", data.certError),
     ];
 }
 
@@ -83,7 +83,7 @@ function create_vars(data){
 */
 function validate() {
     function call(callback){
-        get_certificate_data().then(callback);
+        getCertificateData().then(callback);
     }
     call(D.success);
 }
@@ -97,9 +97,9 @@ function validate() {
 function get_status() {
     function call(callback){
 
-        get_certificate_data()
-            .then(parse_date)
-            .then(create_vars)
+        getCertificateData()
+            .then(parseDate)
+            .then(createVars)
             .then(callback);
     }
 
