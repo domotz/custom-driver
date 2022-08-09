@@ -15,6 +15,10 @@ var device = {
         authentication_key: process.env.DEVICE_SNMP_AUTHENTICATION_KEY,
         encryption_protocol: process.env.DEVICE_SNMP_ENCRYPTION_PROTOCOL,
         encryption_key: process.env.DEVICE_SNMP_ENCRYPTION_KEY,
+    },
+    credentials: {
+        username: "",
+        password: ""
     }
 };
 if (process.env.DEVICE_USERNAME) {
