@@ -12,9 +12,9 @@ var password = D.device.password();
 var redisTelnetParams = {
     port: 6379, // redis remote port
     negotiationMandatory: false,
-    timeout: 10000,
+    timeout: 1000,
     command: "info",
-    onConnectCommand: (password ? "auth "+password+"\n" : null)
+    onConnectCommand: (password ? "auth " + password + "\n" : null)
 };
 
 /**
@@ -29,7 +29,12 @@ function getRedisInfo() {
             console.error(err);
             D.failure();
         }
-        d.resolve(out.split("\n"));
+        if (out.indexOf("-NOAUTH") >= 0) {
+            console.error("Authentication required");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else {
+            d.resolve(out.split("\n"));
+        }
     });
 
     return d.promise;
@@ -59,7 +64,7 @@ function parseInfo(results) {
  * 
  * @param {*} vars monitoring bariables
  */
-function success(vars){
+function success(vars) {
     D.success(vars);
 }
 
@@ -70,8 +75,11 @@ function success(vars){
 */
 function validate() {
     getRedisInfo()
-        .then(function(){
+        .then(function () {
             success();
+        }).catch(function (error) {
+            console.error(error);
+            D.failure();
         });
 }
 
