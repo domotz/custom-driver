@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 var _var = D.device.createVariable;
 var telnet = D.device.sendTelnetCommand;
 
@@ -7,7 +11,7 @@ var redis_telnet_params = {
     negotiationMandatory: false,
     timeout: 10000,
     command: "info",
-    onConnectCommand: "auth moome$2019\n"
+    onConnectCommand: "auth password\n"
 };
 
 
@@ -34,7 +38,7 @@ function convertToK(value, unit) {
 }
 
 function parse_info(results) {
-    return results.map(function (line) {
+    var vars = results.map(function (line) {
         return line.split(":");
     }).filter(function (info) {
         return info.length == 2;
@@ -45,6 +49,7 @@ function parse_info(results) {
         var value = info[1].trim();
         return _var(key, key.split("_").join(" "), value);
     });
+    D.success(vars);
 }
 
 /**
@@ -53,7 +58,10 @@ function parse_info(results) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-
+    get_redis_info()
+        .then(function(){
+            D.success();
+        });
 }
 
 
@@ -65,7 +73,6 @@ function validate() {
 function get_status() {
     get_redis_info()
         .then(parse_info)
-        .then(D.success)
         .catch(function (error) {
             console.error(error);
             D.failure();
