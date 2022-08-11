@@ -5,11 +5,11 @@ var _var = D.device.createVariable;
  * Creates a four custom driver variables.
  */
 var httpOptions = {
-    url: '/admin/api.php?' +
-        'getCacheInfo' +
-        '&summary' +
-        '&auth=' + D.device.password()
-}
+    url: "/admin/api.php?" +
+        "getCacheInfo" +
+        "&summary" +
+        "&auth=" + D.device.password()
+};
 
 function validateHttpResponse(error, response) {
     var errorMessage = null;
@@ -28,29 +28,29 @@ function validateHttpResponse(error, response) {
 }
 
 function createVariables(data) {
-    var variables = []
+    var variables = [];
     variables.push(
-        _var('status', "Status", data.status)
-    )
+        _var("status", "Status", data.status)
+    );
     variables.push(
-        _var('blocked_daily_perc', "Blocked Daily %", parseFloat(data.ads_percentage_today) + '', unit = '%')
-    )
+        _var("blocked_daily_perc", "Blocked Daily %", parseFloat(data.ads_percentage_today) + "", unit = "%")
+    );
     variables.push(
-        _var('blocked_daily', "Blocked Daily", parseInt(data.ads_blocked_today.replace(/,/g, '')) + '')
-    )
+        _var("blocked_daily", "Blocked Daily", parseInt(data.ads_blocked_today.replace(/,/g, "")) + "")
+    );
     variables.push(
-        _var('daily_total', "Daily Total Queries", parseInt(data.dns_queries_all_types.replace(/,/g, '')) + '')
-    )
-    var relative = data.gravity_last_updated.relative
+        _var("daily_total", "Daily Total Queries", parseInt(data.dns_queries_all_types.replace(/,/g, "")) + "")
+    );
+    var relative = data.gravity_last_updated.relative;
     if (relative) {
         variables.push(
-            _var('db_update_since', "Days since last DB update",
-                relative.days + relative.hours/24,  '', 'days'
+            _var("db_update_since", "Days since last DB update",
+                relative.days + relative.hours/24,  "", "days"
             )
-        )
+        );
     }
 
-    return variables
+    return variables;
 }
 
 /**
@@ -60,10 +60,10 @@ function createVariables(data) {
  */
 function validate() {
     D.device.http.get(httpOptions, function (error, response, body) {
-        validateHttpResponse(error, response)
-        var res = JSON.parse(body)
+        validateHttpResponse(error, response);
+        var res = JSON.parse(body);
 
-        D.success(createVariables(res))
+        D.success(createVariables(res));
     });
 }
 
@@ -75,9 +75,9 @@ function validate() {
  */
 function get_status() {
     D.device.http.get(httpOptions, function (error, response, body) {
-        validateHttpResponse(error, response)
-        var res = JSON.parse(body)
+        validateHttpResponse(error, response);
+        var res = JSON.parse(body);
 
-        D.success(createVariables(res))
+        D.success(createVariables(res));
     });
 }

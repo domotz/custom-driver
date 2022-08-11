@@ -15,13 +15,13 @@
 var telnetOptions = {
     timeout: 5000,
     negotiationMandatory: true,
-    shellPrompt: ':/>',
-    loginPrompt: 'Username:',
-    passwordPrompt: 'Password:',
+    shellPrompt: ":/>",
+    loginPrompt: "Username:",
+    passwordPrompt: "Password:",
     // Carriage return is needed to indicate the prompt inputs are entered
     username: D.device.username() + "\r",
     password: D.device.password() + "\r",
-}
+};
 
 /**
 * Used to check if the authentication has not been successful basd on the output string.
@@ -30,9 +30,9 @@ function validateLoggedIn(output) {
     var loginInProgress = "Login in progress";
     var welcomeMessage = "Welcome to";
     if (output && output.indexOf(loginInProgress) !== -1 && output.indexOf(welcomeMessage) === -1) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-    };
-};
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    }
+}
 
 
 /**
@@ -47,11 +47,11 @@ function validate() {
             D.failure(D.errorType.PARSING_ERROR);
         } else {
             D.success();
-        };
-    };
+        }
+    }
     telnetOptions.command = "thermal status ?";
     D.device.sendTelnetCommand(telnetOptions, validationCallback);
-};
+}
 
 /**
 * @remote_procedure
@@ -62,11 +62,11 @@ function get_status() {
     var indexUID = 1;
     var indexValue = 2;
     var indexUnit = 3;
-    var portTemperatureRegex = new RegExp('([\\d]+) +([\\d]+) +(C|F).*.*');
+    var portTemperatureRegex = new RegExp("([\\d]+) +([\\d]+) +(C|F).*.*");
     function thermalStatusParserCallback(output, error) {
-        validateLoggedIn(output)
+        validateLoggedIn(output);
         var variables = [];
-        var lines = output.split('\n\r');
+        var lines = output.split("\n\r");
         lines.forEach(function (line) {
             var match = line.match(portTemperatureRegex);
             if (match) {
@@ -75,10 +75,10 @@ function get_status() {
                     uid, "Port " + uid, match[indexValue], match[indexUnit]
                 );
                 variables.push(portVariable);
-            };
+            }
         });
         D.success(variables);
     }
     telnetOptions.command = "thermal status";
     D.device.sendTelnetCommand(telnetOptions, thermalStatusParserCallback);
-};
+}
