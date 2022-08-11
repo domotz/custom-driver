@@ -361,6 +361,37 @@ Can be used to traverse and manipulate the loaded document.
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ValueType">ValueType</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The value of the column values (used for display purposes)</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1030,7 +1061,7 @@ Can be used to traverse and manipulate the loaded document.
 
             
 
-            <td class="description last">Import statements are not allowed in the sandbox enviroment</td>
+            <td class="description last">Import statements are not allowed in the sandbox environment</td>
         </tr>
 
     
@@ -1053,7 +1084,7 @@ Can be used to traverse and manipulate the loaded document.
 
             
 
-            <td class="description last">Require statements are not allowed in the sandbox enviroment</td>
+            <td class="description last">Require statements are not allowed in the sandbox environment</td>
         </tr>
 
     
@@ -3059,7 +3090,7 @@ Can be used to traverse and manipulate the loaded document.
                 </td>
             
 
-            <td class="description last">The time the tcp command will execute for at most (in milisenconds)</td>
+            <td class="description last">The time the tcp command will execute for at most (in milliseconds)</td>
         </tr>
 
     
@@ -3698,6 +3729,212 @@ Can be used to traverse and manipulate the loaded document.
 
             
                 
+<h4 class="name" id="ValueType">ValueType</h4>
+
+
+
+
+<div class="description">
+    Domotz variable value types
+</div>
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>STRING</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A string value (left adjusted in the variables table)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>NUMBER</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A numeric value (right adjusted in the variables table)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>DATETIME</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A datetime value (...)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>RATE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A numeric value that is expected to change over time (will be displayed with a graph of changes over time as well)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>MONOTONE_RATE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A rate value with negative measurements ignored when displaying</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>D.valueType.MONOTONE_RATE</code></pre>
+
+
+
+            
+                
 <h4 class="name" id="Variable">Variable</h4>
 
 
@@ -3839,6 +4076,29 @@ Created via D.device.createVariable
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>valueType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ValueType">ValueType</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The type of the variable value (used for visualization purposes).</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -3905,7 +4165,7 @@ Created via D.device.createVariable
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jul 29 2022 13:19:26 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Aug 11 2022 16:52:45 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
