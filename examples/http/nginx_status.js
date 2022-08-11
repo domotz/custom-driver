@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 /**
  * this driver is based on nginx module "ngx_http_stub_status_module"
  * You need to read this http://nginx.org/en/docs/http/ngx_http_stub_status_module.html 
