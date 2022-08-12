@@ -48,9 +48,9 @@ function execute_seq(arrayFn, callback) {
  * @param {*} object object to clone
  * @returns cloned object
  */
-function clone(init, object){
+function clone(init, object) {
     var toReturn = JSON.parse(JSON.stringify(object));
-    Object.keys(init).forEach(function(key){
+    Object.keys(init).forEach(function (key) {
         toReturn[key] = init[key];
     });
     return toReturn;

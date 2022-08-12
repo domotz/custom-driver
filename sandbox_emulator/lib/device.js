@@ -31,6 +31,8 @@
  * @memberof D
 */
 var request = require("request");
+// require("request-debug")(request)
+// request.debug = true;
 var ssh = require("./ssh");
 var telnet = require("./telnet");
 var snmp = require("./snmp");
@@ -318,7 +320,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
             } else {
                 unit = null;
             }
-            if (value) {
+            if (value != null) {
                 value = String(value);
             } else {
                 value = null;

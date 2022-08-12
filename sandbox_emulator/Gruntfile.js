@@ -4,7 +4,7 @@
 module.exports = function (grunt) {
 
     var source = grunt.option("source") || "pfsense.js";
-    var action = grunt.option("action") || "status";
+    var action = grunt.option("action") || "get_status";
     console.log(process.argv);
     grunt.initConfig({
         copy: {
@@ -17,6 +17,7 @@ module.exports = function (grunt) {
             my_target: {
                 options: {
                     beautify: true,
+                    compress: false,
                     sourceMapName: "dist/main.map",
                     sourceMap: {
                         includeSources: true

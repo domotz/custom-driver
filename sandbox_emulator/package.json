@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "npm run build",
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist; npm run lint",
     "postbuild": "node dist/main.min.js",
     "build": "grunt --source=${npm_config_source} --action=${npm_config_action}",
     "generate": "mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
@@ -18,12 +18,14 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.0",
+    "cheerio": "1.0.0-rc.3",
     "dotenv": "^16.0.1",
     "events": "^1.1.1",
     "lodash": "^4.17.4",
     "net-snmp": "^1.2.1",
     "q": "^1.5.1",
     "request": "2.74.0",
+    "request-debug": "^0.2.0",
     "ssh2": "1.9.0",
     "telnet-client": "0.9.4"
   },

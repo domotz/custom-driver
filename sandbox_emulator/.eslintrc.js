@@ -13,9 +13,6 @@ module.exports = {
         "plugin:es5/no-es2015",
         "plugin:es5/no-es2016"
     ],
-    "parserOptions": {
-        "ecmaVersion": "latest"
-    },
     "rules": {
         "indent": [
             "error",
