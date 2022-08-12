@@ -7,22 +7,22 @@ var sshConfig = {
     command: dockerInfoCmd
 };
 
-function getDockerInfo(){
+function getDockerInfo() {
     var d = D.q.defer();
 
     D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if(err){
+        if (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         }
         d.resolve(JSON.parse(out));
-        
+
     });
 
     return d.promise;
 }
 
-function createDockerInfoVariables(json){
+function createDockerInfoVariables(json) {
     console.log(json);
     var vars = [];
     return vars;
@@ -35,7 +35,7 @@ function createDockerInfoVariables(json){
 */
 function validate() {
     getDockerInfo()
-        .then(function() {
+        .then(function () {
             D.success();
         });
 }
@@ -47,5 +47,8 @@ function validate() {
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    getDockerInfo;
+    getDockerInfo()
+        .then(createDockerInfoVariables)
+        .then(D.success);
+    
 }
