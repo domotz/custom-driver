@@ -18,7 +18,7 @@ var table = D.createTable(
 );
 
 // list of servers to check the status of their https certificate
-var serversToCheck = ["domotz.com", "google.com", "twitter.com"];
+var serversToCheck = ["domotz.com", "google.com", "twitter.com", "www.facebook.com"];
 
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -26,7 +26,7 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
  * 
  * @returns Promise wait until all https calls are done to the target servers
  */
-function getAllCertficateData() {
+function getAllCertificateData() {
     return D.q.all(
         serversToCheck.map(getCertificateData)
     );
@@ -51,20 +51,28 @@ function getCertificateData(targetServer) {
         }, function (err, resp) {
             if (err) {
                 console.error(err);
-                D.failure();
+                return d.resolve();
             }
             var data = null;
-            if(resp && resp.connection && resp.connection.getPeerCertificate){
+            if (resp && resp.connection && resp.connection.getPeerCertificate) {
                 var cert = resp.connection.getPeerCertificate();
-                if(cert && Object.keys(cert).length)
-                    data = {
-                        server: targetServer,
-                        issuer: cert.issuer.O,
-                        expiry: cert.valid_to,
-                        valid: !resp.connection.authorizationError,
-                        certError: resp.connection.authorizationError
-                    };
-            } 
+                if (cert && Object.keys(cert).length) {
+                    try {
+                        data = {
+                            server: targetServer,
+                            issuer: cert.issuer.O,
+                            expiry: cert.valid_to,
+                            valid: !resp.connection.authorizationError,
+                            certError: resp.connection.authorizationError
+                        };
+                    } catch (e) {
+                        console.warn(e);
+                        console.warn("failed to retrieve ssl certificate information for " + targetServer);
+                    }
+                }
+            } else {
+                console.warn("failed to retrieve ssl certificate information for " + targetServer);
+            }
             d.resolve(data);
         });
 
@@ -87,7 +95,7 @@ function parseDates(dataList) {
  * @returns the same data in the input with added remainingDays attribute
  */
 function parseDate(data) {
-    if(!data) return null;
+    if (!data) return null;
     var expiryParsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
     var month = months.indexOf(expiryParsed[1]);
     var day = expiryParsed[2];
@@ -105,15 +113,15 @@ function parseDate(data) {
 }
 
 function fillTable(dataList) {
-    dataList.filter(function(data) { return data; }).forEach(function (data) {
+    dataList.filter(function (data) { return data; }).forEach(function (data) {
         table.insertRecord(data.server,
             [data.issuer, data.expiry, data.remainingDays, data.valid, data.certError]
         );
     });
-    return table;
+    D.success(table);
 }
 
-function failure(err){
+function failure(err) {
     console.error(err);
     D.failure();
 }
@@ -124,9 +132,14 @@ function failure(err){
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    getAllCertficateData()
-        .then(D.success)
-        .catch(failure);
+    function verify(callback) {
+        getAllCertificateData()
+            .then(callback)
+            .catch(failure);
+    }
+    verify(function(){
+        D.success();
+    });
 }
 
 
@@ -136,9 +149,8 @@ function validate() {
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    getAllCertficateData()
+    getAllCertificateData()
         .then(parseDates)
         .then(fillTable)
-        .then(D.success)
         .catch(failure);
 }

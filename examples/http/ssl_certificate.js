@@ -2,7 +2,7 @@
 /**
  * This driver checks the status of https certificate for the target device
  * Communication protocol is https
- * return the certificate Issuer, Expiry, Remaining days, Is valid, Certificate authorisation error
+ * return the certificate Issuer, Expiry, Remaining days, Is valid, Certificate authorization error
  */
 
 var _var = D.device.createVariable;
@@ -18,22 +18,33 @@ function getCertificateData() {
         {
             url: "/",
             headers: {
-                connection: "keep-alive",
+                "connection": "keep-alive",
+                "keep-alive": "timeout=2, max=1"
             },
             rejectUnauthorized: false,
             protocol: "https"
         }, function (err, resp) {
-            if(err){
+            if (err) {
                 console.error(err);
                 D.failure();
             }
-            var cert = resp.connection.getPeerCertificate();
-            d.resolve({
-                issuer: cert.issuer.O,
-                expiry: cert.valid_to,
-                valid: !resp.connection.authorizationError,
-                certError: resp.connection.authorizationError
-            });
+            var cert;
+            if (!resp.connection || !(cert = resp.connection.getPeerCertificate())){
+                return d.reject("No certification found for this device");
+            }
+            if (
+                cert.issuer &&
+                cert.valid_to &&
+                resp.connection) {
+                d.resolve({
+                    issuer: cert.issuer.O,
+                    expiry: cert.valid_to,
+                    valid: !resp.connection.authorizationError,
+                    certError: resp.connection.authorizationError
+                });
+            } else {
+                d.reject("Missing certificate information");
+            }
         });
 
     return d.promise;
@@ -44,21 +55,23 @@ function getCertificateData() {
  * @param {*} data contains the data passed by getCertificateData function to calculate remaining days for the certificate
  * @returns the same data in the input with added remainingDays attribute
  */
-function parseDate(data){
-    var expiryParsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
-    var month = months.indexOf(expiryParsed[1]);
-    var day = expiryParsed[2];
-    var hour = expiryParsed[3];
-    var min = expiryParsed[4];
-    var sec = expiryParsed[5];
-    var year = expiryParsed[6];
-    var date = new Date();
-    date.setUTCFullYear(year, month, day);
-    date.setUTCHours(hour, min, sec, 0);
-    var diff = Math.floor((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-    data.remainingDays = diff <= 0 ? 0 : diff;
+function parseDate(data) {
+    if(data && data.expiry){
+        var expiryParsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
+        var month = months.indexOf(expiryParsed[1]);
+        var day = expiryParsed[2];
+        var hour = expiryParsed[3];
+        var min = expiryParsed[4];
+        var sec = expiryParsed[5];
+        var year = expiryParsed[6];
+        var date = new Date();
+        date.setUTCFullYear(year, month, day);
+        date.setUTCHours(hour, min, sec, 0);
+        var diff = Math.floor((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        data.remainingDays = diff <= 0 ? 0 : diff;
+    }
     return data;
-    
+
 }
 
 /**
@@ -66,42 +79,49 @@ function parseDate(data){
  * @param {*} data 
  * @returns list of variables to be monitored
  */
-function createVars(data){
-    return [
+function createVars(data) {
+    if(!data) D.failure(D.errorType.GENERIC_ERROR);
+    D.success([
         _var("issuer", "Issuer", data.issuer),
         _var("expiry", "Expiry", data.expiry),
         _var("remainingDays", "Remaining days", data.remainingDays, "day"),
         _var("valid", "Is valid", data.valid),
-        _var("certError", "Certificate authorisation error", data.certError),
-    ];
+        _var("certError", "Certificate authorization error", data.certError),
+    ]);
+}
+
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure check if the server is reachable over https and check if the necessary data exists
 */
 function validate() {
-    function call(callback){
-        getCertificateData().then(callback);
+    function call(callback) {
+        getCertificateData()
+            .then(callback)
+            .catch(failure);
     }
-    call(D.success);
+    call(function () {
+        D.success();
+    });
 }
 
 
 /**
 * @remote_procedure
-* @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @label Get https certificate info 
+* @documentation This procedure make a https call to the target device, extract the necessary data 
+* then create variables for %Issuer, %Expiry, %Remaining days, %Is valid, %Certificate authorization error
 */
 function get_status() {
-    function call(callback){
 
-        getCertificateData()
-            .then(parseDate)
-            .then(createVars)
-            .then(callback);
-    }
-
-    call(D.success);
+    getCertificateData()
+        .then(parseDate)
+        .then(createVars)
+        .catch(failure);
 }
