@@ -25,14 +25,6 @@ function get_redis_info() {
     return d.promise;
 }
 
-function convertToK(value, unit) {
-    switch (unit) {
-    case "G": return value * 1000000;
-    case "M": return value * 1000;
-    default: return value;
-    }
-}
-
 function parse_info(results) {
     return results.map(function (line) {
         return line.split(":");
@@ -47,12 +39,22 @@ function parse_info(results) {
     });
 }
 
+
+function failure(err){
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
 * @remote_procedure
 * @label Validate Association
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
+    get_redis_info()
+        .then(function(){
+            D.success();
+        }).catch(failure);
 
 }
 
@@ -66,8 +68,5 @@ function get_status() {
     get_redis_info()
         .then(parse_info)
         .then(D.success)
-        .catch(function (error) {
-            console.error(error);
-            D.failure();
-        });
+        .catch(failure);
 }
