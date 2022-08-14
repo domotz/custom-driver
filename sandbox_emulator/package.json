@@ -1,11 +1,7 @@
 {
-  "name": "domotz",
+  "name": "domotz_sandbox_emulator",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "start": "npm run build",
     "prebuild": "rimraf dist; npm run lint",
@@ -14,7 +10,7 @@
     "generate": "mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
     "lint": "eslint --fix ."
   },
-  "author": "",
+  "author": "Mohamed Kallel",
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.0",
