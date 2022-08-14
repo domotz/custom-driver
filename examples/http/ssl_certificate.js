@@ -2,7 +2,12 @@
 /**
  * This driver checks the status of https certificate for the target device
  * Communication protocol is https
- * return the certificate Issuer, Expiry, Remaining days, Is valid, Certificate authorization error
+ * return this certificate information:
+ *  %Issuer
+ *  %Expiry
+ *  %Remaining days
+ *  %Is valid
+ *  %Certificate authorization error
  */
 
 var _var = D.device.createVariable;

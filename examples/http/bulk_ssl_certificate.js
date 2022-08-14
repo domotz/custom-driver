@@ -3,7 +3,13 @@
 /**
  * This driver checks the status of https certificate for a list of devices specified in serversToCheck var
  * Communication protocol is https
- * return a table contains the certificate [Issuer, Expiry, Remaining days, Is valid, Certificate authorisation error] for each server listed
+ * return a table with this columns:
+ * %server name
+ * %Issuer, 
+ * %Expiry, 
+ * %Remaining days, 
+ * %Is valid, 
+ * %Certificate authorization error
  */
 
 var table = D.createTable(
@@ -45,6 +51,7 @@ function getCertificateData(targetServer) {
             url: "/",
             headers: {
                 connection: "keep-alive",
+                "keep-alive": "timeout=2, max=1"
             },
             rejectUnauthorized: false,
             protocol: "https"
