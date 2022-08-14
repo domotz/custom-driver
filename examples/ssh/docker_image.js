@@ -1,4 +1,25 @@
 
+/**
+ * This driver extracts docker images information
+ * The communication protocol is SSH
+ * This driver show a table with images details:
+ * -------------------------------
+ * %Id
+ * %Repository
+ * %Created At
+ * %Created Since
+ * %Digest
+ * %Shared Size
+ * %Size
+ * %Tag
+ * %Unique Size
+ * %Virtual Size
+ * %Containers
+ * -------------------------------
+ * Tested under Docker version 19.03.15, build 99e3ed8919
+ */
+
+
 var ssh_config = {
     username: D.device.username(),
     password: D.device.password(),
@@ -21,14 +42,23 @@ var table = D.createTable(
     ]
 );
 
-function get_docker_images() {
+function checkSshError(err) {
+    if (err.message) console.error(err.message);
+    if (err.code == 2) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
+/**
+ * 
+ * @returns Promise wait for docker images result
+ */
+function getDockerImages() {
     var d = D.q.defer();
-    D.device.sendSSHCommand(ssh_config, function (res, err) {
-        if (err) {
-            console.error(err);
-            D.failure();
-        }
-        var images = res.split("\n").map(function (json_string) {
+    D.device.sendSSHCommand(ssh_config, function (out, err) {
+        if (err) checkSshError(err);
+        var images = out.split("\n").map(function (json_string) {
             return JSON.parse(json_string);
         });
         d.resolve(images);
@@ -37,7 +67,12 @@ function get_docker_images() {
     return d.promise;
 }
 
-function convert_to_kB(value) {
+/**
+ * 
+ * @param {string} value 
+ * @returns convert value to KB
+ */
+function convertToKB(value) {
     if (!value || value === "N/A") return null;
     var val = value.substring(0, value.length - 2);
     var unit = value.substring(value.length - 2, value.length);
@@ -48,41 +83,52 @@ function convert_to_kB(value) {
     }
 }
 
-function fill_table(images) {
+/**
+ * fill monitoring table with data related to docker images
+ * @param {[string]} images 
+ */
+function fillTable(images) {
     images.forEach(function (image) {
         table.insertRecord(image.ID, [
             image.Repository,
             image.CreatedAt,
             image.CreatedSince,
             image.Digest,
-            convert_to_kB(image.SharedSize),
-            convert_to_kB(image.Size),
+            convertToKB(image.SharedSize),
+            convertToKB(image.Size),
             image.Tag,
-            convert_to_kB(image.UniqueSize),
-            convert_to_kB(image.VirtualSize),
+            convertToKB(image.UniqueSize),
+            convertToKB(image.VirtualSize),
             image.Containers
         ]);
     });
     D.success(table);
 }
 
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if docker server is reachable and the ssh command is running successfully
 */
 function validate() {
-    D.success();
+    getDockerImages()
+        .then(function () { D.success(); })
+        .catch(failure);
 }
 
 
 /**
 * @remote_procedure
-* @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @label Get docker process info
+* @documentation This procedure is used for retrieving docker images and generate a table containing different information about the images
 */
 function get_status() {
-    get_docker_images()
-        .then(fill_table)
-        .catch(console.error);
+    getDockerImages()
+        .then(fillTable)
+        .catch(failure);
 }

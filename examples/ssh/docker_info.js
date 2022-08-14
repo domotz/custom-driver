@@ -1,4 +1,11 @@
 
+/**
+ * This driver extracts docker process info
+ * The communication protocol is SSH
+ * This driver create a dynamic monitoring variables using the command "docker info"
+ * Tested under Docker version 19.03.15, build 99e3ed8919
+ */
+
 var createVar = D.device.createVariable;
 var dockerInfoCmd = "docker info --format '{{json .}}'";
 var sshConfig = {
@@ -8,6 +15,14 @@ var sshConfig = {
     command: dockerInfoCmd
 };
 
+function checkSshError(err) {
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
  * 
  * @returns Promise wait for docker system information
@@ -15,13 +30,6 @@ var sshConfig = {
 function getDockerInfo() {
     var d = D.q.defer();
 
-    function checkSshError(err) {
-        if(err.message) console.error(err.message);
-        if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-        if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        console.error(err);
-        D.failure(D.errorType.GENERIC_ERROR);
-    }
     D.device.sendSSHCommand(sshConfig, function (out, err) {
         if(err) checkSshError(err);
         d.resolve({ key: "", value: JSON.parse(out) });
