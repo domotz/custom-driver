@@ -80,7 +80,7 @@
 		"body": [
 			"function checkSshError(err) {",
 			"\tif(err.message) console.error(err.message);",
-			"\tif(err.code == 2) D.failure(D.errorType.AUTHENTICATION_ERROR);",
+			"\tif(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);",
 			"\tif(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);",
 			"\tconsole.error(err);",
 			"\tD.failure(D.errorType.GENERIC_ERROR);",
