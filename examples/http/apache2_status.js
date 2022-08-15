@@ -1,8 +1,32 @@
-
+/**
+ * This driver show apache2 status
+ * The communication protocol is http
+ * This driver extract monitoring variables specified in @parametersConfig list
+ * 
+ * This driver create a table for apache2 processes with this columns:
+ * %Srv: Child Server number - generation
+ * %PID: OS process ID
+ * %Acc:	Number of accesses this connection / this child / this slot
+ * %M:	Mode of operation
+ * %CPU:	CPU usage, number of seconds
+ * %SS:	Seconds since beginning of most recent request
+ * %Req:	Milliseconds required to process most recent request
+ * %Dur:	Sum of milliseconds required to process all requests
+ * %Conn:	Kilobytes transferred this connection
+ * %Child:	Megabytes transferred this child
+ * %Slot:	Total megabytes transferred this slot
+ * %Client
+ * %Protocol
+ * %VHost
+ * %Request
+ * 
+ * This driver is tested with Apache/2.4.41
+ * This driver requires to open server-status path in the apache server (https://httpd.apache.org/docs/current/mod/mod_status.html)
+ */
 var apacheHttpParams = {
     // protocol: "https", // To use if the server under https
     // rejectUnauthorized: false, // to accept invalid https certificate
-    port: 9011,
+    port: 9011, // http port number
     url: "/server-status" // server status path, it depends from user's configuration
 };
 
@@ -41,6 +65,10 @@ var table = D.createTable(
     ]
 );
 
+/**
+ * 
+ * @returns Promise wait for server-status page to be loaded
+ */
 function getApache2Status() {
     var d = D.q.defer();
     D.device.http.get(apacheHttpParams, function (error, response, body) {
@@ -57,6 +85,9 @@ var cpuUsageRegex = /CPU Usage: u(\d*\.?\d*) s(\d*\.?\d*) cu(\d*\.?\d*) cs(\d*\.
 var reqStatRegex = /(\d*\.?\d*) requests\/sec - (\d*\.?\d*) B\/second - (\d*\.?\d*) B\/request - (\d*\.?\d*) ms\/request/m;
 var processedReqRegex = /(\d+) requests currently being processed, (\d+) idle workers/m;
 
+/**
+ * this variable contains all monitoring data to be shown
+ */
 var parametersConfig = [
     {
         uid: "server_version",
@@ -101,8 +132,8 @@ var parametersConfig = [
         group: 1,
         unit: "sec",
         postProcess: function (data) {
-            var match = data.trim().match(/^((\d+) hours)?.?((\d+) minutes)?.?((\d+) seconds)?$/);
-            return parseInt(match[2] || 0) * 3600 + parseInt(match[4] || 0) * 60 + parseInt(match[6] || 0);
+            var match = data.trim().match(/^ ?((\d+) days?)?.?((\d+) hours?)?.?((\d+) minutes?)?.?((\d+) seconds?)?$/);
+            return parseInt(match[2] || 0) * 24 * 3600 + parseInt(match[4] || 0) * 3600 + parseInt(match[6] || 0) * 60 + parseInt(match[8] || 0);
         }
     },
     {
@@ -261,6 +292,20 @@ function extractDataVariables(body) {
 }
 
 function buildTable(body) {
+    var $ = D.htmlParse(body);
+    var processTable = $("table tbody")[0];
+    processTable.children.filter(function (node, index) {
+        return index > 0 && node.name == "tr";
+    }).forEach(function (node, index) {
+        var row = node.children.map(function (td, index) {
+            var text = $(td).text().trim();
+            if(index == 3){
+                return scoreboardKey[text];
+            }
+            return text;
+        });
+        table.insertRecord("" + index, row);
+    });
     return table;
 }
 
