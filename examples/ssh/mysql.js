@@ -145,9 +145,9 @@ function parse(output) {
 }
 
 function _parseStatus(line) {
-    line = (line || " ").trim()
+    line = (line || " ").trim();
     if (line.indexOf("Active: ") !== 0) {
-        throw new Error(line)
+        throw new Error(line);
     }
     line = line.split(" ");
     return line[1] + " " + line[2];
@@ -155,9 +155,9 @@ function _parseStatus(line) {
 }
 
 function _parseUsedRam(line) {
-    line = (line || " ").trim()
+    line = (line || " ").trim();
     if (line.indexOf("total ") !== 0) {
-        throw new Error(line)
+        throw new Error(line);
     }
     line = line.substring(6).trim();
     return parseInt(line, 10);
