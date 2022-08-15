@@ -22,7 +22,7 @@ var devicePassword = D.device.password();
 var redisTelnetParams = {
     port: 6379,
     negotiationMandatory: false,
-    timeout: 2000,
+    timeout: 5000,
     command: "info",
     onConnectCommand: devicePassword ? "auth " + devicePassword + "\n" : null
 };
@@ -82,7 +82,7 @@ function failure(err) {
 */
 function validate() {
     getRedisInfo()
-        .then(function () { D.success; })
+        .then(function () { D.success(); })
         .catch(failure);
 
 }
