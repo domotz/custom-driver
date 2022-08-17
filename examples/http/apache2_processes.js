@@ -118,7 +118,7 @@ function failure(err) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if the call to the apache status page is ok
 */
 function validate() {
     getApache2Status()
@@ -130,7 +130,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used for monitoring apache2 related processes
 */
 function get_status() {
 
