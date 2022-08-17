@@ -1,69 +1,249 @@
 /**
  * This driver show apache2 status
  * The communication protocol is http
- * This driver extract monitoring variables specified in @parametersConfig list
- * 
- * This driver create a table for apache2 processes with this columns:
- * %Srv: Child Server number - generation
- * %PID: OS process ID
- * %Acc:	Number of accesses this connection / this child / this slot
- * %M:	Mode of operation
- * %CPU:	CPU usage, number of seconds
- * %SS:	Seconds since beginning of most recent request
- * %Req:	Milliseconds required to process most recent request
- * %Dur:	Sum of milliseconds required to process all requests
- * %Conn:	Kilobytes transferred this connection
- * %Child:	Megabytes transferred this child
- * %Slot:	Total megabytes transferred this slot
- * %Client
- * %Protocol
- * %VHost
- * %Request
- * 
+ * This driver extract monitoring variables specified in {@link parametersConfig} list
  * This driver is tested with Apache/2.4.41
  * This driver requires to open server-status path in the apache server (https://httpd.apache.org/docs/current/mod/mod_status.html)
  */
+
 var apacheHttpParams = {
     // protocol: "https", // To use if the server under https
     // rejectUnauthorized: false, // to accept invalid https certificate
-    port: 9011, // http port number
-    url: "/server-status" // server status path, it depends from user's configuration
+    // auth: "basic",
+    // username: D.device.username(),
+    // password: D.device.password(),
+    // port: 9011, // http port number
+    url: "/server-status?auto" // server status path, it depends from user's configuration
 };
 
-var scoreboardKey = {
-    "_": "Waiting for Connection",
-    "S": "Starting up",
-    "R": "Reading Request",
-    "W": "Sending Reply",
-    "K": "Keepalive (read)",
-    "D": "DNS Lookup",
-    "C": "Closing connection",
-    "L": "Logging",
-    "G": "Gracefully finishing",
-    "I": "Idle cleanup of worker",
-    ".": "Open slot with no current process"
-};
+function multiplier(n) {
+    return function () {
+        this.value = this.value * n;
+    };
+}
 
-var table = D.createTable(
-    "Apache processes",
-    [
-        { label: "Srv" },
-        { label: "PID" },
-        { label: "Acc" },
-        { label: "M" },
-        { label: "CPU" },
-        { label: "SS" },
-        { label: "Req" },
-        { label: "Dur" },
-        { label: "Conn" },
-        { label: "Child" },
-        { label: "Slot" },
-        { label: "Client" },
-        { label: "Protocol" },
-        { label: "VHost" },
-        { label: "Request" },
-    ]
-);
+function toFloat() {
+    this.value = parseFloat(this.value);
+}
+
+var parametersConfig = [
+    {
+        // Service version
+        uid: "version",
+        label: "Version",
+        path: "json.ServerVersion",
+    },
+    {
+        // Service Multi-Processing Module
+        uid: "server_mpm",
+        label: "ServerMPM",
+        path: "json.ServerMPM",
+    },
+    {
+        // Server Built
+        uid: "server_built",
+        label: "Server Built",
+        path: "json['Server Built']",
+    },
+    {
+        // Service Restart Time
+        uid: "restart_time",
+        label: "Restart Time",
+        path: "json.RestartTime",
+    },
+    {
+        // CPU Load 1 minute
+        uid: "load1",
+        label: "CPU Load 1 minute",
+        path: "json.Load1",
+        postProcess: toFloat
+    },
+    {
+        // CPU Load 5 minutes
+        uid: "load5",
+        label: "CPU Load 5 minutes",
+        path: "json.Load5",
+        postProcess: toFloat
+    },
+    {
+        // CPU Load 15 minutes
+        uid: "load15",
+        label: "CPU Load 15 minutes",
+        path: "json.Load15",
+        postProcess: toFloat
+    },
+    {
+        // CPU System
+        uid: "cpu_system",
+        label: "CPU System",
+        path: "json.CPUSystem",
+        postProcess: toFloat
+    },
+    {
+        // CPU User
+        uid: "cpu_user",
+        label: "CPU User",
+        path: "json.CPUUser",
+        postProcess: toFloat
+    },
+    {
+        // CPU Children System
+        uid: "cpu_children_System",
+        label: "CPU Children System",
+        path: "json.CPUChildrenSystem",
+        postProcess: toFloat
+    },
+    {
+        // CPU Children User
+        uid: "cpu_children_user",
+        label: "CPU Children User",
+        path: "json.CPUChildrenUser",
+        postProcess: toFloat
+    },
+    {
+        // CPU Load
+        uid: "cpu_load",
+        label: "CPU Load",
+        path: "json.CPULoad",
+        unit: "%",
+        postProcess: toFloat
+    },
+    {
+        // Calculated as change rate for 'Total bytes' stat.
+        // BytesPerSec is not used, as it counts average since last Apache server start.
+        uid: "bytes_per_second",
+        label: "Bytes per second",
+        rate: true,
+        path: "json['Total kBytes']",
+        unit: "Bps",
+        postProcess: multiplier(1024)
+    },
+    {
+        // Calculated as change rate for 'Total requests' stat.
+        // ReqPerSec is not used, as it counts average since last Apache server start.
+        uid: "requests_per_second",
+        label: "Requests per second",
+        rate: true,
+        path: "json['Total Accesses']",
+        postProcess: toFloat
+    },
+    {
+        // Total bytes served
+        uid: "total_bytes",
+        label: "Total bytes",
+        path: "json['Total kBytes']",
+        unit: "B",
+        postProcess: multiplier(1024)
+    },
+    {
+        // A total number of accesses
+        uid: "total_requests",
+        label: "Total requests",
+        path: "json['Total Accesses']",
+        postProcess: toFloat
+    },
+    {
+        // Total Duration
+        uid: "total_duration",
+        label: "Total Duration",
+        path: "json['Total Duration']",
+        postProcess: toFloat
+    },
+    {
+        // Total number of busy worker threads/processes
+        uid: "total_workers_busy",
+        label: "Total workers busy",
+        path: "json.BusyWorkers",
+        postProcess: toFloat
+    },
+    {
+        // Service uptime in seconds
+        uid: "uptime",
+        label: "Uptime",
+        path: "json.ServerUptimeSeconds",
+        unit: "uptime",
+        postProcess: toFloat
+    },
+    {
+        // Service version
+        uid: "version",
+        label: "Version",
+        path: "json.ServerVersion",
+    },
+    {
+        // Number of workers in closing state
+        uid: "workers_closing_connection",
+        label: "Workers closing connection",
+        path: "json.Workers.closing",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in dnslookup state
+        uid: "workers_dns_lookup",
+        label: "Workers DNS lookup",
+        path: "json.Workers.dnslookup",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in cleanup state
+        uid: "workers_idle_cleanup",
+        label: "Workers idle cleanup",
+        path: "json.Workers.cleanup",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in keepalive state
+        uid: "workers_keepalive_read",
+        label: "Workers keepalive (read)",
+        path: "json.Workers.keepalive",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in logging state
+        uid: "workers_logging",
+        label: "Workers logging",
+        path: "json.Workers.logging",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in reading state
+        uid: "workers_reading_request",
+        label: "Workers reading request",
+        path: "json.Workers.reading",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in sending state
+        uid: "workers_sending_reply",
+        label: "Workers sending reply",
+        path: "json.Workers.sending",
+        postProcess: toFloat
+    },
+    {
+        // Number of slots with no current process
+        uid: "workers_slot_with_no_current_process",
+        label: "Workers slot with no current process",
+        path: "json.Workers.slot",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in starting state
+        uid: "workers_starting_up",
+        label: "Workers starting up",
+        path: "json.Workers.starting",
+        postProcess: toFloat
+    },
+    {
+        // Number of workers in waiting state
+        uid: "workers_waiting_for_connection",
+        label: "Workers waiting for connection",
+        path: "json.Workers.waiting",
+        postProcess: toFloat
+    },
+
+
+];
+
 
 /**
  * 
@@ -75,220 +255,78 @@ function getApache2Status() {
         if (error) {
             failure(error);
         }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
         d.resolve(body);
     });
 
     return d.promise;
 }
 
-var cpuUsageRegex = /CPU Usage: u(\d*\.?\d*) s(\d*\.?\d*) cu(\d*\.?\d*) cs(\d*\.?\d*) - (\d*\.?\d*)% CPU load</m;
-var reqStatRegex = /(\d*\.?\d*) requests\/sec - (\d*\.?\d*) B\/second - (\d*\.?\d*) B\/request - (\d*\.?\d*) ms\/request/m;
-var processedReqRegex = /(\d+) requests currently being processed, (\d+) idle workers/m;
 
-/**
- * this variable contains all monitoring data to be shown
- */
-var parametersConfig = [
-    {
-        uid: "server_version",
-        label: "Server Version",
-        regex: />server version: (.+)</im,
-        group: 1
-    },
-    {
-        uid: "server_mpm",
-        label: "Server MPM",
-        regex: />Server MPM: (.+)</im,
-        group: 1
-    },
-    {
-        uid: "server_built",
-        label: "Server Built",
-        regex: /Server Built: (.*)/m,
-        group: 1
-    },
-    {
-        uid: "restart_time",
-        label: "Restart Time",
-        regex: /Restart Time: (.*)</m,
-        group: 1
-    },
-    {
-        uid: "parent_server_config_gen",
-        label: "Parent Server Config. Generation",
-        regex: /Parent Server Config\. Generation: (.*)</m,
-        group: 1
-    },
-    {
-        uid: "parent_server_mpm_gen",
-        label: "Parent Server MPM Generation",
-        regex: /Parent Server MPM Generation: (.*)</m,
-        group: 1
-    },
-    {
-        uid: "server_uptime",
-        label: "Server uptime",
-        regex: /Server uptime: (.*)</m,
-        group: 1,
-        unit: "sec",
-        postProcess: function (data) {
-            var match = data.trim().match(/^ ?((\d+) days?)?.?((\d+) hours?)?.?((\d+) minutes?)?.?((\d+) seconds?)?$/);
-            return parseInt(match[2] || 0) * 24 * 3600 + parseInt(match[4] || 0) * 3600 + parseInt(match[6] || 0) * 60 + parseInt(match[8] || 0);
+function convertToJson(value) {
+    // Convert Apache status to JSON
+    var lines = value.split("\n");
+    var output = {},
+        workers = {
+            "_": 0, "S": 0, "R": 0, "W": 0,
+            "K": 0, "D": 0, "C": 0, "L": 0,
+            "G": 0, "I": 0, ".": 0
+        };
+
+    // Get all "Key: Value" pairs as an object
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].match(/([A-z0-9 ]+): (.*)/);
+
+        if (line !== null) {
+            output[line[1]] = isNaN(line[2]) ? line[2] : Number(line[2]);
         }
-    },
-    {
-        uid: "server_load_1m",
-        label: "Server load 1 minute",
-        regex: /Server load: (.*) .* .*</m,
-        group: 1
-    },
-    {
-        uid: "server_load_5m",
-        label: "Server load 5 minutes",
-        regex: /Server load: .* (.*) .*</m,
-        group: 1
-    },
-    {
-        uid: "server_load_15m",
-        label: "Server load 15 minutes",
-        regex: /Server load: .* .* (.*)</m,
-        group: 1
-    },
-    {
-        uid: "total_accesses",
-        label: "Total accesses",
-        regex: /Total accesses: (\d+) - Total Traffic: .+ - Total Duration: \d+</m,
-        group: 1
-    },
-    {
-        uid: "total_traffic",
-        label: "Total Traffic",
-        regex: /Total accesses: \d+ - Total Traffic: (.+) - Total Duration: \d+</m,
-        group: 1,
-        unit: "kB",
-        postProcess: function (data) {
-            var match = data.trim().match(/^(\d+) (.+)/);
-            switch (match[2]) {
-            case "mB": return match[1] * 1000;
-            case "gB": return match[1] * 1000000;
-            default: return parseInt(match[1]);
-            }
+    }
+
+    // Multiversion metrics
+    output.ServerUptimeSeconds = output.ServerUptimeSeconds || output.Uptime;
+    output.ServerVersion = output.Server || output.ServerVersion;
+
+    // Parse "Scoreboard" to get worker count.
+    if (typeof output.Scoreboard === "string") {
+        for (i = 0; i < output.Scoreboard.length; i++) {
+            var char = output.Scoreboard[i];
+
+            workers[char]++;
         }
-    },
-    {
-        uid: "total_duration",
-        label: "Total Duration",
-        regex: /Total accesses: \d+ - Total Traffic: .+ - Total Duration: (\d+)</m,
-        group: 1
-    },
-    {
-        uid: "cpu_usage_u",
-        label: "CPU Usage : u",
-        regex: cpuUsageRegex,
-        group: 1,
-        postProcess: parseFloat
-    },
-    {
-        uid: "cpu_usage_s",
-        label: "CPU Usage : s",
-        regex: cpuUsageRegex,
-        group: 2,
-        postProcess: parseFloat
-    },
-    {
-        uid: "cpu_usage_cu",
-        label: "CPU Usage : cu",
-        regex: cpuUsageRegex,
-        group: 3,
-        postProcess: parseFloat
-    },
-    {
-        uid: "cpu_usage_cs",
-        label: "CPU Usage : cs",
-        regex: cpuUsageRegex,
-        group: 4,
-        postProcess: parseFloat
-    },
-    {
-        uid: "cpu_load",
-        label: "CPU load",
-        regex: cpuUsageRegex,
-        group: 5,
-        unit: "%",
-        postProcess: parseFloat
-    },
-    {
-        uid: "req_per_second",
-        label: "requests/sec",
-        regex: reqStatRegex,
-        group: 1,
-        unit: "r/s",
-        postProcess: parseFloat
-    },
-    {
-        uid: "byte_per_second",
-        label: "B/second",
-        regex: reqStatRegex,
-        group: 2,
-        unit: "B/s",
-        postProcess: parseFloat
-    },
-    {
-        uid: "byte_per_request",
-        label: "B/request",
-        regex: reqStatRegex,
-        group: 3,
-        unit: "B/r",
-        postProcess: parseFloat
-    },
-    {
-        uid: "duration_per_request",
-        label: "ms/request",
-        regex: reqStatRegex,
-        group: 4,
-        unit: "ms/r",
-        postProcess: parseFloat
-    },
-    {
-        uid: "requests_currently_being_processed",
-        label: "requests currently being processed",
-        regex: processedReqRegex,
-        group: 1,
-        postProcess: parseInt
-    },
-    {
-        uid: "idle_workers",
-        label: "idle workers",
-        regex: processedReqRegex,
-        group: 2,
-        postProcess: parseInt
-    },
+    }
 
-];
+    // Add worker data to the output
+    output.Workers = {
+        waiting: workers["_"], starting: workers["S"], reading: workers["R"],
+        sending: workers["W"], keepalive: workers["K"], dnslookup: workers["D"],
+        closing: workers["C"], logging: workers["L"], finishing: workers["G"],
+        cleanup: workers["I"], slot: workers["."]
+    };
 
-function processBody(body) {
-    return [
-        extractDataVariables(body),
-        buildTable(body)
-    ];
+    // Return JSON string
+    return output;
 
 }
 
-function extractDataVariables(body) {
-    var variables = [];
-    parametersConfig.forEach(function (param) {
-        var match = body.match(param.regex);
-        if (!match || match.length <= param.group) {
-            console.warn("match not found for parameter " + param.label);
-            return;
+function extractDataVariables(json) {
+    return parametersConfig.map(function (param) {
+        param.value = eval(param.path);
+        if (param.postProcess) {
+            if (Array.isArray(param.postProcess)) {
+                param.postProcess.forEach(function (fn) {
+                    fn.apply(param);
+                });
+            } else {
+                param.postProcess();
+            }
         }
-        var data = match[param.group];
-        if (param.postProcess && typeof (param.postProcess) == "function") {
-            data = param.postProcess.apply(param, [data]);
-        }
-        variables.push(D.device.createVariable(param.uid, param.label, data, param.unit));
+        return D.device.createVariable(param.uid, param.label, param.value, param.unit);
     });
-    return variables;
 }
 
 function buildTable(body) {
@@ -299,7 +337,7 @@ function buildTable(body) {
     }).forEach(function (node, index) {
         var row = node.children.map(function (td, index) {
             var text = $(td).text().trim();
-            if(index == 3){
+            if (index == 3) {
                 return scoreboardKey[text];
             }
             return text;
@@ -318,22 +356,24 @@ function failure(err) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if the call to the apache status page is ok
 */
 function validate() {
-
+    getApache2Status()
+        .then(function () { D.success(); })
+        .catch(failure);
 }
-
 
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used to make a call to apache status page, convert the result to JSON then extract the parameters specified in {@link parametersConfig}
 */
 function get_status() {
 
     getApache2Status()
-        .then(processBody)
-        .spread(D.success)
+        .then(convertToJson)
+        .then(extractDataVariables)
+        .then(D.success)
         .catch(failure);
 }
