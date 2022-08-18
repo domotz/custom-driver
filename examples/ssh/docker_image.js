@@ -4,17 +4,14 @@
  * The communication protocol is SSH
  * This driver show a table with images details:
  * -------------------------------
- * %Id
- * %Repository
- * %Created At
- * %Created Since
- * %Digest
- * %Shared Size
- * %Size
- * %Tag
- * %Unique Size
- * %Virtual Size
- * %Containers
+ * %Id: the repository
+ * %Latest Tag
+ * %Latest Image ID
+ * %Latest Image Created Since
+ * %Latest Image Created Date
+ * %Latest Image Size
+ * %Total Images Size
+ * %Total number of Images
  * -------------------------------
  * Tested under Docker version 19.03.15, build 99e3ed8919
  */
@@ -29,16 +26,13 @@ var ssh_config = {
 var table = D.createTable(
     "Docker images",
     [
-        { label: "Repository" },
-        { label: "Created At" },
-        { label: "Created Since" },
-        { label: "Digest" },
-        { label: "Shared Size", unit: "kB" },
-        { label: "Size", unit: "kB" },
-        { label: "Tag" },
-        { label: "Unique Size", unit: "kB" },
-        { label: "Virtual Size", unit: "kB" },
-        { label: "Containers" },
+        { label: "Latest Tag" },
+        { label: "Latest Image ID" },
+        { label: "Latest Image Created Since" },
+        { label: "Latest Image Created Date" },
+        { label: "Latest Image Size", unit: "kB" },
+        { label: "Total Images Size", unit: "kB" },
+        { label: "Total number of Images" },
     ]
 );
 
@@ -84,22 +78,59 @@ function convertToKB(value) {
 }
 
 /**
- * fill monitoring table with data related to docker images
+ * 
+ * @param {[object]} jsonImages list of docker images
+ * @returns docker images grouped by repository
+ */
+function groupImagesByRepository(jsonImages) {
+    return jsonImages
+        .map(function (image) {
+            // parsing creation date
+            var dateMatch = image.CreatedAt.match(/^(....)-(..)-(..) (..):(..):(..).*$/);
+            var date = new Date();
+            date.setFullYear(dateMatch[1], dateMatch[2], dateMatch[3]);
+            date.setHours(dateMatch[4], dateMatch[5], dateMatch[6]);
+            image.createAtTimestamp = date.getTime();
+            image.sizeKb = convertToKB(image.Size);
+            return image;
+        })
+        .sort(function (a, b) {
+            return b.createAtTimestamp - a.createAtTimestamp;
+        })
+        .reduce(function (a, b) {
+            var val = a[b.Repository] || [];
+            val.push(b);
+            a[b.Repository] = val;
+            return a;
+        }, {});
+
+}
+
+
+/**
+ * fill monitoring table with data related to docker 
+ * %Id: the repository
+ * %Latest Tag
+ * %Latest Image ID
+ * %Latest Image Created Since
+ * %Latest Image Created Date
+ * %Latest Image Size
+ * %Total Images Size
+ * %Total number of Images
  * @param {[string]} images 
  */
 function fillTable(images) {
-    images.forEach(function (image) {
-        table.insertRecord(image.ID, [
-            image.Repository,
-            image.CreatedAt,
-            image.CreatedSince,
-            image.Digest,
-            convertToKB(image.SharedSize),
-            convertToKB(image.Size),
+    Object.keys(images).forEach(function (repository) {
+        var image = images[repository][0];
+        var totalSize = images[repository].reduce(function (a, b) { return a + b.sizeKb; }, 0);
+        table.insertRecord(repository, [
             image.Tag,
-            convertToKB(image.UniqueSize),
-            convertToKB(image.VirtualSize),
-            image.Containers
+            image.ID,
+            image.CreatedSince,
+            image.CreatedAt,
+            image.sizeKb,
+            totalSize,
+            images[repository].length,
         ]);
     });
     D.success(table);
@@ -129,6 +160,7 @@ function validate() {
 */
 function get_status() {
     getDockerImages()
+        .then(groupImagesByRepository)
         .then(fillTable)
         .catch(failure);
 }
