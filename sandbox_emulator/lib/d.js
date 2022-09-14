@@ -15,8 +15,14 @@ var device = {
         authentication_key: process.env.DEVICE_SNMP_AUTHENTICATION_KEY,
         encryption_protocol: process.env.DEVICE_SNMP_ENCRYPTION_PROTOCOL,
         encryption_key: process.env.DEVICE_SNMP_ENCRYPTION_KEY,
+    },
+    credentials:{
+        username: "",
+        password: ""
     }
+    
 };
+
 if (process.env.DEVICE_USERNAME) {
     device.credentials = {
         username: process.env.DEVICE_USERNAME,
@@ -78,7 +84,7 @@ global.D = { /**
             if (!vars) return;
             if (vars && vars.getResult) {
                 var result = vars.getResult();
-                var maxLengths = new Array(result.columnHeaders.length).fill(0)
+                var maxLengths = result.columnHeaders.map(function(header) {return header.label.length}); //new Array(result.columnHeaders.length).fill(0)
                 for (var i = 0; i < result.rows.length; i++) {
                     for (var j = 0; j < result.columnHeaders.length; j++) {
                         maxLengths[j] = Math.max(Math.max(maxLengths[j], result.rows[i][j] ? result.rows[i][j].toString().length : 0), result.columnHeaders[j].label.length)
