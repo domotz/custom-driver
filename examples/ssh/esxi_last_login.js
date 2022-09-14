@@ -6,9 +6,9 @@
  *   - The IP Address from which the ssh session was initiated
  */
 
-var lastLoginUID = 'll-1';
-var lastLoginLabel = 'Last Login';
-var lastLoginUnit = 'line';
+var lastLoginUID = "ll-1";
+var lastLoginLabel = "Last Login";
+var lastLoginUnit = "line";
 
 /**
  * The SSH Command Options
@@ -16,8 +16,8 @@ var lastLoginUnit = 'line';
  * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
-    'prompt': ']',
-    'timeout': 5000
+    "prompt": "]",
+    "timeout": 5000
 };
 
 /**
@@ -41,17 +41,17 @@ function checkForPasswordError(error) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    var commandValidate = 'ls'
+    var commandValidate = "ls";
     console.info("Verifying credentials ... ", commandValidate);
-    sshCommandOptions['command'] = commandValidate;
+    sshCommandOptions["command"] = commandValidate;
     function loginCallback(output, error) {
         variables = [];
         if (error) {
             checkForPasswordError(error);
         } else {
             D.success();
-        };
-    };
+        }
+    }
     D.device.sendSSHCommand(
         sshCommandOptions, loginCallback
     );
@@ -84,8 +84,8 @@ function get_status() {
     * option '-n1' takes the first '1' line 
     * (the last login before your current one);
     */
-    var commandLastLogin = 'grep -i -e login -e accepted /var/log/auth.log | grep -v "grep" | tail -n2 | head -n1';
-    sshCommandOptions['command'] = commandLastLogin;
+    var commandLastLogin = "grep -i -e login -e accepted /var/log/auth.log | grep -v \"grep\" | tail -n2 | head -n1";
+    sshCommandOptions["command"] = commandLastLogin;
     /**
      * Helper callback function to create the Variables for the device
      * Calls D.success to indicate successful run and setting variable values
@@ -93,11 +93,11 @@ function get_status() {
     function resultCallback(output, error) {
         if (error) {
             checkForPasswordError(error);
-        };
-        var lines = output.split('\n');
+        }
+        var lines = output.split("\n");
         var lastLoginValue = null;
 
-        var lastLoginRegex = new RegExp('.*sshd\\[[\\d]+\\]:(.*) port.*');
+        var lastLoginRegex = new RegExp(".*sshd\\[[\\d]+\\]:(.*) port.*");
         lines.forEach(function (line) {
             var match = line.match(lastLoginRegex);
             if (match) {
@@ -114,7 +114,7 @@ function get_status() {
             // D.success accepts an Array of variable objects
             D.success([lastLoginVariable]);
         }
-    };
+    }
     D.device.sendSSHCommand(
         sshCommandOptions, resultCallback
     );

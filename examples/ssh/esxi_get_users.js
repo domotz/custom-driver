@@ -1,6 +1,6 @@
-var userUID = 'user-';
-var userLabel = 'User - ';
-var userUnit = ' ';
+var userUID = "user-";
+var userLabel = "User - ";
+var userUnit = " ";
 
 /**
  * The SSH Command Options
@@ -8,8 +8,8 @@ var userUnit = ' ';
  * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
-    'prompt': ']',
-    'timeout': 5000
+    "prompt": "]",
+    "timeout": 5000
 };
 
 /**
@@ -22,8 +22,8 @@ function checkForPasswordError(error) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else {
         D.failure(D.errorType.GENERIC_ERROR);
-    };
-};
+    }
+}
 
 /**
  * Excuting a simple command to test access to device:
@@ -33,7 +33,7 @@ function checkForPasswordError(error) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    var commandValidate = 'ls';
+    var commandValidate = "ls";
     console.info("Verifying credentials ... ", commandValidate);
     function loginCallback(output, error) {
         variables = [];
@@ -41,13 +41,13 @@ function validate() {
             checkForPasswordError(error);
         } else {
             D.success();
-        };
-    };
-    sshCommandOptions['command'] = commandValidate;
+        }
+    }
+    sshCommandOptions["command"] = commandValidate;
     D.device.sendSSHCommand(
         sshCommandOptions, loginCallback
     );
-};
+}
 
 /**
 * @remote_procedure
@@ -66,8 +66,8 @@ function get_status() {
      *  option '-f1' takes only [f]ield '1' 
      *  (the one containing the username);
     */
-    var commandGetOSUsers = 'cut -d: -f1 /etc/passwd';
-    sshCommandOptions['command'] = commandGetOSUsers;
+    var commandGetOSUsers = "cut -d: -f1 /etc/passwd";
+    sshCommandOptions["command"] = commandGetOSUsers;
     /**
      * Helper callback function to create the Variables for the device
      * Calls D.success to indicate successful run and setting variable values
@@ -76,9 +76,9 @@ function get_status() {
         variables = [];
         if (error) {
             checkForPasswordError(error);
-        };
-        var lines = output.split('\n');
-        var uidIndex = 1
+        }
+        var lines = output.split("\n");
+        var uidIndex = 1;
         lines.forEach(function (line) {
             var userVariable = D.device.createVariable(
                 userUID + uidIndex, userLabel + uidIndex, line, userUnit
@@ -87,8 +87,8 @@ function get_status() {
             uidIndex += 1;
         });
         D.success(variables);
-    };
+    }
     D.device.sendSSHCommand(
         sshCommandOptions, resultCallback
     );
-};
+}

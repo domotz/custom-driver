@@ -5,10 +5,10 @@
  */
 
 var httpOptions = {
-    protocol: 'https',
+    protocol: "https",
     jar: true,
     rejectUnauthorized: false,
-    url: '/api/edge/data.json?data=dhcp_leases'
+    url: "/api/edge/data.json?data=dhcp_leases"
 };
 
 /**
@@ -21,8 +21,8 @@ function validateAuthentication(response) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode >= 400) {
         D.failure(D.errorType.GENERIC_ERROR);
-    };
-};
+    }
+}
 
 /**
 * Utility function.
@@ -30,11 +30,11 @@ function validateAuthentication(response) {
 * Reports the DHCP lease variables.
 */
 function login(callbackMethod) {
-    var loginBody = 'username=' + D.device.username() + '&password=' + D.device.password();
+    var loginBody = "username=" + D.device.username() + "&password=" + D.device.password();
     var httpLoginOptions = {
-        protocol: 'https',
+        protocol: "https",
         rejectUnauthorized: false,
-        url: '/',
+        url: "/",
         body: loginBody,
         jar: true,
     };
@@ -50,7 +50,7 @@ function validate() {
     function verifyCanAccessResource(error, response, body) {
         validateAuthentication(response);
         D.success();
-    };
+    }
     function loginCallback(error, response, body) {
         validateAuthentication(response);
         D.device.http.get(httpOptions, verifyCanAccessResource);
@@ -65,16 +65,16 @@ function validate() {
  */
 function get_status() {
     function getDHCPLeasesCb(error, response, body) {
-        validateAuthentication(response)
+        validateAuthentication(response);
         var jsonBody = JSON.parse(body);
         var leases = jsonBody.output["dhcp-server-leases"]["HomeRouter"];
         var variables = [];
         for (var key in leases) {
             var deviceMac = leases[key].mac;
-            var unit = 'date'
-            var uid = deviceMac.replace(/:/g, '');
+            var unit = "date";
+            var uid = deviceMac.replace(/:/g, "");
             var label = key;
-            var value = leases[key]['expiration'];
+            var value = leases[key]["expiration"];
             var variable = D.device.createVariable(
                 uid,
                 label,
@@ -84,7 +84,7 @@ function get_status() {
             variables.push(variable);
         }
         D.success(variables);
-    };
+    }
     function loginCallback(error, response, body) {
         validateAuthentication(response);
         D.device.http.get(httpOptions, getDHCPLeasesCb);

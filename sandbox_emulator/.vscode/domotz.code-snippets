@@ -1,0 +1,253 @@
+{
+	// Place your sandbox_emulator workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"domotz http get": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"http",
+			"http_get"
+		],
+		"body": [
+			"D.device.http.get(${1:params}, function (error, response, body) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.http.get"
+	},
+	"domotz http post": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"http",
+			"http_post"
+		],
+		"body": [
+			"D.device.http.post(${1:params}, function (err, response, body) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.http.post"
+	},
+	"domotz http put": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"http",
+			"http_put"
+		],
+		"body": [
+			"D.device.http.put(${1:params}, function (err, response, body) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.http.put"
+	},
+	"domotz http delete": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"http",
+			"http_delete"
+		],
+		"body": [
+			"D.device.http.put(${1:params}, function (err, response, body) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.http.delete"
+	},
+	"domotz ssh": {
+		"scope": "javascript,typescript",
+		"prefix": "ssh",
+		"body": [
+			"function checkSshError(err) {",
+			"\tif(err.message) console.error(err.message);",
+			"\tif(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);",
+			"\tif(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);",
+			"\tconsole.error(err);",
+			"\tD.failure(D.errorType.GENERIC_ERROR);",
+			"}",
+			"D.device.sendSSHCommand(${1:params}, function (out, err) {",
+			"\tif(err) checkSshError(err);",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.sendSSHCommand"
+	},
+	"domotz telnet": {
+		"scope": "javascript,typescript",
+		"prefix": "telnet",
+		"body": [
+			"D.device.sendTelnetCommand(${1:params}, function (out, err) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.sendTelnetCommand"
+	},
+	"domotz snmp walk": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"snmp",
+			"snmp_walk"
+		],
+		"body": [
+			"D.device.createSNMPSession().walk(${1:oid_root}, function (out, err) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.createSNMPSession().walk"
+	},
+	"domotz snmp get": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"snmp",
+			"snmp_get"
+		],
+		"body": [
+			"D.device.createSNMPSession().get(${1:oid_array}, function (out, err) {",
+			"\tif(err){",
+			"\t\tconsole.error(err);",
+			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
+			"\t}",
+			"\t$0",
+			"});"
+		],
+		"description": "D.device.createSNMPSession().walk"
+	},
+	"domotz failure": {
+		"scope": "javascript,typescript",
+		"prefix": "failure",
+		"body": [
+			"D.failure($0);"
+		],
+		"description": "D.failure();"
+	},
+	"domotz failure GENERIC_ERROR": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_GENERIC_ERROR"
+		],
+		"body": [
+			"D.failure(D.errorType.GENERIC_ERROR);"
+		],
+		"description": "D.failure(D.errorType.GENERIC_ERROR);"
+	},
+	"domotz failure MISSING_DEVICE_ERROR": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_MISSING_DEVICE_ERROR"
+		],
+		"body": [
+			"D.failure(D.errorType.MISSING_DEVICE_ERROR);"
+		],
+		"description": "D.failure(D.errorType.MISSING_DEVICE_ERROR);"
+	},
+	"domotz failure REQUIRE_NOT_ALLOWED": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_REQUIRE_NOT_ALLOWED"
+		],
+		"body": [
+			"D.failure(D.errorType.REQUIRE_NOT_ALLOWED);"
+		],
+		"description": "D.failure(D.errorType.REQUIRE_NOT_ALLOWED);"
+	},
+	"domotz failure IMPORT_NOT_ALLOWED": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_IMPORT_NOT_ALLOWED"
+		],
+		"body": [
+			"D.failure(D.errorType.IMPORT_NOT_ALLOWED);"
+		],
+		"description": "D.failure(D.errorType.IMPORT_NOT_ALLOWED);"
+	},
+	"domotz failure TIMEOUT_ERROR": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_TIMEOUT_ERROR"
+		],
+		"body": [
+			"D.failure(D.errorType.TIMEOUT_ERROR);"
+		],
+		"description": "D.failure(D.errorType.TIMEOUT_ERROR);"
+	},
+	"domotz failure PARSING_ERROR": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_PARSING_ERROR"
+		],
+		"body": [
+			"D.failure(D.errorType.PARSING_ERROR);"
+		],
+		"description": "D.failure(D.errorType.PARSING_ERROR);"
+	},
+	"domotz failure AUTHENTICATION_ERROR": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_AUTHENTICATION_ERROR"
+		],
+		"body": [
+			"D.failure(D.errorType.AUTHENTICATION_ERROR);"
+		],
+		"description": "D.failure(D.errorType.AUTHENTICATION_ERROR);"
+	},
+	"domotz failure RESOURCE_UNAVAILABLE": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"failure",
+			"failure_RESOURCE_UNAVAILABLE"
+		],
+		"body": [
+			"D.failure(D.errorType.RESOURCE_UNAVAILABLE);"
+		],
+		"description": "D.failure(D.errorType.RESOURCE_UNAVAILABLE);"
+	},
+	"domotz promise": {
+		"scope": "javascript,typescript",
+		"prefix": [
+			"promise"
+		],
+		"body": [
+			"function ${1:function_name}(${2:function_args}){",
+			"\tvar d = D.q.defer();",
+			"\t$0",
+			"\treturn d.promise;",
+			"}"
+		],
+		"description": "Prepare a function with a promise using 'q' library"
+	},
+}

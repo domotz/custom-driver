@@ -4,9 +4,9 @@
  * Creates multiple custom driver variables for each line of the ntp command output.
  */
 
-var ntpUID = 'ntp-';
-var ntpLabel = 'NTP Configuration - ';
-var ntpUnit = 'line';
+var ntpUID = "ntp-";
+var ntpLabel = "NTP Configuration - ";
+var ntpUnit = "line";
 
 /**
  * The SSH Command Options
@@ -14,8 +14,8 @@ var ntpUnit = 'line';
  * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
-    'prompt': ']',
-    'timeout': 5000
+    "prompt": "]",
+    "timeout": 5000
 };
 
 /**
@@ -39,7 +39,7 @@ function checkForPasswordError(error) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    var commandValidate = 'ls';
+    var commandValidate = "ls";
     console.info("Verifying credentials ... ", commandValidate);
     function loginCallback(output, error) {
         variables = [];
@@ -47,9 +47,9 @@ function validate() {
             checkForPasswordError(error);
         } else {
             D.success();
-        };
-    };
-    sshCommandOptions['command'] = commandValidate;
+        }
+    }
+    sshCommandOptions["command"] = commandValidate;
     D.device.sendSSHCommand(
         sshCommandOptions, loginCallback
     );
@@ -68,8 +68,8 @@ function get_status() {
      *  to the standard output) 
      *  the '/etc/ntp.conf' file
     */
-    var commandReadNTPConfig = 'cat /etc/ntp.conf';
-    sshCommandOptions['command'] = commandReadNTPConfig;
+    var commandReadNTPConfig = "cat /etc/ntp.conf";
+    sshCommandOptions["command"] = commandReadNTPConfig;
     /**
      * Helper callback function to create the Variables for the device
      * Calls D.success to indicate successful run and setting variable values
@@ -78,9 +78,9 @@ function get_status() {
         variables = [];
         if (error) {
             checkForPasswordError(error);
-        };
-        var lines = output.split('\n');
-        var uidIndex = 1
+        }
+        var lines = output.split("\n");
+        var uidIndex = 1;
         lines.forEach(function (line) {
             var ntpVariable = D.device.createVariable(
                 ntpUID + uidIndex, ntpLabel + uidIndex, line, ntpUnit
@@ -89,7 +89,7 @@ function get_status() {
             variables.push(ntpVariable);
         });
         D.success(variables);
-    };
+    }
     D.device.sendSSHCommand(
         sshCommandOptions, resultCallback
     );
