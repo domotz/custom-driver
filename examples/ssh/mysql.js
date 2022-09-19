@@ -146,7 +146,7 @@ function parse(output) {
 
 function _parseStatus(line) {
     line = (line || " ").trim();
-    if (line.indexOf(("Active: ") == 0)) {
+    if (line.indexOf("Active: ") !== 0) {
         throw new Error(line);
     }
     line = line.split(" ");
@@ -156,7 +156,7 @@ function _parseStatus(line) {
 
 function _parseUsedRam(line) {
     line = (line || " ").trim();
-    if (!line.indexOf("total ") == 0) {
+    if (line.indexOf("total ") !== 0) {
         throw new Error(line);
     }
     line = line.substring(6).trim();
