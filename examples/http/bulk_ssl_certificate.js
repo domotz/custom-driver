@@ -24,7 +24,7 @@ var table = D.createTable(
 );
 
 // list of servers to check the status of their https certificate
-var serversToCheck = ["domotz.com", "google.com", "twitter.com", "www.facebook.com"];
+var serversToCheck = ["domotz.com", "google.com", "twitter.com"];
 
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
