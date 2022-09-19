@@ -56,7 +56,7 @@ var nodeValueLocation = Object.freeze({
  *    - if response type is json: 
  *       - string: contains the path to the field starting by value which contain the json response (example: "value.field1.field2")
  *       - function: user defined function where the value is passed as an argument and return the value desired
- *    - if response type is json: 
+ *    - if response type is text: 
  *       - Regular Expression: regular expression containing the token to extract (example: /<input name="input_name" value="(.*)" \/>/)
  * * valueValidation: validate the value extracted, it can have 2 possible types (default "value")
  *    - string: expression return expected result depending from the value extracted (example: "value == 'valid' ? true : false")
@@ -64,34 +64,35 @@ var nodeValueLocation = Object.freeze({
  */
 var httpMonitoringConfig = [
     // example using Regular expression to find the value in html response
-    // {
-    //     id: "domotz_feature_page_title",
-    //     link: "/features.php",
-    //     valueExtractor: /<h1.*>(.*)<\/h1>/,
-    //     protocol: "https"
-    // },
-    // example using query selector to find the value in html response
-    // {
-    //     id: "domotz_feature_page_title3",
-    //     link: "/features.php",
-    //     valueExtractor: {
-    //         query: "input",
-    //         valueLocation: "value"
-    //     },
-    //     protocol: "https"
-    // }
-    // example find the value in json response
     {
-        id: "domotz_debian_x64_version",
-        link: "/assets/domotz-packages.json",
-        protocol: "https",
-        // valueExtractor: "value.filter(function(e){return e.model == 'debian' && e.arch =='x64'})[0].version"
-        // valueExtractor: function(value){
-        //     return value.filter(function(e){return e.model == "debian" && e.arch =="x64";})[0].version;
-        // }
-        valueExtractor: "value[3].version",
-        valueValidation: "value == '1.0-2.9.6-4.3.2-b001-0050'"
+        id: "domotz_feature_page_title",
+        link: "/features.php",
+        valueExtractor: /<h1.*>(.*)<\/h1>/,
+        protocol: "https"
+    },
+    // example using query selector to find the value in html response
+    {
+        id: "domotz_feature_page_title3",
+        link: "/features.php",
+        valueExtractor: {
+            query: "h1",
+            nodeIndex: 0,
+            valueLocation: "text"
+        },
+        protocol: "https"
     }
+    // example find the value in json response
+    // {
+    // id: "domotz_debian_x64_version",
+    // link: "/assets/domotz-packages.json",
+    // protocol: "https",
+    // valueExtractor: "value.filter(function(e){return e.model == 'debian' && e.arch =='x64'})[0].version"
+    // valueExtractor: function(value){
+    //     return value.filter(function(e){return e.model == "debian" && e.arch =="x64";})[0].version;
+    // },
+    // valueExtractor: "value[3].version",
+    // valueValidation: "value == '1.0-2.9.6-4.3.2-b001-0050'"
+    // }
 ];
 
 
@@ -112,7 +113,12 @@ function failValidation(message) {
 }
 
 function httpMonitoringConfigValidation() {
-    httpMonitoringConfig.forEach(configValidation);
+    if(httpMonitoringConfig && Array.isArray(httpMonitoringConfig)){
+        httpMonitoringConfig.forEach(configValidation);
+    }else{
+        console.error("httpMonitoringConfig should be an array");
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
     return httpMonitoringConfig;
 }
 
