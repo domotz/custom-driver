@@ -36,6 +36,7 @@ var request = require("request");
 var ssh = require("./ssh");
 var telnet = require("./telnet");
 var snmp = require("./snmp");
+var {valueTypes} = require("./constants")
 // const util = require("util");
 
 /**
@@ -311,7 +312,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
          * @param {string} unit  - The Unit of measurement of the variable (eg %). Max 10 characters
          * @return {Variable}
          */        
-        createVariable: function (uid, name, value, unit) {
+        createVariable: function (uid, name, value, unit, valueType) {
             if (uid === null || uid === undefined || uid.length < 1 || uid.length > agentDriverSettings.max_var_id_len) {
                 throw Error("Invalid variable uid: " + uid);
             }
@@ -320,7 +321,10 @@ function createDevice(device, agentDriverSettings, myConsole) {
             } else {
                 unit = null;
             }
-            if (value != null) {
+            if (valueType && !(valueType in valueTypes)) {
+                throw Error("Invalid variable value type: " + valueType);
+            }
+            if (value !== undefined && value !== null) {
                 value = String(value);
             } else {
                 value = null;
@@ -328,6 +332,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
             return {
                 "uid": uid,
                 "unit": unit,
+                "valueType": valueType,
                 "value": value,
                 "label": name
             };

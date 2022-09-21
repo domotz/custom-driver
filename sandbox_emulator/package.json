@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run build",
     "prebuild": "rimraf dist; npm run lint",
-    "postbuild": "node dist/main.min.js",
+    "postbuild": "node dist/main.min.js ${npm_config_source}",
     "build": "grunt --source=${npm_config_source} --action=${npm_config_action}",
     "generate": "mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
     "lint": "eslint --fix ."
@@ -22,6 +22,8 @@
     "q": "^1.5.1",
     "request": "2.74.0",
     "request-debug": "^0.2.0",
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.1.1",
     "ssh2": "1.9.0",
     "telnet-client": "0.9.4"
   },
