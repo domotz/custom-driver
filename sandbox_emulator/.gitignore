@@ -3,3 +3,4 @@
 /.env
 /.env.sample.*
 /package-lock.json
+/data.db
