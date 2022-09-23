@@ -1,3 +1,10 @@
+/**
+ * This driver extracts information about the network, cpu and some system information for pfsense
+ * The communication protocol is SNMP and SSH
+ * This driver create a dynamic monitoring variables specified in the variable {@link config_paramters}
+ * Tested under pfsense 2.6.0-RELEASE
+ */
+
 var createSNMPSession = D.device.createSNMPSession;
 var _var = D.device.createVariable;
 
@@ -116,9 +123,6 @@ function snmp_get(last, callback) {
 }
 
 function snmp_generate_variable(result, callback) {
-    if (this.unit) {
-        this.label += " (" + this.unit + ")";
-    }
     this._var = _var(this.uid, this.label, this.result, this.unit, this.type);
     callback(this._var);
 }
@@ -144,6 +148,7 @@ var snmp_walk_get_multiply_8_exec = [snmp_walk, update_oid, snmp_get, multiply_r
 var snmp_get_multiply_1000000_exec = [snmp_get, multiply_result(1000000), snmp_generate_variable];
 var snmp_walk_get_multiply_1000000_exec = [snmp_walk, update_oid, snmp_get, multiply_result(1000000), snmp_generate_variable];
 
+// list of configuration variables to extract
 var config_paramters = [
     { service: "bsnmpd", label: "SNMP Service", exec: service_status_exec },
     { service: "dpinger", label: "Gateway Monitoring Daemon", exec: service_status_exec },
@@ -992,7 +997,10 @@ var config_paramters = [
     }
 ];
 
-
+/**
+ * Clone an object
+ * @returns cloned object
+ */
 function clone(init, object) {
     var toReturn = JSON.parse(JSON.stringify(object));
     Object.keys(init).forEach(function (key) {
@@ -1001,6 +1009,11 @@ function clone(init, object) {
     return toReturn;
 }
 
+/**
+ * 
+ * @param {[Function]} arrayFn list of functions executed in the same time
+ * @param {*} callback called when all functions are executed
+ */
 function execute_all(arrayFn, callback) {
     if (arrayFn.length == 0) {
         callback([]);
@@ -1018,6 +1031,11 @@ function execute_all(arrayFn, callback) {
     });
 }
 
+/**
+ * 
+ * @param {[Function]} functions list of functions to execute sequentially
+ * @param {*} callback called when the sequence of functions is done
+ */
 function execute_seq(functions, callback) {
     var _this = this;
     var callbackResult = null;
@@ -1031,6 +1049,11 @@ function execute_seq(functions, callback) {
     executeNext.apply(_this, [0]);
 }
 
+/**
+ * 
+ * @param {*} oid snmp oid
+ * @returns the result in {@link config_paramters}
+ */
 function get_result(oid) {
     return config_paramters.filter(function (p) {
         return p.oid == oid;
@@ -1039,6 +1062,11 @@ function get_result(oid) {
     })[0];
 }
 
+/**
+ * 
+ * @param {*} config contains list of monitoring variables and the way to extract them
+ * @param {*} callback called when all the monitoring variables are fetched
+ */
 function execute_config(config, callback) {
     var order_groups = [];
     var orders = config
@@ -1084,7 +1112,7 @@ function execute_config(config, callback) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to check if the snmp is working in pfsense server
 */
 function validate() {
     createSNMPSession().get(["1.3.6.1.4.1.12325.1.200.1.2.1.0"], function (result, error) {
@@ -1101,7 +1129,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used for retrieving device * variables data specified in {@link config_paramters}
 */
 function get_status() {
     execute_config(config_paramters, function (result) {

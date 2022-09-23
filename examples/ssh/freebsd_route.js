@@ -1,4 +1,10 @@
 
+/**
+ * This driver extracts information about network routes in freebsd os
+ * The communication protocol is SSH
+ * This driver create a dynamic monitoring variables for the routes for ip V6 and V4
+ * Tested under freebsd 12.3-STABLE
+ */
 
 
 
@@ -75,7 +81,7 @@ function execute_all(arrayFn, callback) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if the ssh commands are running successfully
 */
 function validate() {
     exec_command(validate_cmd, function () {
@@ -87,7 +93,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used for retrieving device routing table
 */
 function get_status() {
     execute_all([

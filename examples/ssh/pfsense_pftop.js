@@ -1,3 +1,24 @@
+/**
+ * This driver extracts information for pftop command in pfsense system
+ * The communication protocol is SSH
+ * This driver create a dynamic table containing the result of the pftop command
+ * table columns are:
+ * %Id
+ * %PR
+ * %DIR
+ * %SRC
+ * %DEST
+ * %GW
+ * %STATE
+ * %AGE
+ * %EXP
+ * %PKTS
+ * %BYTES
+ * %AVG
+ * %RULE
+ * Tested under pfsense 2.6.0-RELEASE
+ */
+
 var _var = D.device.createVariable;
 
 var table = D.createTable(
@@ -49,7 +70,7 @@ function convertToK(count, unit) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if pftop command is executed successfully
 */
 function validate() {
     exec_command("pftop -v long -w 200 -o bytes 50", function () {
@@ -60,7 +81,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used for retrieving device pftop table
 */
 function get_status() {
 

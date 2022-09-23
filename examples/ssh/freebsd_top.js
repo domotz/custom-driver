@@ -1,4 +1,13 @@
 
+
+/**
+ * This driver extracts information about top processes running under freebsd os
+ * The communication protocol is SSH
+ * This driver create a dynamic monitoring variables for the system statistics and top 10 processes
+ * Tested under freebsd 12.3-STABLE
+ */
+
+
 var _var = D.device.createVariable;
 
 var table = D.createTable(
@@ -50,7 +59,7 @@ function convertToK(count, unit) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if ssh command is running successfully
 */
 function validate() {
     exec_command("top -o cpu| head -n19", function () {
@@ -63,7 +72,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used for retrieving device system statistics and top processes information
 */
 function get_status() {
 
