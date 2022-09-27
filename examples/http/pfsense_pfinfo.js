@@ -225,7 +225,6 @@ var http_config = {
     protocol: "https",
     rejectUnauthorized: false,
     jar: true
-    // followRedirect: true
 };
 
 /**
