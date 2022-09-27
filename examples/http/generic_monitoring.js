@@ -123,6 +123,10 @@ function failValidation(message) {
     D.failure(D.errorType.PARSING_ERROR);
 }
 
+/**
+ * validate the {@link httpMonitoringConfig}
+ * @returns the config if valid
+ */
 function httpMonitoringConfigValidation() {
     if(httpMonitoringConfig && Array.isArray(httpMonitoringConfig)){
         httpMonitoringConfig.forEach(configValidation);
@@ -133,6 +137,12 @@ function httpMonitoringConfigValidation() {
     return httpMonitoringConfig;
 }
 
+/**
+ * 
+ * @param {*} config 
+ * @param {*} index index of the config in the array
+ * @returns the valid config
+ */
 function configValidation(config, index) {
     if (!config.id || typeof (config.id) != "string") failValidation("this field 'id' in the parameter with index " + index + " is required and should be string value");
     if (!config.link || typeof (config.link) != "string") failValidation("this field 'link' in the parameter with index " + index + " is required and should be string value");
@@ -178,6 +188,11 @@ function configValidation(config, index) {
     return config;
 }
 
+/**
+ * make a http call to the resource based on the config passed in the parameter
+ * @param {*} config 
+ * @returns promise contains the response body and it's related config
+ */
 function findResource(config) {
     var httpConfig = {
         url: config.link,
@@ -234,6 +249,12 @@ function findResource(config) {
     });
     return d.promise;
 }
+
+/**
+ * extract the result from response body based on the config passed in parameter
+ * @param {*} config 
+ * @returns config filled with the result
+ */
 function parse(config) {
     var result, match;
     if (config.responseType == responseType.html) {
@@ -273,6 +294,11 @@ function parse(config) {
 
 }
 
+/**
+ * validate the extracted value
+ * @param {*} config 
+ * @returns config with validation result
+ */
 function valueValidation(config) {
     var value = config.result;
     if (typeof (config.valueValidation) == "string") {
@@ -283,15 +309,36 @@ function valueValidation(config) {
     return config;
 }
 
+/**
+ * 
+ * @returns promise execute all http queries simultaneously
+ */
 function findResourceForAll() {
     return D.q.all(httpMonitoringConfig.map(findResource));
 }
+/**
+ * 
+ * @param {*} configs 
+ * @returns parse all configs
+ */
 function parseForAll(configs) {
     return configs.map(parse);
 }
+
+/**
+ * 
+ * @param {*} configs 
+ * @returns validate all configs
+ */
 function valueValidationForAll(configs) {
     return configs.map(valueValidation);
 }
+
+/**
+ * 
+ * @param {*} configs 
+ * @returns table with filled result
+ */
 function fillTable(configs) {
     configs.forEach(function (config) {
         httpMonitoringTable.insertRecord(
@@ -318,7 +365,7 @@ function failure(err) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate {@link httpMonitoringConfig}
 */
 function validate() {
     httpMonitoringConfigValidation();
@@ -329,7 +376,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
+* @documentation This procedure is used to validate generic http variables
 */
 function get_status() {
     httpMonitoringConfigValidation();
