@@ -162,7 +162,7 @@ global.D = { /**
         console.error(msg);
         process.exit(1);
     },
-    errorTypes: errorTypes,
+    errorType: errorTypes,
     valueType: valueTypes,
     device: createDevice(device, { max_var_id_len: 50 }, console),
     createTable: function (label, headers) {
