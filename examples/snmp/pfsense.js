@@ -200,6 +200,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.56.0",
         label: "CPU interrupt time",
         unit: "%",
+        type: D.valueType.RATE,
         exec: snmp_get_by_cpu_exec
     },
     {
@@ -207,6 +208,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.54.0",
         label: "CPU iowait time",
         unit: "%",
+        type: D.valueType.RATE,
         exec: snmp_get_by_cpu_exec
     },
     {
@@ -214,6 +216,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.51.0",
         label: "CPU nice time",
         unit: "%",
+        type: D.valueType.RATE,
         exec: snmp_get_by_cpu_exec
     },
     {
@@ -221,6 +224,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.52.0",
         label: "CPU system time",
         unit: "%",
+        type: D.valueType.RATE,
         exec: snmp_get_by_cpu_exec
     },
     {
@@ -228,6 +232,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.50.0",
         label: "CPU user time",
         unit: "%",
+        type: D.valueType.RATE,
         exec: snmp_get_by_cpu_exec
     },
     {
@@ -236,6 +241,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.60.0",
         label: "Context switches per second",
         unit: "",
+        type: D.valueType.RATE,
         exec: snmp_get_exec
     },
     {
