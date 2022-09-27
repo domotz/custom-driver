@@ -39,6 +39,7 @@ var nodeValueLocation = Object.freeze({
 /**
  * {@link httpMonitoringConfig} is an arrays contains the configuration of the different parameter to monitor, each parameter should be configured like this:
  * * id: your parameter id (should be unique)
+ * * host: ip address or dns (default the attached device)
  * * link: path to resource over http
  * * protocol (default http)
  * * port (default 80 for http and 443 for https)
@@ -67,6 +68,7 @@ var nodeValueLocation = Object.freeze({
 var httpMonitoringConfig = [
     // example using Regular expression to find the value in html response
     {
+        host: "domotz.com",
         id: "domotz_feature_page_title",
         link: "/features.php",
         valueExtractor: /<h1.*>(.*)<\/h1>/,
@@ -74,6 +76,7 @@ var httpMonitoringConfig = [
     },
     // example using query selector to find the value in html response
     {
+        host:"domotz.com",
         id: "domotz_feature_page_title3",
         link: "/features.php",
         valueExtractor: {
@@ -188,9 +191,20 @@ function findResource(config) {
         httpConfig.form = config.form;
         httpConfig.headers["content-type"] = config.contentType;
     }
+    var device = D.device;
+    if(config.host){
+        device = D.createExternalDevice(config.host);
+    }
     var d = D.q.defer();
     var start = new Date();
-    D.device.http[config.method](httpConfig, function (err, response, body) {
+    switch(config.method){
+    case "get": call = device.http.get; break;
+    case "post": call = device.http.post; break;
+    case "put": call = device.http.put; break;
+    case "delete": call = device.http.delete; break;
+    default: call = D.device.http.get;
+    }
+    call(httpConfig, function (err, response, body) {
         if (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
@@ -267,9 +281,6 @@ function valueValidation(config) {
         config.validation = config.valueValidation(value);
     }
     return config;
-}
-function createVariable(config) {
-    return D.device.create;
 }
 
 function findResourceForAll() {
