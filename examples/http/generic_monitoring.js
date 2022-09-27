@@ -7,6 +7,8 @@
  * %Link: http request link for the device, 
  * %Port: http request port for the device, 
  * %HTTP Method: http request method for the device, 
+ * %Status: Response status
+ * %Elapsed: Time consumed to get the response
  * %Extracted Value: the value that should be extracted from http response, 
  * %Validation: check if the extracted value is valid or not
  * 
@@ -102,6 +104,8 @@ var httpMonitoringTable = D.createTable(
         { label: "Link" },
         { label: "Port" },
         { label: "HTTP Method" },
+        { label: "Status"},
+        { label: "Elapsed", unit: "s"},
         { label: "Extracted value" },
         { label: "Validation" },
     ]
@@ -181,6 +185,7 @@ function findResource(config) {
         httpConfig.headers["content-type"] = config.contentType;
     }
     var d = D.q.defer();
+    var start = new Date();
     D.device.http[config.method](httpConfig, function (err, response, body) {
         if (err) {
             console.error(err);
@@ -204,6 +209,8 @@ function findResource(config) {
             }
         }
         config.responseBody = body;
+        config.elapsed = (new Date().getTime() - start) / 1000;
+        config.status = response.statusCode;
         d.resolve(config);
 
     });
@@ -278,6 +285,8 @@ function fillTable(configs) {
                 config.link,
                 config.port || (!config.protocol || config.protocol == "http" ? "80" : "443"),
                 config.method,
+                config.status,
+                config.elapsed,
                 config.result,
                 config.validation
             ]
