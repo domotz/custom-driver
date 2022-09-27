@@ -88,11 +88,15 @@ var httpMonitoringConfig = [
     // id: "domotz_debian_x64_version",
     // link: "/assets/domotz-packages.json",
     // protocol: "https",
+    // ***************************************
     // valueExtractor: "value.filter(function(e){return e.model == 'debian' && e.arch =='x64'})[0].version"
+    // or
     // valueExtractor: function(value){
     //     return value.filter(function(e){return e.model == "debian" && e.arch =="x64";})[0].version;
     // },
+    // or
     // valueExtractor: "value[3].version",
+    // *****************************************
     // valueValidation: "value == '1.0-2.9.6-4.3.2-b001-0050'"
     // }
 ];
