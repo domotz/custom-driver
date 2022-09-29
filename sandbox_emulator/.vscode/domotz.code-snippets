@@ -13,7 +13,7 @@
 			"http_get"
 		],
 		"body": [
-			"D.device.http.get(${1:params}, function (error, response, body) {",
+			"D.device.http.get(${1:params}, function (err, response, body) {",
 			"\tif(err){",
 			"\t\tconsole.error(err);",
 			"\t\tD.failure(D.errorType.GENERIC_ERROR);",
