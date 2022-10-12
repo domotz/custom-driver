@@ -403,7 +403,8 @@ function extract_variables(body) {
         if (match) {
             for (var i = 1; i < match.length; i += 2) {
                 var j = (i - 1) / 2;
-                _vars.push(_var(p.title + "_" + p.params[j] + "_total", p.title + ": " + p.params[j] + " (total)", match[i]));
+                var variableIdPartial = p.title.replace("table", "tbl");
+                _vars.push(_var(variableIdPartial + "_" + p.params[j] + "_total", p.title + ": " + p.params[j] + " (total)", match[i]));
                 _vars.push(_var(p.title + "_" + p.params[j] + "_rate", p.title + ": " + p.params[j] + " (rate)", match[i + 1].substring(0, match[i + 1].length - 2), "s"));
             }
         }
@@ -414,7 +415,7 @@ function extract_variables(body) {
 
     otherParams.forEach(function (p) {
         var val = extractParameterValue(body, p);
-        _vars.push(_var(p.trim(), p.trim(), val.value, val.unit));
+        _vars.push(_var(p.trim().replace("table", "tbl"), p.trim(), val.value, val.unit));
     });
 }
 

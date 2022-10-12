@@ -46,15 +46,18 @@ var ssh_config = {
     timeout: 30000
 };
 
+function checkSshError(err) {
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
 function exec_command(command, callback) {
     var config = JSON.parse(JSON.stringify(ssh_config));
     config.command = command;
     D.device.sendSSHCommand(config, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + command);
-            console.error(err);
-            D.failure();
-        }
+        if(err) checkSshError(err);
         callback(out.split("\n"));
     });
 }

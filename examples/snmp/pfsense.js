@@ -850,14 +850,6 @@ var config_paramters = [
         unit: "",
     },
     {
-        uid: "normalized_packets",
-        label: "Normalized packets",
-        type: D.valueType.RATE,
-        unit: "pps",
-        oid: "1.3.6.1.4.1.12325.1.200.1.2.5.0",
-        exec: snmp_get_exec
-    },
-    {
         uid: "packet_filter_running_status",
         label: "Packet filter running status",
         unit: "",
@@ -897,7 +889,7 @@ var config_paramters = [
         exec: snmp_get_exec
     },
     {
-        uid: "source_tracking_table_current",
+        uid: "source_tracking_tbl_current",
         label: "Source tracking table current",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.4.1.0",
@@ -905,7 +897,7 @@ var config_paramters = [
         exec: snmp_get_exec
     },
     {
-        uid: "source_tracking_table_limit",
+        uid: "source_tracking_tbl_limit",
         label: "Source tracking table limit",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.5.2.0",
@@ -913,7 +905,7 @@ var config_paramters = [
         exec: snmp_get_exec
     },
     {
-        uid: "source_tracking_table_utilization",
+        uid: "source_tracking_tbl_utilization",
         label: "Source tracking table utilization",
         unit: "%",
         exec: [function (last, next) {
@@ -933,7 +925,7 @@ var config_paramters = [
         unit: "",
     },
     {
-        uid: "states_table_current",
+        uid: "states_tbl_current",
         label: "States table current",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.3.1.0",
@@ -941,7 +933,7 @@ var config_paramters = [
         exec: snmp_get_exec
     },
     {
-        uid: "states_table_limit",
+        uid: "states_tbl_limit",
         label: "States table limit",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.5.1.0",
@@ -949,7 +941,7 @@ var config_paramters = [
         exec: snmp_get_exec
     },
     {
-        uid: "states_table_utilization",
+        uid: "states_tbl_utilization",
         label: "States table utilization",
         unit: "%",
         exec: [function (last, next) {
@@ -958,41 +950,6 @@ var config_paramters = [
             this.result = (count * 100) / limit;
             next(this);
         }, snmp_generate_variable],
-    },
-    {
-        uid: "system_contact_details",
-        label: "System contact details",
-        unit: "",
-        oid: "1.3.6.1.2.1.1.4.0",
-        exec: snmp_get_exec
-    },
-    {
-        uid: "system_description",
-        label: "System description",
-        unit: "",
-        oid: "1.3.6.1.2.1.1.1.0",
-        exec: snmp_get_exec
-    },
-    {
-        uid: "system_location",
-        label: "System location",
-        unit: "",
-        oid: "1.3.6.1.2.1.1.6.0",
-        exec: snmp_get_exec
-    },
-    {
-        uid: "system_name",
-        label: "System name",
-        unit: "",
-        oid: "1.3.6.1.2.1.1.5.0",
-        exec: snmp_get_exec
-    },
-    {
-        uid: "system_object_id",
-        label: "System object ID",
-        unit: "",
-        oid: "1.3.6.1.2.1.1.2.0",
-        exec: snmp_get_exec
     },
     {
         uid: "uptime",
@@ -1114,20 +1071,41 @@ function execute_config(config, callback) {
         callback(result);
     });
 }
+function checkSshError(err) {
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
 
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to check if the snmp is working in pfsense server
+* @documentation This procedure is used to check if the snmp and ssh are working in pfsense server
 */
 function validate() {
+    var valid = 0;
+    function success(){
+        valid++;
+        if(valid == 2){
+            D.success();
+        }
+    }
     createSNMPSession().get(["1.3.6.1.4.1.12325.1.200.1.2.1.0"], function (result, error) {
         if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        D.success();
+        success();
     });
+
+    var config = clone({ command: "ls" }, ssh_config);
+    D.device.sendSSHCommand(config, function (out, err) {
+        if(err) checkSshError(err);
+        success();
+    });
+
 
 }
 

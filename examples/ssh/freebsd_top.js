@@ -39,11 +39,7 @@ function exec_command(command, callback) {
     var config = JSON.parse(JSON.stringify(ssh_config));
     config.command = command;
     D.device.sendSSHCommand(config, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + command);
-            console.error(err);
-            D.failure();
-        }
+        if(err) checkSshError(err);
         callback(out.split("\n"));
     });
 }
