@@ -404,8 +404,8 @@ function extract_variables(body) {
             for (var i = 1; i < match.length; i += 2) {
                 var j = (i - 1) / 2;
                 var variableIdPartial = p.title.replace("table", "tbl");
-                _vars.push(_var(variableIdPartial + "_" + p.params[j] + "_total", p.title + ": " + p.params[j] + " (total)", match[i]));
-                _vars.push(_var(p.title + "_" + p.params[j] + "_rate", p.title + ": " + p.params[j] + " (rate)", match[i + 1].substring(0, match[i + 1].length - 2), "s"));
+                _vars.push(_var(variableIdPartial + "_" + p.params[j].replace("table", "tbl") + "_total", p.title + ": " + p.params[j] + " (total)", match[i]));
+                _vars.push(_var(p.title + "_" + p.params[j].replace("table", "tbl") + "_rate", p.title + ": " + p.params[j] + " (rate)", match[i + 1].substring(0, match[i + 1].length - 2), "s"));
             }
         }
     });
