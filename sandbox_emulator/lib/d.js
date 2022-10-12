@@ -36,6 +36,7 @@ function format(str, charcount) {
     var result = str + " ".repeat(charcount);
     return result.substring(0, charcount);
 }
+const toFindDuplicates = arry => arry.filter((item, index) => arry.filter(i => item == i).length>1)
 
 console.log("\n############################ LOGS ############################\n")
 
@@ -137,6 +138,10 @@ global.D = { /**
                     maxLength = Math.max(maxLength, label.length)
                 })
                 console.log("\n####################### VARIABLE RESULT ######################\n")
+                let duplicates = toFindDuplicates(vars.map(v => v.uid))
+                if(duplicates.length){
+                    console.warn("WARNING: uid duplication found")
+                }
                 await Promise.all(vars.map(function(v){
                     return dbManager.addVar({
                         host:device.ip,
@@ -149,6 +154,7 @@ global.D = { /**
                     console.error(err)
                 })
                 vars.forEach(function (v) {
+                    if(v.uid.indexOf("table")>=0) console.warn("WARNING: the keyword 'table' should not be used in the uid")
                     console.log(format(v.l, maxLength), "=", v.value);
                 });
             }
