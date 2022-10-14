@@ -1,7 +1,7 @@
 
 /**
  * this driver is using ssh for the target server
- * the ssh user should have the sudo privillege to access log files
+ * the ssh user should have the sudo privilege to access log files
  */
 
 var _var = D.device.createVariable;
@@ -213,6 +213,15 @@ function build_config_vars(callback) {
     });
 }
 
+var table = D.createTable("Nginx request stats", [
+    {label: "Server name"},
+    {label: "Server port"},
+    {label: "All requests"},
+    {label: "Successful requests"},
+    {label: "Redirected requests"},
+    {label: "Error requests"}
+]);
+
 /* extracting some statistics from every log file and generate variables for domotz */
 function requests_stats(next) {
     build_config_vars(function (configs) {
@@ -228,12 +237,26 @@ function requests_stats(next) {
         });
         exec_command(log_commands.join(";"), function (results) {
             var variables = [];
-            for (var i = 0; i < results.length; i++) {
-                var result = results[i];
-                var stat = result.split(":");
-                var server = stat[0] + ":" + stat[1];
-                var uid = server + "_" + stat[2];
-                variables.push(_var(uid.substring(uid.length - 50, uid.length), server + "->" + stat[3], stat[4]));
+            for (var i = 0; i < results.length; i+=4) {
+                var allReq = results[i];
+                var sucReq = results[i+1];
+                var redReq = results[i+2];
+                var errReq = results[i+3];
+
+                var row = [null, null];
+                var uid;
+                var server;
+                var port;
+                [allReq, sucReq, redReq, errReq].forEach(function(statString){
+                    var stat = statString.split(":");
+                    server = stat[0];
+                    port = stat[1];
+                    uid = server + "_" + port;
+                    row.push(stat[4]);
+                });
+                row[0] = server;
+                row[1] = port;
+                table.insertRecord(uid, row);
             }
 
             next(variables);
@@ -286,6 +309,6 @@ function get_status() {
         requests_stats,
         nginx_system_config
     ], function (variables) {
-        D.success(variables);
+        D.success(variables, table);
     });
 }
