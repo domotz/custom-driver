@@ -361,6 +361,37 @@ Can be used to traverse and manipulate the loaded document.
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ValueType">ValueType</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The value of the column values (used for display purposes)</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1030,7 +1061,7 @@ Can be used to traverse and manipulate the loaded document.
 
             
 
-            <td class="description last">Import statements are not allowed in the sandbox enviroment</td>
+            <td class="description last">Import statements are not allowed in the sandbox environment</td>
         </tr>
 
     
@@ -1053,7 +1084,7 @@ Can be used to traverse and manipulate the loaded document.
 
             
 
-            <td class="description last">Require statements are not allowed in the sandbox enviroment</td>
+            <td class="description last">Require statements are not allowed in the sandbox environment</td>
         </tr>
 
     
@@ -2746,6 +2777,445 @@ Can be used to traverse and manipulate the loaded document.
 
             
                 
+<h4 class="name" id="TCPCallback">TCPCallback</h4>
+
+
+
+
+<div class="description">
+    The TCP library callback
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">callback</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>output</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The Result from the tcp command execution</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ErrorResult">ErrorResult</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Will be present if the execution resulted in an error</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="TCPOptions">TCPOptions</h4>
+
+
+
+
+<div class="description">
+    The TCP library Options
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>command</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The tcp command to execute against the device</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    23
+                
+                </td>
+            
+
+            <td class="description last">The tcp port to connect to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    500
+                
+                </td>
+            
+
+            <td class="description last">The time the tcp command will execute for at most (in milliseconds)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keepAlive</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Boolean flag to use if the TCP connection should persist until the timeout value runs out. Disabled by default</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>encoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">str</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    utf8
+                
+                </td>
+            
+
+            <td class="description last">The tcp command response encoding. Default 'utf8'</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
 <h4 class="name" id="TelnetCallback">TelnetCallback</h4>
 
 
@@ -3259,6 +3729,212 @@ Can be used to traverse and manipulate the loaded document.
 
             
                 
+<h4 class="name" id="ValueType">ValueType</h4>
+
+
+
+
+<div class="description">
+    Domotz variable value types
+</div>
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>STRING</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">String value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>NUMBER</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Numerical value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>DATETIME</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Datetime value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>RATE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A numeric value that changes over time in an increasing manner. Only the rate of change is calcuated and stored</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>MONOTONE_RATE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A numeric value similar to the RATE type but ignoring values lower than the previous collected value in the rate of change comparison</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>D.valueType.RATE</code></pre>
+
+
+
+            
+                
 <h4 class="name" id="Variable">Variable</h4>
 
 
@@ -3400,6 +4076,29 @@ Created via D.device.createVariable
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>valueType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ValueType">ValueType</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The type of the variable value (used for visualization purposes).</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -3466,7 +4165,7 @@ Created via D.device.createVariable
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jun 03 2022 10:48:33 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Aug 17 2022 11:48:12 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>

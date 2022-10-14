@@ -1,5 +1,7 @@
 // var snmp = require("net-snmp");
 require("dotenv").config();
+var dbManager = require("../lib/db");
+var {valueTypes, errorTypes} = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
 
@@ -15,8 +17,14 @@ var device = {
         authentication_key: process.env.DEVICE_SNMP_AUTHENTICATION_KEY,
         encryption_protocol: process.env.DEVICE_SNMP_ENCRYPTION_PROTOCOL,
         encryption_key: process.env.DEVICE_SNMP_ENCRYPTION_KEY,
+    },
+    credentials:{
+        username: "",
+        password: ""
     }
+    
 };
+
 if (process.env.DEVICE_USERNAME) {
     device.credentials = {
         username: process.env.DEVICE_USERNAME,
@@ -28,6 +36,7 @@ function format(str, charcount) {
     var result = str + " ".repeat(charcount);
     return result.substring(0, charcount);
 }
+const toFindDuplicates = arry => arry.filter((item, index) => arry.filter(i => item == i).length>1)
 
 console.log("\n############################ LOGS ############################\n")
 
@@ -71,14 +80,37 @@ global.D = { /**
     */
     q: require('q'),
     htmlParse: require('cheerio').load,
-    success: function (...args) {
+    success: async function (...args) {
+        await dbManager.init();
         if (!args || !args.length) return;
-        args = [args[0], args[1]]
-        args.forEach(function (vars, index) {
+        let dataToShow = [args[0]]//, args[1]]
+        if(args[1]) dataToShow.push(args[1])
+        await Promise.all(dataToShow.map(async function (vars, index) {
             if (!vars) return;
             if (vars && vars.getResult) {
                 var result = vars.getResult();
-                var maxLengths = new Array(result.columnHeaders.length).fill(0)
+                // saving table data
+                await Promise.all(result.rows.map(function(row){
+                    var row_id = row[0];
+                    return Promise.all(row.map(async function(col, i){
+                        if(index == 0) return null;
+                        return dbManager.addVar({
+                            host: device.ip,
+                            row_id,
+                            uid:result.columnHeaders[i].label,
+                            label: result.columnHeaders[i].label,
+                            unit: result.columnHeaders[i].unit,
+                            value: col,
+                            valueType: result.columnHeaders[i].valueType
+                        }).then(function(res){
+                            row[i] = res;
+                        })
+                    }))
+                })).catch(function(err){
+                    console.error("--------add table error----------")
+                    console.error(err)
+                })
+                var maxLengths = result.columnHeaders.map(function(header) {return header.label.length}); //new Array(result.columnHeaders.length).fill(0)
                 for (var i = 0; i < result.rows.length; i++) {
                     for (var j = 0; j < result.columnHeaders.length; j++) {
                         maxLengths[j] = Math.max(Math.max(maxLengths[j], result.rows[i][j] ? result.rows[i][j].toString().length : 0), result.columnHeaders[j].label.length)
@@ -106,27 +138,38 @@ global.D = { /**
                     maxLength = Math.max(maxLength, label.length)
                 })
                 console.log("\n####################### VARIABLE RESULT ######################\n")
+                let duplicates = toFindDuplicates(vars.map(v => v.uid))
+                if(duplicates.length){
+                    console.warn("WARNING: uid duplication found")
+                }
+                await Promise.all(vars.map(function(v){
+                    return dbManager.addVar({
+                        host:device.ip,
+                        ...v
+                    }).then(function(res){
+                        v.value = res
+                    })
+                })).catch(function(err){
+                    console.error("--------add variable error----------")
+                    console.error(err)
+                })
                 vars.forEach(function (v) {
+                    if(v.uid.indexOf("table")>=0) console.warn("WARNING: the keyword 'table' should not be used in the uid")
                     console.log(format(v.l, maxLength), "=", v.value);
                 });
             }
 
+        })).catch(function(err){
+            console.error("--------exec error----------")
+            console.error(err)
         })
     },
     failure: function (msg) {
         console.error(msg);
         process.exit(1);
     },
-    errorType: {
-        MISSING_DEVICE_ERROR: "No device was found for execution",
-        RESOURCE_UNAVAILABLE: "The Resource you are trying to access is not available",
-        AUTHENTICATION_ERROR: "Authentication with the device has failed",
-        PARSING_ERROR: "Failed to parse the response",
-        TIMEOUT_ERROR: "The remote call has resulted in a timeout",
-        IMPORT_NOT_ALLOWED: "Import statements are not allowed in the sandbox enviroment",
-        REQUIRE_NOT_ALLOWED: "Require statements are not allowed in the sandbox enviroment",
-        GENERIC_ERROR: "Generic/Unknown error has occurred",
-    },
+    errorType: errorTypes,
+    valueType: valueTypes,
     device: createDevice(device, { max_var_id_len: 50 }, console),
     createTable: function (label, headers) {
         return createTable(label, headers, console)
