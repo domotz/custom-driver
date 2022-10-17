@@ -2,6 +2,7 @@
  * this driver is based on nginx module "ngx_http_stub_status_module"
  * You need to read this http://nginx.org/en/docs/http/ngx_http_stub_status_module.html 
  * before using this driver
+ * this driver is tested under nginx version: nginx/1.14.0 (Ubuntu)
  */
 // nginx status page config
 var nginxStatusHttpConfig = {
