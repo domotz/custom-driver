@@ -155,6 +155,7 @@ global.D = { /**
                 })
                 vars.forEach(function (v) {
                     if(v.uid.indexOf("table")>=0) console.warn("WARNING: the keyword 'table' should not be used in the uid")
+                    if(v.value && v.value.length > 500) console.warn("WARNING: value length exceeded 500")
                     console.log(format(v.l, maxLength), "=", v.value);
                 });
             }

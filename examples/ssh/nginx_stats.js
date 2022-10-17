@@ -91,7 +91,8 @@ function nginx_system_config(next) {
         for (var i = 0; i < info.length; i++) {
             var keyValue = info[i].split("=");
             var value = keyValue.splice(1);
-            variables.push(_var(keyValue[0], keyValue[0], value.join("=")));
+            
+            variables.push(_var(keyValue[0], keyValue[0], value.join("=").substring(0,500)));
         }
         next(variables);
     });
