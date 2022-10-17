@@ -2,6 +2,7 @@
 /**
  * this driver is using ssh for the target server
  * the ssh user should have the sudo privilege to access log files
+ * this driver is tested under nginx version: nginx/1.14.0 (Ubuntu)
  */
 
 var _var = D.device.createVariable;
