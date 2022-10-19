@@ -127,6 +127,13 @@ function snmp_generate_variable(result, callback) {
     callback(this._var);
 }
 
+function update_array(array, index){
+    return function(result, callback){
+        array[index] = this.result;
+        callback(result);
+    };
+}
+
 function divide_by_cpu_count(last, next) {
     var nCPU = get_result("1.3.6.1.2.1.25.3.3.1.2.cpus");
     this.result = this.result / nCPU;
@@ -140,13 +147,54 @@ function multiply_result(number) {
     };
 }
 
-var snmp_get_exec = [snmp_get, snmp_generate_variable];
-var snmp_get_by_cpu_exec = [snmp_get, divide_by_cpu_count, snmp_generate_variable];
-var snmp_walk_get_exec = [snmp_walk, update_oid, snmp_get, snmp_generate_variable];
-var snmp_get_multiply_8_exec = [snmp_get, multiply_result(8), snmp_generate_variable];
-var snmp_walk_get_multiply_8_exec = [snmp_walk, update_oid, snmp_get, multiply_result(8), snmp_generate_variable];
-var snmp_get_multiply_1000000_exec = [snmp_get, multiply_result(1000000), snmp_generate_variable];
-var snmp_walk_get_multiply_1000000_exec = [snmp_walk, update_oid, snmp_get, multiply_result(1000000), snmp_generate_variable];
+function exec(fnSeq, callback){
+    var finalSeq = [];
+    fnSeq.forEach(function(fn){
+        finalSeq.push(fn);
+    });
+    finalSeq.push(callback);
+    return finalSeq;
+}
+
+var snmp_get_exec = [snmp_get];
+var snmp_get_by_cpu_exec = [snmp_get, divide_by_cpu_count];
+var snmp_walk_get_exec = [snmp_walk, update_oid, snmp_get];
+var snmp_get_multiply_8_exec = [snmp_get, multiply_result(8)];
+var snmp_walk_get_multiply_8_exec = [snmp_walk, update_oid, snmp_get, multiply_result(8)];
+var snmp_get_multiply_1000000_exec = [snmp_get, multiply_result(1000000)];
+var snmp_walk_get_multiply_1000000_exec = [snmp_walk, update_oid, snmp_get, multiply_result(1000000)];
+
+var em0_row = Array.apply(null, { length: 26 });
+var em1_row = Array.apply(null, { length: 26 });
+var interface_table = D.createTable("Table interfaces", [
+    {label: "Bits received", unit: "bps", type: D.valueType.RATE},
+    {label: "Bits sent", unit: "bps", type: D.valueType.RATE},
+    {label: "Inbound IPv4 packets blocked", unit: "pps", type: D.valueType.RATE},
+    {label: "Inbound IPv4 packets passed", unit: "pps", type: D.valueType.RATE},
+    {label: "Inbound IPv4 traffic blocked", unit: "bps", type: D.valueType.RATE},
+    {label: "Inbound IPv4 traffic passed", unit: "bps", type: D.valueType.RATE},
+    {label: "Inbound IPv6 packets blocked", unit: "pps", type: D.valueType.RATE},
+    {label: "Inbound IPv6 packets passed", unit: "pps", type: D.valueType.RATE},
+    {label: "Inbound IPv6 traffic blocked", unit: "bps", type: D.valueType.RATE},
+    {label: "Inbound IPv6 traffic passed", unit: "bps", type: D.valueType.RATE},
+    {label: "Inbound packets discarded"},
+    {label: "Inbound packets with errors"},
+    {label: "Interface type"},
+    {label: "Operational status"},
+    {label: "Outbound IPv4 packets blocked", unit: "pps", type: D.valueType.RATE},
+    {label: "Outbound IPv4 packets passed", unit: "pps", type: D.valueType.RATE},
+    {label: "Outbound IPv4 traffic blocked", unit: "bps", type: D.valueType.RATE},
+    {label: "Outbound IPv4 traffic passed", unit: "bps", type: D.valueType.RATE},
+    {label: "Outbound IPv6 packets blocked", unit: "pps", type: D.valueType.RATE},
+    {label: "Outbound IPv6 packets passed", unit: "pps", type: D.valueType.RATE},
+    {label: "Outbound IPv6 traffic blocked", unit: "bps", type: D.valueType.RATE},
+    {label: "Outbound IPv6 traffic passed", unit: "bps", type: D.valueType.RATE},
+    {label: "Outbound packets discarded"},
+    {label: "Outbound packets with errors"},
+    {label: "Rules references count"},
+    {label: "Speed", unit: "bps"},
+]
+);
 
 // list of configuration variables to extract
 var config_paramters = [
@@ -179,21 +227,21 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.2021.11.9.0",
         label: "User CPU time",
         unit: "%",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "system_cpu_time",
         oid: "1.3.6.1.4.1.2021.11.10.0",
         label: "System CPU time",
         unit: "%",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "idle_cpu_time",
         oid: "1.3.6.1.4.1.2021.11.11.0",
         label: "Idle CPU time",
         unit: "%",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "cpu_interrupt_time",
@@ -201,7 +249,7 @@ var config_paramters = [
         label: "CPU interrupt time",
         unit: "raw/s",
         type: D.valueType.RATE,
-        exec: snmp_get_by_cpu_exec
+        exec: exec(snmp_get_by_cpu_exec, snmp_generate_variable)
     },
     {
         uid: "cpu_iowait_time",
@@ -209,7 +257,7 @@ var config_paramters = [
         label: "CPU iowait time",
         unit: "raw/s",
         type: D.valueType.RATE,
-        exec: snmp_get_by_cpu_exec
+        exec: exec(snmp_get_by_cpu_exec, snmp_generate_variable)
     },
     {
         uid: "cpu_nice_time",
@@ -217,7 +265,7 @@ var config_paramters = [
         label: "CPU nice time",
         unit: "raw/s",
         type: D.valueType.RATE,
-        exec: snmp_get_by_cpu_exec
+        exec: exec(snmp_get_by_cpu_exec, snmp_generate_variable)
     },
     {
         uid: "cpu_system_time",
@@ -225,7 +273,7 @@ var config_paramters = [
         label: "CPU system time",
         unit: "raw/s",
         type: D.valueType.RATE,
-        exec: snmp_get_by_cpu_exec
+        exec: exec(snmp_get_by_cpu_exec, snmp_generate_variable)
     },
     {
         uid: "cpu_user_time",
@@ -233,7 +281,7 @@ var config_paramters = [
         label: "CPU user time",
         unit: "raw/s",
         type: D.valueType.RATE,
-        exec: snmp_get_by_cpu_exec
+        exec: exec(snmp_get_by_cpu_exec, snmp_generate_variable)
     },
     {
 
@@ -242,7 +290,7 @@ var config_paramters = [
         label: "Context switches per second",
         unit: "",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "total_swap_size",
@@ -250,7 +298,7 @@ var config_paramters = [
         label: "Total Swap Size",
         unit: "Kb",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "available_swap_space",
@@ -258,7 +306,7 @@ var config_paramters = [
         label: "Available Swap Space",
         unit: "Kb",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "swap_usage",
@@ -277,7 +325,7 @@ var config_paramters = [
         label: "Total RAM in machine",
         unit: "Kb",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "total_ram_available",
@@ -285,7 +333,7 @@ var config_paramters = [
         label: "Total RAM Available",
         unit: "Kb",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "memory_usage",
@@ -304,7 +352,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.2.1.25.4.2.1.2",
         walk_param_name: "dhcpd",
         walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "DHCP server status",
         unit: ""
     },
@@ -313,7 +361,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.2.1.25.4.2.1.2",
         walk_param_name: "unbound",
         walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "DNS server status",
         unit: ""
     },
@@ -322,7 +370,7 @@ var config_paramters = [
         oid: "1.3.6.1.4.1.12325.1.200.1.11.1.0",
         label: "Firewall rules count",
         unit: "",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "fragmented_packets",
@@ -330,7 +378,7 @@ var config_paramters = [
         label: "Fragmented packets",
         unit: "pps",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "interface_em0_bits_received",
@@ -338,7 +386,7 @@ var config_paramters = [
         label: "Interface [em0()]: Bits received",
         unit: "bps",
         type: D.valueType.RATE,
-        exec: snmp_get_multiply_8_exec
+        exec: exec(snmp_get_multiply_8_exec, update_array(em0_row, 0))
     },
     {
         uid: "Interface_em0_bits_sent",
@@ -346,7 +394,7 @@ var config_paramters = [
         label: "Interface [em0()]: Bits sent",
         unit: "bps",
         type: D.valueType.RATE,
-        exec: snmp_get_multiply_8_exec
+        exec: exec(snmp_get_multiply_8_exec, update_array(em0_row, 1))
     },
     {
 
@@ -354,7 +402,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.12",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 2)),
         label: "Interface [em0()]: Inbound IPv4 packets blocked",
         unit: "pps",
         type: D.valueType.RATE,
@@ -365,7 +413,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.11",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 3)),
         label: "Interface [em0()]: Inbound IPv4 packets passed",
         unit: "pps",
         type: D.valueType.RATE,
@@ -375,7 +423,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.8",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 4)),
         label: "Interface [em0()]: Inbound IPv4 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps"
@@ -385,7 +433,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.7",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 5)),
         label: "Interface [em0()]: Inbound IPv4 traffic passed",
         type: D.valueType.RATE,
         unit: "bps"
@@ -395,7 +443,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.20",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 6)),
         label: "Interface [em0()]: Inbound IPv6 packets blocked",
         type: D.valueType.RATE,
         unit: "pps"
@@ -405,7 +453,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.19",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 7)),
         label: "Interface [em0()]: Inbound IPv6 packets passed",
         type: D.valueType.RATE,
         unit: "pps"
@@ -415,7 +463,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.16",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 8)),
         label: "Interface [em0()]: Inbound IPv6 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps"
@@ -425,7 +473,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.15",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 9)),
         label: "Interface [em0()]: Inbound IPv6 traffic passed",
         type: D.valueType.RATE,
         unit: "bps"
@@ -436,7 +484,7 @@ var config_paramters = [
         label: "Interface [em0()]: Inbound packets discarded",
         type: D.valueType.RATE,
         unit: "",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em0_row, 10))
     },
     {
         uid: "interface_em0_inbound_packets_with_errors",
@@ -444,28 +492,28 @@ var config_paramters = [
         label: "Interface [em0()]: Inbound packets with errors",
         type: D.valueType.RATE,
         unit: "",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em0_row, 11))
     },
     {
         uid: "interface_em0_interface_type",
         oid: "1.3.6.1.2.1.2.2.1.3.1",
         label: "Interface [em0()]: Interface type",
         unit: "",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em0_row, 12))
     },
     {
         uid: "interface_em0_operational_status",
         oid: "1.3.6.1.2.1.2.2.1.8.1",
         label: "Interface [em0()]: Operational status",
         unit: "",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em0_row, 13))
     },
     {
         uid: "interface_em0_outbound_ipv4_packets_blocked",
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.14",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 14)),
         label: "Interface [em0()]: Outbound IPv4 packets blocked",
         type: D.valueType.RATE,
         unit: "pps"
@@ -475,7 +523,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.13",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 15)),
         label: "Interface [em0()]: Outbound IPv4 packets passed",
         type: D.valueType.RATE,
         unit: "pps"
@@ -485,7 +533,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.10",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 16)),
         label: "Interface [em0()]: Outbound IPv4 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps"
@@ -495,7 +543,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.9",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 17)),
         label: "Interface [em0()]: Outbound IPv4 traffic passed",
         type: D.valueType.RATE,
         unit: "bps"
@@ -505,7 +553,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.22",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 18)),
         label: "Interface [em0()]: Outbound IPv6 packets blocked",
         type: D.valueType.RATE,
         unit: "pps"
@@ -515,7 +563,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.21",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 19)),
         label: "Interface [em0()]: Outbound IPv6 packets passed",
         type: D.valueType.RATE,
         unit: "pps"
@@ -525,7 +573,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.18",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 20)),
         label: "Interface [em0()]: Outbound IPv6 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps"
@@ -535,7 +583,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.17",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em0_row, 21)),
         label: "Interface [em0()]: Outbound IPv6 traffic passed",
         type: D.valueType.RATE,
         unit: "bps"
@@ -546,14 +594,14 @@ var config_paramters = [
         label: "Interface [em0()]: Outbound packets discarded",
         type: D.valueType.RATE,
         unit: "",
-        exec: snmp_get_exec,
+        exec: exec(snmp_get_exec, update_array(em0_row, 22)),
     },
     {
         uid: "interface_em0_outbound_packets_with_errors",
         oid: "1.3.6.1.2.1.2.2.1.20.1",
         label: "Interface [em0()]: Outbound packets with errors",
         type: D.valueType.RATE,
-        exec: snmp_get_exec,
+        exec: exec(snmp_get_exec, update_array(em0_row, 23)),
         unit: ""
     },
     {
@@ -561,7 +609,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em0",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em0_row, 24)),
         label: "Interface [em0()]: Rules references count",
         unit: ""
     },
@@ -569,7 +617,7 @@ var config_paramters = [
         uid: "interface_em0_speed",
         oid: "1.3.6.1.2.1.31.1.1.1.15.1",
         label: "Interface [em0()]: Speed",
-        exec: snmp_get_multiply_1000000_exec,
+        exec: exec(snmp_get_multiply_1000000_exec, update_array(em0_row, 25)),
         unit: "bps"
     },
     {
@@ -577,7 +625,7 @@ var config_paramters = [
         oid: "1.3.6.1.2.1.31.1.1.1.6.2",
         label: "Interface [em1()]: Bits received",
         type: D.valueType.RATE,
-        exec: snmp_get_multiply_8_exec,
+        exec: exec(snmp_get_multiply_8_exec, update_array(em1_row, 0)),
         unit: "bps"
     },
     {
@@ -585,7 +633,7 @@ var config_paramters = [
         oid: "1.3.6.1.2.1.31.1.1.1.10.2",
         label: "Interface [em1()]: Bits sent",
         type: D.valueType.RATE,
-        exec: snmp_get_multiply_8_exec,
+        exec: exec(snmp_get_multiply_8_exec, update_array(em1_row, 1)),
         unit: "bps"
     },
     {
@@ -593,7 +641,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.12",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 2)),
         label: "Interface [em1()]: Inbound IPv4 packets blocked",
         type: D.valueType.RATE,
         unit: "pps"
@@ -603,7 +651,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.11",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 3)),
         label: "Interface [em1()]: Inbound IPv4 packets passed",
         type: D.valueType.RATE,
         unit: "pps"
@@ -613,7 +661,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.8",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 4)),
         label: "Interface [em1()]: Inbound IPv4 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps"
@@ -623,7 +671,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.7",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 5)),
         label: "Interface [em1()]: Inbound IPv4 traffic passed",
         type: D.valueType.RATE,
         unit: "bps",
@@ -633,7 +681,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.20",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 6)),
         label: "Interface [em1()]: Inbound IPv6 packets blocked",
         type: D.valueType.RATE,
         unit: "pps",
@@ -643,7 +691,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.19",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 7)),
         label: "Interface [em1()]: Inbound IPv6 packets passed",
         type: D.valueType.RATE,
         unit: "pps",
@@ -653,7 +701,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.16",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 8)),
         label: "Interface [em1()]: Inbound IPv6 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps",
@@ -663,7 +711,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.15",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 9)),
         label: "Interface [em1()]: Inbound IPv6 traffic passed",
         type: D.valueType.RATE,
         unit: "bps",
@@ -673,33 +721,33 @@ var config_paramters = [
         label: "Interface [em1()]: Inbound packets discarded",
         unit: "", oid: "1.3.6.1.2.1.2.2.1.13.2",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em1_row, 10))
     },
     {
         uid: "interface_em1_inbound_packets_with_errors",
         label: "Interface [em1()]: Inbound packets with errors",
         unit: "", oid: "1.3.6.1.2.1.2.2.1.14.2",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em1_row, 11))
     },
     {
         uid: "interface_em1_interface_type",
         label: "Interface [em1()]: Interface type",
         unit: "", oid: "1.3.6.1.2.1.2.2.1.3.2",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em1_row, 12))
     },
     {
         uid: "interface_em1_operational_status",
         label: "Interface [em1()]: Operational status",
         unit: "", oid: "1.3.6.1.2.1.2.2.1.8.2",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em1_row, 13))
     },
     {
         uid: "interface_em1_outbound_ipv4_packets_blocked",
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.14",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 14)),
         label: "Interface [em1()]: Outbound IPv4 packets blocked",
         type: D.valueType.RATE,
         unit: "pps",
@@ -709,7 +757,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.13",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 15)),
         label: "Interface [em1()]: Outbound IPv4 packets passed",
         type: D.valueType.RATE,
         unit: "pps",
@@ -719,7 +767,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.10",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 16)),
         label: "Interface [em1()]: Outbound IPv4 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps",
@@ -729,7 +777,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.9",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 17)),
         label: "Interface [em1()]: Outbound IPv4 traffic passed",
         type: D.valueType.RATE,
         unit: "bps",
@@ -739,7 +787,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.22",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 18)),
         label: "Interface [em1()]: Outbound IPv6 packets blocked",
         type: D.valueType.RATE,
         unit: "pps",
@@ -749,7 +797,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.21",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 19)),
         label: "Interface [em1()]: Outbound IPv6 packets passed",
         type: D.valueType.RATE,
         unit: "pps",
@@ -759,7 +807,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.18",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 20)),
         label: "Interface [em1()]: Outbound IPv6 traffic blocked",
         type: D.valueType.RATE,
         unit: "bps",
@@ -769,7 +817,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.17",
-        exec: snmp_walk_get_multiply_8_exec,
+        exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 21)),
         label: "Interface [em1()]: Outbound IPv6 traffic passed",
         type: D.valueType.RATE,
         unit: "bps",
@@ -780,7 +828,7 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.2.1.2.2.1.19.2",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em1_row, 22))
     },
     {
         uid: "interface_em1_outbound_packets_with_errors",
@@ -788,14 +836,14 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.2.1.2.2.1.20.2",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, update_array(em1_row, 23))
     },
     {
         uid: "interface_em1_rules_references_count",
         walk_root: "1.3.6.1.4.1.12325.1.200.1.8.2.1.2",
         walk_param_name: "em1",
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, update_array(em1_row, 24)),
         label: "Interface [em1()]: Rules references count",
         unit: "",
     },
@@ -804,7 +852,7 @@ var config_paramters = [
         label: "Interface [em1()]: Speed",
         unit: "bps",
         oid: "1.3.6.1.2.1.31.1.1.1.15.2",
-        exec: snmp_get_multiply_1000000_exec
+        exec: exec(snmp_get_multiply_1000000_exec, update_array(em1_row, 25))
     },
     {
         uid: "interrupts_per_second",
@@ -812,7 +860,7 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.4.1.2021.11.59.0",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "normalized_packets",
@@ -820,14 +868,14 @@ var config_paramters = [
         unit: "pps",
         oid: "1.3.6.1.4.1.12325.1.200.1.2.5.0",
         type: D.valueType.RATE,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "load_average_1m_avg",
         walk_root: "1.3.6.1.4.1.2021.10.1.2",
         walk_param_name: "Load-1",
         walk_oid: "1.3.6.1.4.1.2021.10.1.3",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "Load average (1m avg)",
         unit: "",
     },
@@ -836,7 +884,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.2021.10.1.2",
         walk_param_name: "Load-5",
         walk_oid: "1.3.6.1.4.1.2021.10.1.3",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "Load average (5m avg)",
         unit: "",
     },
@@ -845,7 +893,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.4.1.2021.10.1.2",
         walk_param_name: "Load-15",
         walk_oid: "1.3.6.1.4.1.2021.10.1.3",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "Load average (15m avg)",
         unit: "",
     },
@@ -854,7 +902,7 @@ var config_paramters = [
         label: "Packet filter running status",
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.1.1.0",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "packets_dropped_due_to_memory_limitation",
@@ -862,7 +910,7 @@ var config_paramters = [
         type: D.valueType.RATE,
         unit: "pps",
         oid: "1.3.6.1.4.1.12325.1.200.1.2.6.0",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "packets_matched_a_filter_rule",
@@ -870,7 +918,7 @@ var config_paramters = [
         type: D.valueType.RATE,
         unit: "pps",
         oid: "1.3.6.1.4.1.12325.1.200.1.2.1.0",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "packets_with_bad_offset",
@@ -878,7 +926,7 @@ var config_paramters = [
         type: D.valueType.RATE,
         unit: "pps",
         oid: "1.3.6.1.4.1.12325.1.200.1.2.2.0",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "short_packets",
@@ -886,7 +934,7 @@ var config_paramters = [
         type: D.valueType.RATE,
         unit: "pps",
         oid: "1.3.6.1.4.1.12325.1.200.1.2.4.0",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "source_tracking_tbl_current",
@@ -894,7 +942,7 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.4.1.0",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "source_tracking_tbl_limit",
@@ -902,7 +950,7 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.5.2.0",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "source_tracking_tbl_utilization",
@@ -920,7 +968,7 @@ var config_paramters = [
         walk_root: "1.3.6.1.2.1.25.4.2.1.2",
         walk_param_name: "nginx",
         walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
-        exec: snmp_walk_get_exec,
+        exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "State of nginx process",
         unit: "",
     },
@@ -930,7 +978,7 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.3.1.0",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "states_tbl_limit",
@@ -938,7 +986,7 @@ var config_paramters = [
         unit: "",
         oid: "1.3.6.1.4.1.12325.1.200.1.5.1.0",
         order: 0,
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     },
     {
         uid: "states_tbl_utilization",
@@ -956,7 +1004,7 @@ var config_paramters = [
         label: "Uptime",
         unit: "uptime",
         oid: "1.3.6.1.2.1.25.1.1.0",
-        exec: snmp_get_exec
+        exec: exec(snmp_get_exec, snmp_generate_variable)
     }
 ];
 
@@ -1064,7 +1112,7 @@ function execute_config(config, callback) {
                 param._var.forEach(function (_var) {
                     result.push(_var);
                 });
-            } else {
+            } else if(param._var) {
                 result.push(param._var);
             }
         });
@@ -1117,6 +1165,9 @@ function validate() {
 */
 function get_status() {
     execute_config(config_paramters, function (result) {
-        D.success(result);
+        interface_table.insertRecord("em0", em0_row);
+        interface_table.insertRecord("em1", em1_row);
+        D.success(result, interface_table);
+
     });
 }

@@ -9,7 +9,8 @@
 
 
 var _var = D.device.createVariable;
-
+// top rows to show
+var rowCount = 10;
 var table = D.createTable(
     "Top processes",
     [
@@ -34,7 +35,13 @@ var ssh_config = {
     port: 22,
     timeout: 30000
 };
-
+function checkSshError(err) {
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
 function exec_command(command, callback) {
     var config = JSON.parse(JSON.stringify(ssh_config));
     config.command = command;
@@ -72,7 +79,7 @@ function validate() {
 */
 function get_status() {
 
-    exec_command("top -o cpu| head -n19", function (lines) {
+    exec_command("top -o cpu| head -n" + (9+ rowCount), function (lines) {
         var line0_data = lines[0].match(/^last pid:\s+(.*);\s+load averages:\s+(.*),\s+(.*),\s+(.*)\s+up\s+(.*)\s+(.*)$/);
         var line1_data = lines[1].match(/^(.*)\s+processes:\s+(.*)\s+running,\s+(.*)\s+sleeping$/);
         var line2_data = lines[2].match(/^CPU:\s+(.*)%\s+user,\s+(.*)%\s+nice,\s+(.*)%\s+system,\s+(.*)%\s+interrupt,\s+(.*)%\s+idle$/);
@@ -112,7 +119,7 @@ function get_status() {
 
         var start = 9;
         for (var i = start; i < lines.length; i++) {
-            var process_data = lines[i].replace(/\s+/gm," ").match(/^\s*(\d+)\s+(.*)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(.)\s+(\d+)(.)\s+(.*)\s+(\d+)\s+(.*)\s+(.*)%\s+(.*)$/);
+            var process_data = lines[i].trim().replace(/\s+/gm," ").match(/^(\d+) (.*) (\d+) (\d+) (\d+) (\d+)(.) (\d+)(.) (.*) (\d+ )?(.*) (.*)% (.*)$/);
             table.insertRecord(
                 ""+(i - start), [
                     process_data[1],

@@ -20,6 +20,8 @@
  */
 
 var _var = D.device.createVariable;
+// specify the number of rows to display
+var rowCount = 20;
 
 var table = D.createTable(
     "pfTop",
@@ -76,7 +78,7 @@ function convertToK(count, unit) {
 * @documentation This procedure is used to validate if pftop command is executed successfully
 */
 function validate() {
-    exec_command("pftop -v long -w 200 -o bytes 50", function () {
+    exec_command("pftop -v long -w 200 -o bytes " + rowCount, function () {
         D.success();
     });
 }
