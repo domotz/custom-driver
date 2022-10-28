@@ -7,7 +7,7 @@
 // nginx status page config
 var nginxStatusHttpConfig = {
     port: 8080,
-    url: "/nginx_status"
+    url: "/basic_status"
 };
 
 /**
@@ -26,7 +26,6 @@ function validateAuthentication(response) {
 // calling NGINX status page
 function getNginxStatus(successCallback) {
     D.device.http.get(nginxStatusHttpConfig, function (error, response) {
-        console.log(JSON.stringify(response));
         if (error) {
             return D.failure(D.errorType.GENERIC_ERROR);
         }
