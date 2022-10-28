@@ -10,7 +10,7 @@ var _var = D.device.createVariable;
 
 /** ssh init */
 
-var ssh_config = {
+var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
     port: 22,
@@ -21,7 +21,7 @@ var ntp_status_cmd = "ntpq -p | awk '{print $1 \";\" $2 \";\" $7}'";
 var dns_servers_cmd = "grep \"nameserver\" /etc/resolv.conf | awk '{system(\"dig +tries=1 @\" $2 \" google.com > /dev/null; echo \" $2 \":$?\")}'";
 
 function exec_command(last, next) {
-    var config = clone({ command: this.command }, ssh_config);
+    var config = clone({ command: this.command }, sshConfig);
     D.device.sendSSHCommand(config, function (out, err) {
         next(out ? out.split("\n") : null);
         
@@ -1148,7 +1148,7 @@ function validate() {
         success();
     });
 
-    var config = clone({ command: "ls" }, ssh_config);
+    var config = clone({ command: "ls" }, sshConfig);
     D.device.sendSSHCommand(config, function (out, err) {
         if(err) checkSshError(err);
         success();

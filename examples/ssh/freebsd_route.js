@@ -12,7 +12,7 @@ var validate_cmd = "netstat -r -n";
 var route_v4_cmd = "netstat -4 -r -n | tail -n +5";
 var route_v6_cmd = "netstat -6 -r -n | tail -n +5";
 
-var ssh_config = {
+var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
     port: 22,
@@ -27,8 +27,8 @@ var table = D.createTable("Routing table", [
 ]);
 
 function exec_command(command, callback) {
-    ssh_config.command = command;
-    D.device.sendSSHCommand(ssh_config, function (out, err) {
+    sshConfig.command = command;
+    D.device.sendSSHCommand(sshConfig, function (out, err) {
         if (err) {
             console.error("error while executing command: " + command);
             console.error(err);
