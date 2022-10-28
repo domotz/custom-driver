@@ -6,7 +6,7 @@
  */
 // nginx status page config
 var nginxStatusHttpConfig = {
-    port: 10011,
+    port: 8080,
     url: "/nginx_status"
 };
 
