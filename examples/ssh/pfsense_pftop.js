@@ -41,7 +41,7 @@ var table = D.createTable(
     ]
 );
 
-var ssh_config = {
+var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
     port: 22,
@@ -56,7 +56,7 @@ function checkSshError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 function exec_command(command, callback) {
-    var config = JSON.parse(JSON.stringify(ssh_config));
+    var config = JSON.parse(JSON.stringify(sshConfig));
     config.command = command;
     D.device.sendSSHCommand(config, function (out, err) {
         if(err) checkSshError(err);
