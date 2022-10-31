@@ -17,7 +17,7 @@
  */
 
 
-var ssh_config = {
+var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
     timeout: 10000,
@@ -50,7 +50,7 @@ function checkSshError(err) {
  */
 function getDockerImages() {
     var d = D.q.defer();
-    D.device.sendSSHCommand(ssh_config, function (out, err) {
+    D.device.sendSSHCommand(sshConfig, function (out, err) {
         if (err) checkSshError(err);
         var images = out.split("\n").map(function (json_string) {
             return JSON.parse(json_string);

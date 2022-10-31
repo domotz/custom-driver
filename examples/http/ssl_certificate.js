@@ -30,7 +30,7 @@ function getCertificateData() {
             protocol: "https"
         }, function (err, resp) {
             if (err) {
-                console.error(err);
+                console.error(""+err);
                 D.failure();
             }
             var cert;
