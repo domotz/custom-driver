@@ -27,7 +27,7 @@ function validateAuthentication(response) {
 function getNginxStatus(successCallback) {
     D.device.http.get(nginxStatusHttpConfig, function (error, response) {
         if (error) {
-            console.error(error)
+            console.error(error);
             return D.failure(D.errorType.GENERIC_ERROR);
         }
         if(!response){
