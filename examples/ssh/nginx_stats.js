@@ -225,7 +225,7 @@ var table = D.createTable("Nginx request stats", [
 ]);
 
 /* extracting some statistics from every log file and generate variables for domotz */
-function requests_stats(next) {
+function requestsStats(next) {
     buildConfigVars(function (configs) {
         var logCommands = [];
         configs.forEach(function (config) {
@@ -266,26 +266,7 @@ function requests_stats(next) {
     });
 }
 
-
-
-/**
-* @remote_procedure
-* @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
-*/
-function validate() {
-    execCommand(buildQueriesForLogFile("main", "/var/log/nginx/iovision-redmine.io.access.log").join(";"), function (result) {
-        var variables = [];
-        result.forEach(function (r) {
-            var stat = r.split(":");
-            variables.push(_var(stat[0] + "->" + stat[1], stat[2], stat[3]));
-            //variables.push(_var(r,r,r))
-        });
-        D.success(variables);
-    });
-}
-
-function seq_execute(functions, callback) {
+function seqExecute(functions, callback) {
     var callbackVariables = [];
     function executeNext(functionIndex) {
         if (functionIndex == functions.length) return callback(callbackVariables);
@@ -301,14 +282,37 @@ function seq_execute(functions, callback) {
 
 /**
 * @remote_procedure
+* @label Validate Association
+* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+*/
+function validate() {
+    function validateCallback(result){
+        execCommand(buildQueriesForLogFile("main", "/var/log/nginx/iovision-redmine.io.access.log").join(";"), function (result) {
+            var variables = [];
+            result.forEach(function (r) {
+                var stat = r.split(":");
+                variables.push(_var(stat[0] + "->" + stat[1], stat[2], stat[3]));
+            });
+            D.success(variables);
+        });
+    }
+    execCommand(
+        nginxSystemConfigCmd,
+        validateCallback
+    )
+    
+}
+
+/**
+* @remote_procedure
 * @label Get Device Variables
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    seq_execute([
+    seqExecute([
         nginxStatusStats,
         cpuInfo,
-        requests_stats,
+        requestsStats,
         nginxSystemConfig
     ], function (variables) {
         D.success(variables, table);
