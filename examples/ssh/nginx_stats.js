@@ -36,7 +36,6 @@ function buildQueriesForLogFile(id, logFile) {
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    port: 22,
     timeout: 30000
 };
 
