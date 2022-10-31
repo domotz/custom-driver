@@ -27,6 +27,7 @@ function validateAuthentication(response) {
 function getNginxStatus(successCallback) {
     D.device.http.get(nginxStatusHttpConfig, function (error, response) {
         if (error) {
+            console.error(error)
             return D.failure(D.errorType.GENERIC_ERROR);
         }
         if(!response){
@@ -58,18 +59,22 @@ function get_status() {
     getNginxStatus(function (response) {
         var data = response.body;
         var lines = data.split("\n");
-        var active_cnx_group = lines[0].match(/^.+(\d+)\s*$/);
-        var stats_group = lines[2].match(/^\s+(\d+)\s+(\d+)\s+(\d+)\s*$/);
-        var rww_group = lines[3].match(/^.+:\s+(\d+).+:\s+(\d+).+:\s+(\d+).*$/);
+        if(lines.length < 4) D.failure(D.errorType.PARSING_ERROR);
+
+        var activeCnxGroup = lines[0].match(/^.+(\d+)\s*$/);
+        var statsGroup = lines[2].match(/^\s+(\d+)\s+(\d+)\s+(\d+)\s*$/);
+        var rwwGroup = lines[3].match(/^.+:\s+(\d+).+:\s+(\d+).+:\s+(\d+).*$/);
+        if(!(activeCnxGroup && statsGroup && rwwGroup)) D.failure(D.errorType.PARSING_ERROR);
+        
         var variables = [
             D.device.createVariable("server", "Server", response.headers.server),
-            D.device.createVariable("active_cnx", "Active connections", active_cnx_group[1]),
-            D.device.createVariable("accepted_cnx", "Accepted connections", stats_group[1]),
-            D.device.createVariable("handled_cnx", "Handled connections", stats_group[2]),
-            D.device.createVariable("total_req", "Total requests", stats_group[3]),
-            D.device.createVariable("reading", "Reading", rww_group[1]),
-            D.device.createVariable("writing", "Writing", rww_group[2]),
-            D.device.createVariable("waiting", "Waiting", rww_group[3]),
+            D.device.createVariable("active_cnx", "Active connections", activeCnxGroup[1]),
+            D.device.createVariable("accepted_cnx", "Accepted connections", statsGroup[1]),
+            D.device.createVariable("handled_cnx", "Handled connections", statsGroup[2]),
+            D.device.createVariable("total_req", "Total requests", statsGroup[3]),
+            D.device.createVariable("reading", "Reading", rwwGroup[1]),
+            D.device.createVariable("writing", "Writing", rwwGroup[2]),
+            D.device.createVariable("waiting", "Waiting", rwwGroup[3]),
 
         ];
         D.success(variables);
