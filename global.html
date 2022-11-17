@@ -1778,375 +1778,6 @@ Can be used to traverse and manipulate the loaded document.
 
             
                 
-<h4 class="name" id="snmpCallback">snmpCallback</h4>
-
-
-
-
-<div class="description">
-    The SNMP query callback
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">callback</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>output</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object.&lt;string, string></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">The output object from the snmp query execution as a key-value pair for each oid and it corresponding value</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#ErrorResult">ErrorResult</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Will be present if the snmp query resulted in an error.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
-<h4 class="name" id="snmpSessionOptions">snmpSessionOptions</h4>
-
-
-
-
-<div class="description">
-    The SNMP Session Options
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>port</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    161
-                
-                </td>
-            
-
-            <td class="description last">UDP port to send requests to</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>timeout</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    5000
-                
-                </td>
-            
-
-            <td class="description last">The time the snmp session queries will persist for (in milisenconds).</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxRepetitions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    24
-                
-                </td>
-            
-
-            <td class="description last">How many rows of a table are to be retrieved in a single GetBulk operation. Used in SNMP Walk</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
 <h4 class="name" id="SshAlgorithms">SshAlgorithms</h4>
 
 
@@ -3855,7 +3486,8 @@ Can be used to traverse and manipulate the loaded document.
 
             
 
-            <td class="description last">A numeric value that changes over time in an increasing manner. Only the rate of change is calcuated and stored</td>
+            <td class="description last">A numeric value that changes over time in an increasing manner. 
+Only the rate of change is calculated and stored</td>
         </tr>
 
     
@@ -3878,7 +3510,8 @@ Can be used to traverse and manipulate the loaded document.
 
             
 
-            <td class="description last">A numeric value similar to the RATE type but ignoring values lower than the previous collected value in the rate of change comparison</td>
+            <td class="description last">A numeric value similar to the RATE type but ignoring values lower 
+than the previous collected value in the rate of change comparison</td>
         </tr>
 
     
@@ -3942,7 +3575,7 @@ Can be used to traverse and manipulate the loaded document.
 
 <div class="description">
     Custom Driver variable
-Created via D.device.createVariable
+Created via D.createVariable
 </div>
 
 
@@ -4003,7 +3636,8 @@ Created via D.device.createVariable
 
             
 
-            <td class="description last">The identifier of the variable. Must be Unique. Max 50 characters</td>
+            <td class="description last">The identifier of the variable. Must be Unique. Max 50 characters
+<br> cannot be one of the following reserved words: "table", "column", "history"</td>
         </tr>
 
     
@@ -4026,7 +3660,7 @@ Created via D.device.createVariable
 
             
 
-            <td class="description last">The Name/Label of the variable</td>
+            <td class="description last">The Name/Label of the variable. Max 100 characters</td>
         </tr>
 
     
@@ -4049,7 +3683,7 @@ Created via D.device.createVariable
 
             
 
-            <td class="description last">The Value of the variable</td>
+            <td class="description last">The Value of the variable. Max 500 characters</td>
         </tr>
 
     
@@ -4146,6 +3780,375 @@ Created via D.device.createVariable
 
 
             
+                
+<h4 class="name" id="snmpCallback">snmpCallback</h4>
+
+
+
+
+<div class="description">
+    The SNMP query callback
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">callback</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>output</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;string, string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The output object from the snmp query execution as a key-value pair for each oid and it corresponding value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ErrorResult">ErrorResult</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Will be present if the snmp query resulted in an error.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="snmpSessionOptions">snmpSessionOptions</h4>
+
+
+
+
+<div class="description">
+    The SNMP Session Options
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    161
+                
+                </td>
+            
+
+            <td class="description last">UDP port to send requests to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    5000
+                
+                </td>
+            
+
+            <td class="description last">The time the snmp session queries will persist for (in milisenconds).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRepetitions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    24
+                
+                </td>
+            
+
+            <td class="description last">How many rows of a table are to be retrieved in a single GetBulk operation. Used in SNMP Walk</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
     
 
     
@@ -4159,13 +4162,13 @@ Created via D.device.createVariable
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="D.html">D</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="console.html">console</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Aug 17 2022 11:48:12 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Thu Nov 17 2022 13:02:48 GMT+0200 (Eastern European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
