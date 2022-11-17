@@ -44,7 +44,7 @@ function get_status(){
             var dataLines = serviceData.split("\n");
             // Filter the service section data from empty or "?" lines
             dataLines = dataLines.filter(function (e) {return e.trim().length > 0 && e.trim() !== "?";});
-            var uid = index;
+            var uid = index.toString();
             var label = dataLines[0].trim();
             var value = dataLines[1].trim();
             // Create a zoom service monitoring driver variable
