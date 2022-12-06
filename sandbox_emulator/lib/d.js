@@ -4,6 +4,7 @@ var dbManager = require("../lib/db");
 var {valueTypes, errorTypes} = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
+var winrmExec = require("../lib/winrmTest").winrmExec; 
 
 var device = {
     ip: process.env.DEVICE_IP,
@@ -173,7 +174,10 @@ global.D = { /**
     valueType: valueTypes,
     device: createDevice(device, { max_var_id_len: 50 }, console),
     createTable: function (label, headers) {
-        return createTable(label, headers, console)
+        return createTable(label, headers, winrmExec)
+    },
+    winrmTest: function(command) {
+        return winrmExec(command, console)
     },
 
     /**
