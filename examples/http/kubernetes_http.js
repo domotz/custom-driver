@@ -10,7 +10,7 @@
  */
 
 var _var = D.device.createVariable;
-var token = "jwt_token"
+var token = D.device.password()
 var port = 80;
 
 /**
@@ -31,6 +31,15 @@ function getMetrics() {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         }
+        if(response.statusCode == 404){
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if(response.statusCode == 401){
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if(response.statusCode != 200){
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
         d.resolve(body);
 
     });
@@ -47,19 +56,15 @@ function convert(body) {
     var result = lines
         .filter(function (line) { return line.indexOf("#") != 0 && line; })
         .map(function (line) {
-            try {
-                var matches = line.match(/^([^\{]*)(\{(.*)\})? (.*)$/);
-                var key = matches[1];
-                var desc = matches[3] ? matches[3].split(",").reduce(function (a, b) {
-                    var keyValue = b.split("=");
-                    a[keyValue[0]] = keyValue[1].substring(1, keyValue[1].length - 1);
-                    return a;
-                }, {}) : null;
-                var value = matches[4];
-                return { key: key, desc: desc, value: value };
-            } catch (e) {
-                return null;
-            }
+            var matches = line.match(/^([^\{]*)(\{(.*)\})? (.*)$/);
+            var key = matches[1];
+            var desc = matches[3] ? matches[3].split(",").reduce(function (a, b) {
+                var keyValue = b.split("=");
+                a[keyValue[0]] = keyValue[1].substring(1, keyValue[1].length - 1);
+                return a;
+            }, {}) : null;
+            var value = matches[4];
+            return { key: key, desc: desc, value: value };
         });
     return result;
 }
@@ -353,7 +358,13 @@ function extract(data) {
         } else if (typeof (c.execute) == "function") {
             result = c.execute(data);
         }
-        return _var(c.uid, c.label, result, c.unit, c.type);
+        if(result){
+            return _var(c.uid, c.label, result, c.unit, c.type);
+        }else{
+            return null
+        }
+    }).filter(function(v){
+        return v != null
     });
 }
 
@@ -369,6 +380,9 @@ function validate() {
         });
 }
 
+function success(vars){
+    D.success(vars);
+}
 
 /**
 * @remote_procedure
@@ -385,6 +399,9 @@ function get_status() {
             return data;
         })
         .then(extract)
-        .then(D.success)
-        .catch(console.log);
+        .then(success)
+        .catch(function(err){
+            console.error(err)
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

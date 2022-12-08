@@ -51,7 +51,7 @@ var podTable = D.createTable(
     ]
 );
 
-var token = "jwt_token"
+var token = D.device.password()
 var port = "80"
 
 /**
@@ -81,7 +81,7 @@ var Kube = {
     pods_limit: 1000,
     request: function (query) {
 
-        console.log("[ Kubernetes ] Sending request: " + Kube.params.api_endpoint + query);
+        console.info("[ Kubernetes ] Sending request: " + Kube.params.api_endpoint + query);
         return httpGet({
             url: Kube.params.api_endpoint + query,
             port: port,
@@ -91,7 +91,7 @@ var Kube = {
             }
         }).then(function (response) {
             var status = response.statusCode;
-            console.log("[ Kubernetes ] Received response with status code " + status + ": " + response);
+            console.info("[ Kubernetes ] Received response with status code " + status + ": " + response);
 
             if (status < 200 || status >= 300) {
                 throw "Request failed with status code " + status + ": " + response;
@@ -441,8 +441,9 @@ function get_status() {
     parse().then(function (result) {
         fillTable(result);
         D.success(podTable);
-    }).catch(function (err) {
-        console.log(err);
+    }).catch(function (e) {
+        console.error(e);
+        D.failure(D.errorType.GENERIC_ERROR);
     });
 }
 
