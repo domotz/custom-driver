@@ -286,7 +286,7 @@ function seqExecute(functions, callback) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    function validateCallback(result){
+    function validateCallback(result) {
         execCommand(buildQueriesForLogFile("main", "/var/log/nginx/iovision-redmine.io.access.log").join(";"), function (result) {
             var variables = [];
             result.forEach(function (r) {
@@ -300,7 +300,7 @@ function validate() {
         nginxSystemConfigCmd,
         validateCallback
     )
-    
+
 }
 
 /**
