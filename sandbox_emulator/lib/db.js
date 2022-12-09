@@ -78,7 +78,7 @@ class DatabaseManager {
                 if (!isNaN(input)) return parseFloat(input)
                 else return null
             }
-            default: return input.toString();
+            default: return input && input.toString();
         }
     }
     getLastValue(host, uid, row_id) {
