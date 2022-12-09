@@ -39,7 +39,7 @@ function get_status(){
             console.error("Received an error during the SNMP Get ", error || output[sysUptimeOid].error);
             D.failure(D.errorType.PARSING_ERROR);
         } else {
-            var variableSystemUptime = D.device.createVariable(1, "System Uptime in Days", Math.round(output[sysUptimeOid]/86400000), "days");
+            var variableSystemUptime = D.device.createVariable("1", "System Uptime in Days", Math.round(output[sysUptimeOid]/86400000), "days");
             variables.push(variableSystemUptime);
             D.success(variables);
         }
