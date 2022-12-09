@@ -1,17 +1,21 @@
 
 
 /**
- * This driver extract kubernetes pods information
+ * This driver extract kubernetes Nodes and Pods information
  * Communication protocol is http
- * dynamically create table with columns specified in podTable variable
+ * dynamically create table with columns specified in nodeTable variable
  * communicate with http api using a jwt token generated with this command: 
  * # kubectl -n kube-system create token default --duration=8760h
  * this command returns a jwt token valid for a year for kube-system user
  * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS 
  */
 
-var podTable = D.createTable(
-    "Pods",
+
+var token = D.device.password()
+var port = 80
+
+var nodeTable = D.createTable(
+    "Kubernetes Nodes and Pods Data",
     [
         { label: "Node: Metadata Name" },
         { label: "Node: Internal IP" },
@@ -51,9 +55,6 @@ var podTable = D.createTable(
     ]
 );
 
-var token = D.device.password()
-var port = "80"
-
 /**
  * 
  * @param {object} params http request parameters
@@ -80,7 +81,6 @@ var Kube = {
     },
     pods_limit: 1000,
     request: function (query) {
-
         console.info("[ Kubernetes ] Sending request: " + Kube.params.api_endpoint + query);
         return httpGet({
             url: Kube.params.api_endpoint + query,
@@ -91,8 +91,7 @@ var Kube = {
             }
         }).then(function (response) {
             var status = response.statusCode;
-            console.info("[ Kubernetes ] Received response with status code " + status + ": " + response);
-
+            console.debug("[ Kubernetes ] Received response with status code " + status);
             if (status < 200 || status >= 300) {
                 throw "Request failed with status code " + status + ": " + response;
             }
@@ -226,7 +225,7 @@ Fmt = {
 
 /**
  * 
- * @returns object contains the pods informations
+ * @returns object containing the nodes and pods information
  */
 function parse() {
     return D.q.all([
@@ -371,7 +370,8 @@ function fillTable(data) {
             var ready = pod.conditions._find(function (c) { return c.type == "Ready"; }, {}).status;
             var scheduled = pod.conditions._find(function (c) { return c.type == "PodScheduled"; }, {}).status;
             var podIP = pod.podIP;
-            podTable.insertRecord(pod.name, [
+            var podName = pod.name.slice(0, 50); // Slice to comply with record ID limit of 50 characters
+            nodeTable.upsertRecord(podName, [
                 metadataName,
                 internalIp,
                 externalIp,
@@ -412,14 +412,10 @@ function fillTable(data) {
     });
 }
 
-
-
-
-
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if the nodes, pods, endpointIPs is accessible over http request
+* @documentation This procedure is used to validate if the nodes, pods, endpointIPs are accessible for the device
 */
 function validate() {
     D.q.all([
@@ -434,13 +430,13 @@ function validate() {
 
 /**
 * @remote_procedure
-* @label Get Device Variables
-* @documentation This procedure is used for retrieving kubernetes pods information 
+* @label Get Kubernetes Nodes Data
+* @documentation This procedure Extracts the Nodes and Pods Data from a Kubernetes instance
 */
 function get_status() {
     parse().then(function (result) {
         fillTable(result);
-        D.success(podTable);
+        D.success(nodeTable);
     }).catch(function (e) {
         console.error(e);
         D.failure(D.errorType.GENERIC_ERROR);
