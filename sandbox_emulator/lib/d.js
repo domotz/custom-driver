@@ -1,7 +1,7 @@
 // var snmp = require("net-snmp");
 require("dotenv").config();
 var dbManager = require("../lib/db");
-var {valueTypes, errorTypes} = require("../lib/constants");
+var { valueTypes, errorTypes } = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
 
@@ -18,11 +18,11 @@ var device = {
         encryption_protocol: process.env.DEVICE_SNMP_ENCRYPTION_PROTOCOL,
         encryption_key: process.env.DEVICE_SNMP_ENCRYPTION_KEY,
     },
-    credentials:{
+    credentials: {
         username: "",
         password: ""
     }
-    
+
 };
 
 if (process.env.DEVICE_USERNAME) {
@@ -36,7 +36,7 @@ function format(str, charcount) {
     var result = str + " ".repeat(charcount);
     return result.substring(0, charcount);
 }
-const toFindDuplicates = arry => arry.filter((item, index) => arry.filter(i => item == i).length>1)
+const toFindDuplicates = arry => arry.filter((item, index) => arry.filter(i => item == i).length > 1)
 
 console.log("\n############################ LOGS ############################\n")
 
@@ -84,33 +84,33 @@ global.D = { /**
         await dbManager.init();
         if (!args || !args.length) return;
         let dataToShow = [args[0]]//, args[1]]
-        if(args[1]) dataToShow.push(args[1])
+        if (args[1]) dataToShow.push(args[1])
         await Promise.all(dataToShow.map(async function (vars, index) {
             if (!vars) return;
             if (vars && vars.getResult) {
                 var result = vars.getResult();
                 // saving table data
-                await Promise.all(result.rows.map(function(row){
+                await Promise.all(result.rows.map(function (row) {
                     var row_id = row[0];
-                    return Promise.all(row.map(async function(col, i){
-                        if(index == 0) return null;
+                    return Promise.all(row.map(async function (col, i) {
+                        if (index == 0) return null;
                         return dbManager.addVar({
                             host: device.ip,
                             row_id,
-                            uid:result.columnHeaders[i].label,
+                            uid: result.columnHeaders[i].label,
                             label: result.columnHeaders[i].label,
                             unit: result.columnHeaders[i].unit,
                             value: col,
                             valueType: result.columnHeaders[i].valueType
-                        }).then(function(res){
+                        }).then(function (res) {
                             row[i] = res;
                         })
                     }))
-                })).catch(function(err){
+                })).catch(function (err) {
                     console.error("--------add table error----------")
                     console.error(err)
                 })
-                var maxLengths = result.columnHeaders.map(function(header) {return header.label.length}); //new Array(result.columnHeaders.length).fill(0)
+                var maxLengths = result.columnHeaders.map(function (header) { return header.label.length }); //new Array(result.columnHeaders.length).fill(0)
                 for (var i = 0; i < result.rows.length; i++) {
                     for (var j = 0; j < result.columnHeaders.length; j++) {
                         maxLengths[j] = Math.max(Math.max(maxLengths[j], result.rows[i][j] ? result.rows[i][j].toString().length : 0), result.columnHeaders[j].label.length)
@@ -139,28 +139,30 @@ global.D = { /**
                 })
                 console.log("\n####################### VARIABLE RESULT ######################\n")
                 let duplicates = toFindDuplicates(vars.map(v => v.uid))
-                if(duplicates.length){
+                if (duplicates.length) {
                     console.warn("WARNING: uid duplication found")
                 }
-                await Promise.all(vars.map(function(v){
+                await Promise.all(vars.map(function (v) {
                     return dbManager.addVar({
-                        host:device.ip,
+                        host: device.ip,
                         ...v
-                    }).then(function(res){
+                    }).then(function (res) {
                         v.value = res
                     })
-                })).catch(function(err){
+                })).catch(function (err) {
                     console.error("--------add variable error----------")
                     console.error(err)
                 })
                 vars.forEach(function (v) {
-                    if(v.uid.indexOf("table")>=0) console.warn("WARNING: the keyword 'table' should not be used in the uid")
+                    if (v.uid.indexOf("table") >= 0 ||
+                        v.uid.indexOf("column") >= 0 ||
+                        v.uid.indexOf("history") >= 0) console.warn("WARNING: the keyword 'table' should not be used in the uid")
                     if(v.value && v.value.length > 500) console.warn("WARNING: value length exceeded 500")
                     console.log(format(v.l, maxLength), "=", v.value);
                 });
             }
 
-        })).catch(function(err){
+        })).catch(function (err) {
             console.error("--------exec error----------")
             console.error(err)
         })
