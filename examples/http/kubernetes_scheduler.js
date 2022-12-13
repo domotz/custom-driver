@@ -1,8 +1,8 @@
 
 /**
- * This driver extract kubernetes API metrics
+ * This driver extract kubernetes Scheduler metrics
  * Communication protocol is http
- * dynamically create metrics for Kubernetes API depending from response of the service
+ * dynamically create metrics for Kubernetes Scheduler depending from response of the service
  * communicate with http api using a jwt token generated with this command: 
  * # kubectl -n kube-system create token default --duration=8760h
  * this command returns a jwt token valid for a year for kube-system user
@@ -110,37 +110,6 @@ function getValueSum(key, filterFn){
 
 // config variable containing the list of monitoring parameters
 var config = [
-
-    {
-        uid: "apiserver_request_total_0",
-        label: "API server requests: 0, rate",
-        execute: [statusFilter("apiserver_request_total", "0"), sum],
-        type: D.valueType.RATE
-    },
-    {
-        uid: "apiserver_request_total_200",
-        label: "API server requests: 2xx",
-        execute: [statusFilter("apiserver_request_total","2"), sum],
-        type: D.valueType.RATE
-    },
-    {
-        uid: "apiserver_request_total_300",
-        label: "API server requests: 3xx",
-        execute: [statusFilter("apiserver_request_total","3"), sum],
-        type: D.valueType.RATE
-    },
-    {
-        uid: "apiserver_request_total_400",
-        label: "API server requests: 4xx",
-        execute: [statusFilter("apiserver_request_total","4"), sum],
-        type: D.valueType.RATE
-    },
-    {
-        uid: "apiserver_request_total_500",
-        label: "API server requests: 5xx",
-        execute: [statusFilter("apiserver_request_total","5"), sum],
-        type: D.valueType.RATE
-    },
     {
         uid: "rest_client_requests_total_200",
         label: "HTTP requests: 2xx",
@@ -192,39 +161,10 @@ var config = [
         execute: getValueSum("go_threads")
     },
     {
-        uid: "grpc_client_started",
-        label: "gRPCs client started",
-        execute: getValueSum("grpc_client_started_total"),
-        type: D.valueType.RATE
-    },
-    {
-        uid: "grpc_client_msg_received",
-        label: "gRPCs messages ressived",
-        execute: getValueSum("grpc_client_msg_received_total"),
-        type: D.valueType.RATE
-    },
-    {
-        uid: "grpc_client_msg_sent",
-        label: "gRPCs messages sent",
-        execute: getValueSum("grpc_client_msg_sent_total"),
-        type: D.valueType.RATE
-    },
-    {
-        uid: "apiserver_request_terminations",
-        label: "Request terminations",
-        execute: getValueSum("apiserver_request_terminations_total"),
-        type: D.valueType.RATE
-    },
-    {
         uid: "process_resident_memory_bytes",
         label: "Resident memory",
         execute: getValueSum("process_resident_memory_bytes"),
         unit: "B"
-    },
-    {
-        uid: "apiserver_tls_handshake_errors_total",
-        label: "TLS handshake errors",
-        execute: getValueSum("apiserver_tls_handshake_errors_total"),
     },
     {
         uid: "process_virtual_memory_bytes",
@@ -232,100 +172,27 @@ var config = [
         execute: getValueSum("process_virtual_memory_bytes"),
         type: D.valueType.RATE,
         unit: "B"
+    },
+    {
+        uid: "scheduler_schedule_attempts_error",
+        label: "Schedule attempts: error",
+        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "error"}),
+        type: D.valueType.RATE,
+    },
+    {
+        uid: "scheduler_schedule_attempts_scheduled",
+        label: "Schedule attempts: scheduled",
+        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "scheduled"}),
+        type: D.valueType.RATE,
+    },
+    {
+        uid: "scheduler_schedule_attempts_unschedulable",
+        label: "Schedule attempts: unschedulable",
+        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "unschedulable"}),
+        type: D.valueType.RATE,
     }
+
 ];
-
-/**
- * fill the config variable with authenticated_user_requests
- * @param {[any]} data all the data parsed from the http response body
- */
-function fillConfigAuthUser(data) {
-    data
-        .filter(function (d) { return d.key == "authenticated_user_requests"; })
-        .forEach(function (d) {
-            config.push({
-                uid: ("authenticated_user_requests_" + d.desc.username).substring(0, 50),
-                label: "Authenticated requests: " + d.desc.username,
-                execute: function () { return parseFloat(d.value); },
-                type: D.valueType.RATE
-            });
-        });
-}
-
-/**
- * fill the config variable with authentication_attempts
- * @param {[any]} data all the data parsed from the http response body
- */
-function fillConfigAuthAttempt(data) {
-    data
-        .filter(function (d) { return d.key == "authentication_attempts"; })
-        .forEach(function (d) {
-            config.push({
-                uid: ("authentication_attempts" + d.desc.result).substring(0, 50),
-                label: "Authentication attempts: " + d.desc.result,
-                execute: function () { return parseFloat(d.value); },
-                type: D.valueType.RATE
-            });
-        });
-}
-
-/**
- * fill the config variable with apiserver_current_inflight_requests
- * @param {[any]} data all the data parsed from the http response body
- */
-function fillConfigCurrInflightReq(data) {
-    data
-        .filter(function (d) { return d.key == "apiserver_current_inflight_requests"; })
-        .forEach(function (d) {
-            config.push({
-                uid: ("current_inflight_requests_" + d.desc.request_kind).substring(0, 50),
-                label: "Requests current: " + d.desc.request_kind,
-                execute: function () { return parseFloat(d.value); },
-            });
-        });
-}
-
-/**
- * fill the config variable with workqueue_adds_total and workqueue_depth
- * @param {[any]} data all the data parsed from the http response body
- */
-function fillConfigWorkqueue(data){
-    var data1 = data.filter(function (d) { return d.key == "workqueue_adds_total"; });
-    var data2 = data.filter(function (d) { return d.key == "workqueue_depth"; });
-    data1.forEach(function(d1){
-        var name = d1.desc.name;
-        var d2 = data2.filter(function(d){ return d.desc.name == name;});
-        config.push({
-            uid: ("workqueue_adds_total_" + name).substring(0, 50),
-            label: name + " Workqueue adds total",
-            execute: function () { return parseFloat(d1.value); },
-            type: D.valueType.RATE,
-        });
-        if(d2.length){
-            d2 = d2[0];
-            config.push({
-                uid: ("workqueue_depth_" + name).substring(0, 50),
-                label: name + " Workqueue depth",
-                execute: function () { return parseFloat(d2.value); }
-            });
-        }
-    });
-
-}
-
-
-/**
- * 
- * @param {string} number to convert to float
- * @returns float number
- */
-function toFloat(number){
-    if(number == "+Inf"){
-        return Infinity;
-    }else{
-        return parseFloat(number);
-    }
-}
 
 /**
  * 
@@ -337,13 +204,6 @@ function multiplier(number){
         return value*number;
     };
 }
-
-var fillConfigFns = [
-    fillConfigAuthUser, 
-    fillConfigAuthAttempt,
-    fillConfigCurrInflightReq,
-    fillConfigWorkqueue
-];
 
 /**
  * 
@@ -392,12 +252,6 @@ function success(vars){
 function get_status() {
     getMetrics()
         .then(convert)
-        .then(function (data) {
-            fillConfigFns.forEach(function (fn) {
-                fn(data);
-            });
-            return data;
-        })
         .then(extract)
         .then(success)
         .catch(function(err){
