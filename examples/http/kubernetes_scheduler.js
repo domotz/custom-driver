@@ -11,7 +11,7 @@
 
 var _var = D.device.createVariable;
 var token = D.device.password();
-var port = 80;
+var port = 27000;
 
 /**
  * 
@@ -176,19 +176,19 @@ var config = [
     {
         uid: "scheduler_schedule_attempts_error",
         label: "Schedule attempts: error",
-        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "error"}),
+        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "error";}),
         type: D.valueType.RATE,
     },
     {
         uid: "scheduler_schedule_attempts_scheduled",
         label: "Schedule attempts: scheduled",
-        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "scheduled"}),
+        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "scheduled";}),
         type: D.valueType.RATE,
     },
     {
         uid: "scheduler_schedule_attempts_unschedulable",
         label: "Schedule attempts: unschedulable",
-        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "unschedulable"}),
+        execute: getValueSum("scheduler_schedule_attempts_total", function(d){return d.desc.result == "unschedulable";}),
         type: D.valueType.RATE,
     }
 
