@@ -71,18 +71,30 @@ function getMetrics() {
         });
 }
 
+/**
+ * 
+ * @param {string} node kubernetes node
+ * @returns promise for metrics for the specific node
+ */
 function getCadvisorMetrics(node){
     return httpGet("/api/v1/nodes/"+node+"/proxy/metrics/cadvisor")
         .then(convert);
 }
 
-
+/**
+ * 
+ * @returns promise containing pods info
+ */
 function getPods(){
     return httpGet("/api/v1/pods")
         .then(JSON.parse)
         .then(extractPodsInfo);
 }
 
+/**
+ * 
+ * @returns load all kubernetes node metrics
+ */
 function getNodesMetrics(){
     return httpGet("/api/v1/nodes")
         .then(JSON.parse)
@@ -108,6 +120,11 @@ function getNodesMetrics(){
         });
 }
 
+/**
+ * 
+ * @param {object} body pods api response body
+ * @returns parsed pods infos
+ */
 function extractPodsInfo(body){
     podsInfo = body.items.map(function(e){
         return {
@@ -156,16 +173,6 @@ function statusFilter(key, statusFirstNumber) {
             return d.key == key && d.desc != null && d.desc.code && d.desc.code.indexOf(statusFirstNumber) == 0;
         }).map(function (d) { return parseFloat(d.value); });
     };
-}
-
-/**
- * 
- * @param {[number]} data 
- * @returns sum of array
- */
-function sum(data) {
-    if (!data.length) return null;
-    return data.reduce(function (a, b) { return a + b; }, 0);
 }
 
 /**
