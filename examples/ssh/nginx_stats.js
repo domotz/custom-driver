@@ -1,14 +1,15 @@
-// ../examples/http/nginx_status.js
+
 /**
  * this driver is using ssh for the target server
  * the ssh user should have the sudo privilege to access log files
  * this driver is tested under nginx version: nginx/1.14.0 (Ubuntu)
+ * applicable for linux based systems
  */
 
 var _var = D.device.createVariable;
-var validation_cmd = "ls -al";
-var cpu_info_cmd = "lscpu | grep -ie '^cpu(s):' -ie '^thread(s) per core:' | awk '{print $NF}'";
-var nginx_status_stats_cmds = [
+var validationCmd = "ls -al";
+var cpuInfoCmd = "lscpu | grep -ie '^cpu(s):' -ie '^thread(s) per core:' | awk '{print $NF}'";
+var nginxStatusStatsCmds = [
     "STATUS=$(systemctl status nginx)",
     "echo status:Status:$(echo \"$STATUS\" | grep -i active | awk '{print $2 $3}')",
     "PID=$(echo \"$STATUS\" | grep PID | awk '{print $3}')",
@@ -18,10 +19,10 @@ var nginx_status_stats_cmds = [
     "echo tasks_limit:Tasks limit:$(echo \"$STATUS\" | grep -i tasks | awk '{print substr($4,1,length($4)-1)}')",
     "echo up_from:Up from:$(echo \"$STATUS\" | grep -i active | awk '{print \"\\x27\" $6 \" \" $7 \" \" substr($8,1,length($8)-1) \"\\x27\" \" +\\\"%s\\\"\"}' | xargs date -d)date",
 ];
-var nginx_system_config_cmd = "sudo systemctl show nginx --no-pager";
-var nginx_root_conf_file_location = "/etc/nginx/nginx.conf";
+var nginxSystemConfigCmd = "sudo systemctl show nginx --no-pager";
+var nginxRootConfFileLocation = "/etc/nginx/nginx.conf";
 
-function build_queries_for_log_file(id, logFile) {
+function buildQueriesForLogFile(id, logFile) {
     var command = "last_hour=$(date +\"%d/%b/%Y:%H\" -d \"$DATE -1 hour\");CONTENT=$(sudo grep $last_hour " + logFile + " | cut -d \" \" -f 9)";
     return [
         command,
@@ -32,15 +33,14 @@ function build_queries_for_log_file(id, logFile) {
     ];
 }
 
-var ssh_config = {
+var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    port: 27123,
     timeout: 30000
 };
 
-function exec_command(command, callback) {
-    var config = JSON.parse(JSON.stringify(ssh_config));
+function execCommand(command, callback) {
+    var config = JSON.parse(JSON.stringify(sshConfig));
     config.command = command;
     D.device.sendSSHCommand(config, function (out, err) {
         if (err) {
@@ -52,8 +52,8 @@ function exec_command(command, callback) {
     });
 }
 
-function cpu_info(next) {
-    exec_command(cpu_info_cmd, function (info) {
+function cpuInfo(next) {
+    execCommand(cpuInfoCmd, function (info) {
         next([
             _var("cpus", "CPU(s)", info[0]),
             _var("threads_per_core", "Thread(s) per core", info[1])
@@ -61,8 +61,8 @@ function cpu_info(next) {
     });
 }
 
-function nginx_status_stats(next) {
-    exec_command(nginx_status_stats_cmds.join(";"), function (info) {
+function nginxStatusStats(next) {
+    execCommand(nginxStatusStatsCmds.join(";"), function (info) {
         var variables = [];
         for (var i = 0; i < info.length; i++) {
             var param = info[i];
@@ -86,14 +86,14 @@ function nginx_status_stats(next) {
     });
 }
 
-function nginx_system_config(next) {
-    exec_command(nginx_system_config_cmd, function (info) {
+function nginxSystemConfig(next) {
+    execCommand(nginxSystemConfigCmd, function (info) {
         var variables = [];
         for (var i = 0; i < info.length; i++) {
             var keyValue = info[i].split("=");
             var value = keyValue.splice(1);
-            
-            variables.push(_var(keyValue[0], keyValue[0], value.join("=").substring(0,500)));
+
+            variables.push(_var(keyValue[0], keyValue[0], value.join("=").substring(0, 500)));
         }
         next(variables);
     });
@@ -101,20 +101,20 @@ function nginx_system_config(next) {
 
 
 /* parsing all config files and generate an object containing the config */
-function load_config(callback) {
+function loadConfig(callback) {
     /* Executing command and ignoring errors */
-    function execute_cmd(command, root, callback) {
-        var config = JSON.parse(JSON.stringify(ssh_config));
+    function executeCmd(command, root, callback) {
+        var config = JSON.parse(JSON.stringify(sshConfig));
         config.command = command;
         config.timeout = 5000;
         D.device.sendSSHCommand(config, function (out, err) {
             if (err) console.error(err);
-            build_config(root, out ? out : "", callback);
+            buildConfig(root, out ? out : "", callback);
         });
     }
 
     /* parser for nginx config file */
-    function build_config(root, data, callback) {
+    function buildConfig(root, data, callback) {
         var dataToProcess = data.toString().replace(/\n/g, "").trim().replace(/\s*\t*(\{|\}|;)\s*\t*/g, "$1");
         var param = "";
         var currentNode = root;
@@ -154,26 +154,26 @@ function load_config(callback) {
         }
         if (!includes.length) return callback(root);
 
-        var ls_files = "";
+        var lsFiles = "";
         includes.forEach(function (config) {
-            ls_files += " " + config.value;
+            lsFiles += " " + config.value;
         });
 
-        var cmd = "for file in $(ls -d " + ls_files + " 2>/dev/null); do sudo cat $file; done | sudo sed  's/\s*#.*$//'";
-        execute_cmd(cmd, root, callback);
+        var cmd = "for file in $(ls -d " + lsFiles + " 2>/dev/null); do sudo cat $file; done | sudo sed  's/\s*#.*$//'";
+        executeCmd(cmd, root, callback);
     }
 
     var root = { name: "root", params: [] };
-    var cmd = "sudo sed  's/\s*#.*$//' " + nginx_root_conf_file_location;
-    execute_cmd(cmd, root, function () {
+    var cmd = "sudo sed  's/\s*#.*$//' " + nginxRootConfFileLocation;
+    executeCmd(cmd, root, function () {
         callback(root);
     });
 }
 
 /* extracting the server_name, port and the log file */
-function build_config_vars(callback) {
+function buildConfigVars(callback) {
 
-    function find_servers(configs) {
+    function findServers(configs) {
         if (!configs) return [];
         var servers = [];
         for (var i = 0; i < configs.length; i++) {
@@ -181,7 +181,7 @@ function build_config_vars(callback) {
             if (config.name == "server") {
                 servers.push(config.params);
             } else if (config.params) {
-                var result = find_servers(config.params);
+                var result = findServers(config.params);
                 for (var j = 0; j < result.length; j++) {
                     servers.push(result[j]);
                 }
@@ -191,23 +191,23 @@ function build_config_vars(callback) {
     }
 
 
-    load_config(function (result) {
+    loadConfig(function (result) {
         var configs = [];
         var a = [].indexOf("hello");
-        var servers = find_servers([result]);
+        var servers = findServers([result]);
         servers.forEach(function (config, index) {
-            var server_name_config = config.filter(function (c) { return c.name == "server_name"; });
-            var listen_config = config.filter(function (c) { return c.name == "listen" && c.value.indexOf("[") != 0; });
-            var log_config = config.filter(function (c) { return c.name == "access_log"; });
-            var server_name = server_name_config.length ? server_name_config[0].value.split(" ")[0] : "default";
-            var listen = listen_config.length ? listen_config[0].value.split(" ")[0] : "80";
-            var addr_port = listen.split(":");
-            var port = addr_port.length > 1 ? addr_port[1] : addr_port[0];
-            var log_file = log_config.length ? log_config[0].value : "/var/log/nginx/access.log";
+            var serverNameConfig = config.filter(function (c) { return c.name == "server_name"; });
+            var listenConfig = config.filter(function (c) { return c.name == "listen" && c.value.indexOf("[") != 0; });
+            var logConfig = config.filter(function (c) { return c.name == "access_log"; });
+            var serverName = serverNameConfig.length ? serverNameConfig[0].value.split(" ")[0] : "default";
+            var listen = listenConfig.length ? listenConfig[0].value.split(" ")[0] : "80";
+            var addrPort = listen.split(":");
+            var port = addrPort.length > 1 ? addrPort[1] : addrPort[0];
+            var logFile = logConfig.length ? logConfig[0].value : "/var/log/nginx/access.log";
             configs.push({
-                server_name: server_name,
+                serverName: serverName,
                 port: port,
-                log_file: log_file
+                logFile: logFile
             });
 
         });
@@ -216,40 +216,40 @@ function build_config_vars(callback) {
 }
 
 var table = D.createTable("Nginx request stats", [
-    {label: "Server name"},
-    {label: "Server port"},
-    {label: "All requests"},
-    {label: "Successful requests"},
-    {label: "Redirected requests"},
-    {label: "Error requests"}
+    { label: "Server name" },
+    { label: "Server port" },
+    { label: "All requests" },
+    { label: "Successful requests" },
+    { label: "Redirected requests" },
+    { label: "Error requests" }
 ]);
 
 /* extracting some statistics from every log file and generate variables for domotz */
-function requests_stats(next) {
-    build_config_vars(function (configs) {
-        var log_commands = [];
+function requestsStats(next) {
+    buildConfigVars(function (configs) {
+        var logCommands = [];
         configs.forEach(function (config) {
-            var server_name = config.server_name;
+            var serverName = config.serverName;
             var port = config.port;
-            var log_file = config.log_file;
-            var queries = build_queries_for_log_file(server_name + ":" + port, log_file);
+            var logFile = config.logFile;
+            var queries = buildQueriesForLogFile(serverName + ":" + port, logFile);
             queries.forEach(function (query) {
-                log_commands.push(query);
+                logCommands.push(query);
             });
         });
-        exec_command(log_commands.join(";"), function (results) {
+        execCommand(logCommands.join(";"), function (results) {
             var variables = [];
-            for (var i = 0; i < results.length; i+=4) {
+            for (var i = 0; i < results.length; i += 4) {
                 var allReq = results[i];
-                var sucReq = results[i+1];
-                var redReq = results[i+2];
-                var errReq = results[i+3];
+                var sucReq = results[i + 1];
+                var redReq = results[i + 2];
+                var errReq = results[i + 3];
 
                 var row = [null, null];
                 var uid;
                 var server;
                 var port;
-                [allReq, sucReq, redReq, errReq].forEach(function(statString){
+                [allReq, sucReq, redReq, errReq].forEach(function (statString) {
                     var stat = statString.split(":");
                     server = stat[0];
                     port = stat[1];
@@ -266,26 +266,7 @@ function requests_stats(next) {
     });
 }
 
-
-
-/**
-* @remote_procedure
-* @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
-*/
-function validate() {
-    exec_command(build_queries_for_log_file("main", "/var/log/nginx/iovision-redmine.io.access.log").join(";"), function (result) {
-        var variables = [];
-        result.forEach(function (r) {
-            var stat = r.split(":");
-            variables.push(_var(stat[0] + "->" + stat[1], stat[2], stat[3]));
-            //variables.push(_var(r,r,r))
-        });
-        D.success(variables);
-    });
-}
-
-function seq_execute(functions, callback) {
+function seqExecute(functions, callback) {
     var callbackVariables = [];
     function executeNext(functionIndex) {
         if (functionIndex == functions.length) return callback(callbackVariables);
@@ -301,15 +282,38 @@ function seq_execute(functions, callback) {
 
 /**
 * @remote_procedure
+* @label Validate Association
+* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+*/
+function validate() {
+    function validateCallback(result) {
+        execCommand(buildQueriesForLogFile("main", "/var/log/nginx/iovision-redmine.io.access.log").join(";"), function (result) {
+            var variables = [];
+            result.forEach(function (r) {
+                var stat = r.split(":");
+                variables.push(_var(stat[0] + "->" + stat[1], stat[2], stat[3]));
+            });
+            D.success(variables);
+        });
+    }
+    execCommand(
+        nginxSystemConfigCmd,
+        validateCallback
+    )
+
+}
+
+/**
+* @remote_procedure
 * @label Get Device Variables
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    seq_execute([
-        nginx_status_stats,
-        cpu_info,
-        requests_stats,
-        nginx_system_config
+    seqExecute([
+        nginxStatusStats,
+        cpuInfo,
+        requestsStats,
+        nginxSystemConfig
     ], function (variables) {
         D.success(variables, table);
     });

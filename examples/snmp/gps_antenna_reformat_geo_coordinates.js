@@ -54,16 +54,16 @@ function get_status(){
             var cardinalNorS= "N";
             var cardinalEorO= "E";     
             // Formatting raw values
-            if (antennaStatusRaw == 1) antennaStatus = D.device.createVariable(1, "Antenna Status", "Active", " ");
-            if (antennaStatusRaw == 0) antennaStatus = D.device.createVariable(1, "Antenna Status", "Idle", " ");
+            if (antennaStatusRaw == 1) antennaStatus = D.device.createVariable("1", "Antenna Status", "Active", " ");
+            if (antennaStatusRaw == 0) antennaStatus = D.device.createVariable("1", "Antenna Status", "Idle", " ");
             var headingFormatted = round((headingRaw / 1000), 1) + "°";
             var latitudeFormatted = latitudeDefault.slice(0,2) + "° " + latitudeDefault.slice(3,5)+ "\"";
             var longitudeFormatted = longitudeDefault.slice(0,2) + "° " + longitudeDefault.slice(3,5)+ "\"";
 
             // Creating variables to be pushed 
-            var latitude = D.device.createVariable(2, "Latitude", latitudeFormatted, cardinalNorS);
-            var longitude = D.device.createVariable(3, "Longitude", longitudeFormatted, cardinalEorO);
-            var heading = D.device.createVariable(4, "Heading", headingFormatted, " ");
+            var latitude = D.device.createVariable("2", "Latitude", latitudeFormatted, cardinalNorS);
+            var longitude = D.device.createVariable("3", "Longitude", longitudeFormatted, cardinalEorO);
+            var heading = D.device.createVariable("4", "Heading", headingFormatted, " ");
             
             // Pushing the variables in the list to be displayed
             variables.push(antennaStatus);

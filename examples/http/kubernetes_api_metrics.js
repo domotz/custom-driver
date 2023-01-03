@@ -10,7 +10,7 @@
  */
 
 var _var = D.device.createVariable;
-var token = D.device.password();
+var token = D.device.password()
 var port = 80;
 
 /**
@@ -44,29 +44,6 @@ function getMetrics() {
 
     });
     return d.promise;
-}
-
-/**
- * 
- * @param {string} body containing metrics api response in PROMETHEUS format
- * @returns convert PROMETHEUS format to Javascript object
- */
-function convert(body) {
-    var lines = body.split("\n");
-    var result = lines
-        .filter(function (line) { return line.indexOf("#") != 0 && line; })
-        .map(function (line) {
-            var matches = line.match(/^([^\{]*)(\{(.*)\})? (.*)$/);
-            var key = matches[1];
-            var desc = matches[3] ? matches[3].split(",").reduce(function (a, b) {
-                var keyValue = b.split("=");
-                a[keyValue[0]] = keyValue[1].substring(1, keyValue[1].length - 1);
-                return a;
-            }, {}) : null;
-            var value = matches[4];
-            return { key: key, desc: desc, value: value };
-        });
-    return result;
 }
 
 /**
@@ -108,9 +85,8 @@ function getValueSum(key, filterFn){
     };
 }
 
-// config variable containing the list of monitoring parameters
-var config = [
-
+// The list of custom driver variables to monitor
+var monitoringList = [
     {
         uid: "apiserver_request_total_0",
         label: "API server requests: 0, rate",
@@ -174,22 +150,26 @@ var config = [
     {
         uid: "max_fds",
         label: "Fds max",
-        execute: getValueSum("process_max_fds")
+        execute: getValueSum("process_max_fds"),
+        type: D.valueType.NUMBER
     },
     {
         uid: "open_fds",
         label: "Fds open",
-        execute: getValueSum("process_open_fds")
+        execute: getValueSum("process_open_fds"),
+        type: D.valueType.NUMBER
     },
     {
         uid: "go_goroutines",
         label: "Goroutines",
-        execute: getValueSum("go_goroutines")
+        execute: getValueSum("go_goroutines"),
+        type: D.valueType.NUMBER
     },
     {
         uid: "go_threads",
         label: "Go threads",
-        execute: getValueSum("go_threads")
+        execute: getValueSum("go_threads"),
+        type: D.valueType.NUMBER
     },
     {
         uid: "grpc_client_started",
@@ -219,12 +199,14 @@ var config = [
         uid: "process_resident_memory_bytes",
         label: "Resident memory",
         execute: getValueSum("process_resident_memory_bytes"),
+        type: D.valueType.NUMBER,
         unit: "B"
     },
     {
         uid: "apiserver_tls_handshake_errors_total",
         label: "TLS handshake errors",
         execute: getValueSum("apiserver_tls_handshake_errors_total"),
+        type: D.valueType.NUMBER,
     },
     {
         uid: "process_virtual_memory_bytes",
@@ -236,14 +218,68 @@ var config = [
 ];
 
 /**
+ * 
+ * @param {number} number multiplier
+ * @returns the value muliplied by the number
+ */
+function multiplier(number){
+    return function(value){
+        return value*number;
+    };
+}
+/**
+ * 
+ * @param {[object]} data array of objects 
+ * @returns list of domotz variables
+ */
+function extract(data) {
+    return monitoringList.map(function (c) {
+        var result;
+        if (Array.isArray(c.execute)) {
+            result = c.execute.reduce(function (a, b) { return b(a); }, data);
+        } else if (typeof (c.execute) == "function") {
+            result = c.execute(data);
+        }
+        if(result){
+            return D.device.createVariable(c.uid, c.label, result, c.unit, c.type);
+        }else{
+            return null
+        }
+    }).filter(function(v){
+        return v != null
+    });
+}
+/**
+ * 
+ * @param {string} body containing metrics api response in PROMETHEUS format
+ * @returns convert PROMETHEUS format to Javascript object
+ */
+ function convert(body) {
+    var lines = body.split("\n");
+    var result = lines
+        .filter(function (line) { return line.indexOf("#") != 0 && line; })
+        .map(function (line) {
+            var matches = line.match(/^([^\{]*)(\{(.*)\})? (.*)$/);
+            var key = matches[1];
+            var desc = matches[3] ? matches[3].split(",").reduce(function (a, b) {
+                var keyValue = b.split("=");
+                a[keyValue[0]] = keyValue[1].substring(1, keyValue[1].length - 1);
+                return a;
+            }, {}) : null;
+            var value = matches[4];
+            return { key: key, desc: desc, value: value };
+        });
+    return result;
+}
+/**
  * fill the config variable with authenticated_user_requests
  * @param {[any]} data all the data parsed from the http response body
  */
-function fillConfigAuthUser(data) {
+ function fillConfigAuthUser(data) {
     data
         .filter(function (d) { return d.key == "authenticated_user_requests"; })
         .forEach(function (d) {
-            config.push({
+            monitoringList.push({
                 uid: ("authenticated_user_requests_" + d.desc.username).substring(0, 50),
                 label: "Authenticated requests: " + d.desc.username,
                 execute: function () { return parseFloat(d.value); },
@@ -260,7 +296,7 @@ function fillConfigAuthAttempt(data) {
     data
         .filter(function (d) { return d.key == "authentication_attempts"; })
         .forEach(function (d) {
-            config.push({
+            monitoringList.push({
                 uid: ("authentication_attempts" + d.desc.result).substring(0, 50),
                 label: "Authentication attempts: " + d.desc.result,
                 execute: function () { return parseFloat(d.value); },
@@ -277,7 +313,7 @@ function fillConfigCurrInflightReq(data) {
     data
         .filter(function (d) { return d.key == "apiserver_current_inflight_requests"; })
         .forEach(function (d) {
-            config.push({
+            monitoringList.push({
                 uid: ("current_inflight_requests_" + d.desc.request_kind).substring(0, 50),
                 label: "Requests current: " + d.desc.request_kind,
                 execute: function () { return parseFloat(d.value); },
@@ -295,7 +331,7 @@ function fillConfigWorkqueue(data){
     data1.forEach(function(d1){
         var name = d1.desc.name;
         var d2 = data2.filter(function(d){ return d.desc.name == name;});
-        config.push({
+        monitoringList.push({
             uid: ("workqueue_adds_total_" + name).substring(0, 50),
             label: name + " Workqueue adds total",
             execute: function () { return parseFloat(d1.value); },
@@ -303,7 +339,7 @@ function fillConfigWorkqueue(data){
         });
         if(d2.length){
             d2 = d2[0];
-            config.push({
+            monitoringList.push({
                 uid: ("workqueue_depth_" + name).substring(0, 50),
                 label: name + " Workqueue depth",
                 execute: function () { return parseFloat(d2.value); }
@@ -312,32 +348,6 @@ function fillConfigWorkqueue(data){
     });
 
 }
-
-
-/**
- * 
- * @param {string} number to convert to float
- * @returns float number
- */
-function toFloat(number){
-    if(number == "+Inf"){
-        return Infinity;
-    }else{
-        return parseFloat(number);
-    }
-}
-
-/**
- * 
- * @param {number} number multiplier
- * @returns the value muliplied by the number
- */
-function multiplier(number){
-    return function(value){
-        return value*number;
-    };
-}
-
 var fillConfigFns = [
     fillConfigAuthUser, 
     fillConfigAuthAttempt,
