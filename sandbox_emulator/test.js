@@ -122,3 +122,4 @@ console.log(stateMetrics);
 //     Zabbix.log(3, '[ Kubernetes ] ERROR: ' + error);
 //     console.log({ error: error });
 // }
+
