@@ -9,6 +9,7 @@
  * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS 
  */
 
+var _var = D.device.createVariable;
 var token = D.device.password()
 var port = 80;
 
@@ -355,9 +356,32 @@ var fillConfigFns = [
 ];
 
 /**
+ * 
+ * @param {[object]} data array of objects 
+ * @returns list of domotz variables
+ */
+function extract(data) {
+    return config.map(function (c) {
+        var result;
+        if (Array.isArray(c.execute)) {
+            result = c.execute.reduce(function (a, b) { return b(a); }, data);
+        } else if (typeof (c.execute) == "function") {
+            result = c.execute(data);
+        }
+        if(result){
+            return _var(c.uid, c.label, result, c.unit, c.type);
+        }else{
+            return null;
+        }
+    }).filter(function(v){
+        return v != null;
+    });
+}
+
+/**
 * @remote_procedure
-* @label Validate Kubernetes Instance
-* @documentation This procedure validates if the API metrics are accessible on the device
+* @label Validate Association
+* @documentation This procedure is used to validate if the metrics api is accessible
 */
 function validate() {
     getMetrics()
@@ -366,9 +390,13 @@ function validate() {
         });
 }
 
+function success(vars){
+    D.success(vars);
+}
+
 /**
 * @remote_procedure
-* @label Get Kubernetes API Metrics Data
+* @label Get Device Variables
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
@@ -381,9 +409,9 @@ function get_status() {
             return data;
         })
         .then(extract)
-        .then(D.success)
+        .then(success)
         .catch(function(err){
-            console.error(err)
+            console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
