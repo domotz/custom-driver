@@ -1,14 +1,16 @@
 /** 
- * This driver extract RabbiMQ Nodes information
+ * This driver gets node metrics from RabbitMQ management plugin provided an HTTP-based API using HTTP agent
  * Communication protocol is http
- * 
+ * Communicate with http api using USERNAME and PASSWORD
+ * The rabbitmq cluster name is modified in each installation.So, you can find it in the right side of the rabbitmq GUI. example: Cluster rabbit@319ac541e311
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
  */
-var port = 27002;
+var port = 15672;
 var nodes, overview, monitoringList;
 var healthcheck = {};
 var vars = [];
-//var cluster = "TOCHANGE_CLUSTER_NAME" // example: rabbit@319ac541e311
-var cluster = "rabbit@4ac880362265";
+var cluster = "TO_CHANGE_CLUSTER_NAME" // example: rabbit@319ac541e311
+
 /**
  * @returns promise for http response body
  */
@@ -127,6 +129,7 @@ function length(value) {
 
 /**
  * @param {string} key parameter key
+ * @param {string} body 
  * @returns extract values of all RabbitMQ nodes
  */
 function extractValue(data, key) {
@@ -286,7 +289,7 @@ function loadData() {
 /**
  * @remote_procedure
  * @label Validate Association
- * @documentation This procedure is used to validate if the call to the apache status page is ok
+ * @documentation This procedure is used to validate if the node metrics apis are accessible
  */
 function validate() {
     loadData()
@@ -300,7 +303,8 @@ function success() {
 /**
  * @remote_procedure
  * @label Get Device Variables
- * @documentation This procedure is used for monitoring rabbitmq related processes
+ * @documentation This procedure is used to extract monitoring parameters from RabbitMQ nodes.
+ * 
  */
 function get_status() {
     loadData()
