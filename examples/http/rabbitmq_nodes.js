@@ -10,7 +10,6 @@ var nodes, overview, monitoringList;
 var healthcheck = {};
 var vars = [];
 var cluster = "TO_CHANGE_CLUSTER_NAME" // example: rabbit@319ac541e311
-
 /**
  * @returns promise for http response body
  */
