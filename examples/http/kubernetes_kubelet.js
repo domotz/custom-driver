@@ -17,7 +17,7 @@ var vars = [];
 var table = D.createTable("Kubelets", [
     {label: "node"},
     {label: "namespace"},
-    {label: "CPU: Load avg 10s"},
+    {label: "CPU: usage rate", type: D.valueType.RATE},
     {label: "CPU: System seconds"},
     {label: "CPU: User seconds"},
 ]);
@@ -279,7 +279,7 @@ function fillTable() {
             row: [
                 node.name,
                 item.namespace,
-                getValueSum(node.metrics, "container_cpu_load_average_10s", function(d){
+                getValueSum(node.metrics, "container_cpu_usage_seconds_total", function(d){
                     return d.desc.pod==item.podName && d.desc.namespace == item.namespace;
                 })(),
                 getValueSum(node.metrics, "container_cpu_system_seconds_total", function(d){
