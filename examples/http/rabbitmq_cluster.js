@@ -3,6 +3,25 @@
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
  * Dynamically create a table with specific columns in table variable.
+ * Return a table with this columns:
+ * -------------------------------------
+ * Returned unroutable per second: The rate of messages (per second) returned to a publisher as unroutable.
+ * Returned unroutable: The count of messages returned to a publisher as unroutable.
+ * Redelivered per second: The rate of subset of messages (per second) in the `deliver_get`, which had the `redelivered` flag set.
+ * Redelivered: The count of subset of messages in the `deliver_get`, which had the `redelivered` flag set.
+ * Publish_out per second: The rate of messages (per second) published from this overview into queues.
+ * Publish_out: The count of messages published from this overview into queues.
+ * Publish_in per second: The rate of messages (per second) published from the channels into this overview.
+ * Publish_in: The count of messages published from the channels into this overview.
+ * Published per second: The rate of messages published per second.
+ * Published: The count of published messages.
+ * Delivered per second: The rate of the sum of messages (per second) delivered to consumers in acknowledgement and no-acknowledgement mode.
+ * Delivered: The sum of messages delivered to consumers in acknowledgement and no-acknowledgement mode.
+ * Confirmed per second: The rate of messages confirmed per second.
+ * Confirmed: The count of confirmed messages.
+ * Acknowledged per second: The rate of messages (per second) delivered to clients and acknowledged.
+ * Acknowledged: The number of messages delivered to clients and acknowledged.
+ * -------------------------------------
  * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
  */
 
@@ -28,6 +47,9 @@ var table = D.createTable("Cluster", [
     { label: "Acknowledged" }
 ]);
 
+/**
+ * @returns promise for http response body
+ */
 function httpGet(url) {
     var d = D.q.defer();
     D.device.http.get({
@@ -88,7 +110,6 @@ function getExchanges() {
 
 /**
  * @param {string} key parameter key
- * @param {object} data for cluster informations
  * @returns extract values of all RabbitMQ cluster
  */
 function extractValue(data, key) {
@@ -101,134 +122,159 @@ function extractValue(data, key) {
 function fillConfig() {
     monitoringList = [
         {
+            //
             uid: "queues",
             label: "Queues total",
             execute: extractValue(overview.object_totals, "queues")
         },
         {
+            //The number of unacknowledged messages.
             uid: "messages_unacknowledged",
             label: "Messages unacknowledged",
             execute: extractValue(overview.queue_totals, "messages_unacknowledged")
         },
         {
+            //The total number of messages (ready, plus unacknowledged).
             uid: "messages",
             label: "Messages total",
             execute: extractValue(overview.queue_totals, "messages")
         },
         {
-            uid: "return_unroutable_details",
+            //The rate of messages (per second) returned to a publisher as unroutable.
+            uid: "return_unroutab_details",
             label: "Messages returned unroutable per second",
             execute: extractValue(overview.message_stats, "return_unroutable_details"),
             type: D.valueType.RATE
         },
         {
-            uid: "return_unroutable",
+            //The count of messages returned to a publisher as unroutable.
+            uid: "return_unroutab",
             label: "Messages returned unroutable",
             execute: extractValue(overview.message_stats, "return_unroutable")
         },
         {
+            //The rate of subset of messages (per second) in the `deliver_get`, which had the `redelivered` flag set.
             uid: "redeliver_details",
             label: "Messages returned redeliver per second",
             execute: extractValue(overview.message_stats, "redeliver_details"),
             type: D.valueType.RATE
         },
         {
+            //The count of subset of messages in the `deliver_get`, which had the `redelivered` flag set.
             uid: "redeliver",
             label: "Messages returned redeliver",
             execute: extractValue(overview.message_stats, "redeliver")
         },
         {
+            //The number of messages ready for delivery.
             uid: "messages_ready",
             label: "Messages ready for delivery",
             execute: extractValue(overview.message_stats, "messages_ready")
         },
         {
+            //The rate of messages (per second) published from this overview into queues.
             uid: "publish_out_details",
             label: "Messages publish_out per second",
             execute: extractValue(overview.message_stats, "publish_out_details"),
             type: D.valueType.RATE
         },
         {
+            //The count of messages published from this overview into queues.
             uid: "publish_out",
             label: "Messages publish_out",
             execute: extractValue(overview.message_stats, "publish_out")
         },
         {
+            //The rate of messages (per second) published from the channels into this overview.
             uid: "publish_in_details",
             label: "Messages publish_in per second",
             execute: extractValue(overview.message_stats, "publish_in_details"),
             type: D.valueType.RATE
         },
         {
+            //The count of messages published from the channels into this overview.
             uid: "publish_in",
             label: "Messages publish_in",
             execute: extractValue(overview.message_stats, "publish_in")
         },
         {
+            //The rate of published messages per second.
             uid: "publish_details",
             label: "Messages published per second",
             execute: extractValue(overview.message_stats, "publish_details"),
             type: D.valueType.RATE
         },
         {
+            //The count of published messages.
             uid: "publish",
             label: "Messages published",
             execute: extractValue(overview.message_stats, "publish")
         },
         {
+            //The rate of the sum of messages (per second) delivered to consumers in acknowledgement and no-acknowledgement mode.
             uid: "deliver_get_details",
             label: "Messages delivered per second",
             execute: extractValue(overview.message_stats, "deliver_get_details"),
             type: D.valueType.RATE
         },
         {
+            //The sum of messages delivered to consumers in acknowledgement and no-acknowledgement mode.
             uid: "deliver_get",
             label: "Messages delivered",
             execute: extractValue(overview.message_stats, "deliver_get")
         },
         {
+            //The rate of confirmed messages per second.
             uid: "confirm_details",
             label: "Messages confirmed per second",
             execute: extractValue(overview.message_stats, "confirm_details"),
             type: D.valueType.RATE
         },
         {
+            //The count of confirmed messages.
             uid: "confirm",
             label: "Messages confirmed",
             execute: extractValue(overview.message_stats, "confirm")
         },
         {
+            //The rate of messages (per second) delivered to clients and acknowledged.
             uid: "ack_details",
             label: "Messages acknowledged per second",
             execute: extractValue(overview.message_stats, "ack_details"),
             type: D.valueType.RATE
         },
         {
+            //The number of messages delivered to clients and acknowledged.
             uid: "ack",
             label: "Messages acknowledged",
             execute: extractValue(overview.message_stats, "ack")
         },
         {
+            //Checks if there are no alarms in effect in the cluster
             uid: "alarms",
             label: "Healthcheck: alarms in effect in the cluster",
             execute: extractValue(healthcheck, "status")
         },
         {
+            //The total number of exchanges.
             uid: "exchanges",
             label: "Exchanges total",
             execute: extractValue(overview.object_totals, "exchanges")
         },
         {
+            //The total number of consumers.
             uid: "consumers",
             label: "Consumers total",
             execute: extractValue(overview.object_totals, "consumers")
         },
         {
+            //The total number of connections.
             uid: "connections",
             label: "Connections total",
             execute: extractValue(overview.object_totals, "connections")
         },
         {
+            //The total number of channels.
             uid: "channels",
             label: "Channels total",
             execute: extractValue(overview.object_totals, "channels")
@@ -236,6 +282,7 @@ function fillConfig() {
     ];
 }
 
+//fill the dynamic table with data related to exchanges  
 function fillTable() {
     exchanges.forEach(function (item) {
         var id = "[" + item.name + "]" + "[" + item.vhost + "]" + "[" + item.type + "]";
@@ -299,7 +346,7 @@ function extract(data) {
     });
 }
 
-//Load all data
+// load overview, helthcheck and exchanges informations
 function loadData() {
     return D.q.all([
         getOverview(),
@@ -322,7 +369,7 @@ function validate() {
         });
 }
 
-
+//Indicate the successful execution for variable list and table
 function success() {
     D.success(vars, table);
 }
