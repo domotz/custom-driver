@@ -243,10 +243,10 @@ function extract(data) {
         if(result){
             return D.device.createVariable(c.uid, c.label, result, c.unit, c.type);
         }else{
-            return null
+            return null;
         }
     }).filter(function(v){
-        return v != null
+        return v != null;
     });
 }
 /**
@@ -254,7 +254,7 @@ function extract(data) {
  * @param {string} body containing metrics api response in PROMETHEUS format
  * @returns convert PROMETHEUS format to Javascript object
  */
- function convert(body) {
+function convert(body) {
     var lines = body.split("\n");
     var result = lines
         .filter(function (line) { return line.indexOf("#") != 0 && line; })
@@ -275,7 +275,7 @@ function extract(data) {
  * fill the config variable with authenticated_user_requests
  * @param {[any]} data all the data parsed from the http response body
  */
- function fillConfigAuthUser(data) {
+function fillConfigAuthUser(data) {
     data
         .filter(function (d) { return d.key == "authenticated_user_requests"; })
         .forEach(function (d) {
@@ -354,29 +354,6 @@ var fillConfigFns = [
     fillConfigCurrInflightReq,
     fillConfigWorkqueue
 ];
-
-/**
- * 
- * @param {[object]} data array of objects 
- * @returns list of domotz variables
- */
-function extract(data) {
-    return config.map(function (c) {
-        var result;
-        if (Array.isArray(c.execute)) {
-            result = c.execute.reduce(function (a, b) { return b(a); }, data);
-        } else if (typeof (c.execute) == "function") {
-            result = c.execute(data);
-        }
-        if(result){
-            return _var(c.uid, c.label, result, c.unit, c.type);
-        }else{
-            return null;
-        }
-    }).filter(function(v){
-        return v != null;
-    });
-}
 
 /**
 * @remote_procedure
