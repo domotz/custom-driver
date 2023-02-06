@@ -16,10 +16,10 @@ var options = {
     "command": command,
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 35000
+    "timeout": 5000
 };
 
-// Helper function to parse the df response and call the success callback
+// Helper function to parse the device response and call the success callback
 function successCallback(output) {
     // Creation of custom driver table 
     var table = D.createTable(
@@ -30,31 +30,30 @@ function successCallback(output) {
         ]
     );
 
-var outputArr = output.split(/\r?\n/);
-var outputArrLen = outputArr.length;
+    var outputArr = output.split(/\r?\n/);
+    var outputArrLen = outputArr.length;
 
-for (var i = 0; i < outputArrLen; i++) {
-    var fields = outputArr[i].replace(/\s+/g,' ').trim();
-    var uidN = i;
-    var uid=uidN.toString();
-    var fieldsArr = fields.split(":");
+    for (var i = 0; i < outputArrLen; i++) {
+        var fields = outputArr[i].replace(/\s+/g,' ').trim();
+        var fieldsArr = fields.split(":");
+        recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
 
-    if (fieldsArr.includes("Front Panel Slot")) {
-      let lastElement = fieldsArr[fieldsArr.length - 1];
+        if (fieldsArr.includes("Front Panel Slot")) {
+        const lastElement = fieldsArr[fieldsArr.length - 1];
 
-      table.insertRecord(
-        uid, ["Front Panel Slot", lastElement]
-      )
-    }
+        table.insertRecord(
+            recordId, ["Front Panel Slot", lastElement]
+        )
+        }
 
-    if (fieldsArr.includes("Core3UILevel")) {
-      let lastElement = fieldsArr[fieldsArr.length - 1];
+        if (fieldsArr.includes("Core3UILevel")) {
+        let lastElement = fieldsArr[fieldsArr.length - 1];
 
-      table.insertRecord(
-        uid, ["Core3UILevel", lastElement]
-      )
-    }
-} 
+        table.insertRecord(
+            recordId, ["Core3 UI Level", lastElement]
+        )
+        }
+    } 
 
 D.success(table);
 }
@@ -64,7 +63,7 @@ D.success(table);
 * Calls success callback on ssh output
 */
 function commandExecutionCallback(output, error) {
-    console.info("Execution: ", output);
+    //console.info("Execution: ", output);
     if (error) {
         console.error("Error: ", error);
         if (error.message && (error.message.indexOf("Invalid") === -1 || error.message.indexOf("Handshake failed") === -1)) {
@@ -86,7 +85,7 @@ function commandExecutionCallback(output, error) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation Verifies if the driver can be applied on the device. Checks for credentials
+* @documentation Verifies if the driver can be applied on the device. Checks for credentials and for 
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
@@ -96,7 +95,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Variables
-* @documentation Creates Linux DF custom driver table
+* @documentation Creates custom driver table with defined sensors
 */
 function get_status() {
     D.device.sendSSHCommand(options, commandExecutionCallback);
