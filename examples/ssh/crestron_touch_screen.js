@@ -23,29 +23,22 @@ var options = {
 function successCallback(output) {
     // Creation of custom driver table 
     var table = D.createTable(
-        "Table",
+        "Touchscreen Sensors",
         [
             { label: "Sensor" },
             { label: "Value" }
         ]
     );
 
-console.log(output)  
-
 var outputArr = output.split(/\r?\n/);
 var outputArrLen = outputArr.length;
 
 for (var i = 0; i < outputArrLen; i++) {
     var fields = outputArr[i].replace(/\s+/g,' ').trim();
-    //console.log(line);
     var uidN = i;
     var uid=uidN.toString();
-
     var fieldsArr = fields.split(":");
-     
-    //console.log(fieldsArr) 
-    console.log(fieldsArr.includes("Core3UILevel"));
-  
+
     if (fieldsArr.includes("Front Panel Slot")) {
       let lastElement = fieldsArr[fieldsArr.length - 1];
 
@@ -108,9 +101,3 @@ function validate() {
 function get_status() {
     D.device.sendSSHCommand(options, commandExecutionCallback);
 }
-
-/**
-* @remote_procedure
-* @label Please add a label for the custom_1 function
-* @documentation Please add a documentation for the custom_1 function
-*/
