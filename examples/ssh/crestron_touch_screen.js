@@ -36,7 +36,7 @@ function successCallback(output) {
     for (var i = 0; i < outputArrLen; i++) {
         var fields = outputArr[i].replace(/\s+/g,' ').trim();
         var fieldsArr = fields.split(":");
-        recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
+        var recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
 
         if (fieldsArr.includes("Front Panel Slot")) {
         const lastElement = fieldsArr[fieldsArr.length - 1];
@@ -47,7 +47,7 @@ function successCallback(output) {
         }
 
         if (fieldsArr.includes("Core3UILevel")) {
-        let lastElement = fieldsArr[fieldsArr.length - 1];
+        const lastElement = fieldsArr[fieldsArr.length - 1];
 
         table.insertRecord(
             recordId, ["Core3 UI Level", lastElement]
