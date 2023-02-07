@@ -5,15 +5,14 @@
  * 
  * Communication protocol is SSH.
  * 
- * Creates a Custom Driver Table with the following colums:
+ * Creates a Custom Driver Table with the following columns:
  *  - Sensor
  *  - Value
 **/
 
 // Ssh options and command to be run
-var command ="info"
-var options = {
-    "command": command,
+var sshOptions = {
+    "command": "info",
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 5000
@@ -22,7 +21,7 @@ var options = {
 // Helper function to parse the device response and call the success callback
 function successCallback(output) {
     // Creation of custom driver table 
-    var table = D.createTable(
+    var touchScreenSensorsTable = D.createTable(
         "Touchscreen Sensors",
         [
             { label: "Sensor" },
@@ -30,49 +29,39 @@ function successCallback(output) {
         ]
     );
 
-    var outputArr = output.split(/\r?\n/);
-    if (outputArr == null) {
-        console.error("outputArr is empty or undefined")
-        D.failure(D.errorType.GENERIC_ERROR) 
+    var commandOutputArray = output.split(/\r?\n/);
+    if (commandOutputArray == null) {
+        console.error("commandOutputArray is empty or undefined")
+        D.failure(D.errorType.PARSING_ERROR) 
     }
-    var outputArrLen = outputArr.length;
 
-    for (var i = 0; i < outputArrLen; i++) {
-        var fields = outputArr[i].replace(/\s+/g,' ').trim();
-
-        if (fields == "") {
-            console.info("line empty, skipping")
+    for (var i = 0; i < commandOutputArray.length; i++) {
+        if (commandOutputArray[i] == null){
+            console.debug("Line empty, skipping")
         }
-        else {
-            var fieldsArr = fields.split(":");
+        else{
+            var fieldsArray = commandOutputArray[i].replace(/\s+/g,' ').trim().split(":");
 
-            if (fieldsArr[0] == null) {
+            if (fieldsArray[0] == null) {
                 console.error("fieldsArray[0] is empty  or undefined")
-                D.failure(D.errorType.GENERIC_ERROR) 
+                D.failure(D.errorType.PARSING_ERROR) 
             }
             
             var recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
-
-
-            if (fieldsArr.includes("Front Panel Slot")) {
-            const lastElement = fieldsArr[fieldsArr.length - 1];
-
-            table.insertRecord(
-                recordId, ["Front Panel Slot", lastElement]
-            )
+            var recordValue = fieldsArray[fieldsArray.length - 1];
+            if (fieldsArray.includes("Front Panel Slot")) {
+                touchScreenSensorsTable.insertRecord(
+                    recordId, ["Front Panel Slot", recordValue]
+                )
             }
-
-            if (fieldsArr.includes("Core3UILevel")) {
-            const lastElement = fieldsArr[fieldsArr.length - 1];
-
-            table.insertRecord(
-                recordId, ["Core3 UI Level", lastElement]
-            )
+            if (fieldsArray.includes("Core3UILevel")) {
+                touchScreenSensorsTable.insertRecord(
+                    recordId, ["Core3 UI Level", recordValue]
+                )
             }
         }
     } 
-
-D.success(table);
+    D.success(touchScreenSensorsTable);
 }
 /**
 * SSH Command execution Callback
@@ -80,7 +69,6 @@ D.success(table);
 * Calls success callback on ssh output
 */
 function commandExecutionCallback(output, error) {
-    //console.info("Execution: ", output);
     if (error) {
         console.error("Error: ", error);
         if (error.message && (error.message.indexOf("Invalid") === -1 || error.message.indexOf("Handshake failed") === -1)) {
@@ -98,22 +86,21 @@ function commandExecutionCallback(output, error) {
     }
 }
 
-
 /**
 * @remote_procedure
-* @label Validate Association
+* @label Validate Device is Crestron Touch Screen
 * @documentation Verifies if the driver can be applied on the device. Checks for credentials and for 
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    D.device.sendSSHCommand(options, commandExecutionCallback);
+    D.device.sendSSHCommand(sshOptions, commandExecutionCallback);
 }
 
 /**
 * @remote_procedure
-* @label Get Variables
+* @label Get Sensor Table Variables
 * @documentation Creates custom driver table with defined sensors
 */
 function get_status() {
-    D.device.sendSSHCommand(options, commandExecutionCallback);
+    D.device.sendSSHCommand(sshOptions, commandExecutionCallback);
 }
