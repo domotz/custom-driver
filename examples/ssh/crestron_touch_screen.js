@@ -31,27 +31,44 @@ function successCallback(output) {
     );
 
     var outputArr = output.split(/\r?\n/);
+    if (outputArr == null) {
+        console.error("outputArr is empty or undefined")
+        D.failure(D.errorType.GENERIC_ERROR) 
+    }
     var outputArrLen = outputArr.length;
 
     for (var i = 0; i < outputArrLen; i++) {
         var fields = outputArr[i].replace(/\s+/g,' ').trim();
-        var fieldsArr = fields.split(":");
-        var recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
 
-        if (fieldsArr.includes("Front Panel Slot")) {
-        const lastElement = fieldsArr[fieldsArr.length - 1];
-
-        table.insertRecord(
-            recordId, ["Front Panel Slot", lastElement]
-        )
+        if (fields == "") {
+            console.info("line empty, skipping")
         }
+        else {
+            var fieldsArr = fields.split(":");
 
-        if (fieldsArr.includes("Core3UILevel")) {
-        const lastElement = fieldsArr[fieldsArr.length - 1];
+            if (fieldsArr[0] == null) {
+                console.error("fieldsArray[0] is empty  or undefined")
+                D.failure(D.errorType.GENERIC_ERROR) 
+            }
+            
+            var recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
 
-        table.insertRecord(
-            recordId, ["Core3 UI Level", lastElement]
-        )
+
+            if (fieldsArr.includes("Front Panel Slot")) {
+            const lastElement = fieldsArr[fieldsArr.length - 1];
+
+            table.insertRecord(
+                recordId, ["Front Panel Slot", lastElement]
+            )
+            }
+
+            if (fieldsArr.includes("Core3UILevel")) {
+            const lastElement = fieldsArr[fieldsArr.length - 1];
+
+            table.insertRecord(
+                recordId, ["Core3 UI Level", lastElement]
+            )
+            }
         }
     } 
 
