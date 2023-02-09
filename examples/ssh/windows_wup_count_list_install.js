@@ -9,8 +9,8 @@
  * Communication protocol is SSH.
  * 
  * Creates a Variable Section with 
- *  - Severity
- *  - Number of Updates
+ *  - Severity or Category
+ *  - Number of Updates related to that Severity or Category 
  * 
  * Creates Custom Driver Table with the following columns:
  *   - Id (Microsoft KB)
@@ -26,7 +26,7 @@ var options = {
     "command": command,
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 20000 
+    "timeout": 35000
 };
 
 // Helper function to parse the windows update info response and call the success callback
@@ -47,6 +47,7 @@ function successCallback(output) {
     var LowCount = 0;
     var ModerateCount = 0;
     var UnspecifiedCount = 0;
+    var SecurityCount = 0;
 
     var k = 0;
     if (!output) {
@@ -64,6 +65,9 @@ function successCallback(output) {
         }
         if (!severity) {
             severity = 'Unspecified'
+        }
+        if (category.includes("Security")) {
+            SecurityCount++ ;
         }
         switch(severity) {
         case 'Critical':
@@ -94,21 +98,21 @@ function successCallback(output) {
         );
         k++;
     }
-    dCritical = D.createVariable('4','Critical',CriticalCount,'',D.valueType.NUMBER);
-    dImportant = D.createVariable('3','Important',ImportantCount,'',D.valueType.NUMBER);
-    dLow = D.createVariable('2','Low',LowCount,'',D.valueType.NUMBER);
-    dModerate = D.createVariable('1','Moderate',ModerateCount,'',D.valueType.NUMBER);
-    dUnspecified = D.createVariable('0','Unspecified',UnspecifiedCount,'',D.valueType.NUMBER);
-    D.success([dCritical,dImportant,dLow,dModerate,dUnspecified],table);
+    dUnspecified = D.createVariable('0-s-u','Severity - Unspecified',UnspecifiedCount,'',D.valueType.NUMBER);
+    dModerate = D.createVariable('1-s-m','Severity - Moderate',ModerateCount,'',D.valueType.NUMBER);
+    dLow = D.createVariable('2-s-l','Severity - Low',LowCount,'',D.valueType.NUMBER);
+    dImportant = D.createVariable('3-s-i','Severity - Important',ImportantCount,'',D.valueType.NUMBER);
+    dCritical = D.createVariable('4-s-c','Severity - Critical',CriticalCount,'',D.valueType.NUMBER);
+    dSecurity = D.createVariable('99-c-s','Category - Security',SecurityCount,'',D.valueType.NUMBER);
+    D.success([dCritical,dImportant,dLow,dModerate,dUnspecified,dSecurity],table);
 }
-
 /**
 * SSH Command execution Callback
 * Checks for errors: Parsing, Authentication, Generic
 * Calls success callback on ssh output
 */
 function commandExecutionCallback(output, error) {
-    //console.info("Execution: ", output);
+    console.info("Execution: ", output);
     if (error) {
         console.error("Error: ", error);
         if (error.message && (error.message.indexOf("Invalid") === -1 || error.message.indexOf("Handshake failed") === -1)) {
@@ -140,7 +144,7 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Variables
-* @documentation Creates WUP variables section and custom driver table
+* @documentation Creates WUP custom driver table
 */
 function get_status() {
     D.device.sendSSHCommand(options, commandExecutionCallback);
@@ -150,7 +154,7 @@ function get_status() {
 /**
 * @remote_procedure
 * @label Install Updates
-* @documentation WARNING!! This button does not provide with a confirmation dialogue: it will install all the missing udates from the list, but does not reboot the host.
+* @documentation Installs all the missing udates from the list, it does not reboot
 */
 function custom_1(){
 
