@@ -33,7 +33,8 @@
 
 var port = 15672;
 var queues;
-var page = 1, size = 5;//, regex = "cla";
+var page = 1, size = 100;
+// var queueNameRegex = ""; // Parameter used to filter queue names
 var table = D.createTable("Queues", [
     { label: "Name" },
     { label: "Vhost" },
@@ -95,7 +96,7 @@ function getQueues() {
     params = [];
     if (typeof page !== "undefined") params.push("page=" + page);
     if (typeof size !== "undefined") params.push("page_size=" + size);
-    if (typeof regex !== "undefined") params.push("name=" + regex + "&use_regex=true");
+    if (typeof queueNameRegex !== "undefined") params.push("name=" + queueNameRegex + "&use_regex=true");
     if (params.length)
         query += "?" + params.join("&");
     return httpGet(query)
@@ -110,7 +111,7 @@ function getQueues() {
 //fill the dynamic table with data related to queues  
 function fillTable() {
     queues.forEach(function (item) {
-        var id = new Buffer("[" + item.name + "]" + "[" + item.vhost + "]").toString("base64").substring(0, 50);
+        var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
         var name = item.name;
         var vhost = item.vhost;
         var deliverGetDetails = item.message_stats && item.message_stats.deliver_get_details && item.message_stats.deliver_get_details.rate || 0;
@@ -131,7 +132,7 @@ function fillTable() {
         var queueMessages = item.messages || 0;
         var queueMemory = item.memory || 0;
         var queueConsumers = item.consumers || 0;
-        table.insertRecord(id, [
+        table.insertRecord(recordId, [
             name,
             vhost,
             deliverGetDetails,

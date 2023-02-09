@@ -85,9 +85,14 @@ function httpGet() {
 //fill the dynamic table with data related to exchanges. 
 function fillTable(data) {
     data.forEach(function (item) {
-        var id = new Buffer("[" + item.name + "]" + "[" + item.vhost + "]" + "[" + item.type + "]").toString("base64").substring(0, 50);
-        var name = item.name;
+        var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
         var vhost = item.vhost;
+        if (vhost === "/"){
+            // Igore root level exchanges and only collect vhost child ones.
+            // Remove conditional in case you want to monitor them as well
+            return
+        }
+        var name = item.name;
         var type = item.type;
         var unroutableDetails = item.message_stats && item.message_stats.return_unroutable_details && item.message_stats.return_unroutable_details.rate || 0;
         var unroutable = item.message_stats && item.message_stats.return_unroutable || 0;
@@ -105,7 +110,7 @@ function fillTable(data) {
         var confirmed = item.message_stats && item.message_stats.confirm || 0;
         var ackDetails = item.message_stats && item.message_stats.ack_details && item.message_stats.ack_details.rate || 0;
         var acknowledged = item.message_stats && item.message_stats.ack || 0;
-        table.insertRecord(id, [
+        table.insertRecord(recordId, [
             name,
             vhost,
             type,
