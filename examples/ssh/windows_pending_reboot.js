@@ -1,18 +1,25 @@
 /**
  * Domotz Custom Driver
- * Name: Windows Pending Reboot sensor
- * Description:  Monitors the "Pending Reboot" state [YES,no] - Reboot action can be performed using the reboot button.
- * Communication protocol is SSH.
+ * Name: Windows Pending Reboot Sensor
+ * Description:  Monitors the "Pending Reboot" state [Yes, No] - Reboot action can be performed using the reboot button.
+ * Communication protocol is SSH. Utilizing the native windows powershell command
  * 
- * Creates a Custom Driver Variable containing YES or no, depending on the device pending reboot status
+ * Tested on Windows Versions:
+ *      - Windows 10
+ *      - Microsoft Windows Server 2019
+ * Powershell Version:
+ *      - 5.1.19041.2364
+ * Creates two custom driver variables:
+ *      - Device Uptime - The uptime of the device the driver is applied on
+ *      - Pending Reboot - Yes or No, depending if the device has a pending reboot
  * 
  * Code used in the command was taken and modified from the PS module "pendingreboot"
  */
 
-// The ssh options for windows update info retrieval
-var command ="powershell -c \"$invokeWmiMethodParameters = @{Namespace= 'root/default';Class= 'StdRegProv';Name= 'EnumKey';ErrorAction  = 'Stop';};$hklm = [UInt32] '0x80000002';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\');$registryComponentBasedServicing = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootPending';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\');$registryWindowsUpdateAutoUpdate = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootRequired';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Services\Netlogon');$registryNetlogon = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames;$pendingDomainJoin = ($registryNetlogon -contains 'JoinDomain') -or ($registryNetlogon -contains 'AvoidSpnSet');$invokeWmiMethodParameters.Name = 'GetMultiStringValue';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName\', 'ComputerName');$registryActiveComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\', 'ComputerName');$registryComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$pendingComputerRename = $registryActiveComputerName -ne $registryComputerName -or $pendingDomainJoin;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\Session Manager\', 'PendingFileRenameOperations');$registryPendingFileRenameOperations = (Invoke-WmiMethod @invokeWmiMethodParameters).sValue;$registryPendingFileRenameOperationsBool = [bool]$registryPendingFileRenameOperations;$isRebootPending = $registryComponentBasedServicing -or $pendingComputerRename -or $pendingDomainJoin -or $registryPendingFileRenameOperationsBool -or $registryWindowsUpdateAutoUpdate;@{ IsRebootPending = $isRebootPending; Uptime =  ((Get-Date) - $(Get-CimInstance -ClassName Win32_OperatingSystem | Select -ExpandProperty LastBootupTime)).Hours}\""
-var options = {
-    "command": command,
+
+var commandGetPendingReboot ="powershell -c \"$invokeWmiMethodParameters = @{Namespace= 'root/default';Class= 'StdRegProv';Name= 'EnumKey';ErrorAction  = 'Stop';};$hklm = [UInt32] '0x80000002';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\');$registryComponentBasedServicing = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootPending';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\');$registryWindowsUpdateAutoUpdate = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootRequired';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Services\Netlogon');$registryNetlogon = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames;$pendingDomainJoin = ($registryNetlogon -contains 'JoinDomain') -or ($registryNetlogon -contains 'AvoidSpnSet');$invokeWmiMethodParameters.Name = 'GetMultiStringValue';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName\', 'ComputerName');$registryActiveComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\', 'ComputerName');$registryComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$pendingComputerRename = $registryActiveComputerName -ne $registryComputerName -or $pendingDomainJoin;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\Session Manager\', 'PendingFileRenameOperations');$registryPendingFileRenameOperations = (Invoke-WmiMethod @invokeWmiMethodParameters).sValue;$registryPendingFileRenameOperationsBool = [bool]$registryPendingFileRenameOperations;$isRebootPending = $registryComponentBasedServicing -or $pendingComputerRename -or $pendingDomainJoin -or $registryPendingFileRenameOperationsBool -or $registryWindowsUpdateAutoUpdate;@{ IsRebootPending = $isRebootPending; Uptime =  ((Get-Date) - $(Get-CimInstance -ClassName Win32_OperatingSystem | Select -ExpandProperty LastBootupTime)).Hours}\""
+var sshOptions = {
+    "command": commandGetPendingReboot,
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 10000
@@ -20,27 +27,23 @@ var options = {
 
 // Helper function to parse response and call the success callback
 function successCallback(output) {
-    var outputArr = output.split(/\r?\n/);
-    for (var i = 2; i < 3; i++) {
-        var fields = outputArr[i].replace(/\s+/g,' ').trim();
-        var fieldsArr = fields.split(" ");
-        var pRebootValue = fieldsArr[1]
-        if (pRebootValue == "True") {
-            pRebootValue = "YES"
-        }
-        if (pRebootValue == "False") {
-            pRebootValue = "no"
-        }
+    var outputList = output.split(/\r?\n/);
+    var outputLineRebootState = 2;
+    var outputLineDeviceUptime = 3;
+    var pendingRebootLabel = outputList[outputLineRebootState].replace(/\s+/g,' ').trim().split(" ")[0];
+    var pendingRebootValue = outputList[outputLineRebootState].replace(/\s+/g,' ').trim().split(" ")[1];
+    if (pendingRebootValue) {
+        pendingRebootValue = "Yes"
+    } else {
+        pendingRebootValue = "No"
     }
-    for (var i = 3; i < 4; i++) {
-        var fields = outputArr[i].replace(/\s+/g,' ').trim();
-        var fieldsArr = fields.split(" ");
-        var uptimeValue = fieldsArr[1]
-    }
-    var pRebootVar = D.createVariable('1','Pending Reboot',pRebootValue,'', D.valueType.NUMBER)
-    var uptimeVar = D.createVariable('2','Uptime',uptimeValue,'hours', D.valueType.NUMBER)
-
-    D.success([pRebootVar,uptimeVar]);
+    var deviceUptimeLabel = outputList[outputLineDeviceUptime].replace(/\s+/g,' ').trim().split(" ")[0];
+    var deviceUptimeValue = outputList[outputLineDeviceUptime].replace(/\s+/g,' ').trim().split(" ")[1];
+    
+    D.success([
+        D.createVariable('pending-reboot', pendingRebootLabel, pendingRebootValue, null, D.valueType.STRING),
+        D.createVariable('device-uptime-hours', deviceUptimeLabel, deviceUptimeValue, null, D.valueType.NUMBER)
+    ]);
 }
     
 /**
@@ -49,7 +52,6 @@ function successCallback(output) {
 * Calls success callback on ssh output
 */
 function commandExecutionCallback(output, error) {
-    // console.info("Execution: ", output);
     if (error) {
         console.error("Error: ", error);
         if (error.message && (error.message.indexOf("Invalid") === -1 || error.message.indexOf("Handshake failed") === -1)) {
@@ -67,16 +69,6 @@ function commandExecutionCallback(output, error) {
     }
 }
 
-/**
-* @remote_procedure
-* @label Reboot
-* @documentation WARNING!! This button does not provide with a confirmation dialogue. It will reboot the computer immediately once pressed.
-*/
-function custom_1(){
-    // Command to issued when pressing the button
-    option.command="powershell -c \"Restart-Computer -Force\""
-    D.device.sendSSHCommand(options, commandExecutionCallback);
-}
 
 /**
 * @remote_procedure
@@ -85,14 +77,42 @@ function custom_1(){
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    D.device.sendSSHCommand(options, commandExecutionCallback);
+    D.device.sendSSHCommand(sshOptions, commandExecutionCallback);
 }
 
 /**
 * @remote_procedure
-* @label Get Variables
-* @documentation Pending Reboot Status can be [YES,no]
+* @label Get Reboot Pending and Device Uptimne
+* @documentation Pending Reboot Status can be [Yes, No]. Device uptime is in Hours
 */
 function get_status() {
-    D.device.sendSSHCommand(options, commandExecutionCallback);
+    D.device.sendSSHCommand(sshOptions, commandExecutionCallback);
+}
+
+/**
+* @remote_procedure
+* @label Reboot Now
+* @documentation WARNING! This button does not provide you with a confirmation dialogue. It will reboot the computer immediately once pressed.
+*/
+function custom_1(){
+    function rebootCallback(output, error) {
+        if (error) {
+            console.error("Error: ", error);
+            if (error.message && (error.message.indexOf("Invalid") === -1 || error.message.indexOf("Handshake failed") === -1)) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        } else {
+            if (output && output.indexOf("is not recognized as") !== -1) {
+                D.failure(D.errorType.PARSING_ERROR);
+            } else {
+                D.success();
+            }
+        }
+    }
+    var rebootCommand ="powershell -c \"Restart-Computer -Force\""; 
+    sshOptions.command = rebootCommand
+    D.device.sendSSHCommand(sshOptions, rebootCallback);
 }
