@@ -33,7 +33,7 @@ function successCallback(output) {
     var outputLineDeviceUptime = 3;
     var pendingRebootLabel = outputList[outputLineRebootState].replace(/\s+/g,' ').trim().split(" ")[0];
     var pendingRebootValue = outputList[outputLineRebootState].replace(/\s+/g,' ').trim().split(" ")[1];
-    if (pendingRebootValue) {
+    if (pendingRebootValue.indexOf('alse') === -1) {
         pendingRebootValue = "Yes"
     } else {
         pendingRebootValue = "No"
