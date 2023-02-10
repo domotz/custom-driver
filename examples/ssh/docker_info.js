@@ -105,6 +105,7 @@ function validate() {
 * @documentation This procedure is used to call docker service over ssh and extract the result and create variables to monitor
 */
 function get_status() {
+
     getDockerInfo()
         .then(createDockerInfoVariables)
         .then(D.success)

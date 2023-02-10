@@ -9,6 +9,7 @@
  * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS 
  */
 
+var _var = D.device.createVariable;
 var token = D.device.password()
 var port = 80;
 
@@ -242,10 +243,10 @@ function extract(data) {
         if(result){
             return D.device.createVariable(c.uid, c.label, result, c.unit, c.type);
         }else{
-            return null
+            return null;
         }
     }).filter(function(v){
-        return v != null
+        return v != null;
     });
 }
 /**
@@ -253,7 +254,7 @@ function extract(data) {
  * @param {string} body containing metrics api response in PROMETHEUS format
  * @returns convert PROMETHEUS format to Javascript object
  */
- function convert(body) {
+function convert(body) {
     var lines = body.split("\n");
     var result = lines
         .filter(function (line) { return line.indexOf("#") != 0 && line; })
@@ -274,7 +275,7 @@ function extract(data) {
  * fill the config variable with authenticated_user_requests
  * @param {[any]} data all the data parsed from the http response body
  */
- function fillConfigAuthUser(data) {
+function fillConfigAuthUser(data) {
     data
         .filter(function (d) { return d.key == "authenticated_user_requests"; })
         .forEach(function (d) {
@@ -356,8 +357,8 @@ var fillConfigFns = [
 
 /**
 * @remote_procedure
-* @label Validate Kubernetes Instance
-* @documentation This procedure validates if the API metrics are accessible on the device
+* @label Validate Association
+* @documentation This procedure is used to validate if the metrics api is accessible
 */
 function validate() {
     getMetrics()
@@ -366,9 +367,13 @@ function validate() {
         });
 }
 
+function success(vars){
+    D.success(vars);
+}
+
 /**
 * @remote_procedure
-* @label Get Kubernetes API Metrics Data
+* @label Get Device Variables
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
@@ -381,9 +386,9 @@ function get_status() {
             return data;
         })
         .then(extract)
-        .then(D.success)
+        .then(success)
         .catch(function(err){
-            console.error(err)
+            console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

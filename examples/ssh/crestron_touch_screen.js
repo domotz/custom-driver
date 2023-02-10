@@ -5,7 +5,7 @@
  * 
  * Communication protocol is SSH.
  * 
- * Creates a Custom Driver Table with the following colums:
+ * Creates a Custom Driver Table with the following columns:
  *  - Sensor
  *  - Value
 **/
