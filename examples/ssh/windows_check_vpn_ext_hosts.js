@@ -3,7 +3,23 @@
  * Name: Windows check VPN connection
  * Description: Check if a list of hosts are reachable from the endpoint where the script is run 
  *   
- * Communication protocol is SSH.
+ * Communication protocol is SSH. Utilizing the native windows powershell command.
+ * 
+ * 
+ * 
+ * Tested on Windows Versions:
+ *  - Windows 10
+ *  - Microsoft Windows Server 2019
+ * 
+ * Powershell Version:
+ *  - 5.1.19041.2364
+ * 
+ * 
+ * Creates a Custom Driver Table with the following columns:
+ *  - Host
+ *  - Reachable
+ * 
+ *  Reachable can be [Yes, No]
  * 
 **/
 
@@ -57,7 +73,7 @@ function validate() {
 
 /**
 * @remote_procedure
-* @label Get Device Variables
+* @label Get Hosts/IPs data 
 * @documentation This procedure is used for retrieving device * variables data
 */
 
@@ -69,7 +85,7 @@ function get_status() {
 
         // Crate table that shows parsed variables
         var table = D.createTable(
-                    "VPN access",
+                    "Hosts/IPs to validate",
                     [
                         { label: "Host" },
                         { label: "Reachable"}
