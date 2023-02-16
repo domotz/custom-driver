@@ -17,8 +17,7 @@ var region = "Add region"; //Amazon RDS Region code.
 var secretKey = "Add secretKey"; //Secret access key.
 var accessKey = "Add accessKey"; //Access key ID.
 var dbInstanceId = "dbInstanceId"; //RDS DB Instance identifier.
-
-var requestPeriod = 3600;
+var requestPeriod = 600;
 var monitoringList, metrics, instanceInfo;
 var vars = [];
 
@@ -48,7 +47,7 @@ function prepareParams(params) {
 
 /**
  *   
- * @returns  CloudWatch metrics to be monitored for an AWS RDS instance.
+ * @returns CloudWatch metrics to be monitored for an AWS RDS instance.
  */
 function createMetricsPayload(period, dbInstanceId) {
     var metricsList = [
@@ -146,7 +145,7 @@ function createMetricsPayload(period, dbInstanceId) {
     });
 }
 /**
- *   
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost(data) {
@@ -253,6 +252,7 @@ function httpGet(params) {
         });
     return d.promise;
 }
+
 /**
  * @returns promise for http response containing instance metrics 
 */
@@ -267,7 +267,6 @@ function getMetricsData() {
     return httpPost(payload)
         .then(function (data) {
             metrics = data;
-            console.log(metrics);
         });
 }
 
@@ -275,6 +274,7 @@ function getMetricsData() {
  * @returns promise for http response containing instance info
 */
 function getInstanceData() {
+
     var payload = {};
     payload["Action"] = "DescribeDBInstances",
         payload["Version"] = "2014-10-31",
@@ -283,9 +283,26 @@ function getInstanceData() {
         .then(function (data) {
             instanceInfo = data;
         });
-
 }
 
+function extractValueByLabel(data, label) {
+    return function () {
+        var filteredData = data.filter(function (item) { return item.Label === label; });
+        if (filteredData.length === 0) {
+            return null;
+        }
+        return filteredData[0].Values[0];
+    };
+}
+function extractValueByKey(data, key) {
+    return function () {
+        var filteredData = data.filter(function (item) { return item; });
+        if (filteredData.length === 0) {
+            return null;
+        }
+        return filteredData[0][key];
+    };
+}
 
 // The list of custom driver variables to monitor
 function fillConfig() {
@@ -294,84 +311,64 @@ function fillConfig() {
             //The percent of General Purpose SSD (gp2) burst-bucket I/O credits available.
             uid: "burst_balance",
             label: "Burst balance",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "BurstBalance"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "BurstBalance"),
             unit: "%"
         },
         {
             //Contains the name of the compute and memory capacity class of the DB instance.
             uid: "class",
             label: "Class",
-            execute: function () {
-                return instanceInfo.filter(function (item) { return item; })[0].DBInstanceClass;
-            }
+            execute: extractValueByKey(instanceInfo, "DBInstanceClass")
         },
         {
             //The number of client network connections to the database instance.
             uid: "database_connections",
             label: "Connection",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "DatabaseConnections"; })[0].Values[0];
-            }
+            execute: extractValueByLabel(metrics, "DatabaseConnections")
         },
         {
             //The percentage of CPU utilization.
             uid: "utilization",
             label: "CPU: Utilization",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "CPUUtilization"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "CPUUtilization"),
             unit: "%"
         },
         {
             //Provides the date and time the DB instance was created.
             uid: "create_time",
             label: "Create time",
-            execute: function () {
-                return instanceInfo.filter(function (item) { return item; })[0].InstanceCreateTime;
-            }
+            execute: [extractValueByKey(instanceInfo, "InstanceCreateTime"), function (res) { return new Date(res * 1000); }]
         },
         {
             //The number of CPU credits that an instance has accumulated.
             uid: "credit_balance",
             label: "Credit CPU: Balance",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "CPUCreditBalance"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "CPUCreditBalance")
         },
         {
             //The number of CPU credits consumed during the specified period.
             uid: "credit_usage",
             label: "Credit CPU: Usage",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "CPUCreditUsage"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "CPUCreditUsage")
         },
         {
             //The amount of disk space occupied by binary logs on the master. Applies to MySQL read replicas.
             uid: "bin_log_disk_usage",
             label: "Binlog Usage",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "BinLogDiskUsage"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "BinLogDiskUsage"),
             unit: "B"
         },
         {
             //The number of outstanding read/write requests waiting to access the disk.
             uid: "disk_queue_depth",
             label: "Queue depth",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "DiskQueueDepth"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "DiskQueueDepth")
         },
         {
             //The average number of disk I/O operations per second.
             uid: "read_iops",
             label: "Read IOPS",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "ReadIOPS"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReadIOPS"),
             unit: "Rps",
             type: D.valueType.RATE
         },
@@ -379,48 +376,36 @@ function fillConfig() {
             //The average number of disk read I/O operations to local storage per second.
             uid: "read_iops_local_storage",
             label: "Read IOPS (local storage)",
-            execute: function () {
-                var filteredData = metrics.filter(function (item) { return item.Label === "ReadIOPSLocalStorage"; });
-                if (filteredData.length === 0) return null;
-                return filteredData[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReadIOPSLocalStorage"),
             unit: "Rps",
-            //type: D.valueType.RATE
+            type: D.valueType.RATE
         },
         {
             //The average amount of time taken per disk I/O operation.
             uid: "read_latency",
             label: "Read latency",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "ReadLatency"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReadLatency"),
             unit: "S"
         },
         {
             //The average amount of time taken per disk I/O operation for local storage.
             uid: "read_latency_local_storage",
             label: "Read latency (local storage)",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "ReadLatencyLocalStorage"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReadLatencyLocalStorage"),
             unit: "S"
         },
         {
             //The average number of bytes read from disk per second.
             uid: "read_throughput",
             label: "Read throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "ReadThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReadThroughput"),
             type: D.valueType.RATE
         },
         {
             //The average number of bytes read from disk per second for local storage.
             uid: "read_throughput_local_storage",
             label: "Read throughput (local storage)",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "ReadThroughputLocalStorage"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReadThroughputLocalStorage"),
             unit: "Rps",
             type: D.valueType.RATE
         },
@@ -428,9 +413,7 @@ function fillConfig() {
             //The number of write records generated per second.
             uid: "write_iops",
             label: "Write IOPS",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "WriteIOPS"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "WriteIOPS"),
             unit: "Rps",
             type: D.valueType.RATE
         },
@@ -438,12 +421,7 @@ function fillConfig() {
             //The average number of disk write I/O operations per second on local storage in a Multi-AZ DB cluster.
             uid: "write_iops_local_storage",
             label: "Write IOPS (local storage)",
-            execute: function () {
-                var filteredData = metrics.filter(function (item) { return item.Label === "WriteIOPSLocalStorage"; });
-                if (filteredData.length === 0) return null;
-                return filteredData[0].Values[0];
-
-            },
+            execute: extractValueByLabel(metrics, "WriteIOPSLocalStorage"),
             unit: "Rps",
             type: D.valueType.RATE
         },
@@ -451,29 +429,20 @@ function fillConfig() {
             //The average amount of time taken per disk I/O operation.
             uid: "write_latency",
             label: "Write latency",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "WriteLatency"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "WriteLatency"),
             unit: "S"
         },
         {
             //The average amount of time taken per disk I/O operation on local storage in a Multi-AZ DB cluster.
             uid: "write_latency_local_storage",
             label: "Write latency (local storage)",
-            execute: function () {
-                var filteredData = metrics.filter(function (item) { return item.Label === "WriteLatencyLocalStorage"; });
-                if (filteredData.length === 0) return null;
-                return filteredData[0].Values[0];
-            },
-            unit: "S"
+            execute: extractValueByLabel(metrics, "WriteLatencyLocalStorage")
         },
         {
             //The average number of bytes written to persistent storage every second.
             uid: "write_throughput",
             label: "Write throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "WriteThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "WriteThroughput"),
             unit: "Bps",
             type: D.valueType.RATE
         },
@@ -481,11 +450,7 @@ function fillConfig() {
             //The average number of bytes written to disk per second for local storage.
             uid: "write_throughput_local_storage",
             label: "Write throughput (local storage)",
-            execute: function () {
-                var filteredData = metrics.filter(function (item) { return item.Label === "WriteThroughputLocalStorage"; });
-                if (filteredData.length === 0) return null;
-                return filteredData[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "WriteThroughputLocalStorage"),
             unit: "Bps",
             type: D.valueType.RATE
         },
@@ -493,43 +458,33 @@ function fillConfig() {
             //The percentage of throughput credits remaining in the burst bucket of your RDS database.
             uid: "ebs_byte_balance",
             label: "Byte balance",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "EBSByteBalance%"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "EBSByteBalance%"),
             unit: "%"
         },
         {
             //The percentage of I/O credits remaining in the burst bucket of your RDS database.
             uid: "ebs_io_balance",
             label: "IO balance",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "EBSIOBalance%"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "EBSIOBalance%"),
             unit: "%"
         },
         {
             //Database engine.
             uid: "engine",
             label: "Engine",
-            execute: function () {
-                return instanceInfo[0].Engine;
-            },
+            execute: extractValueByKey(instanceInfo, "Engine")
         },
         {
             //Indicates the database engine version.
             uid: "version",
             label: "Engine version",
-            execute: function () {
-                return instanceInfo.filter(function (item) { return item; })[0].EngineVersion;
-            }
+            execute: extractValueByKey(instanceInfo, "EngineVersion"),
         },
         {
             //The amount of available random access memory.
             uid: "freeable_memory",
             label: "Memory, freeable",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "FreeableMemory"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "FreeableMemory"),
             unit: "B"
         },
         {
@@ -537,18 +492,14 @@ function fillConfig() {
             //For Amazon Aurora: The amount of network throughput received from the Aurora storage subsystem by each instance in the DB cluster.
             uid: "storage_network_receive_throughput",
             label: "Receive throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "NetworkReceiveThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "NetworkReceiveThroughput"),
             unit: "Bps"
         },
         {
             //The incoming (Receive) network traffic on the DB instance, including both customer database traffic and Amazon RDS traffic used for monitoring and replication.
             uid: "network_receive_throughput",
             label: "Receive throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "StorageNetworkReceiveThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "StorageNetworkReceiveThroughput"),
             unit: "Bps",
             type: D.valueType.RATE
         },
@@ -556,9 +507,7 @@ function fillConfig() {
             //The amount of network throughput both received from and transmitted to clients by each instance in the Aurora MySQL DB cluster, in bytes per second.
             uid: "network_throughput",
             label: "Throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "NetworkThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "CPUCreditBaNetworkThroughputlance"),
             unit: "Bps",
             type: D.valueType.RATE
         },
@@ -566,9 +515,7 @@ function fillConfig() {
             //The outgoing (Transmit) network traffic on the DB instance, including both customer database traffic and Amazon RDS traffic used for monitoring and replication.
             uid: "network_transmit_throughput",
             label: "Transmit throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "NetworkTransmitThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "NetworkTransmitThroughput"),
             unit: "Bps",
             type: D.valueType.RATE
         },
@@ -577,9 +524,7 @@ function fillConfig() {
             //For Amazon Aurora: The amount of network throughput sent to the Aurora storage subsystem by each instance in the Aurora MySQL DB cluster.
             uid: "storage_network_transmit_throughput",
             label: "Transmit throughput",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "StorageNetworkTransmitThroughput"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "StorageNetworkTransmitThroughput"),
             unit: "Bps"
         },
         {
@@ -610,44 +555,34 @@ function fillConfig() {
             //The amount of time a read replica DB instance lags behind the source DB instance.
             uid: "replica_lag",
             label: "Lag",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "ReplicaLag"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "ReplicaLag"),
             unit: "S"
         },
         {
             //The number of failed Microsoft SQL Server Agent jobs during the last minute.
             uid: "failed_sql_server_agent_jobs_count",
             label: "Failed agent jobs",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "FailedSQLServerAgentJobsCount"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "FailedSQLServerAgentJobsCount"),
             unit: "Rpm"
         },
         {
             //Specifies the current state of this database.
             uid: "status",
             label: "Status",
-            execute: function () {
-                return instanceInfo[0].DBInstanceStatus;
-            }
+            execute: extractValueByKey(instanceInfo, "DBInstanceStatus")
         },
         {
             //Specifies the allocated storage size specified in gibibytes (GiB).
             uid: "allocated",
             label: "Allocated",
-            execute: function () {
-                return instanceInfo.filter(function (item) { return item; })[0].AllocatedStorage;
-            },
+            execute: extractValueByKey(instanceInfo, "AllocatedStorage"),
             unit: "GiB"
         },
         {
             //The amount of local storage available, in bytes.
             uid: "free_local_storage",
             label: "Local free",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "FreeLocalStorage"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "FreeLocalStorage"),
             unit: "B"
         },
         {
@@ -663,26 +598,20 @@ function fillConfig() {
             //The amount of available storage space.
             uid: "free_storage_space",
             label: "Space free",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "FreeStorageSpace"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "FreeStorageSpace"),
             unit: "B"
         },
         {
             //Specifies the storage type associated with DB instance.
             uid: "storage_type",
             label: "Storage type",
-            execute: function () {
-                return instanceInfo.filter(function (item) { return item; })[0].StorageType;
-            },
+            execute: extractValueByKey(instanceInfo, "StorageType")
         },
         {
             //The amount of swap space used.
             uid: "swap_usage",
             label: "Swap usage",
-            execute: function () {
-                return metrics.filter(function (item) { return item.Label === "SwapUsage"; })[0].Values[0];
-            },
+            execute: extractValueByLabel(metrics, "SwapUsage"),
             unit: "B"
         }
     ];
@@ -700,14 +629,15 @@ function extract(data) {
         } else if (typeof (c.execute) == "function") {
             result = c.execute(data);
         }
-        if (result != null) {
-            return D.device.createVariable(c.uid, c.label, result, c.unit, c.type);
-        } else {
+        //if (result != null) {
+        return D.device.createVariable(c.uid, c.label, result, c.unit, c.type);
+        /*} else {
             return null;
-        }
-    }).filter(function (v) {
-        return v != null;
+        }*/
     });
+    /*.filter(function (v) {
+        return v != null;
+    });*/
 }
 
 /**
