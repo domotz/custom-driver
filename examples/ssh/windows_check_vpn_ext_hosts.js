@@ -5,8 +5,6 @@
  *   
  * Communication protocol is SSH. Utilizing the native windows powershell command.
  * 
- * 
- * 
  * Tested on Windows Versions:
  *  - Windows 10
  *  - Microsoft Windows Server 2019
