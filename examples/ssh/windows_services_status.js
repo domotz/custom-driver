@@ -90,7 +90,7 @@ function parseResultCallback(output, error){
                 { label: "Status" },
                 { label: "Description" }
             ]
-        );        
+        );     
         for (var i = 0; i < result.length; i++) {
             var fields = result[i].replace(/\s+/g,' ').trim().split("#");
             var serviceName=fields[0];
