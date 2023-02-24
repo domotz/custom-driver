@@ -23,6 +23,7 @@ var exludedServices = ['AJRouter','BITS'];
 
 // SSH options when running the commands
 var sshConfig = {
+    command: getCommandForMonitoredServices(),
     username: D.device.username(),
     password: D.device.password(),
     timeout: 10000
@@ -96,7 +97,7 @@ function parseResultCallback(output, error){
             var serviceStatus=fields[1];
             var serviceDescription=fields[2];
             table.insertRecord(
-                i+"-"+serviceName.toLowerCase(), [serviceName, serviceStatus, serviceDescription]
+                serviceName.toLowerCase().substring(0, 50), [serviceName, serviceStatus, serviceDescription]
             );
         }
         D.success(table);
