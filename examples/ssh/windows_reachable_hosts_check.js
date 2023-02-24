@@ -80,17 +80,17 @@ function parseResultCallback(output, error){
     if (error) {
         checkSshError(error)
     } else {
-        var result = result.split(/\r?\n/);
+        var result = output.split(/\r?\n/);
         var variables = [];
         for (var i = 0; i < result.length; i++) {
             if (result[i] !== "") {
                 var uid = "id-" + i + "-reachable";
                 var value = output[i] == "True"
                 variables.push(
-                    D.createVariable(uid, hostsToCheck[i], value, null, "BOOLEAN")
+                    D.createVariable(uid, hostsToCheck[i], value)
                 )
             }
         }
-        D.success(table);
+        D.success(variables);
     };
 }
