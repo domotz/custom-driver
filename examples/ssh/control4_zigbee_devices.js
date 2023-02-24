@@ -9,25 +9,25 @@
  *      - 2.9.0.528365
  * 
  * Creates Custom Driver "Zigbee Devices" Table with the following columns:
- *   - Id
+ *   - LID
+ *   - SID
  *   - Status
  *   - Version
  *   - Product
- *   - Last-Contact
+ *   - Last Contact
  *   - RBoot
- *   - Node
- *   - Type
- *   - Best-Zap
+ *   - Node Type
+ *   - Best Zap
  */
 var columnHeaders = [
+    {"label": "SID"},
     {"label": "Status"},
     {"label": "Version"},
     {"label": "Product"},
-    {"label": "Last-Contact"},
+    {"label": "Last Contact"},
     {"label": "RBoot"},
-    {"label": "Node"},
-    {"label": "Type"},
-    {"label": "Best-Zap"}
+    {"label": "Node Type"},
+    {"label": "Best Zap"}
 ];
 var zigbeeTable = D.createTable(
     "Zigbee Devices", 
