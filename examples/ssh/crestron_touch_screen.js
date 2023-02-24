@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Crestron Touch Screen Monitoring 
- * Description: This drivers monitors Front Panel Slot and Core3UILevel sensors
+ * Description: This drivers monitors all info sensors and temperature sensors and add a reboot button to the driver page.
  * 
  * Communication protocol is SSH.
  * 
@@ -9,98 +9,126 @@
  *  - Sensor
  *  - Value
 **/
+// Define the commands to be run over SSH
+var cmdTemperature='temperature'
+var cmdInfo='info'
+var cmdReboot='reboot'
 
-// Ssh options and command to be run
-var sshOptions = {
-    "command": "info",
-    "username": D.device.username(),
-    "password": D.device.password(),
-    "timeout": 5000
+// Define the SSH options when running the commands
+var sshConfig = {
+    username: D.device.username(),
+    password: D.device.password(),
+    port: 22,
+    timeout: 30000
 };
 
-// Helper function to parse the device response and call the success callback
-function successCallback(output) {
-    // Creation of custom driver table 
-    var touchScreenSensorsTable = D.createTable(
-        "Touchscreen Sensors",
-        [
-            { label: "Sensor" },
-            { label: "Value" }
-        ]
-    );
-
-    var commandOutputArray = output.split(/\r?\n/);
-    if (commandOutputArray == null) {
-        console.error("commandOutputArray is empty or undefined")
-        D.failure(D.errorType.PARSING_ERROR) 
-    }
-
-    for (var i = 0; i < commandOutputArray.length; i++) {
-        if (commandOutputArray[i] == null){
-            console.debug("Line empty, skipping")
-        }
-        else{
-            var fieldsArray = commandOutputArray[i].replace(/\s+/g,' ').trim().split(":");
-
-            if (fieldsArray[0] == null) {
-                console.error("fieldsArray[0] is empty  or undefined")
-                D.failure(D.errorType.PARSING_ERROR) 
-            }
-            
-            var recordId='id-'+fieldsArr[0].replace(/\s/g, '-').toLowerCase();
-            var recordValue = fieldsArray[fieldsArray.length - 1];
-            if (fieldsArray.includes("Front Panel Slot")) {
-                touchScreenSensorsTable.insertRecord(
-                    recordId, ["Front Panel Slot", recordValue]
-                )
-            }
-            if (fieldsArray.includes("Core3UILevel")) {
-                touchScreenSensorsTable.insertRecord(
-                    recordId, ["Core3 UI Level", recordValue]
-                )
-            }
-        }
-    } 
-    D.success(touchScreenSensorsTable);
+// Check for Errors on the SSH command response
+function checkSshError(err) {
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
 }
-/**
-* SSH Command execution Callback
-* Checks for errors: Parsing, Authentication, Generic
-* Calls success callback on ssh output
-*/
-function commandExecutionCallback(output, error) {
-    if (error) {
-        console.error("Error: ", error);
-        if (error.message && (error.message.indexOf("Invalid") === -1 || error.message.indexOf("Handshake failed") === -1)) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-    } else {
-        if (output && output.indexOf("command not found") !== -1) {
-            D.failure(D.errorType.PARSING_ERROR);
-        } else {
-            successCallback(output);
-        }
-    }
+
+function executeCommand(command){
+    var d = D.q.defer();
+    sshConfig.command = command;
+    D.device.sendSSHCommand(sshConfig, function (out, err) {
+        if(err) checkSshError(err);
+        d.resolve(out);
+    });
+    return d.promise;
 }
 
 /**
 * @remote_procedure
-* @label Validate Device is Crestron Touch Screen
-* @documentation Verifies if the driver can be applied on the device. Checks for credentials and for 
+* @label Reboot
+* @documentation WARNING!! This button does not provide with a confirmation dialogue. It will reboot the device immediately once pressed.
+*/
+function custom_1() {
+    // Command to issued when pressing the button
+   executeCommand(cmdReboot).then(function(){
+        D.success();
+    });
+}
+
+/**
+* @remote_procedure
+* @label Validate Association
+* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    D.device.sendSSHCommand(sshOptions, commandExecutionCallback);
+    executeCommand(cmdTemperature).then(function(){
+        D.success();
+    });
 }
 
+// Create the table definition
+var touchScreenSensorTable = D.createTable(
+    "Touchscreen Sensors",
+    [
+        { label: "Sensor" },
+        { label: "Value" }
+    ]
+);
+
+function parseData(executionResult){
+    // result is an array
+    // cmdTemperature output is result[0]
+    // cmdInfo output is result[1]
+    // concatenating the results into one output
+    output = executionResult[0]+executionResult[1];
+    // processing the output
+    var outputArray = output.split(/\r?\n/);
+    if (outputArray == null) {
+        console.error("Commands output is empty or undefined")
+        D.failure(D.errorType.PARSING_ERROR) 
+    }
+    for (var i = 0; i < outputArray.length - 1; i++) {
+        // removing whitespaces
+        var fields = outputArray[i].replace(/\s+/g,' ').trim();
+        // removing prompts characters before ">"
+        var fields = fields.substring(fields.indexOf(">") + 1);
+
+        if (fields != "") {
+            //splitting fields using ":" as separator
+            var sensorArray = fields.split(":");
+            var sensorName = sensorArray[0];
+            if (sensorName == null) {
+                console.error("fieldsArray[0] is empty  or undefined")
+                D.failure(D.errorType.PARSING_ERROR) 
+            }
+            //creating the id field for the table by concat "id-" with the first element of the array
+            var recordId='id-' + sensorName.replace(/\s/g, '-').toLowerCase();
+            var sensorValue = sensorArray[sensorArray.length - 1];
+
+            if (sensorName.includes("Temperature")) {
+                sensorName = sensorName + " - C";
+                sensorValue = sensorValue.slice(0, -1);
+            } else if (sensorName.includes("Web") || sensorName.includes("FTP") || sensorName.includes("SSL") || sensorName.includes("RConsole") || sensorName.includes("System")) {
+                sensorValue = sensorArray[1] + sensorValue;
+            }
+            touchScreenSensorTable.insertRecord(
+                recordId, [sensorName, sensorValue]
+            )
+        } 
+    }
+    return touchScreenSensorTable;
+}
 /**
 * @remote_procedure
-* @label Get Sensor Table Variables
-* @documentation Creates custom driver table with defined sensors
+* @label Get Touch Screen Sensor Data
+* @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    D.device.sendSSHCommand(sshOptions, commandExecutionCallback);
+    D.q.all([
+        executeCommand(cmdTemperature),
+        executeCommand(cmdInfo)
+    ])
+    .then(parseData)
+    .then(function(touchScreenSensorTable){
+        D.success(touchScreenSensorTable);
+    });
 }
