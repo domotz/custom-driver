@@ -85,7 +85,7 @@ function parseResultCallback(output, error){
         for (var i = 0; i < result.length; i++) {
             if (result[i] !== "") {
                 var uid = "id-" + i + "-reachable";
-                var value = output[i] == "True"
+                var value = result[i] == "True"
                 variables.push(
                     D.createVariable(uid, hostsToCheck[i], value)
                 )
