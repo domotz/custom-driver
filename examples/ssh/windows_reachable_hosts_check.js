@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows - check reachable hosts from endpoint
- * Description: Checks if a list of hosts are reachable from the endpoint where the script is run this can be used 
+ * Description: Checks if a list of hosts are reachable from the windows endpoint where the script is run this can be used 
  * for various case scenarios, including checking if a VPN connection is up or not (indirectly by checking if you 
  * can reach some hosts which are reachable only by VPN)
  *   
@@ -15,11 +15,10 @@
  *  - 5.1.19041.2364
  * 
  * 
- * Creates a Custom Driver Table with the following columns:
- *  - Host
- *  - Reachable
+ * Creates a Custom Variables:
+ *  - Label/Name: Hostname [Taken from the list of hostsToCheck]
+ *  - Value: Reachable [True, False]
  * 
- *  Reachable can be [Yes, No]
  * 
  **/
 
@@ -35,23 +34,17 @@ var sshConfig = {
     timeout: 10000
 };
 
-// SSH promise definition
+// Check for SSH Errors in the communication with the windows device the driver is applied on
 function checkSshError(err) {
     if (err.message) console.error(err.message);
-    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
-}
-
-function executeCommand(command) {
-    var d = D.q.defer();
-    sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function(out, err) {
-        if (err) checkSshError(err);
-        d.resolve(out);
-    });
-    return d.promise;
+    if (err.code == 5) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+    } else if (err.code == 255){
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+    } else {
+        console.error(err);
+        D.failure(D.errorType.GENERIC_ERROR);
+    };
 }
 
 /**
@@ -61,11 +54,16 @@ function executeCommand(command) {
  */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    executeCommand(sshConfig.command).then(function() {
-        D.success();
+    D.device.sendSSHCommand(sshConfig, function(output, error){
+        if (error) {
+            checkSshError(error)
+        } else if (!output || output.indexOf("is not recognized") !== -1) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        } else {
+            D.success();
+        }
     });
 }
-
 
 /**
  * @remote_procedure
@@ -74,37 +72,25 @@ function validate() {
  */
 
 function get_status() {
-    executeCommand(sshConfig.command).then(function(result) {
+    D.device.sendSSHCommand(sshConfig, parseResultCallback);
+}
+
+// Result parsing callback for variables data
+function parseResultCallback(output, error){
+    if (error) {
+        checkSshError(error)
+    } else {
         var result = result.split(/\r?\n/);
-
-        // Crate table that shows parsed variables
-        var table = D.createTable(
-            "Hosts/IPs to validate",
-            [{
-                    label: "Host"
-                },
-                {
-                    label: "Reachable"
-                }
-            ]
-        );
-
-        // Parse response and populate the table        
+        var variables = [];
         for (var i = 0; i < result.length; i++) {
-            var uid = "id-" + i + "-reachable";
             if (result[i] !== "") {
-                var host = hostsToCheck[i]
-                if (result[i] != "True") {
-                    var reachable = "No"
-                } else {
-                    var reachable = "Yes"
-                }
-
+                var uid = "id-" + i + "-reachable";
+                var value = output[i] == "True"
+                variables.push(
+                    D.createVariable(uid, hostsToCheck[i], value, null, "BOOLEAN")
+                )
             }
-            table.insertRecord(
-                uid, [host, reachable]
-            );
         }
         D.success(table);
-    });
+    };
 }
