@@ -61,7 +61,7 @@ function get_status(){
         responseIsOk(output, error);
         lines = output.split(/\r?\n/);
 
-        var zigbeeNodesRegexp = /([\w\d]+)\s+([\w\d]+)\s+(\w+)\s+([\d\.]+)\s+([\w\d\_\:\-]+)\s+(\w{3}\s\w{3}\s[0-9]+\s[0-9\:]+)\s+(\d+)\s+(\w+)\s+([\w\d]+).*/
+        var zigbeeNodesRegexp = /([\w\d]+)\s+([\w\d]+)\s+(\w+)\s+([\d\.]+)\s+([\w\d\_\:\-]+)\s+(\w{3}\s\w{3}\s[0-9]+\s[0-9\:]+)\s+(\d+)\s+([\w\s]+)\s+(0x[\w\d]+)/
         var matchOffset = 2;
         // Start from index 1 to skip table headers and emove last 2 lines to skip footers of the response
         for (var i = 1; i < lines.length - 2; i++) {
