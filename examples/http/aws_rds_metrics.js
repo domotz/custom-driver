@@ -3,7 +3,6 @@
  * Communication protocol is https
  */
 var crypto = require("crypto");
-
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
     return crypto.createHash("sha256").update(message).digest("hex");
@@ -11,6 +10,7 @@ function sha256(message) {
 function hmac(algo, key, message) {
     return crypto.createHmac(algo, key).update(message).digest("hex");
 }
+
 var region = "Add region";
 var secretKey = "Add secret access key";
 var accessKey = "Add access key";
@@ -30,8 +30,7 @@ function sign(key, message) {
     return result;
 }
 
-/**
- *   
+/**  
  * @returns CloudWatch metrics to be monitored for an AWS RDS instance.
  */
 function createMetricsPayload(period, dbInstanceId) {
@@ -138,7 +137,6 @@ function httpPost(data) {
     var service = "monitoring";
     var body = JSON.stringify(data);
     var method = "POST";
-    var device = D.createExternalDevice(service + "." + region + ".amazonaws.com");
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com:443",
@@ -153,7 +151,7 @@ function httpPost(data) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.post({
+    D.device.http.post({
         url: canonicalUri,
         protocol: "https",
         headers: {
@@ -166,21 +164,21 @@ function httpPost(data) {
         },
         body: body
     },
-        function (err, response, body) {
-            if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode == 401) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            d.resolve(JSON.parse(body).MetricDataResults);
-        });
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -197,7 +195,7 @@ function getMetricsData() {
     payload["MetricDataQueries"] = createMetricsPayload(requestPeriod, dbInstanceId);
     return httpPost(payload)
         .then(function (data) {
-            metrics = data;
+            metrics = data.MetricDataResults;
         });
 }
 
@@ -488,11 +486,6 @@ function validate() {
         });
 }
 
-//Indicate the successful execution for variable list.
-function success() {
-    D.success(vars);
-}
-
 /**
  * @remote_procedure
  * @label Get Device Variables
@@ -504,7 +497,9 @@ function get_status() {
             fillConfig();
         })
         .then(extract)
-        .then(success)
+        .then(function () {
+            D.success(vars);
+        })
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);

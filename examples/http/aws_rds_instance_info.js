@@ -16,7 +16,6 @@ var region = "Add region";
 var secretKey = "Add secret access key";
 var accessKey = "Add access key";
 var dbInstanceId = "Add RDS instance id";
-var device = D.createExternalDevice("rds." + region + ".amazonaws.com");
 var monitoringList, instanceInfo;
 
 function sign(key, message) {
@@ -63,13 +62,11 @@ function httpGet(params) {
         credentialScope = date + "/" + region + "/" + service + "/" + "aws4_request",
         requestString = "AWS4-HMAC-SHA256" + "\n" + amzdate + "\n" + credentialScope + "\n" + sha256(canonicalRequest),
         key = sign("AWS4" + secretKey, date);
-
     key = sign(key, region);
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-
-    device.http.get({
+    D.device.http.get({
         url: canonicalUri + "?" + params,
         protocol: "https",
         headers: {
@@ -97,9 +94,10 @@ function httpGet(params) {
         });
     return d.promise;
 }
+
 /**
  * @returns promise for http response containing instance info
-*/
+ */
 function getInstanceData() {
     var payload = {};
     payload["Action"] = "DescribeDBInstances",
@@ -112,8 +110,6 @@ function getInstanceData() {
 }
 
 /**
- * Returns a function that extracts the value of a given key from an object in an array of objects.
- *
  * @param {Array} data An array of objects.
  * @param {string} key The name of the property to extract from the objects.
  * @returns The value of the specified key in the first object in the array.
@@ -128,6 +124,7 @@ function extractValueByKey(data, key) {
     };
 }
 
+// The list of custom driver variables to monitor
 function fillConfig() {
     monitoringList = [
         {
@@ -210,9 +207,9 @@ function fillConfig() {
 }
 
 /**
-* @param {[object]} data array of objects 
-* @returns list of domotz variables
-*/
+ * @param {[object]} data array of objects 
+ *  @returns list of domotz variables
+ */
 function extract(data) {
     vars = monitoringList.map(function (c) {
         var result;
@@ -243,11 +240,6 @@ function validate() {
         });
 }
 
-//Indicate the successful execution for variable list.
-function success() {
-    D.success(vars);
-}
-
 /**
  * @remote_procedure
  * @label Get Device Variables
@@ -259,7 +251,9 @@ function get_status() {
             fillConfig();
         })
         .then(extract)
-        .then(success)
+        .then(function () {
+            D.success(vars);
+        })
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);

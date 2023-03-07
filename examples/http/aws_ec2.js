@@ -58,7 +58,6 @@ function prepareRecursive(prefix, param) {
 }
 
 /**
- *   
  * @returns CloudWatch metrics to be monitored for an AWS EC2.
  */
 function createMetricsPayload(period, instanceId) {
@@ -125,14 +124,13 @@ function prepareParams(params) {
 }
 
 /**
- * @returns  HTTP GET request to an AWS EC2 API to retrieve information about DB instances. 
+ * @returns HTTP GET request to an AWS EC2 API to retrieve information about DB instances. 
  */
 function httpGet(params) {
     var d = D.q.defer();
     var service = "monitoring";
     var data = "";
     var method = "GET";
-    var device = D.createExternalDevice(service + "." + region + ".amazonaws.com");
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com:443",
@@ -147,7 +145,7 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.get({
+    D.device.http.get({
         url: canonicalUri + "?" + params,
         protocol: "https",
         headers: {
@@ -158,21 +156,21 @@ function httpGet(params) {
             "Authorization": auth
         }
     },
-        function (err, response, body) {
-            if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode == 401) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            d.resolve(JSON.parse(body));
-        });
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -215,7 +213,7 @@ function extractValue(label) {
  */
 function diviser(number) {
     return function (value) {
-        if (value === null) {
+        if (value == null) {
             return null;
         }
         return value / number;
@@ -292,14 +290,14 @@ function fillConfig() {
             //Percentage of throughput credits remaining in the burst bucket for Nitro-based instances.
             uid: "byte_balance",
             label: "EBS: Byte balance",
-            execute: extractValue("EBSByteBalance"),
+            execute: extractValue("EBSByteBalance%"),
             unit: "%"
         },
         {
             //Percentage of I/O credits remaining in the burst bucket for Nitro-based instances.
             uid: "io_balance",
             label: "EBS: IO balance",
-            execute: extractValue("EBSIOBalance"),
+            execute: extractValue("EBSIOBalance%"),
             unit: "%"
         },
         {
@@ -328,7 +326,7 @@ function fillConfig() {
         {
             //Bytes read from all EBS volumes attached to the instance for Nitro-based instances.
             uid: "write_bytes",
-            label: "EBS:  Write bytes",
+            label: "EBS: Write bytes",
             execute: [extractValue("EBSWriteBytes"), diviser(300)],
             unit: "Bps",
             type: D.valueType.RATE
@@ -379,8 +377,7 @@ function fillConfig() {
             //Reports whether the instance has passed the instance status check in the last minute.
             uid: "status_check_failed_instance",
             label: "Status: Check failed, instance",
-            execute: extractValue("StatusCheckFailed_Instance"),
-            type: D.valueType.RATE
+            execute: extractValue("StatusCheckFailed_Instance")
         },
         {
             //Reports whether the instance has passed the system status check in the last minute.
@@ -425,11 +422,6 @@ function validate() {
         });
 }
 
-//Indicate the successful execution for variable list.
-function success() {
-    D.success(vars);
-}
-
 /**
  * @remote_procedure
  * @label Get Device Variables
@@ -441,9 +433,8 @@ function get_status() {
             fillConfig();
         })
         .then(extract)
-        .then(success)
         .then(function () {
-            D.success();
+            D.success(vars);
         })
         .catch(function (err) {
             console.error(err);
