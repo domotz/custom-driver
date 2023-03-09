@@ -38,9 +38,13 @@
     <div class="container-overview">
     
         
-            <div class="description">Object for encrypting data.
-Returned by D.crypto.createCipher.
-Cipher objects are streams that are both readable and writable. The written plain text data is used to produce the encrypted data on the readable side. The legacy update and final methods are also supported.</div>
+            <div class="description">Returned by D.crypto.createCipher.<p>
+Instances of the Cipher object are used to encrypt data.<br>
+The object can be used in one of two ways:
+<ul>
+     <li> As a stream that is both readable and writable, where plain unencrypted data is written to produce encrypted data on the readable side.</li>
+     <li> Using the cipher.update() and cipher.final() methods to produce the encrypted data.</li>
+</ul></div>
         
 
         
@@ -109,7 +113,7 @@ Cipher objects are streams that are both readable and writable. The written plai
     
 
     
-    <h4 class="name" id=".final"><span class="type-signature">(static) </span>final<span class="signature">(outputEcoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    <h4 class="name" id=".final"><span class="type-signature">(static) </span>final<span class="signature">(outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
     
 
     
@@ -117,9 +121,10 @@ Cipher objects are streams that are both readable and writable. The written plai
 
 
 <div class="description">
-    Returns any remaining enciphered contents, with outputEncoding being one of: 'binary', 'base64' or 'hex'. 
-If no encoding is provided, then a buffer is returned.
-The Cipher object cannot be used after final() method has been called.
+    Returns any remaining enciphered contents.<br>
+If no encoding is provided, then a Buffer is returned.<p>
+Once the cipher.final() method has been called, the Cipher object can no longer be used to encrypt data.<br>
+Attempts to call cipher.final() more than once will result in an error being thrown.
 </div>
 
 
@@ -157,7 +162,7 @@ The Cipher object cannot be used after final() method has been called.
 
         <tr>
             
-                <td class="name"><code>outputEcoding</code></td>
+                <td class="name"><code>outputEncoding</code></td>
             
 
             <td class="type">
@@ -189,7 +194,7 @@ The Cipher object cannot be used after final() method has been called.
 
             
 
-            <td class="description last">The outputEncoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'. If no encoding is provided, then a buffer is returned.</td>
+            <td class="description last">The encoding of the return value.<br>Can be 'binary', 'base64' or 'hex'. <br>If no encoding is provided, then a buffer is returned.</td>
         </tr>
 
     
@@ -281,7 +286,7 @@ The Cipher object cannot be used after final() method has been called.
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>D.crypto.createCipher('sha1', 'key', 'iv').final('binary')</code></pre>
+    <pre class="prettyprint"><code>D.crypto.createCipher('sha1', 'key', 'initialization vector').final('binary')</code></pre>
 
 
 
@@ -299,10 +304,11 @@ The Cipher object cannot be used after final() method has been called.
 
 
 <div class="description">
-    You can disable automatic padding of the input data to block size. 
-If autoPadding is false, the length of the entire input data must be a multiple of the cipher's block size or final will fail. 
-Useful for non-standard padding, e.g. using 0x0 instead of PKCS padding. 
-You must call this before cipher.final.
+    When using block encryption algorithms, the Cipher class will automatically add padding to the input data to the appropriate block size.<p>
+To disable the default padding call cipher.setAutoPadding(false).<br>
+When autoPadding is false, the length of the entire input data must be a multiple of the cipher's block size or cipher.final() will throw an error. <br>
+Disabling automatic padding is useful for non-standard padding, for instance using 0x0 instead of PKCS padding.<p>
+The cipher.setAutoPadding() method must be called before cipher.final().
 </div>
 
 
@@ -329,6 +335,8 @@ You must call this before cipher.final.
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -364,6 +372,12 @@ You must call this before cipher.final.
                 </td>
             
 
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
             
 
             <td class="description last">The auto padding boolean flag.</td>
@@ -443,7 +457,7 @@ You must call this before cipher.final.
     
 
     
-    <h4 class="name" id=".update"><span class="type-signature">(static) </span>update<span class="signature">(data, inputEncoding<span class="signature-attributes">opt</span>, outputEcoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    <h4 class="name" id=".update"><span class="type-signature">(static) </span>update<span class="signature">(data, inputEncoding<span class="signature-attributes">opt</span>, outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
     
 
     
@@ -451,8 +465,19 @@ You must call this before cipher.final.
 
 
 <div class="description">
-    Updates the cipher with data, the encoding of which is given in inputEcoding and can be 'utf8', 'ascii' or 'binary'. 
-If data is a Buffer then inputEncoding is ignored.
+    Updates the cipher with data.<br>
+The cipher.update() method can be called multiple times with new data until cipher.final() is called.<br>
+Calling cipher.update() after cipher.final() will result in an error being thrown.<p>
+Input Encoding options:
+<ul>
+     <li> If the inputEncoding argument is given, the data argument is a string using the specified encoding.</li>
+     <li> If the inputEncoding argument is not given, data must be a Buffer.</li>
+</ul>
+Output Encoding options:
+<ul>
+     <li> If the outputEncoding is specified, a string using the specified encoding is returned.</li>
+     <li> If no outputEncoding is provided, a Buffer is returned.</li>
+</ul>
 </div>
 
 
@@ -517,7 +542,7 @@ If data is a Buffer then inputEncoding is ignored.
 
             
 
-            <td class="description last">The data object. If data is a Buffer then inputEncoding is ignored.</td>
+            <td class="description last">The data object.</td>
         </tr>
 
     
@@ -556,14 +581,14 @@ If data is a Buffer then inputEncoding is ignored.
 
             
 
-            <td class="description last">The input encoding. If data is a Buffer then inputEncoding is ignored.</td>
+            <td class="description last">The encoding of the data.<br>If data is a Buffer this argument is ignored.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>outputEcoding</code></td>
+                <td class="name"><code>outputEncoding</code></td>
             
 
             <td class="type">
@@ -595,7 +620,7 @@ If data is a Buffer then inputEncoding is ignored.
 
             
 
-            <td class="description last">The output encoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'. If no encoding is provided, then a buffer is returned.</td>
+            <td class="description last">The encoding of the return value.<br>The output encoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'.<br>If no encoding is provided, then a buffer is returned.</td>
         </tr>
 
     
@@ -687,7 +712,7 @@ If data is a Buffer then inputEncoding is ignored.
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>D.crypto.createCipher('sha1', 'key', 'iv').update('data', 'binary', 'binary')</code></pre>
+    <pre class="prettyprint"><code>D.crypto.createCipher('sha1', 'key', 'initialization vector').update('data', 'binary', 'binary')</code></pre>
 
 
 
@@ -713,7 +738,7 @@ If data is a Buffer then inputEncoding is ignored.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Mar 08 2023 16:00:58 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Mar 09 2023 17:52:43 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>

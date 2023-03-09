@@ -38,9 +38,13 @@
     <div class="container-overview">
     
         
-            <div class="description">Object for encrypting data.
-Returned by D.crypto.createDecipher.
-Decipher objects are streams that are both readable and writable. The written enciphered data is used to produce the plain-text data on the the readable side. The legacy update and final methods are also supported.</div>
+            <div class="description">Returned by D.crypto.createDecipher.<p>
+Instances of the Decipher object are used to decrypt data.<br>
+The object can be used in one of two ways:
+<ul>
+     <li> As a stream that is both readable and writable, where plain encrypted data is written to produce unencrypted data on the readable side</li>
+     <li> Using the decipher.update() and decipher.final() methods to produce the unencrypted data.</li>
+</ul></div>
         
 
         
@@ -109,7 +113,7 @@ Decipher objects are streams that are both readable and writable. The written en
     
 
     
-    <h4 class="name" id=".final"><span class="type-signature">(static) </span>final<span class="signature">(outputEcoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    <h4 class="name" id=".final"><span class="type-signature">(static) </span>final<span class="signature">(outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
     
 
     
@@ -117,9 +121,10 @@ Decipher objects are streams that are both readable and writable. The written en
 
 
 <div class="description">
-    Returns any remaining plaintext which is deciphered.
-The Decipher object can not be used after final() method has been called.
-If no encoding is provided, then a buffer is returned.
+    Returns any remaining plaintext which is deciphered.<br>
+If outputEncoding is specified, a string is returned. If an outputEncoding is not provided, a Buffer is returned.<p>
+Once the decipher.final() method has been called, the Decipher object can no longer be used to decrypt data.<br>
+Attempts to call decipher.final() more than once will result in an error being thrown.
 </div>
 
 
@@ -157,7 +162,7 @@ If no encoding is provided, then a buffer is returned.
 
         <tr>
             
-                <td class="name"><code>outputEcoding</code></td>
+                <td class="name"><code>outputEncoding</code></td>
             
 
             <td class="type">
@@ -189,7 +194,7 @@ If no encoding is provided, then a buffer is returned.
 
             
 
-            <td class="description last">The outputEncoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'. If no encoding is provided, then a buffer is returned.</td>
+            <td class="description last">The outputEncoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'.<br>If no encoding is provided, then a buffer is returned.</td>
         </tr>
 
     
@@ -254,7 +259,7 @@ If no encoding is provided, then a buffer is returned.
 
         
 <div class="param-desc">
-    - Returns any remaining deciphered data
+    - Any remaining deciphered data
 </div>
 
 
@@ -281,7 +286,7 @@ If no encoding is provided, then a buffer is returned.
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>D.crypto.createDecipher('sha1', 'key', 'iv').final('binary')</code></pre>
+    <pre class="prettyprint"><code>D.crypto.createDecipher('sha1', 'key', 'initialization vector').final('binary')</code></pre>
 
 
 
@@ -299,9 +304,9 @@ If no encoding is provided, then a buffer is returned.
 
 
 <div class="description">
-    You can disable auto padding if the data has been encrypted without standard block padding to prevent decipher.final from checking and removing it. 
-Can only work if the input data's length is a multiple of the ciphers block size. 
-You must call this before streaming data to decipher.update.
+    When data has been encrypted without standard block padding, calling decipher.setAutoPadding(false) will disable automatic padding to prevent decipher.final() from checking for and removing padding.<br>
+Turning auto padding off will only work if the input data's length is a multiple of the cipher's block size.<p>
+The decipher.setAutoPadding() method must be called before decipher.final().
 </div>
 
 
@@ -328,6 +333,8 @@ You must call this before streaming data to decipher.update.
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -363,6 +370,12 @@ You must call this before streaming data to decipher.update.
                 </td>
             
 
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
             
 
             <td class="description last">The auto padding boolean flag.</td>
@@ -432,7 +445,7 @@ You must call this before streaming data to decipher.update.
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>D.crypto.createDecipher('sha1', 'key', 'iv').setAutoPadding(false)</code></pre>
+    <pre class="prettyprint"><code>D.crypto.createDecipher('sha1', 'key', 'initialization vector').setAutoPadding(false)</code></pre>
 
 
 
@@ -442,7 +455,7 @@ You must call this before streaming data to decipher.update.
     
 
     
-    <h4 class="name" id=".update"><span class="type-signature">(static) </span>update<span class="signature">(data, inputEncoding<span class="signature-attributes">opt</span>, outputEcoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    <h4 class="name" id=".update"><span class="type-signature">(static) </span>update<span class="signature">(data, inputEncoding<span class="signature-attributes">opt</span>, outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
     
 
     
@@ -450,8 +463,20 @@ You must call this before streaming data to decipher.update.
 
 
 <div class="description">
-    Updates the decipher with data, which is encoded in 'binary', 'base64' or 'hex'. 
-If no encoding is provided, then a buffer is expected.
+    Updates the decipher with data.<br>
+The decipher.update() method can be called multiple times with new data until decipher.final() is called.<br>
+Calling decipher.update() after decipher.final() will result in an error being thrown.<p>
+Input Encoding options:
+<ul>
+     <li> If the inputEncoding argument is given, the data argument is a string using the specified encoding.</li>
+     <li> If the inputEncoding argument is not given, data must be a Buffer.</li>
+     <li> If data is a Buffer then inputEncoding is ignored.</li>
+</ul>
+Output Encoding options:
+<ul>
+     <li> If the outputEncoding is specified, a string using the specified encoding is returned.</li>
+     <li> If no outputEncoding is provided, a Buffer is returned.</li>
+</ul>
 </div>
 
 
@@ -516,7 +541,7 @@ If no encoding is provided, then a buffer is expected.
 
             
 
-            <td class="description last">The data object. If data is a Buffer then inputEncoding is ignored.</td>
+            <td class="description last">The data object.</td>
         </tr>
 
     
@@ -555,14 +580,14 @@ If no encoding is provided, then a buffer is expected.
 
             
 
-            <td class="description last">The input encoding. If data is a Buffer then inputEncoding is ignored.</td>
+            <td class="description last">The encoding of the data string.<br>If data is a Buffer this argument is ignored.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>outputEcoding</code></td>
+                <td class="name"><code>outputEncoding</code></td>
             
 
             <td class="type">
@@ -594,7 +619,7 @@ If no encoding is provided, then a buffer is expected.
 
             
 
-            <td class="description last">The output encoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'. If no encoding is provided, then a buffer is returned.</td>
+            <td class="description last">The encoding of the return value.<br>The output encoding specifies the output format of the enciphered data, and can be 'binary', 'base64' or 'hex'.<br>If no encoding is provided, then a buffer is returned.</td>
         </tr>
 
     
@@ -686,7 +711,7 @@ If no encoding is provided, then a buffer is expected.
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>D.crypto.createDecipher('sha1', 'key', 'iv').update('data', 'binary', 'binary')</code></pre>
+    <pre class="prettyprint"><code>D.crypto.createDecipher('sha1', 'key', 'initialization vector').update('data', 'binary', 'binary')</code></pre>
 
 
 
@@ -712,7 +737,7 @@ If no encoding is provided, then a buffer is expected.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Mar 08 2023 16:00:58 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Mar 09 2023 17:52:43 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -185,7 +185,7 @@ Used for encrypting data.
 
             
 
-            <td class="description last">The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+            <td class="description last">The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
         </tr>
 
     
@@ -394,7 +394,7 @@ Used for decrypting data.
 
             
 
-            <td class="description last">The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+            <td class="description last">The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
         </tr>
 
     
@@ -542,7 +542,7 @@ D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')</
     
 
     
-    <h4 class="name" id=".hash"><span class="type-signature">(static) </span>hash<span class="signature">(data, algorithm, inputEncoding<span class="signature-attributes">opt</span>, outputEcoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    <h4 class="name" id=".hash"><span class="type-signature">(static) </span>hash<span class="signature">(data, algorithm, inputEncoding<span class="signature-attributes">opt</span>, outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
     
 
     
@@ -615,7 +615,7 @@ D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')</
 
             
 
-            <td class="description last">The data object. If data is a Buffer then inputEncoding is ignored.</td>
+            <td class="description last">The data object.<br>If data is a Buffer then inputEncoding is ignored.</td>
         </tr>
 
     
@@ -646,7 +646,7 @@ D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')</
 
             
 
-            <td class="description last">The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+            <td class="description last">The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
         </tr>
 
     
@@ -685,14 +685,14 @@ D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')</
 
             
 
-            <td class="description last">The input encoding</td>
+            <td class="description last">The encoding of the data string.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>outputEcoding</code></td>
+                <td class="name"><code>outputEncoding</code></td>
             
 
             <td class="type">
@@ -724,7 +724,7 @@ D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')</
 
             
 
-            <td class="description last">The output encoding. If no encoding is provided, then a buffer is returned.</td>
+            <td class="description last">The encoding of the return value.<br>If no encoding is provided, then a buffer is returned.</td>
         </tr>
 
     
@@ -823,7 +823,7 @@ D.crypto.hash('my data', 'sha256', 'utf8', 'hex')</code></pre>
     
 
     
-    <h4 class="name" id=".hmac"><span class="type-signature">(static) </span>hmac<span class="signature">(data, key, algorithm, outputEcoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    <h4 class="name" id=".hmac"><span class="type-signature">(static) </span>hmac<span class="signature">(data, key, algorithm, outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
     
 
     
@@ -924,7 +924,7 @@ D.crypto.hash('my data', 'sha256', 'utf8', 'hex')</code></pre>
 
             
 
-            <td class="description last">The hmac key to be used.</td>
+            <td class="description last">The HMAC key to be used.</td>
         </tr>
 
     
@@ -955,14 +955,14 @@ D.crypto.hash('my data', 'sha256', 'utf8', 'hex')</code></pre>
 
             
 
-            <td class="description last">The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+            <td class="description last">The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>outputEcoding</code></td>
+                <td class="name"><code>outputEncoding</code></td>
             
 
             <td class="type">
@@ -994,7 +994,7 @@ D.crypto.hash('my data', 'sha256', 'utf8', 'hex')</code></pre>
 
             
 
-            <td class="description last">The output encoding. If no encoding is provided, then a buffer is returned.</td>
+            <td class="description last">The output encoding.<br>If no encoding is provided, then a buffer is returned.</td>
         </tr>
 
     
@@ -1082,7 +1082,7 @@ D.crypto.hash('my data', 'sha256', 'utf8', 'hex')</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// returns '049f32be4f33a698204529818c1b676d460c9cb2f6901457d012a6646127ae31' for the generated hmac digest with hex output encoding
+    <pre class="prettyprint"><code>// returns '049f32be4f33a698204529818c1b676d460c9cb2f6901457d012a6646127ae31' for the generated HMAC digest with hex output encoding
 D.crypto.hmac('my data', 'my secret', 'sha256', 'hex')</code></pre>
 
 
@@ -1101,7 +1101,7 @@ D.crypto.hmac('my data', 'my secret', 'sha256', 'hex')</code></pre>
 
 
 <div class="description">
-    Synchronous PBKDF2 (Password-Based Key Derivation Function) Returns derivedKey or throws error.
+    Synchronous PBKDF2 (Password-Based Key Derivation Function) Returns derivedKey or throws an error.
 * @example 
 // returns the Derived key
 D.crypto.pbkdf2Sync('the password', 'the salt', 100, 10)
@@ -1169,7 +1169,7 @@ D.crypto.pbkdf2Sync('the password', 'the salt', 100, 10)
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">string</span>
 
 
             
@@ -1192,7 +1192,7 @@ D.crypto.pbkdf2Sync('the password', 'the salt', 100, 10)
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">integer</span>
 
 
             
@@ -1215,7 +1215,7 @@ D.crypto.pbkdf2Sync('the password', 'the salt', 100, 10)
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">integer</span>
 
 
             
@@ -1335,7 +1335,7 @@ D.crypto.pbkdf2Sync('the password', 'the salt', 100, 10)
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Mar 08 2023 16:00:58 GMT+0200 (EET)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Mar 09 2023 17:52:43 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
