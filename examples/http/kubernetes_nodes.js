@@ -11,8 +11,8 @@
  */
 
 
-var token = D.device.password()
-var port = 80
+var token = D.device.password();
+var port = 80;
 
 var nodeTable = D.createTable(
     "Kubernetes Nodes and Pods Data",

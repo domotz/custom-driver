@@ -112,8 +112,9 @@ function fillTable(exchanges) {
     exchanges.forEach(function (d) {
         d.forEach(function (item) {
             var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
-            // Filter out the root vhosts
-            if (item.vhost === "/"){
+            if (vhost === "/"){
+                // Igore root level exchanges and only collect vhost child ones.
+                // Remove conditional in case you want to monitor them as well
                 return
             }
             var name = item.name;
