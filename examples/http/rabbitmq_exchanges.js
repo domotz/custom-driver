@@ -29,8 +29,8 @@
  */
 
 var port = 15672;
-var exchanges;
-var vars = [];
+var exchanges = [];
+// var exchangeNameRegex = ""; // Parameter used to filter queue names
 var table = D.createTable("Exchanges", [
     { label: "Name" },
     { label: "Vhost" },
@@ -56,14 +56,15 @@ var table = D.createTable("Exchanges", [
 /**
  * @returns promise for http response body
  */
-function httpGet() {
+function httpGet(url) {
     var d = D.q.defer();
     D.device.http.get({
-        url: "/api/exchanges",
+        url: url,
         port: port,
         username: D.device.username(),
         password: D.device.password(),
         auth: "basic"
+
     }, function (err, response, body) {
         if (err) {
             D.failure(D.errorType.GENERIC_ERROR);
@@ -77,61 +78,94 @@ function httpGet() {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(JSON.parse(body));
+        d.resolve(body);
     });
     return d.promise;
 }
 
+/**
+ * @returns promise for http response containing exchanges info
+ */
+function getExchanges(page) {
+    if (!page) page = 1;
+    var query = "/api/exchanges";
+    var params = [];
+    params.push("page_size=100");
+    params.push("page=" + page);
+    if (typeof exchangeNameRegex !== "undefined") params.push("name=" + exchangeNameRegex + "&use_regex=true");
+    query += "?" + params.join("&");
+    return httpGet(query)
+        .then(JSON.parse)
+        .then(function (data) {
+            exchanges = exchanges.concat(data.items);
+            if (data.page < data.page_count) {
+                return getExchanges(++page);
+            }
+            else {
+                return exchanges;
+            }
+        });
+}
+
 //fill the dynamic table with data related to exchanges. 
-function fillTable(data) {
-    data.forEach(function (item) {
-        var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
-        var vhost = item.vhost;
-        if (vhost === "/"){
-            // Igore root level exchanges and only collect vhost child ones.
-            // Remove conditional in case you want to monitor them as well
-            return
-        }
-        var name = item.name;
-        var type = item.type;
-        var unroutableDetails = item.message_stats && item.message_stats.return_unroutable_details && item.message_stats.return_unroutable_details.rate || 0;
-        var unroutable = item.message_stats && item.message_stats.return_unroutable || 0;
-        var redeliverDetails = item.message_stats && item.message_stats.redeliver_details && item.message_stats.redeliver_details.rate || 0;
-        var redelivered = item.message_stats && item.message_stats.redeliver || 0;
-        var publishOutDetails = item.message_stats && item.message_stats.publish_out_details && item.message_stats.publish_out_details.rate || 0;
-        var publishOut = item.message_stats && item.message_stats.publish_out || 0;
-        var publishInDetails = item.message_stats && item.message_stats.publish_in_details && item.message_stats.publish_in_details.rate || 0;
-        var publishIn = item.message_stats && item.message_stats.publish_in || 0;
-        var publishDetails = item.message_stats && item.message_stats.publish_details && item.message_stats.publish_details.rate || 0;
-        var published = item.message_stats && item.message_stats.publish || 0;
-        var deliverGetDetails = item.message_stats && item.message_stats.deliver_get_details && item.message_stats.deliver_get_details.rate || 0;
-        var deliverGet = item.message_stats && item.message_stats.deliver_get || 0;
-        var confirmDetails = item.message_stats && item.message_stats.confirm_details && item.message_stats.confirm_details.rate || 0;
-        var confirmed = item.message_stats && item.message_stats.confirm || 0;
-        var ackDetails = item.message_stats && item.message_stats.ack_details && item.message_stats.ack_details.rate || 0;
-        var acknowledged = item.message_stats && item.message_stats.ack || 0;
-        table.insertRecord(recordId, [
-            name,
-            vhost,
-            type,
-            unroutableDetails,
-            unroutable,
-            redeliverDetails,
-            redelivered,
-            publishOutDetails,
-            publishOut,
-            publishInDetails,
-            publishIn,
-            publishDetails,
-            published,
-            deliverGetDetails,
-            deliverGet,
-            confirmDetails,
-            confirmed,
-            ackDetails,
-            acknowledged
-        ]);
+function fillTable(exchanges) {
+    exchanges.forEach(function (d) {
+        d.forEach(function (item) {
+            var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
+            if (vhost === "/"){
+                // Igore root level exchanges and only collect vhost child ones.
+                // Remove conditional in case you want to monitor them as well
+                return
+            }
+            var name = item.name;
+            var vhost = item.vhost;
+            var type = item.type;
+            var unroutableDetails = item.message_stats && item.message_stats.return_unroutable_details && item.message_stats.return_unroutable_details.rate || 0;
+            var unroutable = item.message_stats && item.message_stats.return_unroutable || 0;
+            var redeliverDetails = item.message_stats && item.message_stats.redeliver_details && item.message_stats.redeliver_details.rate || 0;
+            var redelivered = item.message_stats && item.message_stats.redeliver || 0;
+            var publishOutDetails = item.message_stats && item.message_stats.publish_out_details && item.message_stats.publish_out_details.rate || 0;
+            var publishOut = item.message_stats && item.message_stats.publish_out || 0;
+            var publishInDetails = item.message_stats && item.message_stats.publish_in_details && item.message_stats.publish_in_details.rate || 0;
+            var publishIn = item.message_stats && item.message_stats.publish_in || 0;
+            var publishDetails = item.message_stats && item.message_stats.publish_details && item.message_stats.publish_details.rate || 0;
+            var published = item.message_stats && item.message_stats.publish || 0;
+            var deliverGetDetails = item.message_stats && item.message_stats.deliver_get_details && item.message_stats.deliver_get_details.rate || 0;
+            var deliverGet = item.message_stats && item.message_stats.deliver_get || 0;
+            var confirmDetails = item.message_stats && item.message_stats.confirm_details && item.message_stats.confirm_details.rate || 0;
+            var confirmed = item.message_stats && item.message_stats.confirm || 0;
+            var ackDetails = item.message_stats && item.message_stats.ack_details && item.message_stats.ack_details.rate || 0;
+            var acknowledged = item.message_stats && item.message_stats.ack || 0;
+            table.insertRecord(recordId, [
+                name,
+                vhost,
+                type,
+                unroutableDetails,
+                unroutable,
+                redeliverDetails,
+                redelivered,
+                publishOutDetails,
+                publishOut,
+                publishInDetails,
+                publishIn,
+                publishDetails,
+                published,
+                deliverGetDetails,
+                deliverGet,
+                confirmDetails,
+                confirmed,
+                ackDetails,
+                acknowledged
+            ]);
+        });
     });
+}
+
+// load exchanges informations
+function loadData() {
+    return D.q.all([
+        getExchanges()
+    ]);
 }
 
 /**
@@ -140,10 +174,11 @@ function fillTable(data) {
  * @documentation This procedure is used to validate if the driver rabbitmq exchanges is accessible for the device.
  */
 function validate() {
-    httpGet()
+    loadData()
         .then(function () {
             D.success();
         });
+
 }
 
 //Indicate the successful execution for variable list and table
@@ -157,12 +192,10 @@ function success() {
  * @documentation This procedure is used to extract monitoring parameters from RabbitMQ exchanges.
  */
 function get_status() {
-    httpGet()
+    loadData()
         .then(fillTable)
         .then(success)
         .catch(function (err) {
-            console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
-
