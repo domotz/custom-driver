@@ -30,7 +30,7 @@
 
 var port = 15672;
 var exchanges = [];
-// var queueNameRegex = ""; // Parameter used to filter queue names
+// var exchangeNameRegex = ""; // Parameter used to filter queue names
 var table = D.createTable("Exchanges", [
     { label: "Name" },
     { label: "Vhost" },
@@ -112,6 +112,10 @@ function fillTable(exchanges) {
     exchanges.forEach(function (d) {
         d.forEach(function (item) {
             var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
+            // Filter out the root vhosts
+            if (item.vhost === "/"){
+                return
+            }
             var name = item.name;
             var vhost = item.vhost;
             var type = item.type;

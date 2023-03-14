@@ -114,7 +114,7 @@ function getQueues(page) {
 function fillTable(queues) {
     queues.forEach(function (d) {
         d.forEach(function (item) {
-            var recordId = "[" + item.name + "]" + "[" + item.vhost + "]".substring(0, 50);
+            var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
             var name = item.name;
             var vhost = item.vhost;
             var deliverGetDetails = item.message_stats && item.message_stats.deliver_get_details && item.message_stats.deliver_get_details.rate || 0;
