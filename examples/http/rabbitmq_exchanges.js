@@ -115,7 +115,7 @@ function fillTable(exchanges) {
             if (vhost === "/"){
                 // Igore root level exchanges and only collect vhost child ones.
                 // Remove conditional in case you want to monitor them as well
-                return
+                return;
             }
             var name = item.name;
             var vhost = item.vhost;

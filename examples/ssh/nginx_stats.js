@@ -299,7 +299,7 @@ function validate() {
     execCommand(
         nginxSystemConfigCmd,
         validateCallback
-    )
+    );
 
 }
 

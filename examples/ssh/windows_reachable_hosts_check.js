@@ -23,7 +23,7 @@
  **/
 
 // Define here the list of hosts/ips you would like to check
-var hostsToCheck = ["www.notworkingnetaddress.com", "www.google.com", "www.microsoft.com.it", "129.312.32.31"]
+var hostsToCheck = ["www.notworkingnetaddress.com", "www.google.com", "www.microsoft.com.it", "129.312.32.31"];
 
 // SSH options when running the commands
 var sshConfig = {
@@ -38,13 +38,13 @@ var sshConfig = {
 function checkSshError(err) {
     if (err.message) console.error(err.message);
     if (err.code == 5) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (err.code == 255){
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
         console.error(err);
         D.failure(D.errorType.GENERIC_ERROR);
-    };
+    }
 }
 
 /**
@@ -56,9 +56,9 @@ function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     D.device.sendSSHCommand(sshConfig, function(output, error){
         if (error) {
-            checkSshError(error)
+            checkSshError(error);
         } else if (!output || output.indexOf("is not recognized") !== -1) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else {
             D.success();
         }
@@ -78,19 +78,19 @@ function get_status() {
 // Result parsing callback for variables data
 function parseResultCallback(output, error){
     if (error) {
-        checkSshError(error)
+        checkSshError(error);
     } else {
         var result = output.split(/\r?\n/);
         var variables = [];
         for (var i = 0; i < result.length; i++) {
             if (result[i] !== "") {
                 var uid = "id-" + i + "-reachable";
-                var value = result[i] == "True"
+                var value = result[i] == "True";
                 variables.push(
                     D.createVariable(uid, hostsToCheck[i], value)
-                )
+                );
             }
         }
         D.success(variables);
-    };
+    }
 }

@@ -10,7 +10,7 @@
  */
 
 var _var = D.device.createVariable;
-var token = D.device.password()
+var token = D.device.password();
 var port = 80;
 
 /**
