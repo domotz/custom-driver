@@ -116,6 +116,10 @@ function validate() {
         .then(loadData)
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 

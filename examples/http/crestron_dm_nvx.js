@@ -270,6 +270,12 @@ function loadData() {
         });
 }
 
+
+//Indicate the successful execution of the driver and returns the variable list and table data
+function success() {
+    D.success(vars, table);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -287,11 +293,6 @@ function validate() {
         });
 }
 
-//Indicate the successful execution for variable list and table
-function success() {
-    D.success(vars, table);
-}
-
 /**
  * @remote_procedure
  * @label Get Device Variables
@@ -306,5 +307,6 @@ function get_status() {
         .then(success)
         .catch(function (err) {
             console.error(err);
+            D.failure(D.errorType.PARSING_ERROR);
         });
 }

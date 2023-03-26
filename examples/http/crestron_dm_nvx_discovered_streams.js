@@ -91,6 +91,11 @@ function fillTable() {
     }
 }
 
+//Indicate the successful execution for the get status and returns the table data
+function success() {
+    D.success(table);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -108,11 +113,6 @@ function validate() {
         });
 }
 
-//Indicate the successful execution for table
-function success() {
-    D.success(table);
-}
-
 /**
  * @remote_procedure
  * @label Get Device Variables
@@ -125,5 +125,6 @@ function get_status() {
         .then(success)
         .catch(function (err) {
             console.error(err);
+            D.failure(D.errorType.PARSING_ERROR);
         });
 }
