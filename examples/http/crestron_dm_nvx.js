@@ -2,16 +2,16 @@
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
- * Create 2 tables with specific columns.
- * Return a table with this columns:
+ * Create a table for stream Receiving or Transmitting information depending on the operational mode of the NVX device.
+
  * -------------------------------------
- * Columns for the tableStreamReceive:
+ * Columns for the table 'Stream Receive':
  * MulticastAddress: The multicast address of the device connected to the receiving device.
  * InitiatorAddress: The address of the device connected to the receiver.
  * HorizontalResolution: The horizontal resolution of the received stream.
  * VerticalResolution: The vertical resolution of the received stream.
  * 
- * Columns for the tableStreamTransmit:
+ * Columns for the table 'Stream Transmit':
  * MulticastAddress: The multicast address of the transmitted stream.
  * StreamLocation: The multicast address of the transmitted stream.
  * ActiveBitrate: The bitrate of the active stream, in Mbps.
@@ -44,6 +44,25 @@ var tableStreamTransmit = D.createTable(
 );
 
 /**
+ * Utility wrapper function for http get commands
+ * @returns a promise containing the body of the response.
+ */
+function httpGet(url) {
+    var d = D.q.defer();
+    var config = {
+        url: url,
+        protocol: "https",
+        jar: true,
+        rejectUnauthorized: false
+    };
+    D.device.http.get(config, function (error, response, body) {
+        if (response.statusCode && response.statusCode === 200 && body)
+            d.resolve(body);
+    });
+    return d.promise;
+}
+
+/**
  * @returns a promise containing the body of the login page.
  */
 function login() {
@@ -67,24 +86,6 @@ function login() {
 }
 
 /**
- * @returns a promise containing the body of the response.
- */
-function httpGet(url) {
-    var d = D.q.defer();
-    var config = {
-        url: url,
-        protocol: "https",
-        jar: true,
-        rejectUnauthorized: false
-    };
-    D.device.http.get(config, function (error, response, body) {
-        if (response.statusCode && response.statusCode === 200 && body)
-            d.resolve(body);
-    });
-    return d.promise;
-}
-
-/**
  * @returns promise for http response body containig system version information for the DM NVX device
  */
 function getSystemVersions() {
@@ -97,7 +98,7 @@ function getSystemVersions() {
 }
 
 /**
- * @returns promise for http response body containig device‑specific inforations  
+ * @returns promise for http response body containig device specific information.
  */
 function getDeviceSpecific() {
     return httpGet("/Device/DeviceSpecific")
@@ -130,6 +131,7 @@ function getStreamReceive() {
 }
 
 /**
+ * Function to get the stream transmitting information.
  * @returns promise for http response body containig transmitted stream for the DM NVX device.
  */
 function getStreamTransmit() {
@@ -141,9 +143,10 @@ function getStreamTransmit() {
 }
 
 /**
+ * Extracts values of Crestron DM-NVX devices
  * @param {string} key parameter key
  * @param {object} data for Crestron DM NVX informations
- * @returns extract values of Crestron DM-NVX devices
+ * @returns values of Crestron DM-NVX devices
  */
 function extractValue(data, key) {
     return function () {
