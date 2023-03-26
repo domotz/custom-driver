@@ -18,7 +18,7 @@
  */
 
 
-var commandGetPendingReboot ="powershell -c \"$invokeWmiMethodParameters = @{Namespace= 'root/default';Class= 'StdRegProv';Name= 'EnumKey';ErrorAction  = 'Stop';};$hklm = [UInt32] '0x80000002';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\');$registryComponentBasedServicing = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootPending';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\');$registryWindowsUpdateAutoUpdate = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootRequired';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Services\Netlogon');$registryNetlogon = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames;$pendingDomainJoin = ($registryNetlogon -contains 'JoinDomain') -or ($registryNetlogon -contains 'AvoidSpnSet');$invokeWmiMethodParameters.Name = 'GetMultiStringValue';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName\', 'ComputerName');$registryActiveComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\', 'ComputerName');$registryComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$pendingComputerRename = $registryActiveComputerName -ne $registryComputerName -or $pendingDomainJoin;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\Session Manager\', 'PendingFileRenameOperations');$registryPendingFileRenameOperations = (Invoke-WmiMethod @invokeWmiMethodParameters).sValue;$registryPendingFileRenameOperationsBool = [bool]$registryPendingFileRenameOperations;$isRebootPending = $registryComponentBasedServicing -or $pendingComputerRename -or $pendingDomainJoin -or $registryPendingFileRenameOperationsBool -or $registryWindowsUpdateAutoUpdate;@{ IsRebootPending = $isRebootPending; Uptime =  ((Get-Date) - $(Get-CimInstance -ClassName Win32_OperatingSystem | Select -ExpandProperty LastBootupTime)).Hours}\""
+var commandGetPendingReboot ="powershell -c \"$invokeWmiMethodParameters = @{Namespace= 'root/default';Class= 'StdRegProv';Name= 'EnumKey';ErrorAction  = 'Stop';};$hklm = [UInt32] '0x80000002';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\');$registryComponentBasedServicing = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootPending';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\');$registryWindowsUpdateAutoUpdate = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames -contains 'RebootRequired';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Services\Netlogon');$registryNetlogon = (Invoke-WmiMethod @invokeWmiMethodParameters).sNames;$pendingDomainJoin = ($registryNetlogon -contains 'JoinDomain') -or ($registryNetlogon -contains 'AvoidSpnSet');$invokeWmiMethodParameters.Name = 'GetMultiStringValue';$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName\', 'ComputerName');$registryActiveComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\', 'ComputerName');$registryComputerName = Invoke-WmiMethod @invokeWmiMethodParameters;$pendingComputerRename = $registryActiveComputerName -ne $registryComputerName -or $pendingDomainJoin;$invokeWmiMethodParameters.ArgumentList = @($hklm, 'SYSTEM\CurrentControlSet\Control\Session Manager\', 'PendingFileRenameOperations');$registryPendingFileRenameOperations = (Invoke-WmiMethod @invokeWmiMethodParameters).sValue;$registryPendingFileRenameOperationsBool = [bool]$registryPendingFileRenameOperations;$isRebootPending = $registryComponentBasedServicing -or $pendingComputerRename -or $pendingDomainJoin -or $registryPendingFileRenameOperationsBool -or $registryWindowsUpdateAutoUpdate;@{ IsRebootPending = $isRebootPending; Uptime =  ((Get-Date) - $(Get-CimInstance -ClassName Win32_OperatingSystem | Select -ExpandProperty LastBootupTime)).Hours}\"";
 var sshOptions = {
     "command": commandGetPendingReboot,
     "username": D.device.username(),
@@ -31,19 +31,19 @@ function successCallback(output) {
     var outputList = output.split(/\r?\n/);
     var outputLineRebootState = 2;
     var outputLineDeviceUptime = 3;
-    var pendingRebootLabel = outputList[outputLineRebootState].replace(/\s+/g,' ').trim().split(" ")[0];
-    var pendingRebootValue = outputList[outputLineRebootState].replace(/\s+/g,' ').trim().split(" ")[1];
-    if (pendingRebootValue.indexOf('alse') === -1) {
-        pendingRebootValue = "Yes"
+    var pendingRebootLabel = outputList[outputLineRebootState].replace(/\s+/g," ").trim().split(" ")[0];
+    var pendingRebootValue = outputList[outputLineRebootState].replace(/\s+/g," ").trim().split(" ")[1];
+    if (pendingRebootValue.indexOf("alse") === -1) {
+        pendingRebootValue = "Yes";
     } else {
-        pendingRebootValue = "No"
+        pendingRebootValue = "No";
     }
-    var deviceUptimeLabel = outputList[outputLineDeviceUptime].replace(/\s+/g,' ').trim().split(" ")[0];
-    var deviceUptimeValue = outputList[outputLineDeviceUptime].replace(/\s+/g,' ').trim().split(" ")[1];
+    var deviceUptimeLabel = outputList[outputLineDeviceUptime].replace(/\s+/g," ").trim().split(" ")[0];
+    var deviceUptimeValue = outputList[outputLineDeviceUptime].replace(/\s+/g," ").trim().split(" ")[1];
     
     D.success([
-        D.createVariable('pending-reboot', pendingRebootLabel, pendingRebootValue, null, D.valueType.STRING),
-        D.createVariable('device-uptime-hours', deviceUptimeLabel, deviceUptimeValue, null, D.valueType.NUMBER)
+        D.createVariable("pending-reboot", pendingRebootLabel, pendingRebootValue, null, D.valueType.STRING),
+        D.createVariable("device-uptime-hours", deviceUptimeLabel, deviceUptimeValue, null, D.valueType.NUMBER)
     ]);
 }
     
@@ -114,6 +114,6 @@ function custom_1(){
         }
     }
     var rebootCommand ="powershell -c \"Restart-Computer -Force\""; 
-    sshOptions.command = rebootCommand
+    sshOptions.command = rebootCommand;
     D.device.sendSSHCommand(sshOptions, rebootCallback);
 }
