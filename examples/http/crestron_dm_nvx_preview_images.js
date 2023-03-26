@@ -2,14 +2,14 @@
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
- * Create a tables with specific columns.
- * Return a table with this columns:
+ * Create a tables with NVX device Images information
+ * The Table has the following columns:
  * -------------------------------------
  * FQDN Path: The path to the device using its FQDN (Fully Qualified Domain Name).
- * Height: The height of the generated image.
  * IPv4 Path: The path to the device using its IPv4 address.
  * Is Image Available: Indicates whether the device will generate a preview image for this resolution (true) or not (false).
  * Size: The generated image size, in bytes.
+ * Height: The height of the generated image.
  * Width: The width of the generated image.
  * -----------------------------------------
  */
@@ -20,10 +20,10 @@ var table = D.createTable(
     "Images",
     [
         { label: "FQDN Path" },
-        { label: "Height" },
         { label: "IPv4 Path" },
         { label: "Is Image Available" },
         { label: "Size" },
+        { label: "Height" },
         { label: "Width" },
     ]
 );
@@ -88,32 +88,33 @@ function fillTable() {
         var imageAvailable = imageList[image].IsImageAvailable;
         var size = imageList[image].Size;
         var width = imageList[image].Width;
-        var id = imageList[image].Name;
-        table.insertRecord(id, [
+        var recordId = imageList[image].Name.slice(0, 50); // Slice to comply with record ID limit of 50 characters;
+        table.insertRecord(recordId, [
             fqdnPath,
-            height,
             ipv4Path,
             imageAvailable,
             size,
-            width]);
+            height,
+            width
+        ]);
     }
 }
 
-// load the preview image informations
-function loadData() {
-    return D.q.all([
-        getPreviewImages()
-    ]);
+
+//Indicate the successful execution for table
+function success() {
+    D.success(table);
 }
 
 /**
  * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate if data are accessible
+ * @label Validate DM-NVX Device
+ * @documentation This procedure is used to validate if the data needed for the retrieval is accessible
  */
 function validate() {
     login()
-        .then(loadData)
+        .then(getPreviewImages)
+        .then(fillTable)
         .then(function () {
             D.success();
         })
@@ -123,24 +124,16 @@ function validate() {
         });
 }
 
-//Indicate the successful execution for table
-function success() {
-    D.success(table);
-}
-
 /**
  * @remote_procedure
- * @label Get Device Variables
- * @documentation This procedure is used to extract monitoring parameters from Crestron API.
+ * @label Get Preview Images
+ * @documentation This procedure creates the Preview Images table and collects the data for it
  */
 function get_status() {
     login()
-        .then(loadData)
+        .then(getPreviewImages)
         .then(fillTable)
         .then(success)
-        .then(function () {
-            D.success();
-        })
         .catch(function (err) {
             console.error(err);
         });

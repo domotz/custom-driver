@@ -98,8 +98,8 @@ function success() {
 
 /**
  * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate if data are accessible
+ * @label Validate DM-NVX Device
+ * @documentation This procedure is used to validate if the data needed for the retrieval is accessible
  */
 function validate() {
     login()
@@ -115,7 +115,7 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get Device Variables
+ * @label Get Discovered Streams
  * @documentation This procedure is used to extract monitoring parameters from Crestron API.
  */
 function get_status() {
