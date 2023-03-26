@@ -241,7 +241,7 @@ function extract(data) {
             result = c.execute(data);
         }
         if (result != null) {
-            return D.device.createVariable(c.uid, c.label, result, c.unit, c.type);
+            return D.createVariable(c.uid, c.label, result, c.unit, c.type);
         } else {
             return null;
         }
@@ -280,6 +280,10 @@ function validate() {
         .then(loadData)
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
@@ -291,7 +295,7 @@ function success() {
 /**
  * @remote_procedure
  * @label Get Device Variables
- * @documentation This procedure is used to extract monitoring parameters from Crestron API.
+ * @documentation This procedure is used to extract monitoring parameters from Crestron DM NVX API.
  * 
  */
 function get_status() {
