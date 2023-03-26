@@ -2,8 +2,8 @@
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
- * Create a tables with specific columns.
- * Return a table with this columns:
+ * Create a tables  for Discovered Streaming information ('Discovered Streams').
+ * Return a table with these columns:
  * -------------------------------------
  * Session name: The session name.
  * Bitrate: The stream bitrate in Mbps.
@@ -14,7 +14,7 @@
 
 var discoveredStreams;
 var table = D.createTable(
-    "Discovered streams",
+    "Discovered Streams",
     [
         { label: "Session name" },
         { label: "Bitrate" },
@@ -81,8 +81,8 @@ function fillTable() {
         var bitrate = stream[uuid].Bitrate;
         var resolution = stream[uuid].Resolution;
         var multicastAddress = stream[uuid].MulticastAddress;
-        var id = stream[uuid].UniqueId;
-        table.insertRecord(id, [
+        var recordId = stream[uuid].UniqueId;
+        table.insertRecord(recordId, [
             sessionName,
             bitrate,
             resolution,
@@ -101,6 +101,10 @@ function validate() {
         .then(getDiscoveredStreams)
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
