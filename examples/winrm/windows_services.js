@@ -13,28 +13,44 @@
  * 
  * Creates a Custom Driver table with a list of services, their status and their start type
  * 
- * Privilege required: Standard User
- * 
+ * Privilege required: Local Administrator
+* 
 **/
 
-/** List of services you want to monitor, note that you can put the DisplayName or the ServiceName  
- * 
- * This is an example of the filter which suit a Windows 10 computer (workstation):
- * var svcFilter = '@("bits","Dnscache","Spooler","schedule","DHCP Client")'
- * 
- * For a server you may want to set the filter as follow :
- * var svcFilter = '@("LanmanServer","dnscache","Windows Time","dhcp","schedule","RpcEptMapper","MpsSvc")
- * 
- * If you want to list ALL services just put '$null' as a filter 
- * var svcFilter = '$null';
- * **/
+// List of services you want to monitor, note that you can put the DisplayName or the ServiceName  
 
-var svcFilter = '@("LanmanServer","dnscache","Windows Time","dhcp","schedule","RpcEptMapper","MpsSvc")';
+// This is an example of the filter which suit a Windows 10 computer (workstation):
+// var svcFilter = '@("bits","Dnscache","Spooler","schedule","DHCP Client")'
+ 
+// For a server you may want to set the filter as follow :
+var svcFilter = '@("LanmanServer","dnscache","Windows Time","dhcp","schedule","RpcEptMapper","MpsSvc")'
+ 
+// If you want to list ALL services just put '$null' as a filter 
+// var svcFilter = '$null';
+
 
 /** Some services have a long DisplayName that may cause a problem with the Domotz Table,
  *  you can use the ServiceName instead setting to false the variable useDisplayName
 **/
 var useDisplayName = false;
+
+var getServices = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType |ConvertTo-Json'
+
+// Define the WinRM options when running the commands
+var winrmConfig = {
+    "command": getServices,
+    "username": D.device.username(),
+    "password": D.device.password()
+};
+
+// Check for Errors on the WinRM command response
+function checkSshError(err) {
+    if(err.message) console.error(err.message);
+    if(err.code == 401) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
 
 /**
 * @remote_procedure
@@ -46,20 +62,18 @@ function validate() {
         if (output.error === null) {
             D.success();
         } else {
-            console.error(output.error);
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            checkSshError(output.error);
         }
     });
 }
 
 /**
 * @remote_procedure
-* @label Get Services 
-* @documentation This procedure retrieves Windows services specified according to svcFilter 
+* @label Get Host failed logon for the last hours
+* @documentation This procedure retrieves last hour failed logon attempts
 */
 function get_status() {
-    var psCommand = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType |ConvertTo-Json'
-    D.device.sendWinRMCommand({ command: psCommand }, callBackFunct);
+    D.device.sendWinRMCommand(winrmConfig, callBackFunct);
 }
 
 var svcTable = D.createTable(
@@ -98,6 +112,7 @@ function populateTable(svcName, displayname, status, startType) {
 }
 
 function callBackFunct(output) {
+
     if (output.error === null) {
         var jsonOutput = JSON.parse(JSON.stringify(output));
         jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
