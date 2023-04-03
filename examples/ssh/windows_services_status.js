@@ -34,7 +34,7 @@
  * 
 */
 
-var exludedServices = ['AJRouter','B'];;
+var exludedServices = ["AJRouter","B"];
 var monitoredServices = [];
 
 // SSH options when running the commands
@@ -49,13 +49,13 @@ var sshConfig = {
 function checkSshError(err) {
     if (err.message) console.error(err.message);
     if (err.code == 5) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (err.code == 255){
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
         console.error(err);
         D.failure(D.errorType.GENERIC_ERROR);
-    };
+    }
 }
 
 /**
@@ -67,9 +67,9 @@ function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     D.device.sendSSHCommand(sshConfig, function(output, error){
         if (error) {
-            checkSshError(error)
+            checkSshError(error);
         } else if (!output || output.indexOf("is not recognized") !== -1) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else {
             D.success();
         }
@@ -86,18 +86,18 @@ function get_status() {
 }
 
 function getCommandForMonitoredServices(){
-    console.info(exludedServices.length)
+    console.info(exludedServices.length);
     if (exludedServices.length > 0 && monitoredServices.length > 0) {
         console.error("exludedServices and monitoredServices variables cannot be both not empty");
         D.failure(D.errorType.GENERIC_ERROR);
     } else {
         if (exludedServices.length > 0){
-            return "powershell -command \"Get-Service | Select Status,Name,DisplayName | foreach { $_.Name + '#' + $_.Status + '#' +  $_.DisplayName} | Select-String -Pattern " + exludedServices.toString() + " -NotMatch\""
+            return "powershell -command \"Get-Service | Select Status,Name,DisplayName | foreach { $_.Name + '#' + $_.Status + '#' +  $_.DisplayName} | Select-String -Pattern " + exludedServices.toString() + " -NotMatch\"";
         } else {
             if (monitoredServices.length > 0){
-                return "powershell -command \"Get-Service | Select Status,Name,DisplayName | foreach { $_.Name + '#' + $_.Status + '#' +  $_.DisplayName} | Select-String -Pattern " + monitoredServices.toString()
+                return "powershell -command \"Get-Service | Select Status,Name,DisplayName | foreach { $_.Name + '#' + $_.Status + '#' +  $_.DisplayName} | Select-String -Pattern " + monitoredServices.toString();
             } else {
-            return "powershell -command \"Get-Service | Select Status,Name,DisplayName | foreach { $_.Name + '#' + $_.Status + '#' +  $_.DisplayName}\""
+                return "powershell -command \"Get-Service | Select Status,Name,DisplayName | foreach { $_.Name + '#' + $_.Status + '#' +  $_.DisplayName}\"";
             }
         }
     }
@@ -106,7 +106,7 @@ function getCommandForMonitoredServices(){
 // Result parsing callback for variables data
 function parseResultCallback(output, error){
     if (error) {
-        checkSshError(error)
+        checkSshError(error);
     } else {
         var result = output.split(/\r?\n/);
         var table = D.createTable(
@@ -118,7 +118,7 @@ function parseResultCallback(output, error){
             ]
         );     
         for (var i = 0; i < result.length; i++) {
-            var fields = result[i].replace(/\s+/g,' ').trim().split("#");
+            var fields = result[i].replace(/\s+/g," ").trim().split("#");
             var serviceName=fields[0];
             var serviceStatus=fields[1];
             var serviceDescription=fields[2];
@@ -127,5 +127,5 @@ function parseResultCallback(output, error){
             );
         }
         D.success(table);
-    };
+    }
 }
