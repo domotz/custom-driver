@@ -85,8 +85,9 @@ function checkWinRmError(err) {
 * @label Validate WinRM is working on device
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials and privileges provided
 */
-function validate() {
-    D.device.sendWinRMCommand({ command: "Get-Service eventlog" }, function (output) {
+function validate() { 
+    winrmConfig.command =  "Get-Service eventlog"
+    D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
             D.success();
         } else {
