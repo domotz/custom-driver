@@ -11,7 +11,7 @@
 // Define SSH configuration
 var sshConfig = {
     port: 22,
-    timeout: 30000,
+    timeout: 20000
 };
 
 var _var = D.device.createVariable;
@@ -26,7 +26,6 @@ var commands = [
     "iperf3 -f m -c localhost -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'",
     "iperf3 -f m -c localhost -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'"
 ];
-
 
 //Checking SSH errors and handling them
 function checkSshError(err) {
@@ -46,23 +45,8 @@ function exec_command(command, callback) {
     });
 }
 
-/**
-* @remote_procedure
-* @label Validate Association
-* @documentation This procedure is used to validate if iperf3 commands are executed successfully
-*/
-function validate() {
-    exec_command(commands, function () {
-        D.success();
-    });
-}
-
-/**
-* @remote_procedure
-* @label Get Device Variables
-* @documentation This procedure is used for retrieving iperf3 results
-*/
-function get_status() {
+//This function execute the SSH commands to retrieve network speed data using the iperf3 tool, and then creating dynamic monitoring variables based on the obtained data.
+function execute() {
     exec_command(commands[0], function (cmd) {
         dload = cmd || 0;
         exec_command(commands[1], function (cmd) {
@@ -87,5 +71,35 @@ function get_status() {
                 ]);
             }
         });
+    });
+}
+
+//This function is a failure handler for SSH command execution. 
+function failure(err) {
+    console.log(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
+/**
+* @remote_procedure
+* @label Validate Association
+* @documentation This procedure is used to verify if the call of docker command over ssh is successfully done
+*/
+function validate() {
+    execute(function () {
+        D.success()
+            .catch(failure);
+    });
+}
+
+/**
+* @remote_procedure
+* @label Get Docker info
+* @documentation This procedure is used to call docker service over ssh and extract the result and create variables to monitor
+*/
+function get_status() {
+    execute(function () {
+        D.success()
+            .catch(failure);
     });
 }
