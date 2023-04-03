@@ -4,6 +4,8 @@ var dbManager = require("../lib/db");
 var { valueTypes, errorTypes } = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
+var variableLibrary = require("../lib/variable")
+var cryptoLibrary = require("../lib/crypto")
 
 var device = {
     ip: process.env.DEVICE_IP,
@@ -194,4 +196,9 @@ global.D = { /**
         }
         return createDevice(externalDevice, { max_var_id_len: 50 }, console);
     },
+    createVariable: function (uid, name, value, unit, valueType) {
+        driverVariable = variableLibrary.createVariable(uid, name, value, unit, valueType, { max_var_id_len: 50 });
+        return driverVariable;
+    },
+    crypto: cryptoLibrary.cryptoLibrary(console),
 };
