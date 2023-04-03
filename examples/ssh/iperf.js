@@ -83,7 +83,7 @@ function failure(err) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to verify if the call of docker command over ssh is successfully done
+* @documentation This procedure is used to validate if iperf3 commands are executed successfully
 */
 function validate() {
     execute(function () {
@@ -94,8 +94,8 @@ function validate() {
 
 /**
 * @remote_procedure
-* @label Get Docker info
-* @documentation This procedure is used to call docker service over ssh and extract the result and create variables to monitor
+* @label Get Device Variables
+* @documentation This procedure is used for retrieving iperf3 results
 */
 function get_status() {
     execute(function () {
