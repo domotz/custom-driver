@@ -2,13 +2,15 @@
  * This driver Gets AWS EC2 and attached AWS EBS volumes metrics and uses the script item to make HTTP requests to the CloudWatch API.
  * Communication protocol is https
  */
-var crypto = require("crypto");
+
+
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
-    return crypto.createHash("sha256").update(message).digest("hex");
+    return D.crypto.hash(message, "sha256", null, "hex")
 }
+
 function hmac(algo, key, message) {
-    return crypto.createHmac(algo, key).update(message).digest("hex");
+    return D.crypto.hmac(message, key, algo, "hex")
 }
 
 var region = "Add region";
@@ -134,6 +136,7 @@ function httpGet(params) {
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com:443",
+        device = D.createExternalDevice(service + "." + region + ".amazonaws.com"),
         canonicalUri = "/",
         canonicalHeaders = "content-encoding:amz-1.0\n" + "host:" + host + "\n" + "x-amz-date:" + amzdate + "\n",
         signedHeaders = "content-encoding;host;x-amz-date",
@@ -145,7 +148,7 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    D.device.http.get({
+    device.http.get({
         url: canonicalUri + "?" + params,
         protocol: "https",
         headers: {
@@ -156,21 +159,21 @@ function httpGet(params) {
             "Authorization": auth
         }
     },
-        function (err, response, body) {
-            if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode == 401) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            d.resolve(JSON.parse(body));
-        });
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
