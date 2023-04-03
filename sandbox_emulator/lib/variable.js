@@ -39,8 +39,8 @@
 * @return {Variable}
 */
 
-const validUidRegex = require('../constants').validUidRegex;
-const valueTypes = require('../constants').valueTypes;
+const validUidRegex = require('../lib/constants').validUidRegex;
+const valueTypes = require('../lib/constants').valueTypes;
 
 function createVariable (uid, name, value, unit, valueType, agentDriverSettings) {
     if (uid === null || uid === undefined || uid.length < 1 || uid.length > agentDriverSettings.max_var_id_len) {
