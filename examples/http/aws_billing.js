@@ -3,13 +3,13 @@
  * Communication protocol is https.
  */
 
-var crypto = require("crypto");
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
-    return crypto.createHash("sha256").update(message).digest("hex");
+    return D.crypto.hash(message, "sha256", null, "hex");
 }
+
 function hmac(algo, key, message) {
-    return crypto.createHmac(algo, key).update(message).digest("hex");
+    return D.crypto.hmac(message, key, algo, "hex");
 }
 
 var region = "ADD_REGION";
@@ -92,6 +92,7 @@ function httpPost() {
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com",
+        device = D.createExternalDevice(service + "." + region + ".amazonaws.com"),
         canonicalUri = "/",
         canonicalHeaders = "host:" + host + "\n" + "x-amz-date:" + amzdate + "\n",
         signedHeaders = "host;x-amz-date",
@@ -103,7 +104,7 @@ function httpPost() {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    D.device.http.post({
+    device.http.post({
         url: canonicalUri,
         protocol: "https",
         headers: {
