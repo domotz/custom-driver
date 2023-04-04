@@ -2,14 +2,14 @@
  * This driver Gets AWS EC2 and attached AWS EBS volumes metrics and uses the script item to make HTTP requests to the CloudWatch API.
  * Communication protocol is https
  */
-var crypto = require("crypto");
-var cheerio = require("cheerio");
+
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
-    return crypto.createHash("sha256").update(message).digest("hex");
+    return D.crypto.hash(message, "sha256", null, "hex");
 }
+
 function hmac(algo, key, message) {
-    return crypto.createHmac(algo, key).update(message).digest("hex");
+    return D.crypto.hmac(message, key, algo, "hex");
 }
 
 var region = "Add region";
@@ -81,21 +81,21 @@ function httpGet(params) {
             "Authorization": auth
         }
     },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(body);
-    });
+        function (err, response, body) {
+            if (err) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            d.resolve(body);
+        });
     return d.promise;
 }
 
@@ -105,11 +105,11 @@ function httpGet(params) {
 function getVolumesData(nextToken) {
     var payload = {};
     payload["Action"] = "DescribeVolumes",
-    payload["MaxResults"] = 100,
-    payload["Version"] = "2016-11-15",
-    payload["Filter.1.Name"] = "attachment.instance-id",
-    payload["Filter.1.Value"] = instanceId,
-    payload["NextToken"] = nextToken;
+        payload["MaxResults"] = 100,
+        payload["Version"] = "2016-11-15",
+        payload["Filter.1.Name"] = "attachment.instance-id",
+        payload["Filter.1.Value"] = instanceId,
+        payload["NextToken"] = nextToken;
     return httpGet(prepareParams(payload))
         .then(function (data) {
             var $ = D.htmlParse(data);

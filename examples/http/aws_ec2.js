@@ -3,14 +3,13 @@
  * Communication protocol is https
  */
 
-
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
-    return D.crypto.hash(message, "sha256", null, "hex")
+    return D.crypto.hash(message, "sha256", null, "hex");
 }
 
 function hmac(algo, key, message) {
-    return D.crypto.hmac(message, key, algo, "hex")
+    return D.crypto.hmac(message, key, algo, "hex");
 }
 
 var region = "Add region";
@@ -43,8 +42,7 @@ function prepareRecursive(prefix, param) {
                     result[key] = nested[key];
                 });
             });
-        }
-        else {
+        } else {
             Object.keys(param).forEach(function (k) {
                 var nested = prepareRecursive(prefix + "." + k, param[k]);
                 Object.keys(nested).forEach(function (key) {
@@ -52,8 +50,7 @@ function prepareRecursive(prefix, param) {
                 });
             });
         }
-    }
-    else {
+    } else {
         result[prefix] = param;
     }
     return result;
@@ -136,7 +133,6 @@ function httpGet(params) {
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com:443",
-        device = D.createExternalDevice(service + "." + region + ".amazonaws.com"),
         canonicalUri = "/",
         canonicalHeaders = "content-encoding:amz-1.0\n" + "host:" + host + "\n" + "x-amz-date:" + amzdate + "\n",
         signedHeaders = "content-encoding;host;x-amz-date",
@@ -148,7 +144,7 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.get({
+    D.device.http.get({
         url: canonicalUri + "?" + params,
         protocol: "https",
         headers: {
