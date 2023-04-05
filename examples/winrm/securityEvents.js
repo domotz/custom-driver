@@ -109,22 +109,28 @@
  function parseOutput(output) {
      if (output.error === null) {
          var k = 0;
-          var eventId;
+         var eventId;
+         var count;
          var eventsInOutput = [];
          console.log(JSON.stringify(output));
          var jsonOutput = JSON.parse(JSON.stringify(output));
+         console.log(jsonOutput);
          jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
          if (Array.isArray(jsonOutput)) {
              while (k < jsonOutput.length) {
                  eventId = jsonOutput[k].Name;
-                 evtTable.insertRecord(eventId, [auditedEvents[eventId], jsonOutput[k].Count]);
+                 count = jsonOutput[k].Count;
+                 //evtTable.insertRecord(eventId, [auditedEvents[eventId], count]);
                  eventsInOutput.push(eventId);
                  k++
              }
          } else {
              eventId = jsonOutput.Name;
-             evtTable.insertRecord(eventId, [auditedEvents[eventId], jsonOutput.Count]);
-             eventsInOutput.push(jsonOutput.Name);
+             if (eventId) {
+                 evtTable.insertRecord(eventId, [audited, count]);
+                 eventsInOutput.push(jsonOutput.Name);
+             }
+ 
          }
          // events with no instances will appear in the table with a 0 value
          for (var key in auditedEvents) {
