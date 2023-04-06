@@ -1,5 +1,5 @@
 /**
- * The driver retrieves billing metrics from Amazon Web Services (AWS) CloudWatch API.
+ * The driver retrieves billing metrics from Amazon Web Services(AWS) CloudWatch API.
  * Communication protocol is https.
  */
 
@@ -9,6 +9,7 @@ function sha256(message) {
 }
 
 function hmac(algo, key, message) {
+    key = D._unsafe.buffer.from(key);
     return D.crypto.hmac(message, key, algo, "hex");
 }
 
@@ -29,15 +30,10 @@ function sign(key, message) {
     return result;
 }
 
-//This function formats a given date object into a string of the form "YYYY-MM-DD".
-function formatDate(date) {
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
-    return year + "-" + month.toString().padStart(2, "0") + "-" + day.toString().padStart(2, "0");
-}
-var end = new Date();
-var start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+var requestPeriod = 24 * 60 * 60;
+var timestamp = new Date().getTime();
+var endTime = (new Date(timestamp).toISOString()).split("T")[0];
+var startTime = (new Date(timestamp - requestPeriod * 1000).toISOString()).split("T")[0];
 
 /**
  * CloudWatch metrics to be monitored for an AWS billing.
@@ -77,8 +73,8 @@ var body = JSON.stringify({
         "UsageQuantity"
     ],
     "TimePeriod": {
-        "End": formatDate(end),
-        "Start": formatDate(start)
+        "End": endTime,
+        "Start": startTime
     }
 });
 
