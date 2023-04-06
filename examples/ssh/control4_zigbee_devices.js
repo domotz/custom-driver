@@ -63,7 +63,7 @@ function get_status(){
 
         var zigbeeNodesRegexp = /([\w\d]+)\s+([\w\d]+)\s+(\w+)\s+([\d\.]+)\s+([\w\d\_\:\-]+)\s+(\w{3}\s\w{3}\s[0-9]+\s[0-9\:]+)\s+(\d+)\s+([\w\s]+)\s+(0x[\w\d]+)/
         var matchOffset = 2;
-        // Start from index 1 to skip table headers and emove last 2 lines to skip footers of the response
+        // Start from index 1 to skip table headers and remove last 2 lines to skip footers of the response
         for (var i = 1; i < lines.length - 2; i++) {
             var zigbeeEntry = lines[i].match(zigbeeNodesRegexp);
             if (zigbeeEntry){
@@ -75,7 +75,7 @@ function get_status(){
     // SSH Send Commands options
     var sshSendOptions = {
         command: "zman <<'EOT'\nshownodes\nexit\nEOT\n",
-        timeout: 10000
+        timeout: 20000
     };
     D.device.sendSSHCommand(sshSendOptions, parseNodesCallback)
 };
@@ -94,7 +94,7 @@ function responseIsOk(out, err) {
         }
     } else if (!out || out.match(zmanErrorRegexp)) {
         console.error("Unable to retrieve data" + out);
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.PARSING_ERROR)
     } else {
         return true;
     }
