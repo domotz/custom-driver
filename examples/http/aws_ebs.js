@@ -2,20 +2,21 @@
  * The driver gets AWS EBS and uses the script item to make HTTP requests to the CloudWatch API.
  * Communication protocol is https
  */
-var crypto = require("crypto");
 
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
-    return crypto.createHash("sha256").update(message).digest("hex");
-}
-function hmac(algo, key, message) {
-    return crypto.createHmac(algo, key).update(message).digest("hex");
+    return D.crypto.hash(message, "sha256", null, "hex");
 }
 
-var region = "Add region";
-var secretKey = "Add secret access key";
-var accessKey = "Add access key";
-var volumeId = "Add RDS instance id";
+function hmac(algo, key, message) {
+    key = D._unsafe.buffer.from(key);
+    return D.crypto.hmac(message, key, algo, "hex");
+}
+
+var region = "ADD_REGION";
+var secretKey = "ADD_SECRET_ACCESS_KEY";
+var accessKey = "ADD_ACCESS_KEY";
+var volumeId = "ADD_VOLUME_ID";
 var requestPeriod = 600;
 var volumes;
 var vars = [];
@@ -82,6 +83,7 @@ function httpPost(data) {
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com:443",
+        device = D.createExternalDevice(service + "." + region + ".amazonaws.com"),
         canonicalUri = "/",
         canonicalHeaders = "content-encoding:amz-1.0\n" + "host:" + host + "\n" + "x-amz-date:" + amzdate + "\n",
         signedHeaders = "content-encoding;host;x-amz-date",
@@ -93,7 +95,7 @@ function httpPost(data) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    D.device.http.post({
+    device.http.post({
         url: canonicalUri,
         protocol: "https",
         headers: {
