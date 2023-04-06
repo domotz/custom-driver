@@ -4,8 +4,8 @@ var dbManager = require("../lib/db");
 var { valueTypes, errorTypes } = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
+var variableLibrary = require("../lib/variable")
 var cryptoLibrary = require("../lib/crypto")
-const variableLibrary = require('../lib/variable');
 
 var device = {
     ip: process.env.DEVICE_IP,
