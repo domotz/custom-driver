@@ -4,8 +4,9 @@ var dbManager = require("../lib/db");
 var { valueTypes, errorTypes } = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
+var variableLibrary = require("../lib/variable")
 var cryptoLibrary = require("../lib/crypto")
-const variableLibrary = require('../lib/variable');
+var bufferLibrary = require('../lib/buffer');
 
 var device = {
     ip: process.env.DEVICE_IP,
@@ -159,7 +160,7 @@ global.D = { /**
                     if (v.uid.indexOf("table") >= 0 ||
                         v.uid.indexOf("column") >= 0 ||
                         v.uid.indexOf("history") >= 0) console.warn("WARNING: the keyword 'table' should not be used in the uid")
-                    if (v.value && v.value.length > 500) console.warn("WARNING: value length exceeded 500")
+                    if(v.value && v.value.length > 500) console.warn("WARNING: value length exceeded 500")
                     console.log(format(v.l, maxLength), "=", v.value);
                 });
             }
@@ -196,6 +197,10 @@ global.D = { /**
         }
         return createDevice(externalDevice, { max_var_id_len: 50 }, console);
     },
+    createVariable: function (uid, name, value, unit, valueType) {
+        driverVariable = variableLibrary.createVariable(uid, name, value, unit, valueType, { max_var_id_len: 50 });
+        return driverVariable;
+    },
     /**
      * The Custom Driver Crypto object.
      * Contains utility functions that offer ways of encapsulating secure credentials to be used as part of a secure HTTPS net or http connection.
@@ -207,7 +212,13 @@ global.D = { /**
      * @namespace D.crypto
     */
     crypto: cryptoLibrary.cryptoLibrary(console),
-    createVariable: function (uid, name, value, unit, valueType) {
-        return variableLibrary.createVariable(uid, name, value, unit, valueType, { max_var_id_len: 50 })
-    }
+    /**
+     * Wrapper for unsafe functions which can lead to crashing the agent or other potential problems if not used properly
+     * @example  D._unsafe
+     * @memberof D
+     * @namespace D._unsafe
+     */
+    _unsafe: {
+        buffer: bufferLibrary.bufferLibrary(console),
+    },
 };
