@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: crypto</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: crypto</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="D.html">D</a>.</span>crypto</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">The Custom Driver Crypto object.
+Contains utility functions that offer ways of encapsulating secure credentials to be used as part of a secure HTTPS net or http connection.
+Offers a set of wrappers for OpenSSL's hash, hmac, cipher methods.<br>
+For more information check the official node documentation:<br>
+<a href="https://nodejs.org/docs/latest-v14.x/api/crypto.html">https://nodejs.org/docs/latest-v14.x/api/crypto.html</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+            <h3>Example</h3>
+            
+    <pre class="prettyprint"><code>D.crypto</code></pre>
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Namespaces</h3>
+
+        <dl>
+            <dt><a href="D.crypto.Cipher.html">Cipher</a></dt>
+            <dd></dd>
+        
+            <dt><a href="D.crypto.Decipher.html">Decipher</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createCipher"><span class="type-signature">(static) </span>createCipher<span class="signature">(algorithm, key, initializationVector)</span><span class="type-signature"> &rarr; {Cipher}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates and returns a Cipher object with the given algorithm, key and initialization vector.
+Used for encrypting data.
+This is a wrapper of the node's crypto library 'crypto.createCipheriv'.<br>
+For more information check the official node documentation:<br>
+<a href="https://nodejs.org/docs/latest-v14.x/api/crypto.html#crypto_crypto_createcipheriv_algorithm_key_iv_options">https://nodejs.org/docs/latest-v14.x/api/crypto.html#crypto_crypto_createcipheriv_algorithm_key_iv_options</a>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>algorithm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The key to be used. Must be 'binary' encoded strings or buffers.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>initializationVector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The initialization vector. Must be 'binary' encoded strings or buffers.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Cipher</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// returns the Cipher object
+D.crypto.createCipher('aes-128-ecb', 'the key', 'the initialization vector')</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createDecipher"><span class="type-signature">(static) </span>createDecipher<span class="signature">(algorithm, key, initializationVector)</span><span class="type-signature"> &rarr; {Decipher}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates and returns a decipher object, with the given algorithm, key and initialization vector. This is the mirror of the D.createCipher().
+Used for decrypting data.
+This is a wrapper of the node's crypto library 'crypto.createDecipheriv'.<br>
+For more information check the official node documentation:<br>
+<a href="https://nodejs.org/docs/latest-v14.x/api/crypto.html#crypto_crypto_createdecipheriv_algorithm_key_iv_options">https://nodejs.org/docs/latest-v14.x/api/crypto.html#crypto_crypto_createdecipheriv_algorithm_key_iv_options</a>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>algorithm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The key to be used. Must be 'binary' encoded strings or buffers.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>initializationVector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The initialization vector. Must be 'binary' encoded strings or buffers.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Decipher</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// returns the Decipher object
+D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".hash"><span class="type-signature">(static) </span>hash<span class="signature">(data, algorithm, inputEncoding<span class="signature-attributes">opt</span>, outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This is a utility function for creating hash digests of data.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The data object.<br>If data is a Buffer then inputEncoding is ignored.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>algorithm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform.<p>Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputEncoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">binary</span>
+|
+
+<span class="param-type">ascii</span>
+|
+
+<span class="param-type">utf8</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The encoding of the data string.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>outputEncoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">binary</span>
+|
+
+<span class="param-type">base64</span>
+|
+
+<span class="param-type">hex</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The encoding of the return value.<br>If no encoding is provided, then a buffer is returned.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// returns '4130d2b39ca35eaf4cb95fc846c21ee6a39af698154a83a586ee270a0d372139' for the generated hash digest with 'utf8' input encoding and 'hex' output encoding.
+D.crypto.hash('my data', 'sha256', 'utf8', 'hex')</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".hmac"><span class="type-signature">(static) </span>hmac<span class="signature">(data, key, algorithm, outputEncoding<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Buffer}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This is a utility function for creating cryptographic HMAC digests.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The data string</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The HMAC key to be used.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>algorithm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform.<p>Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>outputEncoding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">binary</span>
+|
+
+<span class="param-type">base64</span>
+|
+
+<span class="param-type">hex</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The output encoding.<br>If no encoding is provided, then a buffer is returned.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// returns '049f32be4f33a698204529818c1b676d460c9cb2f6901457d012a6646127ae31' for the generated HMAC digest with hex output encoding
+D.crypto.hmac('my data', 'my secret', 'sha256', 'hex')</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".pbkdf2Sync"><span class="type-signature">(static) </span>pbkdf2Sync<span class="signature">(password, salt, iterations, keyLength)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Synchronous PBKDF2 (Password-Based Key Derivation Function) Returns derivedKey or throws an error.
+* @example 
+// returns the Derived key
+D.crypto.pbkdf2Sync('the password', 'the salt', 100, 10)
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The password</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>salt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The random bit of data added to the password before it is run through the hashing algorithm.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>iterations</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The number of iterations for the key and salt mixing.<br>Higher iterrations count makes guessing the key harder.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keyLength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The number of output bytes to be used for the algorithm.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Derived key
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D._unsafe.html">_unsafe</a></li><li><a href="D._unsafe.buffer.html">buffer</a></li><li><a href="D.crypto.html">crypto</a></li><li><a href="D.crypto.Cipher.html">Cipher</a></li><li><a href="D.crypto.Decipher.html">Decipher</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Mar 15 2023 17:35:46 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

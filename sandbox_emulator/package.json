@@ -5,9 +5,9 @@
   "scripts": {
     "start": "npm run build",
     "prebuild": "rimraf dist; npm run lint",
-    "postbuild": "node dist/main.min.js ${npm_config_source}",
-    "build": "grunt --source=${npm_config_source} --action=${npm_config_action}",
-    "generate": "mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
+    "postbuild": "cross-vars node dist/main.min.js ${npm_config_source}",
+    "build": "cross-vars grunt --source=${npm_config_source} --action=${npm_config_action}",
+    "generate": "cross-vars mkdir -p $(dirname ${npm_config_source}); cp -i lib/template.js ${npm_config_source}",
     "lint": "eslint --fix ."
   },
   "author": "Mohamed Kallel",
