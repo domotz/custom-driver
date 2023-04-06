@@ -17,15 +17,13 @@
 * 
 **/
 
+
 // List of services you want to monitor, note that you can put the DisplayName or the ServiceName  
-
-// This is an example of the filter which suit a Windows 10 computer (workstation):
-// var svcFilter = '@("bits","Dnscache","Spooler","schedule","DHCP Client")'
-
-// If you want to list ALL services just put '$null' as a filter 
-// var svcFilter = '$null';
-
-// For a server you may want to set the filter as follow :
+// If you want to list ALL services:
+// var svcFilter = []
+// For Windows 10 computer (workstation) you may want to set the filter the following way:
+// var svcFilter = ["bits","Dnscache","Spooler","schedule","DHCP Client"]
+// For a server you may want to set the filter the following way:
 var svcFilter = ["LanmanServer", "dnscache", "Windows Time", "dhcp", "schedule", "RpcEptMapper", "MpsSvc"]
 
 if (svcFilter !== '$null'){
@@ -62,11 +60,9 @@ const startTypes = {
 var svcTable = D.createTable(
     "Monitored services",
     [
-
         { label: "Service Name" },
         { label: "Status" },
         { label: "Start Type" }
-
     ]
 );
 
@@ -74,10 +70,14 @@ var svcTable = D.createTable(
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
     if (err.message) console.error(err.message);
-    if (err.code == 401) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
+    if (err.code == 401){
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (err.code == 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(err);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 /**
@@ -120,7 +120,8 @@ function parseOutput(output) {
         if (jsonOutput) {
             var k = 0;
             while (k < jsonOutput.length) {
-                populateTable(jsonOutput[k].ServiceName,
+                populateTable(
+                    jsonOutput[k].ServiceName,
                     jsonOutput[k].DisplayName,
                     jsonOutput[k].Status.toString(),
                     jsonOutput[k].StartType.toString()
@@ -128,7 +129,8 @@ function parseOutput(output) {
                 k++;
             }
         } else {
-            populateTable(jsonOutput.ServiceName,
+            populateTable(
+                jsonOutput.ServiceName,
                 jsonOutput.DisplayName,
                 jsonOutput.Status.toString(),
                 jsonOutput.StartType.toString()
