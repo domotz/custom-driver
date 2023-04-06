@@ -21,7 +21,7 @@
  const MODULE_NAME = 'PLATFORM';
  const PUBLIC_SNAP = 'domotzpro-agent-publicstore';
  const PRIVATE_SNAP = 'domotzpro-agent';
- var nmapInformation = require('./nmapInformation');
+//  var nmapInformation = require('./nmapInformation');
  
  
  const q = require('q');
@@ -29,28 +29,28 @@
  function factory (fs) {
      var nmapInfo;
  
-     function getNmapInfo () {
-         if (nmapInfo) {
-             return q.resolve(nmapInfo);
-         }
-         var res = nmapInformation.getNmapInformation();
-         res.then(function (data) {
-             nmapInfo = data;
-         }).catch(function (error) {
-             console.error('Unable to retrieve nmap info: %s', error);
-         });
-         return res;
-     }
+    //  function getNmapInfo () {
+    //      if (nmapInfo) {
+    //          return q.resolve(nmapInfo);
+    //      }
+    //      var res = nmapInformation.getNmapInformation();
+    //      res.then(function (data) {
+    //          nmapInfo = data;
+    //      }).catch(function (error) {
+    //          console.error('Unable to retrieve nmap info: %s', error);
+    //      });
+    //      return res;
+    //  }
  
-     function getNmapVersion () {
-         var deferred = q.defer();
-          getNmapInfo().then(function (data) {
-             deferred.resolve(data.nmap);
-         }).catch(function (error) {
-             console.error('Unable to retrieve nmap version %s', error);
-         });
-          return deferred.promise;
-     }
+    //  function getNmapVersion () {
+    //      var deferred = q.defer();
+    //       getNmapInfo().then(function (data) {
+    //          deferred.resolve(data.nmap);
+    //      }).catch(function (error) {
+    //          console.error('Unable to retrieve nmap version %s', error);
+    //      });
+    //       return deferred.promise;
+    //  }
  
  
      function isVirtualBox () {
@@ -139,8 +139,8 @@
          isSlow: isSlow,
          needsSudo: needsSudo,
          getWindowsShell: getWindowsShell,
-         getNmapInfo: getNmapInfo,
-         getNmapVersion: getNmapVersion,
+        //  getNmapInfo: getNmapInfo,
+        //  getNmapVersion: getNmapVersion,
          //test only
          _setNmapInfo: _setNmapInfo,
          supportsDomainAccountAuth: supportsDomainAccountAuth
