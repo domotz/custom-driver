@@ -10,6 +10,7 @@ function sha256(message) {
 }
 
 function hmac(algo, key, message) {
+    key = D._unsafe.buffer.from(key)
     return D.crypto.hmac(message, key, algo, "hex")
 }
 
