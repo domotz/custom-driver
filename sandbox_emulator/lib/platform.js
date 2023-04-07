@@ -21,38 +21,12 @@
  const MODULE_NAME = 'PLATFORM';
  const PUBLIC_SNAP = 'domotzpro-agent-publicstore';
  const PRIVATE_SNAP = 'domotzpro-agent';
- var nmapInformation = require('./nmapInformation');
  
  
  const q = require('q');
  
  function factory (fs) {
-     var nmapInfo;
- 
-     function getNmapInfo () {
-         if (nmapInfo) {
-             return q.resolve(nmapInfo);
-         }
-         var res = nmapInformation.getNmapInformation();
-         res.then(function (data) {
-             nmapInfo = data;
-         }).catch(function (error) {
-             console.error('Unable to retrieve nmap info: %s', error);
-         });
-         return res;
-     }
- 
-     function getNmapVersion () {
-         var deferred = q.defer();
-          getNmapInfo().then(function (data) {
-             deferred.resolve(data.nmap);
-         }).catch(function (error) {
-             console.error('Unable to retrieve nmap version %s', error);
-         });
-          return deferred.promise;
-     }
- 
- 
+  
      function isVirtualBox () {
          console.info('%s - Checking Virtual Box platform...', MODULE_NAME);
          if (process.env.SNAP_COMMON && process.env.SNAP_COMMON.length > 0) {
@@ -120,10 +94,6 @@
          return process.env.DOMOTZ_ROOT_DIR + '\\lib\\portable-git\\bin\\domotz_bash.exe';
      }
  
-     function _setNmapInfo (newNmapInfo) {
-         nmapInfo = newNmapInfo;
-     }
- 
  
      function supportsDomainAccountAuth() {
          return !isNodeVersionZero();
@@ -139,10 +109,7 @@
          isSlow: isSlow,
          needsSudo: needsSudo,
          getWindowsShell: getWindowsShell,
-         getNmapInfo: getNmapInfo,
-         getNmapVersion: getNmapVersion,
          //test only
-         _setNmapInfo: _setNmapInfo,
          supportsDomainAccountAuth: supportsDomainAccountAuth
      };
  }

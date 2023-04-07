@@ -42,15 +42,15 @@ function validate(){
     var validateOptions = {
         timeout: 5000,
         command: "zman <<'EOT'\nhelp\nexit\nEOT\n"
-    }
+    };
     function validatecallback(output, error){
         if (responseIsOk(output, error)){
             D.success();
-        };
-    };
-    D.device.sendSSHCommand(validateOptions, validatecallback)
+        }
+    }
+    D.device.sendSSHCommand(validateOptions, validatecallback);
     
-};
+}
 /**
  * @remote_procedure
  * @label Get Zigbee Devices Information
@@ -61,24 +61,24 @@ function get_status(){
         responseIsOk(output, error);
         lines = output.split(/\r?\n/);
 
-        var zigbeeNodesRegexp = /([\w\d]+)\s+([\w\d]+)\s+(\w+)\s+([\d\.]+)\s+([\w\d\_\:\-]+)\s+(\w{3}\s\w{3}\s[0-9]+\s[0-9\:]+)\s+(\d+)\s+([\w\s]+)\s+(0x[\w\d]+)/
+        var zigbeeNodesRegexp = /([\w\d]+)\s+([\w\d]+)\s+(\w+)\s+([\d\.]+)\s+([\w\d\_\:\-]+)\s+(\w{3}\s\w{3}\s[0-9]+\s[0-9\:]+)\s+(\d+)\s+([\w\s]+)\s+(0x[\w\d]+)/;
         var matchOffset = 2;
         // Start from index 1 to skip table headers and remove last 2 lines to skip footers of the response
         for (var i = 1; i < lines.length - 2; i++) {
             var zigbeeEntry = lines[i].match(zigbeeNodesRegexp);
             if (zigbeeEntry){
-                zigbeeTable.insertRecord(zigbeeEntry[1], zigbeeEntry.slice(matchOffset, columnHeaders.length + matchOffset))
+                zigbeeTable.insertRecord(zigbeeEntry[1], zigbeeEntry.slice(matchOffset, columnHeaders.length + matchOffset));
             }
         }
-        D.success(zigbeeTable)
+        D.success(zigbeeTable);
     }
     // SSH Send Commands options
     var sshSendOptions = {
         command: "zman <<'EOT'\nshownodes\nexit\nEOT\n",
         timeout: 20000
     };
-    D.device.sendSSHCommand(sshSendOptions, parseNodesCallback)
-};
+    D.device.sendSSHCommand(sshSendOptions, parseNodesCallback);
+}
 
 // Check for SSH Errors in the communication with the control4 device the driver is applied on
 function responseIsOk(out, err) {
@@ -86,15 +86,15 @@ function responseIsOk(out, err) {
     if (err){
         console.error("Error message:" + err.message);
         if (err.code == 5) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else if (err.code == 255){
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else {
             D.failure(D.errorType.GENERIC_ERROR);
         }
     } else if (!out || out.match(zmanErrorRegexp)) {
         console.error("Unable to retrieve data" + out);
-        D.failure(D.errorType.PARSING_ERROR)
+        D.failure(D.errorType.PARSING_ERROR);
     } else {
         return true;
     }
