@@ -2,22 +2,24 @@
  * The driver gets AWS RDS instance metrics and uses the script item to make HTTP requests to the CloudWatch API.
  * Communication protocol is https
  */
-var crypto = require("crypto");
+
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
 function sha256(message) {
-    return crypto.createHash("sha256").update(message).digest("hex");
-}
-function hmac(algo, key, message) {
-    return crypto.createHmac(algo, key).update(message).digest("hex");
+    return D.crypto.hash(message, "sha256", null, "hex");
 }
 
-var region = "Add region";
-var secretKey = "Add secret access key";
-var accessKey = "Add access key";
-var dbInstanceId = "Add RDS instance id";
+function hmac(algo, key, message) {
+    key = D._unsafe.buffer.from(key);
+    return D.crypto.hmac(message, key, algo, "hex");
+}
+var region = "ADD_REGION";
+var secretKey = "ADD_SECRET_ACCESS_KEY";
+var accessKey = "ADD_ACCESS_KEY";
+var dbInstanceId = "ADD_DB_INSTANCE_ID";
 var requestPeriod = 600;
 var monitoringList;
 var vars = [];
+
 function sign(key, message) {
     var hex = hmac("sha256", key, message);
     if ((hex.length % 2) === 1) {
@@ -128,6 +130,7 @@ function createMetricsPayload(period, dbInstanceId) {
         };
     });
 }
+
 /**
  * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
@@ -140,6 +143,7 @@ function httpPost(data) {
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
         host = service + "." + region + ".amazonaws.com:443",
+        device = D.createExternalDevice(service + "." + region + ".amazonaws.com"),
         canonicalUri = "/",
         canonicalHeaders = "content-encoding:amz-1.0\n" + "host:" + host + "\n" + "x-amz-date:" + amzdate + "\n",
         signedHeaders = "content-encoding;host;x-amz-date",
@@ -151,7 +155,7 @@ function httpPost(data) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    D.device.http.post({
+    device.http.post({
         url: canonicalUri,
         protocol: "https",
         headers: {
@@ -164,21 +168,21 @@ function httpPost(data) {
         },
         body: body
     },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
-    });
+        function (err, response, body) {
+            if (err) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            d.resolve(JSON.parse(body));
+        });
     return d.promise;
 }
 
