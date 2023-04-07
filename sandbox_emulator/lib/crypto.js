@@ -206,7 +206,7 @@ function createDecipherObject(myConsole, algorithm, key, initializationVector) {
  * @readonly
  * @param {Object} myConsole                       - The Domotz Sandbox console
  */
- function cryptoLibrary(myConsole) {
+function cryptoLibrary(myConsole) {
     return {
         /**
          * This is a utility function for creating hash digests of data.

@@ -39,18 +39,18 @@
 * @return {Variable}
 */
 
-const validUidRegex = require('../lib/constants').validUidRegex;
-const valueTypes = require('../lib/constants').valueTypes;
+const validUidRegex = require('./constants').validUidRegex;
+const valueTypes = require('./constants').valueTypes;
 
-function createVariable (uid, name, value, unit, valueType, agentDriverSettings) {
+function createVariable(uid, name, value, unit, valueType, agentDriverSettings) {
     if (uid === null || uid === undefined || uid.length < 1 || uid.length > agentDriverSettings.max_var_id_len) {
         throw Error("Invalid variable uid: " + uid);
     }
-    if (typeof(uid) === "number") {
+    if (typeof (uid) === "number") {
         uid = uid.toString();
     }
     if (uid.match(validUidRegex) === null) {
-        throw Error("uid '"+uid+"' is a reserved word");
+        throw Error("uid '" + uid + "' is a reserved word");
     }
     if (unit) {
         unit = unit.substr(0, agentDriverSettings.max_var_unit_len);
