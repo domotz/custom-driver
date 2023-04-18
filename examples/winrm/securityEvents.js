@@ -102,7 +102,7 @@
  * @documentation This procedure retrieves last hour failed logon attempts
  */
  function get_status() {
-     winrmConfig.command = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=' + idArray + ';StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {Write-Output {name="";count="0"}|ConvertTo-Json};';
+     winrmConfig.command = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=' + idArray + ';StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {@{name="";count="0"}|ConvertTo-Json};';
      D.device.sendWinRMCommand(winrmConfig, parseOutput);
  }
  
