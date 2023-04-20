@@ -40,7 +40,7 @@ function validate(){
 * @documentation This procedure retrieves the users on the host device and outputs if they are enabled or not
 */
 function get_status(){
-    D.device.sendWinRMCommand({command:'Get-LocalUser'}, callbackUsers);
+    D.device.sendWinRMCommand({command:"Get-LocalUser"}, callbackUsers);
 }
 
 var hostUsersTable = D.createTable(
@@ -51,21 +51,21 @@ var hostUsersTable = D.createTable(
         { label: "Description" }
     ]
 );
-var userDetailsRegexp = /([\w\d]+)\s+([\w]+)\s+(.*)/
+var userDetailsRegexp = /([\w\d]+)\s+([\w]+)\s+(.*)/;
 
 function callbackUsers(output) {
     if (output.error === null){
         var outputLines = output.outcome.stdout.split(/\r?\n/).slice(1);
         for (var i = 1; i < outputLines.length; i++) {
             var line = outputLines[i];
-            if (line !== ''){
+            if (line !== ""){
                 var match = line.match(userDetailsRegexp);
                 if (match){
                     var name = match[1];
                     var recordId = name.toLowerCase().substring(0, 50);
                     var status = match[2];
                     var description = match[3];
-                    hostUsersTable.insertRecord(recordId, [name, status, description])
+                    hostUsersTable.insertRecord(recordId, [name, status, description]);
                 }
             }
         }

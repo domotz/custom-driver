@@ -4,6 +4,9 @@ var dbManager = require("../lib/db");
 var { valueTypes, errorTypes } = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
+var variableLibrary = require("../lib/variable")
+var cryptoLibrary = require("../lib/crypto")
+var bufferLibrary = require('../lib/buffer');
 
 var device = {
     ip: process.env.DEVICE_IP,
@@ -193,5 +196,29 @@ global.D = { /**
             credentials: deviceCredentials
         }
         return createDevice(externalDevice, { max_var_id_len: 50 }, console);
+    },
+    createVariable: function (uid, name, value, unit, valueType) {
+        driverVariable = variableLibrary.createVariable(uid, name, value, unit, valueType, { max_var_id_len: 50 });
+        return driverVariable;
+    },
+    /**
+     * The Custom Driver Crypto object.
+     * Contains utility functions that offer ways of encapsulating secure credentials to be used as part of a secure HTTPS net or http connection.
+     * Offers a set of wrappers for OpenSSL's hash, hmac, cipher methods.<br>
+     * For more information check the official node documentation:<br>
+     * {@link https://nodejs.org/docs/latest-v14.x/api/crypto.html}
+     * @example D.crypto
+     * @memberof D
+     * @namespace D.crypto
+    */
+    crypto: cryptoLibrary.cryptoLibrary(console),
+    /**
+     * Wrapper for unsafe functions which can lead to crashing the agent or other potential problems if not used properly
+     * @example  D._unsafe
+     * @memberof D
+     * @namespace D._unsafe
+     */
+    _unsafe: {
+        buffer: bufferLibrary.bufferLibrary(console),
     },
 };

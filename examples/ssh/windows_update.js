@@ -62,36 +62,36 @@ function dataParserCallback(output) {
     var k = 0;
     if (!output) {
         // If there are no missing updates, we need to update the table accordingly
-        output = '[{"KB" : "None", "Title" : "None","MsrcSeverity" : "None" ,"Category" : "None","URL" : "None"}]'
+        output = "[{\"KB\" : \"None\", \"Title\" : \"None\",\"MsrcSeverity\" : \"None\" ,\"Category\" : \"None\",\"URL\" : \"None\"}]";
     }
     var jsonOutput = JSON.parse(output);
     while (k < jsonOutput.length) {
-        var recordId = 'KB' + jsonOutput[k].KB;
+        var recordId = "KB" + jsonOutput[k].KB;
         var title = jsonOutput[k].Title;
-        var severity = jsonOutput[k].MsrcSeverity || 'Unspecified';
+        var severity = jsonOutput[k].MsrcSeverity || "Unspecified";
         var category = jsonOutput[k].Category;
         var url = jsonOutput[k].URL ;
         
-        if (category.includes("Security")) {
+        if (category.indexOf("Security") >= 0) {
             SecurityCount++ ;
         }
         switch(severity) {
-            case 'Critical':
-                CriticalCount++;
-                break;
-            case 'Important':
-                ImportantCount++;
-                break;
-            case 'Low':
-                LowCount++;
-                break;
-            case 'Moderate':
-                ModerateCount++;
+        case "Critical":
+            CriticalCount++;
             break;
-            case 'Unspecified':
-                UnspecifiedCount++;
-                break;
-            default:
+        case "Important":
+            ImportantCount++;
+            break;
+        case "Low":
+            LowCount++;
+            break;
+        case "Moderate":
+            ModerateCount++;
+            break;
+        case "Unspecified":
+            UnspecifiedCount++;
+            break;
+        default:
         }
 
         missingUpdatesTable.insertRecord(
@@ -100,12 +100,12 @@ function dataParserCallback(output) {
         k++;
     }
     var updateSeverityCounterVariables = [
-        D.createVariable('0-severity-unspecified', 'Severity - Unspecified', UnspecifiedCount, null, D.valueType.NUMBER),
-        D.createVariable('1-severity-moderate', 'Severity - Moderate', ModerateCount, null, D.valueType.NUMBER),
-        D.createVariable('2-severity-low', 'Severity - Low', LowCount, null, D.valueType.NUMBER),
-        D.createVariable('3-severity-important', 'Severity - Important', ImportantCount, null, D.valueType.NUMBER),
-        D.createVariable('4-severity-critical', 'Severity - Critical', CriticalCount, null, D.valueType.NUMBER),
-        D.createVariable('99-category-security', 'Category - Security', SecurityCount, null, D.valueType.NUMBER),
+        D.createVariable("0-severity-unspecified", "Severity - Unspecified", UnspecifiedCount, null, D.valueType.NUMBER),
+        D.createVariable("1-severity-moderate", "Severity - Moderate", ModerateCount, null, D.valueType.NUMBER),
+        D.createVariable("2-severity-low", "Severity - Low", LowCount, null, D.valueType.NUMBER),
+        D.createVariable("3-severity-important", "Severity - Important", ImportantCount, null, D.valueType.NUMBER),
+        D.createVariable("4-severity-critical", "Severity - Critical", CriticalCount, null, D.valueType.NUMBER),
+        D.createVariable("99-category-security", "Category - Security", SecurityCount, null, D.valueType.NUMBER),
     ];
     D.success(updateSeverityCounterVariables,missingUpdatesTable);
 }
