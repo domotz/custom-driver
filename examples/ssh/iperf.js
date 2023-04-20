@@ -2,10 +2,12 @@
  * this driver is designed to retrieve network speed data using the iperf3.
  * Communication protocol is SSH.
  * This driver create a dynamic monitoring variables 
- * down: test for download speed.
- * up: test for upload speed.
- * UDPdown: test for UDP download speed.
- * UDPup: test for UDP upload speed. 
+ *      down: test for download speed.
+ *      up: test for upload speed.
+ *      UDPdown: test for UDP download speed.
+ *      UDPup: test for UDP upload speed. 
+ * 
+ * Tested with iperf3 version: v 3.7 under Ubuntu 22.04.1 LTS
  */
 
 // Define SSH configuration
