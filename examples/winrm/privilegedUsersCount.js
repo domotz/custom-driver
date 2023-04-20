@@ -15,12 +15,21 @@
  * Privilege required: AD User
  * 
 **/
+
+// Define winrm configuration
 var winrmConfig = {
-    "command": '',
+    "command": "",
     "username": D.device.username(),
     "password": D.device.password()
 };
 
+var privilegedUsersTable = D.createTable(
+    "Privileged AD groups members",
+    [
+        { label: "Group" },
+        { label: "Count" }
+    ]
+);
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
@@ -53,33 +62,27 @@ function validate() {
 * @documentation This procedure retrieves the number of privileged users
 */
 function get_status() {
-    winrmConfig.command = '$Domain = (Get-ADDomain).DNSRoot;$DC=$false;if ($(Get-SmbShare |? name  -eq \"SYSVOL\")){$DC=$true}; if (-not $DC){return $([PSCustomObject]@{Name=\"N/A\";\"MemberCount\"= \"This computer is not a Domain Controller\"}|ConvertTo-Json)};$Filter = {admincount -eq 1 -and iscriticalsystemobject -like \"*\"};$PrivilegedGroups = Get-ADGroup -server $Domain -filter $Filter  -Properties * | Select-Object Name, members;[System.Collections.ArrayList]$aPrivGroupsMembersCount = @();foreach ($g in $PrivilegedGroups) {$PrivGroupMemberCountObj = [PSCustomObject]@{Name= $null;MemberCount = $null};$PrivGroupMemberCountObj.Name = $g.name;$PrivGroupMemberCountObj.MemberCount = $($g.members).count;$aPrivGroupsMembersCount += $PrivGroupMemberCountObj};$aPrivGroupsMembersCount|ConvertTo-Json';
+    winrmConfig.command = "$Domain = (Get-ADDomain).DNSRoot;$DC=$false;if ($(Get-SmbShare |? name  -eq \"SYSVOL\")){$DC=$true}; if (-not $DC){return $([PSCustomObject]@{Name=\"N/A\";\"MemberCount\"= \"This computer is not a Domain Controller\"}|ConvertTo-Json)};$Filter = {admincount -eq 1 -and iscriticalsystemobject -like \"*\"};$PrivilegedGroups = Get-ADGroup -server $Domain -filter $Filter  -Properties * | Select-Object Name, members;[System.Collections.ArrayList]$aPrivGroupsMembersCount = @();foreach ($g in $PrivilegedGroups) {$PrivGroupMemberCountObj = [PSCustomObject]@{Name= $null;MemberCount = $null};$PrivGroupMemberCountObj.Name = $g.name;$PrivGroupMemberCountObj.MemberCount = $($g.members).count;$aPrivGroupsMembersCount += $PrivGroupMemberCountObj};$aPrivGroupsMembersCount|ConvertTo-Json";
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
-var privilegedUsersTable = D.createTable(
-    "Privileged AD groups members",
-    [
 
-        { label: "Group" },
-        { label: "Count" }
-
-    ]
-);
-
+/**
+ * Parse the WinRM command output to extract the number of privileged users.
+ * @param {Object} output  the WinRM command output to parse
+ */
 function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var totPrivilegedUsers = 0;
         var jsonOutput = JSON.parse(JSON.stringify(output));
         jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
-        console.log(JSON.stringify(jsonOutput));
         while (k < jsonOutput.length) {
-            privilegedUsersTable.insertRecord(k.toString(), [jsonOutput[k].Name,jsonOutput[k].MemberCount]);
+            privilegedUsersTable.insertRecord(k.toString(), [jsonOutput[k].Name, jsonOutput[k].MemberCount]);
             totPrivilegedUsers += jsonOutput[k].MemberCount;
-            k++
+            k++;
         }
-        var totPrivilegedUsers = [D.createVariable('PrivilegedUsers', 'Total privileged users', totPrivilegedUsers, null, D.valueType.NUMBER)];
-        D.success(totPrivilegedUsers,privilegedUsersTable);
+        totPrivilegedUsers = [D.createVariable("PrivilegedUsers", "Total privileged users", totPrivilegedUsers, null, D.valueType.NUMBER)];
+        D.success(totPrivilegedUsers, privilegedUsersTable);
     } else {
         console.error(output.error);
         D.failure();
