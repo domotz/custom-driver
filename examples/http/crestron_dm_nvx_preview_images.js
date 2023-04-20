@@ -5,8 +5,8 @@
  * Create a tables with NVX device Images information
  * The Table has the following columns:
  * -------------------------------------
- * FQDN Path: The path to the device using its FQDN (Fully Qualified Domain Name).
- * IPv4 Path: The path to the device using its IPv4 address.
+ * FQDN Path: The path to the image using its FQDN (Fully Qualified Domain Name).
+ * IPv4 Path: The path to the image using its IPv4 address.
  * Is Image Available: Indicates whether the device will generate a preview image for this resolution (true) or not (false).
  * Size: The generated image size, in bytes.
  * Height: The height of the generated image.

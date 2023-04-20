@@ -1,0 +1,76 @@
+{
+  "_from": "httpntlm",
+  "_id": "httpntlm@1.8.2",
+  "_inBundle": false,
+  "_integrity": "sha512-ek0c3XzClBg6TOwYkwAgkD8P4XvVPdVu2gL6h3iW3HWhfGmI9FkhEe/wLNkJPEQ50iZkeOg44Jm3GQAb/P4znA==",
+  "_location": "/httpntlm",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "httpntlm",
+    "name": "httpntlm",
+    "escapedName": "httpntlm",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/httpntlm/-/httpntlm-1.8.2.tgz",
+  "_shasum": "d5c7094c0dee57437d425cd96e9eb7d81d8f3556",
+  "_spec": "httpntlm",
+  "_where": "C:\\Users\\DanieleBucchi\\PycharmProjects\\domotz",
+  "author": {
+    "name": "Sam Decrock",
+    "url": "https://github.com/SamDecrock/"
+  },
+  "bugs": {
+    "url": "https://github.com/SamDecrock/node-http-ntlm/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Martin Andreas Ullrich",
+      "url": "https://github.com/dasMulli"
+    }
+  ],
+  "dependencies": {
+    "httpreq": ">=0.4.22",
+    "underscore": "~1.12.1"
+  },
+  "deprecated": false,
+  "description": "httpntlm is a Node.js library to do HTTP NTLM authentication",
+  "engines": {
+    "node": ">=10.4.0"
+  },
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LPYD83FGC7XPW"
+    },
+    {
+      "type": "buymeacoffee",
+      "url": "https://www.buymeacoffee.com/samdecrock"
+    }
+  ],
+  "homepage": "https://github.com/SamDecrock/node-http-ntlm#readme",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "main": "./httpntlm",
+  "name": "httpntlm",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SamDecrock/node-http-ntlm.git"
+  },
+  "scripts": {
+    "jshint": "jshint *.js"
+  },
+  "version": "1.8.2"
+}
