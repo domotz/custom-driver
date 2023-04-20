@@ -35,6 +35,7 @@ var request = require("request");
 // request.debug = true;
 var ssh = require("./ssh");
 var telnet = require("./telnet");
+var winrm = require('./winrm');
 var snmp = require("./snmp");
 var {valueTypes} = require("./constants")
 // const util = require("util");
@@ -128,6 +129,23 @@ function createDevice(device, agentDriverSettings, myConsole) {
         }
         // myConsole.debug(util.inspect(options));
         return options;
+    }
+    function buildWinRMOptions(options) {
+        options.host = device.ip;
+        assertCommandInOptions(options, "D.sendWinRMCommand");
+        addDefaultCredentials(options);
+        return {payload: options};
+    }
+    function assertCommandInOptions(options, name) {
+        if (!options.command) {
+            throw Error(name + " requires a 'command' in its options parameter");
+        }
+    }
+    function addDefaultCredentials(options) {
+        if (!options.username && device.credentials) {
+            options.username = device.credentials.username;
+            options.password = new Buffer(device.credentials.password, 'base64').toString();
+        }
     }
 
     return {
@@ -240,6 +258,22 @@ function createDevice(device, agentDriverSettings, myConsole) {
          * @memberof D.device
          * @namespace http
         */
+        /**        
+        * Sends a command to the device via WinRM. Only basic authentication is supported. 
+        * [WinRM setup instructions]{@link https://help.domotz.com/user-guide/os-monitoring-feature/#htoc-installing-using-domotz-powershell-script1}
+        * @example D.device.sendWinRMCommand(options, callback)
+        * @example 
+        * [See WinRM Driver Examples]{@link https://github.com/domotz/custom-driver/tree/master/examples/winrm}
+        * @memberof D.device
+        * @readonly
+        * @param {WinRMOptions}   options   - The WinRM Command execution options
+        * @param {WinRMCallback}  callback  - The WinRM Command execution callback function
+        * @function
+        */
+        sendWinRMCommand: function (options, callback) {
+            options = buildWinRMOptions(options);
+            return winrm.sendWinRMCommand(myConsole, options, callback);
+        }, 
         http: {
             /**
              * Executes an HTTP GET request towards the device.
