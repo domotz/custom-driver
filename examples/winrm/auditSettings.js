@@ -98,16 +98,13 @@
  *   "Directory Service Changes",
  *   "Directory Service Replication"]
  * 
- *  
- * 
- * **/
+ */
 
 var winrmConfig = {
-    "command": '',
+    "command": "",
     "username": D.device.username(),
     "password": D.device.password()
 };
-
 
 var filter = ["Security System Extension",
     "Logon",
@@ -126,13 +123,10 @@ filter = '@("' + filter.join('","') + '")';
 var auditTable = D.createTable(
     "Audit Settings",
     [
-
         { label: "Subcategory" },
         { label: "Setting" }
-
     ]
 );
-
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
@@ -169,6 +163,11 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
+/**
+ * Parses the output of the audit tool and inserts the audit results into the audit table.
+ * @param {Object} output The output of the audit tool.
+ */
+
 function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
@@ -179,7 +178,7 @@ function parseOutput(output) {
         jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
         if (jsonOutput) {
             while (k < jsonOutput.length) {
-                category = k + '-' + jsonOutput[k].category;
+                category = k + "-" + jsonOutput[k].category;
                 subcat = jsonOutput[k].subcat;
                 setting = jsonOutput[k].setting;
                 auditTable.insertRecord(category, [subcat, setting]);
