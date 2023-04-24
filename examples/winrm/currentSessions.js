@@ -1,10 +1,20 @@
 /**
  * Domotz Custom Driver 
- * Name: Windows Failed Logon attempts
- * Description: monitors the failed logon on a Windows computer
+ * Name: Windows current sessions
+ * Description: monitor current logged in users on a Windows computer
  *   
  * Communication protocol is WinRM
  * 
+ * Dynamically create table with columns specified in usersTable variable
+ * Return a table with this columns:
+ * -------------------------------------
+ *    State: The state of the user session, such as active or disconnected.
+ *    Logon Time: The time when the user session was logged on to the system.
+ *    Session ID: The ID of the user session.
+ *    Idle Time: The duration of time the user session has been idle.
+ *    Session Name: The name of the user session.
+ * -------------------------------------
+ *     
  * Tested on Windows Versions:
  *      - Microsoft Windows Server 2019
  * Powershell Version:
@@ -14,14 +24,27 @@
  * 
  * Privilege required: Administrator
  * 
+ * 
 **/
 
-
+// Define winrm configuration
 var winrmConfig = {
     "command": 'Start-Process quser -NoNewWindow -RedirectStandardError "NUL"',
     "username": D.device.username(),
-    "password": D.device.password()
+    "password": D.device.password(),
+    "port": 41986
 };
+
+var usersTable = D.createTable(
+    "Logged In Users",
+    [
+        { label: "State" },
+        { label: "Logon Time" },
+        { label: "Session ID" },
+        { label: "Idle Time" },
+        { label: "Session Name" }
+    ]
+);
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
@@ -31,7 +54,6 @@ function checkWinRmError(err) {
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
-
 
 /**
 * @remote_procedure
@@ -57,25 +79,14 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
-var usersTable = D.createTable(
-    "Logged In Users",
-    [
-
-        { label: "State" },
-        { label: "Logon Time" },
-        { label: "Session ID" },
-        { label: "Idle Time" },
-        { label: "Session Name" }
-
-
-    ]
-);
-
+/**
+ * Parses the output of a system command that lists logged-in users and adds the relevant information to a table.
+ * @param {Object} output The output of the system command, including stdout and an error object.
+ */
 function parseOutput(output) {
-    console.log(JSON.stringify(output));
-    if ((output.error === null)) {
+    if (output.error === null) {
         var outputLines = output.outcome.stdout.split(/\r?\n/);
-        var line = '';
+        var line = "";
         var words = [];
         var username;
         var sessionId;
@@ -86,11 +97,11 @@ function parseOutput(output) {
         var k = 1;
         while (k < outputLines.length) {
             line = outputLines[k];
-            if (line !== '') {
-                line = line.replace(/\s\s+/g, ' ');
-                words = line.split(' ').slice(1);
+            if (line !== "") {
+                line = line.replace(/\s\s+/g, " ");
+                words = line.split(" ").slice(1);
                 if (words.length === 7) {
-                    sessionName = '';
+                    sessionName = "";
                 } else {
                     sessionName = words[1];
                     idxOffset = 1;
@@ -100,21 +111,15 @@ function parseOutput(output) {
                 status = words[2 + idxOffset];
                 idleTime = words[3 + idxOffset];
                 logonTime = words[4 + idxOffset] +
-                    ' ' + words[5 + idxOffset] +
-                    ' ' + words[6 + idxOffset];
+                    " " + words[5 + idxOffset] +
+                    " " + words[6 + idxOffset];
                 usersTable.insertRecord(username, [status, logonTime, sessionId, idleTime, sessionName]);
-
             }
             k++;
         }
-
         D.success(usersTable);
-
     } else {
         console.error(output.error);
         D.failure();
     }
 }
-
-
-
