@@ -18,7 +18,6 @@
  * - User
  */
 
-var hours = 1;
 var CriticalCount = 0;
 var ImportantCount = 0;
 var LowCount = 0;
@@ -79,7 +78,7 @@ function get_status() {
 }
 
 /**
- * @description Parses the output of the WinRM command and populates the missing updates table and severity counter variables.
+ * @description Parses the output of the WinRM command and fill the missing updates table and severity counter variables.
  * @param {object} output - The output of the WinRM command.
  */
 function parseOutput(output) {
@@ -94,7 +93,7 @@ function parseOutput(output) {
                 var severity = jsonOutput[k].MsrcSeverity || "Unspecified";
                 var category = jsonOutput[k].Category;
                 var url = jsonOutput[k].URL;
-                if (category.indexOf("Security")) {
+                if (category.indexOf("Security") >= 0) {
                     SecurityCount++;
                 }
                 switch (severity) {
