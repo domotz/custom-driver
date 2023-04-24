@@ -40,7 +40,7 @@ var winrmConfig = {
 };
 
 
-const statusCodes = {
+var statusCodes = {
     "1": "Stopped",
     "2": "StartPending",
     "3": "StopPending",
@@ -49,7 +49,7 @@ const statusCodes = {
     "6": "PausePending",
     "7": "Paused"
 };
-const startTypes = {
+var startTypes = {
     "0": "Boot",
     "1": "System",
     "2": "Automatic",
@@ -86,7 +86,7 @@ function checkWinRmError(err) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials and privileges provided
 */
 function validate() { 
-    winrmConfig.command =  "Get-Service eventlog"
+    winrmConfig.command =  "Get-Service eventlog";
     D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
             D.success();
@@ -109,7 +109,7 @@ function populateTable(svcName, displayname, status, startType) {
     var recordID;
     recordID = displayname.slice(0, 50);
     status = statusCodes[status];
-    startType = startTypes[startType]
+    startType = startTypes[startType];
     svcTable.insertRecord(recordID, [svcName, status, startType]);
 }
 
