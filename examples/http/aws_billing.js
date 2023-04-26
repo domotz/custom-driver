@@ -1,5 +1,7 @@
 /**
- * The driver retrieves billing metrics from Amazon Web Services(AWS) CloudWatch API.
+ * The driver uses the AWS CloudWatch API to monitor the CloudWatch metrics for an AWS billing.
+ * Is retrieving billing metrics from AWS to monitor AWS cost and usage to ensure that the cost of AWS usage does not exceed the allocated budget.
+ * 
  * Communication protocol is https.
  */
 
@@ -7,15 +9,14 @@
 function sha256(message) {
     return D.crypto.hash(message, "sha256", null, "hex");
 }
-
 function hmac(algo, key, message) {
     key = D._unsafe.buffer.from(key);
     return D.crypto.hmac(message, key, algo, "hex");
 }
 
 var region = "ADD_REGION";
-var secretKey = "ADD_SECRET_ACCESS_KEY";
-var accessKey = "ADD_ACCESS_KEY";
+var accessKey = D.device.username(); //accessKey == username
+var secretKey = D.device.password(); //secretKey == password
 var billing;
 
 function sign(key, message) {
@@ -119,7 +120,7 @@ function httpPost() {
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-            if (response.statusCode == 401) {
+            if (response.statusCode === 401 || response.statusCode === 403) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             if (response.statusCode != 200) {
@@ -148,7 +149,7 @@ function getBillingMetrics() {
  */
 function getBilling(propertyName) {
     return function () {
-        return billing[propertyName].Amount;
+        return parseFloat(billing[propertyName].Amount).toFixed(3);
     };
 }
 
@@ -229,6 +230,12 @@ function extract(data) {
     });
 }
 
+// This function handles errors
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -238,7 +245,7 @@ function validate() {
     getBillingMetrics()
         .then(function () {
             D.success();
-        });
+        }).catch(failure);
 }
 
 /**
@@ -248,15 +255,9 @@ function validate() {
  */
 function get_status() {
     getBillingMetrics()
-        .then(function () {
-            fillConfig();
-        })
+        .then(fillConfig)
         .then(extract)
         .then(function () {
             D.success(vars);
-        })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        }).catch(failure);
 }
