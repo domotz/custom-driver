@@ -7,15 +7,14 @@
 function sha256(message) {
     return D.crypto.hash(message, "sha256", null, "hex");
 }
-
 function hmac(algo, key, message) {
     key = D._unsafe.buffer.from(key);
     return D.crypto.hmac(message, key, algo, "hex");
 }
 
+var accessKey = D.device.username(); //accessKey == username
+var secretKey = D.device.password(); //secretKey == password
 var region = "ADD_REGION";
-var secretKey = "ADD_SECRET_ACCESS_KEY";
-var accessKey = "ADD_ACCESS_KEY";
 var dbInstanceId = "ADD_DB_INSTANCE_ID";
 var monitoringList, instanceInfo;
 
@@ -86,7 +85,7 @@ function httpGet(params) {
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-            if (response.statusCode == 401) {
+            if (response.statusCode === 401 || response.statusCode === 403) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             if (response.statusCode != 200) {
@@ -230,6 +229,12 @@ function extract(data) {
     });
 }
 
+// This function handles errors
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -239,7 +244,7 @@ function validate() {
     getInstanceData()
         .then(function () {
             D.success();
-        });
+        }).catch(failure);
 }
 
 /**
@@ -249,15 +254,9 @@ function validate() {
  */
 function get_status() {
     getInstanceData()
-        .then(function () {
-            fillConfig();
-        })
+        .then(fillConfig)
         .then(extract)
         .then(function () {
             D.success(vars);
-        })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        }).catch(failure);
 }
