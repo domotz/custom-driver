@@ -1,5 +1,7 @@
 /**
- * This driver Gets AWS EC2 and attached AWS EBS volumes metrics and uses the script item to make HTTP requests to the CloudWatch API.
+ * This driver retrieves information about AWS EC2 instances and attached EBS volumes using the DescribeVolumes API action. 
+ * Uses HTTPS to communicate with the API, and computes hash-based message authentication codes (HMAC) using the SHA256 algorithm to sign requests.
+ *
  * Communication protocol is https
  */
 
@@ -7,15 +9,14 @@
 function sha256(message) {
     return D.crypto.hash(message, "sha256", null, "hex");
 }
-
 function hmac(algo, key, message) {
     key = D._unsafe.buffer.from(key);
     return D.crypto.hmac(message, key, algo, "hex");
 }
 
+var accessKey = D.device.username(); //accessKey == username
+var secretKey = D.device.password(); //secretKey == password
 var region = "ADD_REGION";
-var secretKey = "ADD_SECRET_ACCESS_KEY";
-var accessKey = "ADD_ACCESS_KEY";
 var instanceId = "ADD_INSTANCE_ID";
 var monitoringList, volumes;
 var vars = [];
@@ -90,7 +91,7 @@ function httpGet(params) {
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-            if (response.statusCode == 401) {
+            if (response.statusCode === 401 || response.statusCode === 403) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             if (response.statusCode != 200) {
@@ -225,6 +226,12 @@ function extract(data) {
     });
 }
 
+// This function handles errors
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -234,7 +241,7 @@ function validate() {
     getVolumesData()
         .then(function () {
             D.success();
-        });
+        }).catch(failure);
 }
 
 //Indicate the successful execution for variable list.
@@ -249,13 +256,8 @@ function success() {
  */
 function get_status() {
     getVolumesData()
-        .then(function () {
-            fillConfig();
-        })
+        .then(fillConfig)
         .then(extract)
         .then(success)
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(failure);
 }

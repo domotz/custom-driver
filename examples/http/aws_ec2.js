@@ -1,5 +1,8 @@
 /**
  * This driver Gets AWS EC2 and attached AWS EBS volumes metrics and uses the script item to make HTTP requests to the CloudWatch API.
+ * Collects metrics for an AWS EC2 instance, including CPU utilization, network activity, disk I/O, and EBS performance. 
+ * The collected metrics are used to monitor and analyze the performance and health of the EC2 instance.
+ * 
  * Communication protocol is https
  */
 
@@ -7,15 +10,14 @@
 function sha256(message) {
     return D.crypto.hash(message, "sha256", null, "hex");
 }
-
 function hmac(algo, key, message) {
     key = D._unsafe.buffer.from(key);
     return D.crypto.hmac(message, key, algo, "hex");
 }
 
+var accessKey = D.device.username(); //accessKey == username
+var secretKey = D.device.password(); //secretKey == password
 var region = "ADD_REGION";
-var secretKey = "ADD_SECRET_ACCESS_KEY";
-var accessKey = "ADD_ACCESS_KEY";
 var instanceId = "ADD_INSTANCE_ID";
 var requestPeriod = 600;
 var monitoringList, metrics;
@@ -164,7 +166,7 @@ function httpGet(params) {
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-            if (response.statusCode == 401) {
+            if (response.statusCode === 401 || response.statusCode === 403) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             if (response.statusCode != 200) {
@@ -201,13 +203,16 @@ function getMetricsData() {
 function extractValue(label) {
     return function () {
         var filteredData = metrics.filter(function (item) { return item.Label === label; });
-        if (filteredData.length === 0) {
+        if (filteredData.length === 0 || filteredData[0].Values.length === 0) {
             return null;
         }
-        return filteredData[0].Values[0];
+        var value = filteredData[0].Values[0];
+        if (typeof value !== "number") {
+            return null;
+        }
+        return value.toFixed(3);
     };
 }
-
 /**
  * @param {number} number diviser
  * @returns the value divide by the number
@@ -411,6 +416,12 @@ function extract(data) {
     });
 }
 
+// This function handles errors
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -420,7 +431,7 @@ function validate() {
     getMetricsData()
         .then(function () {
             D.success();
-        });
+        }).catch(failure);
 }
 
 /**
@@ -430,15 +441,9 @@ function validate() {
  */
 function get_status() {
     getMetricsData()
-        .then(function () {
-            fillConfig();
-        })
+        .then(fillConfig)
         .then(extract)
         .then(function () {
             D.success(vars);
-        })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        }).catch(failure);
 }
