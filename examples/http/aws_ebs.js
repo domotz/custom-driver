@@ -1,5 +1,9 @@
 /**
  * The driver gets AWS EBS and uses the script item to make HTTP requests to the CloudWatch API.
+ * 
+ * Computes hash-based message authentication codes (HMAC) using a specified algorithm and creates a CloudWatch metric to be monitored for an AWS EBS. 
+ * Then it authorizes an HTTP POST request to an Amazon Web Services (AWS) endpoint.
+ * 
  * Communication protocol is https
  */
 
@@ -7,19 +11,19 @@
 function sha256(message) {
     return D.crypto.hash(message, "sha256", null, "hex");
 }
-
 function hmac(algo, key, message) {
     key = D._unsafe.buffer.from(key);
     return D.crypto.hmac(message, key, algo, "hex");
 }
 
 var region = "ADD_REGION";
-var secretKey = "ADD_SECRET_ACCESS_KEY";
-var accessKey = "ADD_ACCESS_KEY";
 var volumeId = "ADD_VOLUME_ID";
+var accessKey = D.device.username(); //accessKey == username
+var secretKey = D.device.password(); //secretKey == password
 var requestPeriod = 600;
 var volumes;
 var vars = [];
+
 function sign(key, message) {
     var hex = hmac("sha256", key, message);
     if ((hex.length % 2) === 1) {
@@ -115,7 +119,7 @@ function httpPost(data) {
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-            if (response.statusCode == 401) {
+            if (response.statusCode === 401 || response.statusCode === 403) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             if (response.statusCode != 200) {
@@ -143,6 +147,7 @@ function getMetricsData() {
             volumes = data.MetricDataResults;
         });
 }
+
 /**
  * @param {string} label  The label to search for in the metric array.
  * @returns A function that takes no arguments and returns the first value associated with the given label, or null if no such label exists.
@@ -150,10 +155,14 @@ function getMetricsData() {
 function extractValue(label) {
     return function () {
         var filteredData = volumes.filter(function (item) { return item.Label === label; });
-        if (filteredData.length === 0) {
+        if (filteredData.length === 0 || filteredData[0].Values.length === 0) {
             return null;
         }
-        return filteredData[0].Values[0];
+        var value = filteredData[0].Values[0];
+        if (typeof value !== "number") {
+            return null;
+        }
+        return value.toFixed(3);
     };
 }
 // The list of custom driver variables to monitor
@@ -246,6 +255,11 @@ function extract(data) {
     });
 }
 
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -255,7 +269,7 @@ function validate() {
     getMetricsData()
         .then(function () {
             D.success();
-        });
+        }).catch(failure);
 }
 
 /**
@@ -265,15 +279,9 @@ function validate() {
  */
 function get_status() {
     getMetricsData()
-        .then(function () {
-            fillConfig();
-        })
+        .then(fillConfig)
         .then(extract)
         .then(function () {
             D.success(vars);
-        })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        }).catch(failure);
 }
