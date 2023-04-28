@@ -1,75 +1,101 @@
 /**
  * this driver monitor the performance of web services by measuring their response time.
- * Creates a Custom Variables for each URL with its response time value:
- *  - Label: Taken from the list of urls
- *  - Value: The response time for each urls
+ * 
+ * Return a table with this columns:
+ *  - Server: The URL of the server being checked.
+ *  - Status: The status code of the HTTP response, or -1 if an error occurred.
+ *  - Response Time: The response time for each urls.
  */
 
-function sha256(message) {
-    return D.crypto.hash(message, "sha256", null, "hex");
-}
+// Table to store the response times of the URLs
+var table = D.createTable(
+    "Response Times",
+    [
+        { label: "Server" },
+        { label: "Status" },
+        { label: "Response Time (ms)" }
+    ]
+);
 
-// This is an array of URLs to be tested for response time.
+// List of servers to check the response time
 var urls = ["www.facebook.com", "www.google.com", "www.github.com", "www.domotz.com", "www.twitter.com"];
 
+/** 
+ * @returns promise that resolves when all response times have been obtained
+ */
+function getResponseTimes() {
+    return D.q.all(
+        urls.map(responseTime)
+    );
+}
+
 /**
- * This function measures the response time of a given URL by making an HTTP GET request.
- * @param {string} url  The URL to be tested.
+ * @param {*} url server to check its response time
+ * @returns Promise that wait for the HTTPS call to the URL and parse the response data
  */
 function responseTime(url) {
     var d = D.q.defer();
+    var website = D.createExternalDevice(url);
     var start = new Date();
-    D.device.http.get(url, function (response, error) {
+    website.http.get({
+        url: "/",
+        protocol: "https"
+    }, function (err, resp) {
+        if (err) {
+            console.error(err);
+            return d.resolve(-1);
+        }
         var end = new Date();
         var responseTime = end - start;
-        if (error) {
-            d.resolve(-1);
-        } else if (response.statusCode >= 200 && response.statusCode < 300) {
-            d.resolve(responseTime);
-        } else {
-            d.failure(-1);
-        }
+        var data = {
+            server: url,
+            statusCode: resp ? resp.statusCode : -1,
+            responseTime: responseTime
+        };
+        d.resolve(data);
     });
     return d.promise;
 }
 
 /**
- * This function tests the response time of each URL in the urls array by calling the responseTime function for each URL
+ * @param {Array} result  Array of objects containing server response time data
  */
-function testUrls() {
-    var variables = [];
-    urls.forEach(function (url) {
-        responseTime(url)
-            .then(function (responseTime) {
-                var uid = sha256(url).substring(0, 50);
-                var unit = "ms";
-                var value = responseTime;
-                variables.push(
-                    D.createVariable(uid, url, value, unit)
-                );
-                if (variables.length === urls.length) {
-                    D.success(variables);
-                }
-            }).catch(function (error) {
-                console.error(error);
-            });
+function fillTable(result) {
+    result.filter(function (data) {
+        return data;
+    }).forEach(function (data) {
+        table.insertRecord(
+            data.server, [data.server, data.statusCode, data.responseTime]
+        );
     });
+    D.success(table);
+}
+
+function failure(err) {
+    console.error(err);
+    D.failure();
 }
 
 /**
- * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate if the driver can be applied on a device.
- */
+* @remote_procedure
+* @label Validate Association
+* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+*/
 function validate() {
-    testUrls();
+    getResponseTimes()
+        .then(function () {
+            D.success();
+        })
+        .catch(failure);
 }
 
 /**
  * @remote_procedure
  * @label Get Device Variables
- * @documentation This procedure is used for testing  the response time of web servecices.
+ * @documentation This procedure is used for testing the response time of web servecices.
  */
 function get_status() {
-    testUrls();
+    getResponseTimes()
+        .then(fillTable)
+        .catch(failure);
 }
