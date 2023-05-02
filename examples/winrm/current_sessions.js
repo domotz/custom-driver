@@ -32,7 +32,6 @@ var winrmConfig = {
     "command": 'Start-Process quser -NoNewWindow -RedirectStandardError "NUL"',
     "username": D.device.username(),
     "password": D.device.password(),
-    "port": 41986
 };
 
 var usersTable = D.createTable(
