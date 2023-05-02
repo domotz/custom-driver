@@ -100,10 +100,9 @@
  * 
  */
 
-var winrmConfig = {
-    "command": "",
-    "username": D.device.username(),
-    "password": D.device.password()
+ var winrmConfig = {
+    username: D.device.username(),
+    password: D.device.password()
 };
 
 var filter = ["Security System Extension",
@@ -123,6 +122,7 @@ filter = '@("' + filter.join('","') + '")';
 var auditTable = D.createTable(
     "Audit Settings",
     [
+        { label: "Category" },
         { label: "Subcategory" },
         { label: "Setting" }
     ]
@@ -172,24 +172,23 @@ function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var category;
-        var subcat;
+        var subcategory;
         var setting;
+        var recordId;
         var jsonOutput = JSON.parse(JSON.stringify(output));
         jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
         if (jsonOutput) {
             while (k < jsonOutput.length) {
-                category = k + "-" + jsonOutput[k].category;
-                subcat = jsonOutput[k].subcat;
+                category = jsonOutput[k].category;
+                subcategory = jsonOutput[k].subcat;
                 setting = jsonOutput[k].setting;
-                auditTable.insertRecord(category, [subcat, setting]);
+                recordId = (category + "_" + subcategory).replace(" ", "_").toLowerCase().slice(0, 50);
+                auditTable.insertRecord(recordId, [category, subcategory, setting]);
                 k++;
             }
-
         } else {
-            category = jsonOutput.category;
-            subcat = jsonOutput.subcat;
-            setting = jsonOutput.setting;
-            auditTable.insertRecord(category, [subcat, setting]);
+            console.error("No data was collected")
+            D.failure(D.errorType.PARSING_ERROR);
         }
         D.success(auditTable);
     } else {
