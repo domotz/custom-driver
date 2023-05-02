@@ -1,11 +1,12 @@
 /**
  * this driver is designed to retrieve network speed data using the iperf3.
  * Communication protocol is SSH.
+ * 
  * This driver create a dynamic monitoring variables 
- *      down: test for download speed.
- *      up: test for upload speed.
- *      UDPdown: test for UDP download speed.
- *      UDPup: test for UDP upload speed. 
+ *      Download speed: test for download speed.
+ *      Upload speed: test for upload speed.
+ *      Download speed UDP: test for UDP download speed.
+ *      Upload speed UDP: test for UDP upload speed. 
  * 
  * Tested with iperf3 version: v 3.7 under Ubuntu 22.04.1 LTS
  */
@@ -16,10 +17,10 @@ var sshConfig = {
     timeout: 20000
 };
 
-var _var = D.device.createVariable;
-var dload, uload, udpdload, udpuload;  // Define variables for storing download/upload speeds
+var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 
-var UDP = "Y"; // Define whether UDP is enabled on the device (set to "Y" by default)
+// Define whether UDP is enabled on the device 
+var testUDPSpeed = true;
 
 // Define the commands to be executed via SSH to retrieve speed data
 var commands = [
@@ -38,42 +39,45 @@ function checkSshError(err) {
 }
 
 // Function for executing SSH command 
-function exec_command(command, callback) {
-    var config = JSON.parse(JSON.stringify(sshConfig));
-    config.command = command;
-    D.device.sendSSHCommand(config, function (out, err) {
-        if (err) checkSshError(err);
-        callback(out.split("\n"));
+function executeCommand(command) {
+    var d = D.q.defer();
+    sshConfig.command = command;
+    D.device.sendSSHCommand(sshConfig, function (out, err) {
+        if (err) {
+            checkSshError(err);
+            d.reject(err);
+        }
+        d.resolve(out);
     });
+    return d.promise;
 }
 
-//This function execute the SSH commands to retrieve network speed data using the iperf3 tool, and then creating dynamic monitoring variables based on the obtained data.
+//This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
 function execute() {
-    exec_command(commands[0], function (cmd) {
-        dload = cmd || 0;
-        exec_command(commands[1], function (cmd) {
-            uload = cmd || 0;
-            if (UDP == "Y") {
-                exec_command(commands[2], function (cmd) {
-                    udpdload = cmd || 0;
-                    exec_command(commands[3], function (cmd) {
-                        udpuload = cmd || 0;
-                        D.success([
-                            _var("down", "DLOAD", dload, "Mb/s"),
-                            _var("up", "ULOAD", uload, "Mb/s"),
-                            _var("UDPdown", "UDPDLOAD", udpdload, "Mb/s"),
-                            _var("UDPup", "UDPULOAD", udpuload, "Mb/s")
-                        ]);
-                    });
+    return executeCommand(commands[0])
+        .then(function (downloadSpeedResult) {
+            return executeCommand(commands[1])
+                .then(function (uploadSpeedResult) {
+                    return [downloadSpeedResult, uploadSpeedResult];
                 });
+        })
+        .then(function (downUpSpeedResults) {
+            if (testUDPSpeed) {
+                return executeCommand(commands[2])
+                    .then(function (downSpeedUdpResult) {
+                        return downUpSpeedResults.concat(downSpeedUdpResult);
+                    })
+                    .then(function (downUpDownUdpSpeedResults) {
+                        return executeCommand(commands[3])
+                            .then(function (upSpeedUdpResult) {
+                                return downUpDownUdpSpeedResults.concat(upSpeedUdpResult);
+                            });
+                    });
             } else {
-                D.success([
-                    _var("down", "DLOAD", dload, "Mb/s"),
-                    _var("up", "ULOAD", uload, "Mb/s")
-                ]);
+                return downUpSpeedResults;
             }
-        });
-    });
+        })
+        .catch(failure);
 }
 
 //This function is a failure handler for SSH command execution. 
@@ -85,13 +89,16 @@ function failure(err) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This procedure is used to validate if iperf3 commands are executed successfully
+* @documentation This function is used to check if the iperf3 command is available and to validate if the iperf3 commands work correctly.
 */
 function validate() {
-    execute(function () {
-        D.success()
-            .catch(failure);
-    });
+    // Check if the iperf3 command is available
+    executeCommand("which iperf3")
+        .then(execute)
+        .then(function () {
+            D.success();
+        })
+        .catch(failure);
 }
 
 /**
@@ -100,8 +107,17 @@ function validate() {
 * @documentation This procedure is used for retrieving iperf3 results
 */
 function get_status() {
-    execute(function () {
-        D.success()
-            .catch(failure);
-    });
+    execute()
+        .then(function (results) {
+            downloadSpeed = results[0] || 0;
+            uploadSpeed = results[1] || 0;
+            downloadSpeedUDP = results[2] || 0;
+            uploadSpeedUDP = results[3] || 0;
+            D.success([
+                D.device.createVariable("download_speed", "Download speed", downloadSpeed, "Mb/s"),
+                D.device.createVariable("upload_speed", "Upload speed", uploadSpeed, "Mb/s"),
+                D.device.createVariable("download_speed_udp", "Download speed UDP", downloadSpeedUDP, "Mb/s"),
+                D.device.createVariable("upload_speed_udp", "Upload speed UDP", uploadSpeedUDP, "Mb/s")
+            ]);
+        }).catch(failure);
 }
