@@ -18,9 +18,8 @@
 
 // Define winrm configuration
 var winrmConfig = {
-    "command": "",
-    "username": D.device.username(),
-    "password": D.device.password()
+    username: D.device.username(),
+    password: D.device.password()
 };
 
 var privilegedUsersTable = D.createTable(
