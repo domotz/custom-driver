@@ -1,0 +1,38 @@
+{
+	"name": "str",
+	"description": "str",
+	"requirements": [
+		"str",
+		"str"
+	],
+	"code": "str/ or reference to the examples",
+	"category": "str (software, hardware, cloud)",
+	"tags": [
+		"str",
+		"str (maybe enums)"
+	],
+	"credentials_required": "bool",
+	"minimal_sample_period": "seconds",
+	"version": {
+		"sandbox": "the sandbox version(1.0.0=<2.0.0)",
+		"driver": "the driver version"
+	},
+	"actions": "bool",
+	"variables": {
+		"table": "range (..10)",
+		"independent": "range (1..)"
+	},
+	"protocols": [
+		"http",
+		"ssh"
+	],
+	"parameters": {
+		"param_1": "value/value type"
+	},
+	"supported_on": [
+		{
+			"name": "str (the device/software name)",
+			"version": "firmware version"
+		}
+	]
+}
