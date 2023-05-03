@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows Security events monitoring
- * Description: monitors the instances of Windows security events, some events are only raised if the related audit setting is enabled.
+ * Description: monitors the occurrences of Windows security events, some events are only raised if the related audit setting is enabled.
  *    
  * More info   
  *  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/advanced-security-auditing-faq
@@ -13,7 +13,7 @@
  * Powershell Version:
  *      - 5.1.19041.2364
  * 
- * Creates a Custom Driver Table with event IDs, Description, Instances count for the choosen period of time
+ * Creates a Custom Driver Table with event IDs, Description, Number of Occurrences for the choosen period of time
  * 
  * Required permissions: 
  *  - Read permissions on HKLM\System\CurrentControlSet\Services\eventlog\Security
@@ -29,9 +29,8 @@
 
  // Define the WinRM options when running the commands
  var winrmConfig = {
-     "command": "",
-     "username": D.device.username(),
-     "password": D.device.password()
+     username: D.device.username(),
+     password: D.device.password()
  };
  
  /**
@@ -54,10 +53,10 @@
  var idArray = Object.keys(auditedEvents);
  
  var eventTable = D.createTable(
-     "Security events ",
+     "Security events",
      [
          { label: "Description" },
-         { label: "last " + hours + " hour(s) instances" }
+         { label: "Last " + hours + " hour(s) occurrences" }
      ]
  );
  
@@ -88,8 +87,8 @@
  
  /**
   * @remote_procedure
-  * @label Get Windows Security Events Instances
-  * @documentation This procedure Retrieves the instances count of selected Windows security events in the last hour.
+  * @label Get Windows Security Events Occurrences
+  * @documentation This procedure Retrieves the occurrences count of selected Windows security events in the last hour.
   */
  function get_status() {
      winrmConfig.command = "$Hours=" + hours + ";$events=Get-WinEvent -FilterHashTable @{LogName=\"Security\";ID=" + idArray + ";StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {@{name=\"\";count=\"0\"}|ConvertTo-Json};";
@@ -109,7 +108,6 @@
              while (k < jsonOutput.length) {
                  eventId = jsonOutput[k].Name;
                  count = jsonOutput[k].Count;
-                 //eventTable.insertRecord(eventId, [auditedEvents[eventId], count]);
                  eventsInOutput.push(eventId);
                  k++;
              }
@@ -120,10 +118,10 @@
                  eventsInOutput.push(jsonOutput.Name);
              }
          }
-         // events with no instances will appear in the table with a 0 value
-         for (var key in auditedEvents) {
-             if (eventsInOutput.indexOf(key) === -1) {
-                 eventTable.insertRecord(key, [auditedEvents[key], 0]);
+         // events with no occurrences will appear in the table with a 0 value
+         for (var eventId in auditedEvents) {
+             if (eventsInOutput.indexOf(eventId) === -1) {
+                 eventTable.insertRecord(eventId, [auditedEvents[eventId], 0]);
              }
          }
          D.success(eventTable);
