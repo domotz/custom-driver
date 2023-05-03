@@ -13,7 +13,6 @@
 
 // Define SSH configuration
 var sshConfig = {
-    port: 22,
     timeout: 20000
 };
 
@@ -22,12 +21,12 @@ var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 // Define whether UDP is enabled on the device 
 var testUDPSpeed = true;
 
-// Define the commands to be executed via SSH to retrieve speed data
-var commands = [
-    "iperf3 -f m -c localhost -R | grep sender | awk -F \" \" '{print $7}'",
-    "iperf3 -f m -c localhost | grep sender | awk -F \" \" '{print $7}'",
-    "iperf3 -f m -c localhost -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'",
-    "iperf3 -f m -c localhost -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'"
+// Define the commands to be executed via SSH to retrieve speed data and variable configuration
+var execConfig = [
+    { id: "download_speed", label: "Download speed", command: "iperf3 -f m -c localhost -R | grep sender | awk -F \" \" '{print $7}'" },
+    { id: "upload_speed", label: "Upload speed", command: "iperf3 -f m -c localhost | grep sender | awk -F \" \" '{print $7}'" },
+    { id: "download_speed_udp", label: "Download speed UDP", command: "iperf3 -f m -c localhost -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" },
+    { id: "upload_speed_udp", label: "Upload speed UDP", command: "iperf3 -f m -c localhost -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" }
 ];
 
 //Checking SSH errors and handling them
@@ -40,44 +39,40 @@ function checkSshError(err) {
 
 // Function for executing SSH command 
 function executeCommand(command) {
-    var d = D.q.defer();
-    sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            checkSshError(err);
-            d.reject(err);
-        }
-        d.resolve(out);
-    });
-    return d.promise;
+    return function(result){
+        var d = D.q.defer();
+        sshConfig.command = command;
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) {
+                checkSshError(err);
+                d.reject(err);
+            }
+            if(Array.isArray(result))
+                result.push(out)
+            d.resolve(result);
+        });
+        return d.promise;
+    }
 }
 
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
 function execute() {
-    return executeCommand(commands[0])
-        .then(function (downloadSpeedResult) {
-            return executeCommand(commands[1])
-                .then(function (uploadSpeedResult) {
-                    return [downloadSpeedResult, uploadSpeedResult];
-                });
-        })
-        .then(function (downUpSpeedResults) {
-            if (testUDPSpeed) {
-                return executeCommand(commands[2])
-                    .then(function (downSpeedUdpResult) {
-                        return downUpSpeedResults.concat(downSpeedUdpResult);
-                    })
-                    .then(function (downUpDownUdpSpeedResults) {
-                        return executeCommand(commands[3])
-                            .then(function (upSpeedUdpResult) {
-                                return downUpDownUdpSpeedResults.concat(upSpeedUdpResult);
-                            });
-                    });
-            } else {
-                return downUpSpeedResults;
-            }
-        })
-        .catch(failure);
+    var commands = [
+        executeCommand(execConfig[0].command),
+        executeCommand(execConfig[1].command),
+    ];
+    if (testUDPSpeed) {
+        commands.push(executeCommand(execConfig[2].command));
+        commands.push(executeCommand(execConfig[3].command));
+    }
+
+    return commands.reduce(D.q.when, D.q([]))
+        .then(function(result){
+            return result.map(function(res, index){
+                return D.device.createVariable(execConfig[index].id, execConfig[index].label, res, "Mb/s");
+            });
+        });
+
 }
 
 //This function is a failure handler for SSH command execution. 
@@ -89,12 +84,11 @@ function failure(err) {
 /**
 * @remote_procedure
 * @label Validate Association
-* @documentation This function is used to check if the iperf3 command is available and to validate if the iperf3 commands work correctly.
+* @documentation This function is used to check if the iperf3 command is available.
 */
 function validate() {
     // Check if the iperf3 command is available
-    executeCommand("which iperf3")
-        .then(execute)
+    executeCommand("which iperf3")()
         .then(function () {
             D.success();
         })
@@ -108,16 +102,6 @@ function validate() {
 */
 function get_status() {
     execute()
-        .then(function (results) {
-            downloadSpeed = results[0] || 0;
-            uploadSpeed = results[1] || 0;
-            downloadSpeedUDP = results[2] || 0;
-            uploadSpeedUDP = results[3] || 0;
-            D.success([
-                D.device.createVariable("download_speed", "Download speed", downloadSpeed, "Mb/s"),
-                D.device.createVariable("upload_speed", "Upload speed", uploadSpeed, "Mb/s"),
-                D.device.createVariable("download_speed_udp", "Download speed UDP", downloadSpeedUDP, "Mb/s"),
-                D.device.createVariable("upload_speed_udp", "Upload speed UDP", uploadSpeedUDP, "Mb/s")
-            ]);
-        }).catch(failure);
+        .then(D.success)
+        .catch(failure);
 }
