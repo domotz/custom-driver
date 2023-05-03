@@ -32,8 +32,7 @@
  */
 
 var port = 15672;
-var queues;
-var page = 1, size = 100;
+var queues = [];
 // var queueNameRegex = ""; // Parameter used to filter queue names
 var table = D.createTable("Queues", [
     { label: "Name" },
@@ -69,7 +68,6 @@ function httpGet(url) {
         username: D.device.username(),
         password: D.device.password(),
         auth: "basic"
-
     }, function (err, response, body) {
         if (err) {
             D.failure(D.errorType.GENERIC_ERROR);
@@ -91,69 +89,75 @@ function httpGet(url) {
 /**
  * @returns promise for http response containing queues info
  */
-function getQueues() {
-    query = "/api/queues";
-    params = [];
-    if (typeof page !== "undefined") params.push("page=" + page);
-    if (typeof size !== "undefined") params.push("page_size=" + size);
+function getQueues(page) {
+    if (!page) page = 1;
+    var query = "/api/queues";
+    var params = [];
+    params.push("page_size=100");
+    params.push("page=" + page);
     if (typeof queueNameRegex !== "undefined") params.push("name=" + queueNameRegex + "&use_regex=true");
-    if (params.length)
-        query += "?" + params.join("&");
+    query += "?" + params.join("&");
     return httpGet(query)
         .then(JSON.parse)
         .then(function (data) {
-            if (typeof page === "undefined")
-                queues = data;
-            else
-                queues = data.items;
+            queues = queues.concat(data.items);
+            if (data.page < data.page_count) {
+                return getQueues(++page);
+            }
+            else {
+                return queues;
+            }
         });
 }
+
 //fill the dynamic table with data related to queues  
-function fillTable() {
-    queues.forEach(function (item) {
-        var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
-        var name = item.name;
-        var vhost = item.vhost;
-        var deliverGetDetails = item.message_stats && item.message_stats.deliver_get_details && item.message_stats.deliver_get_details.rate || 0;
-        var deliverGet = item.message_stats && item.message_stats.deliver_get || 0;
-        var unacknowledgedDetails = item.messages_unacknowledged_details && item.messages_unacknowledged_details.rate || 0;
-        var unacknowledged = item.messages_unacknowledged || 0;
-        var redeliverDetails = item.message_stats && item.message_stats.redeliver_details && item.message_stats.redeliver_details.rate || 0;
-        var redelivered = item.message_stats && item.message_stats.redeliver || 0;
-        var readyDetails = item.messages_ready_details && item.messages_ready_details.rate || 0;
-        var ready = item.messages_ready || 0;
-        var publishDetails = item.message_stats && item.message_stats.publish_details && item.message_stats.publish_details.rate || 0;
-        var published = item.message_stats && item.message_stats.publish || 0;
-        var messagesDetails = item.messages_details && item.messages_details.rate || 0;
-        var deliverDetails = item.message_stats && item.message_stats.deliver_details && message_stats.deliver_details.rate || 0;
-        var delivered = item.message_stats && item.message_stats.deliver || 0;
-        var ackDetails = item.message_stats && item.message_stats.ack_details && message_stats.ack_details.rate || 0;
-        var acknowledged = item.message_stats && item.message_stats.ack || 0;
-        var queueMessages = item.messages || 0;
-        var queueMemory = item.memory || 0;
-        var queueConsumers = item.consumers || 0;
-        table.insertRecord(recordId, [
-            name,
-            vhost,
-            deliverGetDetails,
-            deliverGet,
-            unacknowledgedDetails,
-            unacknowledged,
-            redeliverDetails,
-            redelivered,
-            readyDetails,
-            ready,
-            publishDetails,
-            published,
-            messagesDetails,
-            deliverDetails,
-            delivered,
-            ackDetails,
-            acknowledged,
-            queueMessages,
-            queueMemory,
-            queueConsumers
-        ]);
+function fillTable(queues) {
+    queues.forEach(function (d) {
+        d.forEach(function (item) {
+            var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
+            var name = item.name;
+            var vhost = item.vhost;
+            var deliverGetDetails = item.message_stats && item.message_stats.deliver_get_details && item.message_stats.deliver_get_details.rate || 0;
+            var deliverGet = item.message_stats && item.message_stats.deliver_get || 0;
+            var unacknowledgedDetails = item.messages_unacknowledged_details && item.messages_unacknowledged_details.rate || 0;
+            var unacknowledged = item.messages_unacknowledged || 0;
+            var redeliverDetails = item.message_stats && item.message_stats.redeliver_details && item.message_stats.redeliver_details.rate || 0;
+            var redelivered = item.message_stats && item.message_stats.redeliver || 0;
+            var readyDetails = item.messages_ready_details && item.messages_ready_details.rate || 0;
+            var ready = item.messages_ready || 0;
+            var publishDetails = item.message_stats && item.message_stats.publish_details && item.message_stats.publish_details.rate || 0;
+            var published = item.message_stats && item.message_stats.publish || 0;
+            var messagesDetails = item.messages_details && item.messages_details.rate || 0;
+            var deliverDetails = item.message_stats && item.message_stats.deliver_details && message_stats.deliver_details.rate || 0;
+            var delivered = item.message_stats && item.message_stats.deliver || 0;
+            var ackDetails = item.message_stats && item.message_stats.ack_details && message_stats.ack_details.rate || 0;
+            var acknowledged = item.message_stats && item.message_stats.ack || 0;
+            var queueMessages = item.messages || 0;
+            var queueMemory = item.memory || 0;
+            var queueConsumers = item.consumers || 0;
+            table.insertRecord(recordId, [
+                name,
+                vhost,
+                deliverGetDetails,
+                deliverGet,
+                unacknowledgedDetails,
+                unacknowledged,
+                redeliverDetails,
+                redelivered,
+                readyDetails,
+                ready,
+                publishDetails,
+                published,
+                messagesDetails,
+                deliverDetails,
+                delivered,
+                ackDetails,
+                acknowledged,
+                queueMessages,
+                queueMemory,
+                queueConsumers
+            ]);
+        });
     });
 }
 
