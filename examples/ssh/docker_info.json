@@ -5,7 +5,6 @@
         "docker installed",
         "ssh enabled"
     ],
-    "code": "ssh/docker_info.js",
     "category": "software",
     "tags": [
         "ubuntu",
