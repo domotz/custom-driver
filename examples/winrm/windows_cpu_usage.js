@@ -14,8 +14,9 @@
  * Creates a Custom Driver Variable with CPU load percentage
  * 
  */
+
 var winrmConfig = {
-    "command": "",
+    "command": "Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average | Select Average",
     "username": D.device.username(),
     "password": D.device.password()
 };
@@ -35,7 +36,6 @@ function checkWinRmError(err) {
 * @documentation This procedure is used to validate the driver and credentials provided during association.
 */
 function validate() {
-    winrmConfig.command = "Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average | Select Average";
     D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
             D.success();
@@ -51,7 +51,6 @@ function validate() {
 * @documentation This procedure retrieves the average CPU load percentage of the device.
 */
 function get_status() {
-    winrmConfig.command = "Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average | Select Average";
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
@@ -67,6 +66,6 @@ function parseOutput(output) {
         D.success(cpu);
     } else {
         console.error(output.error);
-        D.failure();
+        checkWinRmError(output.error);
     }
 }
