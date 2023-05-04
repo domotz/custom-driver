@@ -62,7 +62,7 @@ function parseOutput(output) {
     if (output.error === null) {
         var outputLines = output.outcome.stdout.trim().split(/\r?\n/);
         var cpuValue = outputLines[2].replace(/\s+/g, ""); // To remove all spaces
-        var cpu = [D.device.createVariable("loadPercentage", "Average", cpuValue)];
+        var cpu = [D.device.createVariable("loadPercentage", "Average", cpuValue, "%")];
         D.success(cpu);
     } else {
         console.error(output.error);
