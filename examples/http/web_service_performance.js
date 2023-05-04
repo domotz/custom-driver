@@ -54,17 +54,16 @@ function responseTime(url) {
         url: path,
         port: port
     }, function (err, resp) {
-        if (err) {
-            console.error(err);
-            return d.resolve(-1);
-        }
-        var end = new Date();
-        var responseTime = end - start;
         var data = {
             server: url,
             statusCode: resp ? resp.statusCode : -1,
-            responseTime: responseTime
+            responseTime: -1
         };
+        if (err) {
+            console.error(err);
+            return d.resolve(data);
+        }
+        data.responseTime = new Date() - start;
         d.resolve(data);
     });
     return d.promise;
@@ -77,8 +76,11 @@ function fillTable(result) {
     result.filter(function (data) {
         return data;
     }).forEach(function (data) {
+        // the id should be generated as base 64 string which is applied the the requested url
+        // because the url could have some special chars and it's length could exceed 50
+        var base64Url = D._unsafe.buffer.from(data.server).toString('base64');
         table.insertRecord(
-            data.server, [data.server, data.statusCode, data.responseTime]
+            base64Url.substring(0, 50), [data.server, data.statusCode, data.responseTime]
         );
     });
     D.success(table);
@@ -86,7 +88,7 @@ function fillTable(result) {
 
 function failure(err) {
     console.error(err);
-    D.failure();
+    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
