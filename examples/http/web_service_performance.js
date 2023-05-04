@@ -18,7 +18,14 @@ var table = D.createTable(
 );
 
 // List of servers to check the response time
-var urls = ["www.facebook.com", "www.google.com", "www.github.com", "www.domotz.com", "www.twitter.com"];
+var urls = [
+    "https://www.facebook.com",
+    "https://www.google.com",
+    "https://www.github.com",
+    "https://www.twitter.com",
+    "http://127.0.0.1:15672/",
+    "https://portal.domotz.com/custom-driver"
+];
 
 /** 
  * @returns promise that resolves when all response times have been obtained
@@ -31,15 +38,21 @@ function getResponseTimes() {
 
 /**
  * @param {*} url server to check its response time
- * @returns Promise that wait for the HTTPS call to the URL and parse the response data
+ * @returns Promise that wait for the HTTP call to the URL and parse the response data
  */
 function responseTime(url) {
     var d = D.q.defer();
-    var website = D.createExternalDevice(url);
+    var parts = url.split("/");
+    var address = parts[2];
+    var addressParts = address.split(":");
+    address = addressParts[0];
+    var port = addressParts[1] || "";
+    var path = "/";
+    var website = D.createExternalDevice(address);
     var start = new Date();
     website.http.get({
-        url: "/",
-        protocol: "https"
+        url: path,
+        port: port
     }, function (err, resp) {
         if (err) {
             console.error(err);
