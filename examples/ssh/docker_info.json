@@ -19,7 +19,6 @@
     "sample_period": 300,
     "actions": false,
     "expected_variables": {
-        "table": "[0]",
         "independent": "[78]"
     },
     "protocols": [
