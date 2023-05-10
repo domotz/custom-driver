@@ -10,22 +10,19 @@
             "ssh enabled"
         ]
     },
-    "category": "software",
     "tags": [
         "ubuntu",
         "docker",
         "software"
     ],
     "sample_period": 300,
-    "actions": false,
+    "has_actions": false,
     "expected_variables": {
-        "table": "[0]",
         "independent": "[78]"
     },
     "protocols": [
         "SSH"
     ],
-    "parameters": null,
     "supported_on": [
         {
             "name": "Ubuntu",
