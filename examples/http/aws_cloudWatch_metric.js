@@ -20,12 +20,9 @@ function hmac(algo, key, message) {
 
 var accessKey = D.device.username(); //accessKey == username
 var secretKey = D.device.password(); //secretKey == password
-var region = "ADD_REGION";
-var instanceId = "ADD_INSTANCE_ID";
-var dbInstanceId = "ADD_DB_INSTANCE_ID";
+var region = "us-east-2";
 var requestPeriod = 600;
 var metrics;
-var ec2, rds;
 
 var table = D.createTable("ClouWatch", [
     { label: "Namespace" },
@@ -74,62 +71,6 @@ function prepareObject(prefix, param) {
 /**
  * @returns CloudWatch metrics to be monitored for an AWS CloudWatch.
  */
-function createMetricsPayload(period, instanceId, dbInstanceId) {
-    var metricsList = [
-        //for EC2
-        "CPUUtilization:Percent",
-        "DiskQueueDepth:Count",
-        "MetadataNoToken:Count",
-        //For RDS
-        "BurstBalance:Percent",
-        "WriteLatency:Seconds"
-    ];
-    return metricsList.map(function (metric) {
-        var parts = metric.split(":", 2);
-        var name = parts[0].replace(/[^a-zA-Z0-9]/g, "");
-        // create the EC2 metric object
-        ec2 = {
-            "Id": name.charAt(0).toLowerCase() + name.slice(1),
-            "MetricStat": {
-                "Metric": {
-                    "Namespace": "AWS/EC2",
-                    "MetricName": parts[0],
-                    "Dimensions": [
-                        {
-                            "Name": "InstanceId",
-                            "Value": instanceId
-                        }
-                    ]
-                },
-                "Period": period,
-                "Stat": "Average",
-                Unit: parts[1]
-
-            }
-        };
-        // create the RDS metric object
-        rds = {
-            Id: name.charAt(0).toLowerCase() + name.slice(1),
-            MetricStat: {
-                Metric: {
-                    Namespace: "AWS/RDS",
-                    MetricName: parts[0],
-                    Dimensions: [
-                        {
-                            "Name": "DBInstanceIdentifier",
-                            "Value": dbInstanceId
-                        }
-                    ]
-                },
-                Period: period,
-                Stat: "Average",
-                Unit: parts[1]
-            }
-        };
-        return rds;
-    });
-}
-
 function prepareParams(params) {
     var result = [];
     Object.keys(params).sort().forEach(function (key) {
@@ -142,6 +83,82 @@ function prepareParams(params) {
     });
     return result.join("&");
 }
+
+var cloudWatchMetric = [
+    {
+        "Id": "m1",
+        "MetricStat": {
+            "Metric": {
+                "Namespace": "AWS/RDS",
+                "MetricName": "CPUUtilization",
+                "Dimensions": [
+                    {
+                        "Name": "DBInstanceIdentifier",
+                        "Value": "value-1"
+                    }
+                ]
+            },
+            "Period": 600,
+            "Stat": "Average",
+            "Unit": "Percent"
+        }
+    },
+    {
+        "Id": "m2",
+        "MetricStat": {
+            "Metric": {
+                "Namespace": "AWS/RDS",
+                "MetricName": "DiskQueueDepth",
+                "Dimensions": [
+                    {
+                        "Name": "DBInstanceIdentifier",
+                        "Value": "value-2"
+                    }
+                ]
+            },
+            "Period": 600,
+            "Stat": "Average",
+            "Unit": "Count"
+        }
+    },
+    {
+        "Id": "m3",
+        "MetricStat": {
+            "Metric": {
+                "Namespace": "AWS/RDS",
+                "MetricName": "MetadataNoToken",
+                "Dimensions": [
+                    {
+                        "Name": "DBInstanceIdentifier",
+                        "Value": "value-3"
+                    }
+                ]
+            },
+            "Period": 600,
+            "Stat": "Average",
+            "Unit": "Count"
+        }
+    },
+    {
+        "Id": "m4",
+        "MetricStat": {
+            "Metric": {
+                "Namespace": "AWS/RDS",
+                "MetricName": "BurstBalance",
+                "Dimensions": [
+                    {
+                        "Name": "DBInstanceIdentifier",
+                        "Value": "value-4"
+                    }
+                ]
+            },
+            "Period": 600,
+            "Stat": "Average",
+            "Unit": "Percent"
+        }
+    }
+];
+
 
 /**
  * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
@@ -195,7 +212,6 @@ function httpPost(params) {
     return d.promise;
 }
 
-
 /**
  * @returns promise for http response containing CloudWatch metrics 
  */
@@ -203,29 +219,20 @@ function getMetricsData() {
     var timestamp = new Date().getTime(),
         endTime = new Date(timestamp).toISOString().replace(/\.\d+Z/, "Z"),
         startTime = new Date(timestamp - requestPeriod * 1000).toISOString().replace(/\.\d+Z/, "Z"),
-        payload = prepareObject("MetricDataQueries", createMetricsPayload(requestPeriod, instanceId, dbInstanceId));
+        payload = prepareObject("MetricDataQueries", cloudWatchMetric);
     payload["Action"] = "GetMetricData";
     payload["Version"] = "2010-08-01";
     payload["StartTime"] = startTime;
     payload["EndTime"] = endTime;
     return httpPost(prepareParams(payload))
         .then(function (data) {
-            var namespace;
-            var identifier;
-            var type;
-
+            for (var i = 0; i < cloudWatchMetric.length; i++) {
+                var identifier = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
+                var namespace = cloudWatchMetric[i].MetricStat.Metric.Namespace;
+                var type = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Name;
+            }
             metrics = data.GetMetricDataResponse.GetMetricDataResult.MetricDataResults;
             metrics.forEach(function (item) {
-                if (namespace === "AWS/EC2") {
-
-                    namespace = ec2.MetricStat.Metric.Namespace;
-                    type = ec2.MetricStat.Metric.Dimensions[0].Name;
-                    identifier = instanceId;
-                } else {
-                    namespace = rds.MetricStat.Metric.Namespace;
-                    type = rds.MetricStat.Metric.Dimensions[0].Name;
-                    identifier = dbInstanceId;
-                }
                 var recordId = identifier + "-" + item.Label;
                 var metric = item.Label;
                 var value = item.Values[0];
@@ -268,4 +275,4 @@ function get_status() {
         .then(function () {
             D.success(table);
         }).catch(failure);
-}            
+}           
