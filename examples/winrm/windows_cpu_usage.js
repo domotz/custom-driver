@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows CPU usage
- * Description: This driver retrieves the average CPU load percentage of a Windows server.
+ * Description: This driver retrieves the average CPU load average percentage of a Windows server.
  *   
  * Communication protocol is WinRM
  * 
@@ -11,7 +11,7 @@
  * Powershell Version:
  *      - 5.1.19041.2364
  *
- * Creates a Custom Driver Variable with CPU load percentage
+ * Creates a Custom Driver Variable with CPU load average percentage
  * 
  */
 
@@ -62,8 +62,8 @@ function parseOutput(output) {
     if (output.error === null) {
         var outputLines = output.outcome.stdout.trim().split(/\r?\n/);
         var cpuValue = outputLines[2].replace(/\s+/g, ""); // To remove all spaces
-        var cpu = [D.device.createVariable("loadPercentage", "Average", cpuValue, "%")];
-        D.success(cpu);
+        var cpuLoadAverage = D.device.createVariable("cpu-load-average", "CPU Load Average", cpuValue, "%", D.valueType.NUMBER);
+        D.success([cpuLoadAverage]);
     } else {
         console.error(output.error);
         checkWinRmError(output.error);
