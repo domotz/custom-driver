@@ -9,11 +9,11 @@
 
 // Table to store the response times of the URLs
 var table = D.createTable(
-    "Response Times",
+    "Server Response Time",
     [
-        { label: "Server" },
-        { label: "Status" },
-        { label: "Response Time (ms)" }
+        { label: "Server URL" },
+        { label: "Response Status" },
+        { label: "Response Time" , unit: "ms", type: D.valueType.NUMBER}
     ]
 );
 
@@ -21,10 +21,6 @@ var table = D.createTable(
 var urls = [
     "https://www.facebook.com",
     "https://www.google.com",
-    "https://www.github.com",
-    "https://www.twitter.com",
-    "http://127.0.0.1:15672/",
-    "https://portal.domotz.com/custom-driver"
 ];
 
 /** 
@@ -78,9 +74,9 @@ function fillTable(result) {
     }).forEach(function (data) {
         // the id should be generated as base 64 string which is applied the the requested url
         // because the url could have some special chars and it's length could exceed 50
-        var base64Url = D._unsafe.buffer.from(data.server).toString('base64');
+        var recordId = D._unsafe.buffer.from(data.server).toString('base64').substring(0, 50);
         table.insertRecord(
-            base64Url.substring(0, 50), [data.server, data.statusCode, data.responseTime]
+            recordId, [data.server, data.statusCode, data.responseTime]
         );
     });
     D.success(table);
