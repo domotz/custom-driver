@@ -2,6 +2,7 @@
     "version": "1.0.0",
     "name": "Docker Info",
     "description": "This driver create a dynamic monitoring variables using the command 'docker info'",
+    "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.0.0",
