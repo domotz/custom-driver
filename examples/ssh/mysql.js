@@ -15,9 +15,7 @@
  * - Your MySQL must run as systemd service for this command to work
  * - This works in Debian derivatives and Centos, other Linux distributions might different paths
  * 
- * 
  * The driver will create the following variables:
- * 
  * - Status
  * - Version
  * - Used Ram
@@ -29,24 +27,17 @@
  * - Open tables
  * - Average Queries
  * - Errors
- * 
 **/
-
-
-// Mysql options, set here username and password to be used
-var mysqlUser=""
-var mysqlPass="" 
 
 // Ssh options and command to be run
 var command = "(service mysql status | grep Active:) || echo 'No service found'; " + // Your MySQL must run as systemd service for this command to work
     "(ls /var/run/mysqld/mysqld.pid && pmap `cat /var/run/mysqld/mysqld.pid` ) | tail -1 2>/dev/null || echo 'No pid found';" +  // This works in Debian and derivatives, other distributions moght use another path
-    "(mysqladmin -u "+mysqlUser+" --password='"+mysqlPass+"' version) || echo 'Cannot run mysqladmin'";
+    "(mysqladmin -u "+D.device.username()+" --password='"+D.device.password()+"' -h 127.0.0.1 version) || echo 'Cannot run mysqladmin'";
 
 var sshConfig = {
     "command": command,
     "username": D.device.username(),
     "password": D.device.password(),
-    "port":22,
     "timeout": 35000
 };
 
@@ -54,13 +45,13 @@ var sshConfig = {
 function checkSshError(err) {
     if (err.message) console.error(err.message);
     if (err.code == 5) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (err.code == 255){
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
         console.error(err);
         D.failure(D.errorType.GENERIC_ERROR);
-    };
+    }
 }
 
 /**
@@ -68,14 +59,13 @@ function checkSshError(err) {
  * @label Validate Association
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     D.device.sendSSHCommand(sshConfig, function(output, error){
         if (error) {
-            checkSshError(error)
+            checkSshError(error);
         } else if (!output || output.indexOf("is not recognized") !== -1) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else {
             D.success();
         }
@@ -89,32 +79,15 @@ function validate() {
  */
 function get_status() {
     D.device.sendSSHCommand(sshConfig,function (output, error) {
-            if (error) {
-                console.error(error);
-                D.failure();
-            } else {
-                var data = parse(output);
-                reportData(data);
-                if (!isRunning(data)) {
-                    tryStart();
-                }
-            }
+        if (error) {
+            console.error(error);
+            D.failure();
+        } else {
+            var data = parse(output);
+            reportData(data);             
         }
+    }
     );
-}
-
-function tryStart() {
-    D.device.sendSSHCommand(
-        {
-            command: "service mysql start",
-            username: D.device.username(),
-            password: D.device.password(),
-            timeout: 10000
-        }, function () {
-            if (error) {
-                console.error(error);
-            }
-        });
 }
 
 function reportData(data) {
@@ -153,7 +126,6 @@ function reportData(data) {
     if (data.queriesS) {
         variables.push(_var("queriesS", "Average Queries", data.queriesS, "query/s"));
     }
-
     variables.push(_var("errors", "Errors", data.errors || " "));
     D.success(variables);
 }
