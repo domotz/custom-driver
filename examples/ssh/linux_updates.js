@@ -29,7 +29,8 @@ var result = [];
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    timeout: 10000
+    port: 27123,
+    timeout: 30000
 };
 
 // SSH promise definition
