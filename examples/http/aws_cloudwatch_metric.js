@@ -17,10 +17,13 @@ var metrics;
 
 var table = D.createTable("ClouWatch", [
     { label: "Namespace" },
-    { label: "Type" },
-    { label: "Identifier" },
+    { label: "Dimension" },
+    { label: "Dimension Value" },
     { label: "Metric" },
-    { label: "Value" }
+    { label: "Period" },
+    { label: "Stat" },
+    { label: "Value" },
+    { label: "Unit" }
 ]);
 
 //These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
@@ -89,75 +92,75 @@ function prepareParams(params) {
 // This is the metrics list, should be changed to the user need. (follow the structure in the following variable)
 var cloudWatchMetric = [
     {
-        "Id": "m1",
-        "MetricStat": {
-            "Metric": {
-                "Namespace": "AWS/EC2",
-                "MetricName": "CPUUtilization",
-                "Dimensions": [
+        Id: "server1NetworkIn",
+        MetricStat: {
+            Metric: {
+                Namespace: "AWS/EC2",
+                MetricName: "NetworkIn",
+                Dimensions: [
                     {
-                        "Name": "DBInstanceIdentifier",
-                        "Value": "value-1"
+                        Name: "InstanceId",
+                        Value: "i-12345678"
                     }
                 ]
             },
-            "Period": 600,
-            "Stat": "Average",
-            "Unit": "Percent"
+            Period: 300,
+            Stat: "Average",
+            Unit: "Bytes"
         }
     },
     {
-        "Id": "m2",
-        "MetricStat": {
-            "Metric": {
-                "Namespace": "AWS/RDS",
-                "MetricName": "DiskQueueDepth",
-                "Dimensions": [
+        Id: "myDatabaseFreeStorage",
+        MetricStat: {
+            Metric: {
+                Namespace: "AWS/RDS",
+                MetricName: "FreeStorageSpace",
+                Dimensions: [
                     {
-                        "Name": "DBInstanceIdentifier",
-                        "Value": "value-2"
+                        Name: "DBInstanceIdentifier",
+                        Value: "db-name"
                     }
                 ]
             },
-            "Period": 600,
-            "Stat": "Average",
-            "Unit": "Count"
+            Period: 300,
+            Stat: "Average",
+            Unit: "Bytes"
         }
     },
     {
-        "Id": "m3",
-        "MetricStat": {
-            "Metric": {
-                "Namespace": "AWS/RDS",
-                "MetricName": "MetadataNoToken",
-                "Dimensions": [
+        Id: "myDatabaseCPUUsage",
+        MetricStat: {
+            Metric: {
+                Namespace: "AWS/RDS",
+                MetricName: "CPUUtilization",
+                Dimensions: [
                     {
-                        "Name": "DBInstanceIdentifier",
-                        "Value": "value-3"
+                        Name: "DBInstanceIdentifier",
+                        Value: "db-name"
                     }
                 ]
             },
-            "Period": 600,
-            "Stat": "Average",
-            "Unit": "Count"
+            Period: 300,
+            Stat: "Average",
+            Unit: "Percent"
         }
     },
     {
-        "Id": "m4",
-        "MetricStat": {
-            "Metric": {
-                "Namespace": "AWS/RDS",
-                "MetricName": "BurstBalance",
-                "Dimensions": [
+        Id: "volume1BurstBalance",
+        MetricStat: {
+            Metric: {
+                Namespace: "AWS/EBS",
+                MetricName: "BurstBalance",
+                Dimensions: [
                     {
-                        "Name": "DBInstanceIdentifier",
-                        "Value": "value-4"
+                        Name: "VolumeId",
+                        Value: "vol-12345678"
                     }
                 ]
             },
-            "Period": 600,
-            "Stat": "Average",
-            "Unit": "Percent"
+            Period: 300,
+            Stat: "Average",
+            Unit: "Percent"
         }
     }
 ];
@@ -197,21 +200,21 @@ function httpPost(params) {
             "Authorization": auth
         }
     },
-        function (err, response, body) {
-            if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode === 401 || response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            d.resolve(JSON.parse(body));
-        });
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -227,30 +230,35 @@ function getMetricsData() {
     payload["Version"] = "2010-08-01";
     payload["StartTime"] = startTime;
     payload["EndTime"] = endTime;
-    return httpPost(prepareParams(payload))
+    return httpPost(prepareParams(payload));
 }
 
 // parse aws response for cloudwatch metrics
 function parseData(data){
-    for (var i = 0; i < cloudWatchMetric.length; i++) {
-        var identifier = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
-        var namespace = cloudWatchMetric[i].MetricStat.Metric.Namespace;
-        var type = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Name;
-    }
     metrics = data.GetMetricDataResponse.GetMetricDataResult.MetricDataResults;
-    metrics.forEach(function (item) {
-        var recordId = identifier + "-" + item.Label;
-        var metric = item.Label;
-        var value = item.Values[0];
-        table.insertRecord(recordId, [
+    for (var i = 0; i < cloudWatchMetric.length; i++) {
+        var id = cloudWatchMetric[i].Id
+        var dimensionValue = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
+        var namespace = cloudWatchMetric[i].MetricStat.Metric.Namespace;
+        var period = cloudWatchMetric[i].MetricStat.Period;
+        var stat = cloudWatchMetric[i].MetricStat.Stat || "";
+        var unit = cloudWatchMetric[i].MetricStat.Unit || "";
+        var dimension = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Name;
+        var metric = cloudWatchMetric[i].MetricStat.Metric.MetricName
+        var value = metrics[i].Values[0] || "";
+        table.insertRecord(id, [
             namespace,
-            type,
-            identifier,
+            dimension,
+            dimensionValue,
             metric,
-            value !== undefined ? value : ""
+            period,
+            stat,
+            value,
+            unit
         ]);
-    });
-    return table
+    }
+    
+    return table;
 }
 
 // This function handles errors
