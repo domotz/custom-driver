@@ -7,8 +7,8 @@
         "credentials": true,
         "sandbox_version": "1.0.0",
         "others": [
-            "docker installed",
-            "ssh enabled"
+            "Docker Installed",
+            "SSH Enabled"
         ]
     },
     "tags": [
@@ -28,11 +28,6 @@
         {
             "name": "Ubuntu",
             "version": "20.04.6"
-        },
-        {
-            "name": "Docker",
-            "version": "19.03.15",
-            "build": "99e3ed8919"
         }
     ]
 }
