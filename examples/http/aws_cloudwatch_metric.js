@@ -89,7 +89,7 @@ var cloudWatchMetric = [
         "Id": "m1",
         "MetricStat": {
             "Metric": {
-                "Namespace": "AWS/RDS",
+                "Namespace": "AWS/EC2",
                 "MetricName": "CPUUtilization",
                 "Dimensions": [
                     {
@@ -225,26 +225,28 @@ function getMetricsData() {
     payload["StartTime"] = startTime;
     payload["EndTime"] = endTime;
     return httpPost(prepareParams(payload))
-        .then(function (data) {
-            for (var i = 0; i < cloudWatchMetric.length; i++) {
-                var identifier = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
-                var namespace = cloudWatchMetric[i].MetricStat.Metric.Namespace;
-                var type = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Name;
-            }
-            metrics = data.GetMetricDataResponse.GetMetricDataResult.MetricDataResults;
-            metrics.forEach(function (item) {
-                var recordId = identifier + "-" + item.Label;
-                var metric = item.Label;
-                var value = item.Values[0];
-                table.insertRecord(recordId, [
-                    namespace,
-                    type,
-                    identifier,
-                    metric,
-                    value !== undefined ? value : ""
-                ]);
-            });
-        });
+}
+
+function parseData(data){
+    for (var i = 0; i < cloudWatchMetric.length; i++) {
+        var identifier = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
+        var namespace = cloudWatchMetric[i].MetricStat.Metric.Namespace;
+        var type = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Name;
+    }
+    metrics = data.GetMetricDataResponse.GetMetricDataResult.MetricDataResults;
+    metrics.forEach(function (item) {
+        var recordId = identifier + "-" + item.Label;
+        var metric = item.Label;
+        var value = item.Values[0];
+        table.insertRecord(recordId, [
+            namespace,
+            type,
+            identifier,
+            metric,
+            value !== undefined ? value : ""
+        ]);
+    });
+    return table
 }
 
 // This function handles errors
@@ -272,7 +274,7 @@ function validate() {
  */
 function get_status() {
     getMetricsData()
-        .then(function () {
-            D.success(table);
-        }).catch(failure);
+        .then(parseData)
+        .then(D.success)
+        .catch(failure);
 }           
