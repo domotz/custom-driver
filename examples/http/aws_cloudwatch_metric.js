@@ -9,18 +9,9 @@
  * Communication protocol is https
  */
 
-//These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
-function sha256(message) {
-    return D.crypto.hash(message, "sha256", null, "hex");
-}
-function hmac(algo, key, message) {
-    key = D._unsafe.buffer.from(key);
-    return D.crypto.hmac(message, key, algo, "hex");
-}
-
 var accessKey = D.device.username(); //accessKey == username
 var secretKey = D.device.password(); //secretKey == password
-var region = "us-east-2";
+var region = "us-east-2"; // change this by you aws region
 var requestPeriod = 600;
 var metrics;
 
@@ -31,6 +22,15 @@ var table = D.createTable("ClouWatch", [
     { label: "Metric" },
     { label: "Value" }
 ]);
+
+//These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
+function sha256(message) {
+    return D.crypto.hash(message, "sha256", null, "hex");
+}
+function hmac(algo, key, message) {
+    key = D._unsafe.buffer.from(key);
+    return D.crypto.hmac(message, key, algo, "hex");
+}
 
 function sign(key, message) {
     var hex = hmac("sha256", key, message);
@@ -44,6 +44,8 @@ function sign(key, message) {
     return result;
 }
 
+
+// this function convert json object to aws application/x-www-form-urlencoded content-type
 function prepareObject(prefix, param) {
     var result = {};
     if (typeof param === "object") {
@@ -84,6 +86,7 @@ function prepareParams(params) {
     return result.join("&");
 }
 
+// This is the metrics list, should be changed to the user need. (follow the structure in the following variable)
 var cloudWatchMetric = [
     {
         "Id": "m1",
@@ -227,6 +230,7 @@ function getMetricsData() {
     return httpPost(prepareParams(payload))
 }
 
+// parse aws response for cloudwatch metrics
 function parseData(data){
     for (var i = 0; i < cloudWatchMetric.length; i++) {
         var identifier = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
