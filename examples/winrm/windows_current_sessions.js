@@ -31,12 +31,13 @@
 var winrmConfig = {
     "command": 'Start-Process quser -NoNewWindow -RedirectStandardError "NUL"',
     "username": D.device.username(),
-    "password": D.device.password(),
+    "password": D.device.password()
 };
 
 var usersTable = D.createTable(
     "Logged In Users",
     [
+        { label: "Username" },
         { label: "State" },
         { label: "Logon Time" },
         { label: "Session ID" },
@@ -92,6 +93,7 @@ function parseOutput(output) {
         var status;
         var idleTime;
         var logonTime;
+        var recordId;
         var idxOffset = 0;
         var k = 1;
         while (k < outputLines.length) {
@@ -106,13 +108,14 @@ function parseOutput(output) {
                     idxOffset = 1;
                 }
                 username = words[0];
+                recordId = D.crypto.hash(username, "sha256", null, "hex").slice(0, 50);
                 sessionId = words[1 + idxOffset];
                 status = words[2 + idxOffset];
                 idleTime = words[3 + idxOffset];
                 logonTime = words[4 + idxOffset] +
                     " " + words[5 + idxOffset] +
                     " " + words[6 + idxOffset];
-                usersTable.insertRecord(username, [status, logonTime, sessionId, idleTime, sessionName]);
+                usersTable.insertRecord(recordId, [username, status, logonTime, sessionId, idleTime, sessionName]);
             }
             k++;
         }
