@@ -33,7 +33,6 @@ var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password()
 };
-
 var usersTable = D.createTable(
     "Logged In Users",
     [
@@ -121,7 +120,6 @@ function parseOutput(output) {
         }
         D.success(usersTable);
     } else {
-        console.error(output.error);
-        D.failure();
+        checkWinRmError(output.error);
     }
 }
