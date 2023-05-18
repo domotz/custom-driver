@@ -54,6 +54,21 @@ function checkSshError(err) {
     }
 }
 
+function executeCommand(command) {
+    var d = D.q.defer();
+    sshConfig.command = command;
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            checkSshError(error);
+            d.reject(error);
+        }
+        else{
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -61,15 +76,17 @@ function checkSshError(err) {
  */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    D.device.sendSSHCommand(sshConfig, function(output, error){
-        if (error) {
+    executeCommand(command)
+        .then(function(output) {
+            if (!output || output.indexOf("is not recognized") !== -1) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else {
+                D.success();
+            }
+        })
+        .catch(function(error) {
             checkSshError(error);
-        } else if (!output || output.indexOf("is not recognized") !== -1) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else {
-            D.success();
-        }
-    });
+        });
 }
 
 /**
@@ -78,55 +95,52 @@ function validate() {
  * @documentation This procedure is used for retrieving device * variables data
  */
 function get_status() {
-    D.device.sendSSHCommand(sshConfig,function (output, error) {
-        if (error) {
-            console.error(error);
-            D.failure();
-        } else {
+    executeCommand(command)
+        .then(function(output) {
             var data = parse(output);
-            reportData(data);             
-        }
-    }
-    );
+            reportData(data);   
+        })
+        .catch(function(error) {
+            checkSshError(error);
+        });
 }
 
 function reportData(data) {
-    var _var = D.device.createVariable;
     var variables = [];
     if (data.status) {
-        variables.push(_var("status", "Status", data.status));
+        variables.push(D.device.createVariable("status", "Status", data.status));
     }
     if (data.version) {
-        variables.push(_var("version", "Version", data.version));
+        variables.push(D.device.createVariable("version", "Version", data.version));
     }
     if (data.usedRam) {
-        variables.push(_var("usedRam", "Used Ram", data.usedRam, "KB"));
+        variables.push(D.device.createVariable("usedRam", "Used Ram", data.usedRam, "KB"));
     }
     if (data.uptime) {
-        variables.push(_var("uptime", "Uptime", toHours(data.uptime), "hours"));
+        variables.push(D.device.createVariable("uptime", "Uptime", toHours(data.uptime), "hours"));
     }
     if (data.threads) {
-        variables.push(_var("threads", "Threads", data.threads));
+        variables.push(D.device.createVariable("threads", "Threads", data.threads));
     }
     if (data.questions) {
-        variables.push(_var("questions", "Questions", data.questions));
+        variables.push(D.device.createVariable("questions", "Questions", data.questions));
     }
     if (data.slowQueries) {
-        variables.push(_var("slowQueries", "Slow Queries", data.slowQueries));
+        variables.push(D.device.createVariable("slowQueries", "Slow Queries", data.slowQueries));
     }
     if (data.opens) {
-        variables.push(_var("opens", "Opens", data.opens));
+        variables.push(D.device.createVariable("opens", "Opens", data.opens));
     }
     if (data.flushTables) {
-        variables.push(_var("flushTables", "Flush Tables", data.flushTables));
+        variables.push(D.device.createVariable("flushTables", "Flush Tables", data.flushTables));
     }
     if (data.openTables) {
-        variables.push(_var("openTables", "Open Tables", data.openTables));
+        variables.push(D.device.createVariable("openTables", "Open Tables", data.openTables));
     }
     if (data.queriesS) {
-        variables.push(_var("queriesS", "Average Queries", data.queriesS, "query/s"));
+        variables.push(D.device.createVariable("queriesS", "Average Queries", data.queriesS, "query/s"));
     }
-    variables.push(_var("errors", "Errors", data.errors || " "));
+    variables.push(D.device.createVariable("errors", "Errors", data.errors || " "));
     D.success(variables);
 }
 
@@ -221,17 +235,6 @@ function toHours(data) {
     var days = match[2] || 0;
     var hours = match[4] || 0;
     var minutes = match[6] || 0;
-
     var totalHours = parseInt(days, 10) * 24 + parseInt(hours, 10) + parseInt(minutes, 10)/60;
     return (Math.floor(totalHours * 100) / 100) + "";
-}
-
-try {
-    module.exports.parse = parse;
-    module.exports.isRunning = isRunning;
-    module.exports.toHours = toHours;
-    module.exports.report = report;
-} catch (e)
-{
-    // ignore
 }
