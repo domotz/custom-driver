@@ -96,51 +96,47 @@ function validate() {
  */
 function get_status() {
     executeCommand(command)
-        .then(function(output) {
-            var data = parse(output);
-            reportData(data);   
-        })
-        .catch(function(error) {
-            checkSshError(error);
-        });
+        .then(parse)
+        .then(reportData)
+        .catch(checkSshError);
 }
 
 function reportData(data) {
     var variables = [];
     if (data.status) {
-        variables.push(D.device.createVariable("status", "Status", data.status));
+        variables.push(D.createVariable("status", "Status", data.status));
     }
     if (data.version) {
-        variables.push(D.device.createVariable("version", "Version", data.version));
+        variables.push(D.createVariable("version", "Version", data.version));
     }
     if (data.usedRam) {
-        variables.push(D.device.createVariable("usedRam", "Used Ram", data.usedRam, "KB"));
+        variables.push(D.createVariable("usedRam", "Used Ram", data.usedRam, "KB"));
     }
     if (data.uptime) {
-        variables.push(D.device.createVariable("uptime", "Uptime", toHours(data.uptime), "hours"));
+        variables.push(D.createVariable("uptime", "Uptime", toHours(data.uptime), "hours"));
     }
     if (data.threads) {
-        variables.push(D.device.createVariable("threads", "Threads", data.threads));
+        variables.push(D.createVariable("threads", "Threads", data.threads));
     }
     if (data.questions) {
-        variables.push(D.device.createVariable("questions", "Questions", data.questions));
+        variables.push(D.createVariable("questions", "Questions", data.questions));
     }
     if (data.slowQueries) {
-        variables.push(D.device.createVariable("slowQueries", "Slow Queries", data.slowQueries));
+        variables.push(D.createVariable("slowQueries", "Slow Queries", data.slowQueries));
     }
     if (data.opens) {
-        variables.push(D.device.createVariable("opens", "Opens", data.opens));
+        variables.push(D.createVariable("opens", "Opens", data.opens));
     }
     if (data.flushTables) {
-        variables.push(D.device.createVariable("flushTables", "Flush Tables", data.flushTables));
+        variables.push(D.createVariable("flushTables", "Flush Tables", data.flushTables));
     }
     if (data.openTables) {
-        variables.push(D.device.createVariable("openTables", "Open Tables", data.openTables));
+        variables.push(D.createVariable("openTables", "Open Tables", data.openTables));
     }
     if (data.queriesS) {
-        variables.push(D.device.createVariable("queriesS", "Average Queries", data.queriesS, "query/s"));
+        variables.push(D.createVariable("queriesS", "Average Queries", data.queriesS, "query/s"));
     }
-    variables.push(D.device.createVariable("errors", "Errors", data.errors || " "));
+    variables.push(D.createVariable("errors", "Errors", data.errors || " "));
     D.success(variables);
 }
 
