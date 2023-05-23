@@ -1,0 +1,37 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Active Directory privileged users count",
+    "description": "Monitors the number of members of AD privileged groups",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.10.0",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: AD User",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "Windows",
+        "users",
+        "active-directory",
+        "software"
+    ],
+    "sample_period": 86400,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]",
+        "table": "[2,999]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        }
+    ]
+}

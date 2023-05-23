@@ -1,0 +1,35 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Services Monitoring",
+    "description": "Monitors the status of services on a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.10.0",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: Local Administrator",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "Windows",
+        "service",
+        "software"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[21]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        }
+    ]
+}
