@@ -1,8 +1,8 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Updates",
-    "description": "This driver collects data about missing updates on a Windows system. It create variables with a break-down of categories and classifications of missing updates and a table with the list of missing updates data",
+    "name": "Windows Audit Settings",
+    "description": "Monitors the audit settings on Windows",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -10,19 +10,22 @@
         "others": [
             "Powershell Version 5.1.19041.2364",
             "Priviliedged User Required",
+            "Read permissions on HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\EventLog\\Security",
+            "Membership of builtin group 'Event Log Readers'",
             "WinRM Enabled"
         ]
     },
     "tags": [
         "Windows",
-        "update",
-        "software"
+        "audit",
+        "settings",
+        "policy",
+        "security"
     ],
     "sample_period": 86400,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[6]",
-        "table": "[0,999]"
+        "table": "[33]"
     },
     "protocols": [
         "WINRM"

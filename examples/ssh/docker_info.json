@@ -13,8 +13,8 @@
         ]
     },
     "tags": [
+        "Docker",
         "ubuntu",
-        "docker",
         "software"
     ],
     "sample_period": 300,

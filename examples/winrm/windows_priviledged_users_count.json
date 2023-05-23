@@ -1,28 +1,29 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Updates",
-    "description": "This driver collects data about missing updates on a Windows system. It create variables with a break-down of categories and classifications of missing updates and a table with the list of missing updates data",
+    "name": "Windows Active Directory privileged users count",
+    "description": "Monitors the number of members of AD privileged groups",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.10.0",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "Priviliedged User Required",
+            "Privilege required: AD User",
             "WinRM Enabled"
         ]
     },
     "tags": [
         "Windows",
-        "update",
+        "users",
+        "active-directory",
         "software"
     ],
     "sample_period": 86400,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[6]",
-        "table": "[0,999]"
+        "independent": "[1]",
+        "table": "[2,999]"
     },
     "protocols": [
         "WINRM"
