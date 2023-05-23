@@ -11,10 +11,27 @@
  *      - Memory : Memory usage in MB
  *      - Boot disk : Boot disk usage in GB
  *      - PID : Process ID
+ *      - cores : Number of CPU cores
+ *      - meta : Meta information
+ *      - net0 : Network interface information
+ *      - numa : NUMA (Non-Uniform Memory Access) information
+ *      - ostype : Operating system type
+ *      - sockets : Number of CPU sockets
  * 
+ * Creates custom driver variables:
+ *      - Version : Proxmox serverVersion
+ *      - CPU BOGOMIPS : The Bogomips value of the CPU, which is a measurement of CPU speed.
+ *      - REGEX/SECOND : The number of regular expression matches per second.
+ *      - HD SIZE : The size of the hard disk in gigabytes (GB).
+ *      - BUFFERED READS : The rate of buffered reads from storage, measured in megabytes per second (MB/sec).
+ *      - AVERAGE SEEK TIME : The average seek time of the storage device in milliseconds (ms).
+ *      - FSYNCS/SECOND : The number of file system sync operations per second.
+ *      - DNS EXT : The external DNS (Domain Name System) resolution time in milliseconds (ms).
  **/
 
 var cmdKVMsList = "qm list";
+var cmdPVEVersion = "pveversion";
+var cmdPVEPerf = "pveperf";
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
@@ -29,7 +46,13 @@ var kvmsTable = D.createTable(
         { label: "Status" },
         { label: "Memory" , unit: "MB" },
         { label: "Boot disk" , unit: "GB"},
-        { label: "PID" }
+        { label: "PID" },
+        { label: "cores" },
+        { label: "meta" },
+        { label: "net0" },
+        { label: "numa" },
+        { label: "ostype" },
+        { label: "sockets" } 
     ]
 );
 
@@ -41,7 +64,6 @@ function checkSshError(err) {
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
-
 
 /**
  * Executes a SSH command and returns a promise
@@ -66,23 +88,41 @@ function execCommand(command) {
  * @description Parses the output of the SSH command and populates the KVMs table
  * @param {string} data The output of the SSH command
  */
-function parseData(data){
+function parseData(data) {
     var lines = data.trim().split('\n');
-    lines.shift(); 
-    lines.forEach(function(line){
+    lines.shift();
+    var promises = [];
+    lines.forEach(function(line) {
         var values = line.trim().split(/\s+/);
         var vmid = values[0];
         var name = values[1];
         var status = values[2];
         var memory = values[3];
         var bootdisk = values[4];
-        var pid = values[5];  
+        var pid = values[5];
         var recordId = vmid + "-" + name;
-        kvmsTable.insertRecord(recordId, [vmid, name, status, memory, bootdisk, pid]);
+        var promise = execCommand("qm config " + vmid)
+            .then(function(configData) {
+                var configLines = configData.trim().split('\n');
+                var config = {};
+                configLines.forEach(function(configLine) {
+                    var configValues = configLine.trim().split(":");
+                    var key = configValues[0].trim();
+                    var value = configValues[1].trim();
+                    config[key] = value;
+                });
+                kvmsTable.insertRecord(recordId, [vmid, name, status, memory, bootdisk, pid, config.cores, config.meta, config.net0, config.numa, config.ostype, config.sockets]);
+            });
+        promises.push(promise);
     });
-    D.success(kvmsTable); 
-} 
-
+    D.q.all(promises)
+        .then(function() {
+            D.success(kvmsTable);
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
+}
 /**
  * @remote_procedure
  * @label Validate Association
@@ -90,7 +130,7 @@ function parseData(data){
  */
 function validate() {
     execCommand(cmdKVMsList)
-        .then(function (){
+        .then(function() {
             D.success();
         })
         .catch(function (err) {
@@ -105,9 +145,35 @@ function validate() {
  * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server.
  */
 function get_status() {
-    execCommand(cmdKVMsList)
-        .then(parseData)
-        .catch(function (err) {
+    var kvmPromise = execCommand(cmdKVMsList)
+        .then(parseData);
+    var pveVersionPromise = execCommand(cmdPVEVersion);
+    var pvePerfPromise = execCommand(cmdPVEPerf)
+        .then(function(perfData) {
+            var pvePerf = perfData.trim().split('\n');
+            var config = {};
+            pvePerf.forEach(function(result) {
+                var configValues = result.trim().split(":");
+                var key = configValues[0].trim();
+                var value = parseFloat(configValues[1].trim());
+                config[key] = value;
+            });
+            return pveVersionPromise.then(function(pveVersion) {
+                var result = [
+                    D.createVariable("version", "Version", pveVersion),
+                    D.createVariable("cpu_bogomips", 'CPU BOGOMIPS', config["CPU BOGOMIPS"]),
+                    D.createVariable("regex_second", 'REGEX/SECOND', config["REGEX/SECOND"]),
+                    D.createVariable("hd_size", 'HD SIZE', config["HD SIZE"], "GB"),
+                    D.createVariable("buffered_reads", 'BUFFERED READS', config["BUFFERED READS"], "MB/sec"),
+                    D.createVariable("average_seek_time", 'AVERAGE SEEK TIME', config["AVERAGE SEEK TIME"], "ms"),
+                    D.createVariable("fsync_second", 'FSYNCS/SECOND', config["FSYNCS/SECOND"]),
+                    D.createVariable("dns_ext", 'DNS EXT', config["DNS EXT"], "ms")
+                ];
+                D.success(result);
+            });
+        });
+    D.q.all([kvmPromise, pvePerfPromise])
+        .catch(function(err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
