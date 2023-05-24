@@ -11,7 +11,10 @@
  * Requires:
  *      - requires apt
  *      - requires sed, grep, and awk
- *      - PLEASE NOTE: it requires to be rut as root
+ *      - PLEASE NOTE: it requires to be run as a user and added to the list of sudoers that do not require a password 
+ *                     To add the user to the sudoers list, run the following command:
+ *                     sudo vi /etc/sudoers
+ *                     Then add the following line, replacing "username" with the actual username: username ALL=(ALL) NOPASSWD: ALL
  * 
  * Creates a Custom Driver Variable with the Number of Updates available
  * 
@@ -22,14 +25,13 @@
  * 
 **/
 
-var cmdListOfUpdates="sudo apt update -qq 2>/dev/null | grep -v packages ; sudo apt list --upgradable -qq  2>/dev/null | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' |  sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
-var result = [];
+var cmdListOfUpdates="apt update -qq 2>/dev/null | grep -v packages ; apt list --upgradable -qq  2>/dev/null | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' |  sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
 
 // SSH options when running the commands
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    port: 27123,
+    port: 22,
     timeout: 30000
 };
 
@@ -50,8 +52,8 @@ function executeCommand(command){
             checkSshError(err);
             d.reject(err);
         } else {
-            result.push(out);
-            d.resolve();
+            
+            d.resolve(out);
         }
     });
     return d.promise;
@@ -83,13 +85,8 @@ var updateListTable = D.createTable(
     ]
 );
  
-function parseData(){
-    var executionResult = result;
-    // executionResult is an array
-    // cmdListOfUpdates output is executionResult[0]
-    // parsing cmdListOfUpdates result
-    listOfUpdates = executionResult[0];
-    var listOfUpdates = listOfUpdates.split(/\r?\n/);
+function parseData(executionResult){
+    var listOfUpdates = executionResult.split(/\r?\n/);
     for (var i = 0; i < listOfUpdates.length; i++) {
         var fields = listOfUpdates[i].replace(/\s+/g,' ').trim().split(" ");
         var pkgName = fields[0];
@@ -104,9 +101,8 @@ function parseData(){
     var numberOfAvailableUpdatesValue = listOfUpdates.length;
     numberOfAvailableUpdates = [D.createVariable("available-updates-number", numberOfAvailableUpdatesLabel, numberOfAvailableUpdatesValue, null, D.valueType.NUMBER)];
     D.success(numberOfAvailableUpdates,updateListTable);
-
-   
 }
+
 /**
 * @remote_procedure
 * @label Get Linux Updates
