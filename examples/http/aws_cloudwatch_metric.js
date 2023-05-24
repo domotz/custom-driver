@@ -15,80 +15,6 @@ var region = "us-east-2"; // change this by you aws region
 var requestPeriod = 600;
 var metrics;
 
-var table = D.createTable("ClouWatch", [
-    { label: "Namespace" },
-    { label: "Dimension" },
-    { label: "Dimension Value" },
-    { label: "Metric" },
-    { label: "Period" },
-    { label: "Stat" },
-    { label: "Value" },
-    { label: "Unit" }
-]);
-
-//These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
-function sha256(message) {
-    return D.crypto.hash(message, "sha256", null, "hex");
-}
-function hmac(algo, key, message) {
-    key = D._unsafe.buffer.from(key);
-    return D.crypto.hmac(message, key, algo, "hex");
-}
-
-function sign(key, message) {
-    var hex = hmac("sha256", key, message);
-    if ((hex.length % 2) === 1) {
-        throw "Invalid length of a hex string!";
-    }
-    var result = new Int8Array(hex.length / 2);
-    for (var i = 0, b = 0; i < hex.length; i += 2, b++) {
-        result[b] = parseInt(hex.substring(i, i + 2), 16);
-    }
-    return result;
-}
-
-
-// this function convert json object to aws application/x-www-form-urlencoded content-type
-function prepareObject(prefix, param) {
-    var result = {};
-    if (typeof param === "object") {
-        if (Array.isArray(param)) {
-            param.forEach(function (value, index) {
-                var nested = prepareObject(prefix + ".member." + (index + 1), value);
-                Object.keys(nested).forEach(function (key) {
-                    result[key] = nested[key];
-                });
-            });
-        } else {
-            Object.keys(param).forEach(function (k) {
-                var nested = prepareObject(prefix + "." + k, param[k]);
-                Object.keys(nested).forEach(function (key) {
-                    result[key] = nested[key];
-                });
-            });
-        }
-    } else {
-        result[prefix] = param;
-    }
-    return result;
-}
-
-/**
- * @returns CloudWatch metrics to be monitored for an AWS CloudWatch.
- */
-function prepareParams(params) {
-    var result = [];
-    Object.keys(params).sort().forEach(function (key) {
-        if (typeof params[key] !== "object") {
-            result.push(key + "=" + encodeURIComponent(params[key]));
-        }
-        else {
-            result.push(prepareObject(key, params[key]));
-        }
-    });
-    return result.join("&");
-}
-
 // This is the metrics list, should be changed to the user need. (follow the structure in the following variable)
 var cloudWatchMetric = [
     {
@@ -165,6 +91,79 @@ var cloudWatchMetric = [
     }
 ];
 
+var table = D.createTable(
+    "Cloud Watch", [
+        { label: "Namespace" },
+        { label: "Dimension" },
+        { label: "Dimension Value" },
+        { label: "Metric Name" },
+        { label: "Period" },
+        { label: "Statistic" },
+        { label: "Value" }
+    ]
+);
+
+//These functions are used to compute hash-based message authentication codes (HMAC) using a specified algorithm.
+function sha256(message) {
+    return D.crypto.hash(message, "sha256", null, "hex");
+}
+function hmac(algo, key, message) {
+    key = D._unsafe.buffer.from(key);
+    return D.crypto.hmac(message, key, algo, "hex");
+}
+
+function sign(key, message) {
+    var hex = hmac("sha256", key, message);
+    if ((hex.length % 2) === 1) {
+        throw "Invalid length of a hex string!";
+    }
+    var result = new Int8Array(hex.length / 2);
+    for (var i = 0, b = 0; i < hex.length; i += 2, b++) {
+        result[b] = parseInt(hex.substring(i, i + 2), 16);
+    }
+    return result;
+}
+
+// this function convert json object to aws application/x-www-form-urlencoded content-type
+function prepareObject(prefix, param) {
+    var result = {};
+    if (typeof param === "object") {
+        if (Array.isArray(param)) {
+            param.forEach(function (value, index) {
+                var nested = prepareObject(prefix + ".member." + (index + 1), value);
+                Object.keys(nested).forEach(function (key) {
+                    result[key] = nested[key];
+                });
+            });
+        } else {
+            Object.keys(param).forEach(function (k) {
+                var nested = prepareObject(prefix + "." + k, param[k]);
+                Object.keys(nested).forEach(function (key) {
+                    result[key] = nested[key];
+                });
+            });
+        }
+    } else {
+        result[prefix] = param;
+    }
+    return result;
+}
+
+/**
+ * @returns CloudWatch metrics to be monitored for an AWS CloudWatch.
+ */
+function prepareParams(params) {
+    var result = [];
+    Object.keys(params).sort().forEach(function (key) {
+        if (typeof params[key] !== "object") {
+            result.push(key + "=" + encodeURIComponent(params[key]));
+        }
+        else {
+            result.push(prepareObject(key, params[key]));
+        }
+    });
+    return result.join("&");
+}
 
 /**
  * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
@@ -237,27 +236,24 @@ function getMetricsData() {
 function parseData(data){
     metrics = data.GetMetricDataResponse.GetMetricDataResult.MetricDataResults;
     for (var i = 0; i < cloudWatchMetric.length; i++) {
-        var id = cloudWatchMetric[i].Id
+        var id = cloudWatchMetric[i].Id;
         var dimensionValue = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Value;
         var namespace = cloudWatchMetric[i].MetricStat.Metric.Namespace;
         var period = cloudWatchMetric[i].MetricStat.Period;
         var stat = cloudWatchMetric[i].MetricStat.Stat || "";
-        var unit = cloudWatchMetric[i].MetricStat.Unit || "";
         var dimension = cloudWatchMetric[i].MetricStat.Metric.Dimensions[0].Name;
-        var metric = cloudWatchMetric[i].MetricStat.Metric.MetricName
+        var metric = cloudWatchMetric[i].MetricStat.Metric.MetricName;
         var value = metrics[i].Values[0] || "";
-        table.insertRecord(id, [
+        table.insertRecord(id.substring(0, 50), [
             namespace,
             dimension,
             dimensionValue,
             metric,
             period,
             stat,
-            value,
-            unit
+            value
         ]);
     }
-    
     return table;
 }
 
@@ -274,9 +270,8 @@ function failure(err) {
  */
 function validate() {
     getMetricsData()
-        .then(function () {
-            D.success();
-        }).catch(failure);
+        .then(D.success)
+        .catch(failure);
 }
 
 /**
