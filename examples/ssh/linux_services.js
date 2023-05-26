@@ -8,8 +8,8 @@
  *      - bash version 5.0.3(1)
  * 
  * Requires:
- *      - requires systemctl
- *      - requires sed, grep, awk, and tail
+ *      - systemctl
+ *      - sed, grep, awk, and tail
  *      - PLEASE NOTE: it requires to be rut as root
  * 
  * 
@@ -114,14 +114,19 @@ function get_status() {
         });
 }
 
+/**
+ * Parses the output of the executed command to extract service information.
+ * @param {string} output  The output of the executed command.
+ */
 function parseOutput(output){       
     var result = output.split(/\r?\n/);
     for (var i = 0; i < result.length; i++) {
-        var fields = result[i].replace(/\s+/g,' ').trim().split(" ");
+        var fields = result[i].replace(/\s+/g," ").trim().split(" ");
         var serviceName = fields[0];
         var serviceStatus = fields[1];
+        var recordId = D.crypto.hash(i + "_" + serviceName, "sha256", null, "hex").toLowerCase().slice(0, 50);
         table.insertRecord(
-            i + "-" + serviceName.toLowerCase(), [serviceName, serviceStatus]
+            recordId, [serviceName, serviceStatus]
         );
     }
     D.success(table);
