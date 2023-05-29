@@ -1,0 +1,37 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Security events monitoring",
+    "description": "Monitors the occurrences of Windows security events, some events are only raised if the related audit setting is enabled. More info on https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/advanced-security-auditing-faq",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.10.0",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled",
+            "Read permissions on HKLM\\System\\CurrentControlSet\\Services\\eventlog\\Security",
+            "User must be a member of Built-in group 'Event Log Readers'"
+        ]
+    },
+    "tags": [
+        "windows",
+        "security",
+        "event",
+        "software"
+    ],
+    "sample_period": 3600,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[20]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        }
+    ]
+}
