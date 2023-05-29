@@ -1,0 +1,38 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows CPU usage",
+    "description": "This driver retrieves the average CPU load average percentage of a Windows server.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.10.0",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "cpu"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
+        }
+    ]
+}
