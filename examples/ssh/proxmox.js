@@ -115,14 +115,38 @@ function parseData(data) {
             });
         promises.push(promise);
     });
-    D.q.all(promises)
-        .then(function() {
-            D.success(kvmsTable);
-        })
-        .catch(function(error) {
-            console.error(error);
+    var pveVersionPromise = execCommand(cmdPVEVersion);
+    var pvePerfPromise = execCommand(cmdPVEPerf)
+        .then(function(perfData) {
+            var pvePerf = perfData.trim().split('\n');
+            var config = {};
+            pvePerf.forEach(function(result) {
+                var configValues = result.trim().split(":");
+                var key = configValues[0].trim();
+                var value = parseFloat(configValues[1].trim());
+                config[key] = value;
+            });
+            return config;
+        });
+
+    D.q.all([pveVersionPromise, pvePerfPromise])
+        .then(function(results) {
+            var pveVersionResult = results[0];     
+            var pvePerfResult = results[1];
+            var result = [
+                D.createVariable("version", "Version", pveVersionResult),
+                D.createVariable("cpu_bogomips", 'CPU BOGOMIPS', pvePerfResult["CPU BOGOMIPS"]),
+                D.createVariable("regex_second", 'REGEX/SECOND', pvePerfResult["REGEX/SECOND"]),
+                D.createVariable("hd_size", 'HD SIZE', pvePerfResult["HD SIZE"], "GB"),
+                D.createVariable("buffered_reads", 'BUFFERED READS', pvePerfResult["BUFFERED READS"], "MB/sec"),
+                D.createVariable("average_seek_time", 'AVERAGE SEEK TIME', pvePerfResult["AVERAGE SEEK TIME"], "ms"),
+                D.createVariable("fsync_second", 'FSYNCS/SECOND', pvePerfResult["FSYNCS/SECOND"]),
+                D.createVariable("dns_ext", 'DNS EXT', pvePerfResult["DNS EXT"], "ms")
+            ];
+            D.success(result, kvmsTable);
         });
 }
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -130,9 +154,7 @@ function parseData(data) {
  */
 function validate() {
     execCommand(cmdKVMsList)
-        .then(function() {
-            D.success();
-        })
+        .then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
@@ -145,34 +167,8 @@ function validate() {
  * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server.
  */
 function get_status() {
-    var kvmPromise = execCommand(cmdKVMsList)
-        .then(parseData);
-    var pveVersionPromise = execCommand(cmdPVEVersion);
-    var pvePerfPromise = execCommand(cmdPVEPerf)
-        .then(function(perfData) {
-            var pvePerf = perfData.trim().split('\n');
-            var config = {};
-            pvePerf.forEach(function(result) {
-                var configValues = result.trim().split(":");
-                var key = configValues[0].trim();
-                var value = parseFloat(configValues[1].trim());
-                config[key] = value;
-            });
-            return pveVersionPromise.then(function(pveVersion) {
-                var result = [
-                    D.createVariable("version", "Version", pveVersion),
-                    D.createVariable("cpu_bogomips", 'CPU BOGOMIPS', config["CPU BOGOMIPS"]),
-                    D.createVariable("regex_second", 'REGEX/SECOND', config["REGEX/SECOND"]),
-                    D.createVariable("hd_size", 'HD SIZE', config["HD SIZE"], "GB"),
-                    D.createVariable("buffered_reads", 'BUFFERED READS', config["BUFFERED READS"], "MB/sec"),
-                    D.createVariable("average_seek_time", 'AVERAGE SEEK TIME', config["AVERAGE SEEK TIME"], "ms"),
-                    D.createVariable("fsync_second", 'FSYNCS/SECOND', config["FSYNCS/SECOND"]),
-                    D.createVariable("dns_ext", 'DNS EXT', config["DNS EXT"], "ms")
-                ];
-                D.success(result);
-            });
-        });
-    D.q.all([kvmPromise, pvePerfPromise])
+    execCommand(cmdKVMsList)
+        .then(parseData)
         .catch(function(err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
