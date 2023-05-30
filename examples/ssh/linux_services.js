@@ -73,7 +73,9 @@ function executeCommand(command){
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     executeCommand(command)
-        .then(D.success)
+        .then(function(){
+            D.success();
+        })
         .catch(checkSshError);
 }
  
