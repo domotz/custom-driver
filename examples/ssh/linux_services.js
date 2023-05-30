@@ -10,8 +10,7 @@
  * Requires:
  *      - systemctl
  *      - sed, grep, awk, and tail
- *      - PLEASE NOTE: it requires to be rut as root
- * 
+ *      - PLEASE NOTE: it requires to be run as a user from the sudoers group
  * 
  * Creates a Custom Driver Table with the following columns:
  *  - Service Name
@@ -19,38 +18,19 @@
  * 
 **/
 
-// Define the services you want to show (all|include)
-var servicesToGet="include"; 
+var includedServices = ["snmpd", "ssh", "zabbix"]; //Define the services you want to include. If empty all services are retrieved
+var command = "systemctl --all --type=service | sed -e 's/.service//' | tail -n +2 | awk '{print $1,$4}' | head -n -6 | grep -v 'inactive\\|systemd-fsck'";
 
-// if using the "include" option you might edit the includeServices variable which contains the list
-// remember to follow this format "'systemd\\|apt'" so each pattern should be followed by \\| as a separator
-// if your and to include only one service you should use "'systemd'"
-// PLEASE NOTE THAT the following will not be used if servicesToGet="all"
-var includeServices="'systemd\\|apt'";
-var command, error;
-if (servicesToGet == "include") {
-    command = "systemctl --all --type=service | sed -e 's/.service//' | tail -n +2 | awk '{print $1,$4}' | head -n -6 | grep -v 'inactive\\|systemd-fsck' | grep -v " + includeServices;
-}
-else if (servicesToGet == "all") {
-    // we include by default ● inactive services and systemd-fsck* services for parsing reasons
-    command ="systemctl --all --type=service | sed -e 's/.service//' | tail -n +2 | awk '{print $1,$4}' | head -n -6 |  grep -v 'inactive\\|systemd-fsck'";        
-}
-else if (!servicesToGet || /^\s*$/.test(servicesToGet)){
-    error="servicesToGet variable cannot be null or empty - possible options are: all|include" ;
-    console.error(error);
-    D.failure(D.errorType.GENERIC_ERROR);
-}
-else{
-    error="servicesToGet variable cannot be set as: " + servicesToGet + " - possible options are: all|include";
-    console.error(error);
-    D.failure(D.errorType.GENERIC_ERROR);
-}
+// Filter the services based on the includedServices array
+if (includedServices.length > 0) {
+    var includedServicesString = includedServices.join("\\|");
+    command += " | grep -E " + includedServicesString;
+} 
 
 // SSH options when running the commands
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    port: 22,
     timeout: 5000
 };
 
@@ -75,10 +55,10 @@ function executeCommand(command){
     sshConfig.command = command;
     D.device.sendSSHCommand(sshConfig, function (out, err) {
         if (err) {
-            checkSshError(err);
+            console.error("Command execution error: " + err);
+            checkSsherr(err);
             d.reject(err);
-        }
-        else{
+        } else {
             d.resolve(out);
         }
     });
@@ -93,9 +73,8 @@ function executeCommand(command){
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     executeCommand(command)
-        .then(function(){
-            D.success();
-        });
+        .then(D.success)
+        .catch(checkSshError);
 }
  
 /**
@@ -106,28 +85,31 @@ function validate() {
 function get_status() {
     executeCommand(command)
         .then(parseOutput)
-        .then(function(){
-            D.success();
-        })
-        .catch(function(error) {
-            checkSshError(error);
-        });
+        .then(D.success)
+        .catch(checkSshError);
 }
 
 /**
  * Parses the output of the executed command to extract service information.
  * @param {string} output  The output of the executed command.
  */
-function parseOutput(output){       
+function parseOutput(output){     
     var result = output.split(/\r?\n/);
     for (var i = 0; i < result.length; i++) {
         var fields = result[i].replace(/\s+/g," ").trim().split(" ");
         var serviceName = fields[0];
         var serviceStatus = fields[1];
-        var recordId = D.crypto.hash(i + "_" + serviceName, "sha256", null, "hex").toLowerCase().slice(0, 50);
+        var recordId = _getRecordIdForService(i, serviceName);
         table.insertRecord(
             recordId, [serviceName, serviceStatus]
         );
     }
     D.success(table);
+}
+
+// Helper function to generate record ID for a service
+function _getRecordIdForService(index, serviceName) {
+    var idString = index + "_" + serviceName;
+    var hashedId = D.crypto.hash(idString, "sha256", null, "hex").toLowerCase().slice(0, 50);
+    return hashedId;
 }
