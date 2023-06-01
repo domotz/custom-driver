@@ -100,12 +100,13 @@
  * 
  */
 
- var winrmConfig = {
+var winrmConfig = {
     username: D.device.username(),
     password: D.device.password()
 };
 
-var filter = ["Security System Extension",
+var filter = [
+    "Security System Extension",
     "Logon",
     "SAM",
     "Audit Policy Change",
@@ -115,13 +116,15 @@ var filter = ["Security System Extension",
     "Security Group Management",
     "User Account Management",
     "Directory Service Changes",
-    "Directory Service Replication"];
+    "Directory Service Replication"
+];
 
 filter = '@("' + filter.join('","') + '")';
 
 var auditTable = D.createTable(
     "Audit Settings",
     [
+        { label: "Audit Name" },
         { label: "Category" },
         { label: "Subcategory" },
         { label: "Setting" }
@@ -174,6 +177,7 @@ function parseOutput(output) {
         var category;
         var subcategory;
         var setting;
+        var auditName;
         var recordId;
         var jsonOutput = JSON.parse(JSON.stringify(output));
         jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
@@ -182,12 +186,13 @@ function parseOutput(output) {
                 category = jsonOutput[k].category;
                 subcategory = jsonOutput[k].subcat;
                 setting = jsonOutput[k].setting;
-                recordId = (category + "_" + subcategory).replace(" ", "_").toLowerCase().slice(0, 50);
-                auditTable.insertRecord(recordId, [category, subcategory, setting]);
+                auditName = (category + "_" + subcategory).replace(" ", "_");
+                recordId = D.crypto.hash(auditName, "sha256", null, "hex").toLowerCase().slice(0, 50);
+                auditTable.insertRecord(recordId, [auditName, category, subcategory, setting]);
                 k++;
             }
         } else {
-            console.error("No data was collected")
+            console.error("No data was collected");
             D.failure(D.errorType.PARSING_ERROR);
         }
         D.success(auditTable);
@@ -195,5 +200,4 @@ function parseOutput(output) {
         console.error(output.error);
         D.failure();
     }
-
 }
