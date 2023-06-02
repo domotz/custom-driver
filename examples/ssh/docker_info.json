@@ -1,0 +1,34 @@
+{
+    "logo": "docker.svg",
+    "version": "1.0.0",
+    "name": "Docker Info",
+    "description": "This driver create a dynamic monitoring variables using the command 'docker info'",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.0.0",
+        "others": [
+            "Docker Installed",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "docker",
+        "ubuntu",
+        "software"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[78]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "20.04.6"
+        }
+    ]
+}
