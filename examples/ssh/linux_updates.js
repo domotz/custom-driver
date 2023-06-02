@@ -11,10 +11,13 @@
  * Requires:
  *      - requires apt
  *      - requires sed, grep, and awk
- *      - PLEASE NOTE: it requires to be run as a user and added to the list of sudoers that do not require a password 
- *                     To add the user to the sudoers list, run the following command:
- *                     sudo vi /etc/sudoers
- *                     Then add the following line, replacing "username" with the actual username: username ALL=(ALL) NOPASSWD: ALL
+ *      - PLEASE NOTE: it requires to be run as a user   
+ *      - User must have sudo rights without password
+ *        To set up sudo without password, follow these steps:
+ *        1. Open a terminal and run the command "sudo vi /etc/sudoers"
+ *        2. In the sudoers file, add the following line:
+ *           "<username> ALL=(ALL) NOPASSWD:ALL"
+ *           Replace "<username>" with your actual username
  * 
  * Creates a Custom Driver Variable with the Number of Updates available
  * 
@@ -25,7 +28,7 @@
  * 
 **/
 
-var cmdListOfUpdates="apt update -qq 2>/dev/null | grep -v packages ; apt list --upgradable -qq  2>/dev/null | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' |  sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
+var cmdListOfUpdates = "sudo apt update -qq 2>/dev/null | grep -v packages ; sudo apt list --upgradable -qq 2>/dev/null | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' | sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
 
 // SSH options when running the commands
 var sshConfig = {
