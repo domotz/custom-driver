@@ -12,12 +12,7 @@
  *      - requires apt
  *      - requires sed, grep, and awk
  *      - PLEASE NOTE: it requires to be run as a user   
- *      - User must have sudo rights without password
- *        To set up sudo without password, follow these steps:
- *        1. Open a terminal and run the command "sudo vi /etc/sudoers"
- *        2. In the sudoers file, add the following line:
- *           "<username> ALL=(ALL) NOPASSWD:ALL"
- *           Replace "<username>" with your actual username
+ *      - User must have sudo rights
  * 
  * Creates a Custom Driver Variable with the Number of Updates available
  * 
@@ -28,7 +23,17 @@
  * 
 **/
 
-var cmdListOfUpdates = "sudo apt update -qq 2>/dev/null | grep -v packages ; sudo apt list --upgradable -qq 2>/dev/null | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' | sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
+var cmdSudoCheck = "echo '" + D.device.password() + "'|sudo -S -v"
+var cmdNumberUpdates = "echo '" + D.device.password() + "'|sudo -S apt update -qq 2>/dev/null"
+var cmdListOfUpdates = "echo '" + D.device.password() + "'|sudo -S apt list --upgradable -qq 2>/dev/null"
+var fullCommand = 
+                // break on sudo error
+                "set -e;" + 
+                cmdSudoCheck + ";"+
+                // if sudo is ok run the command
+                "set +e;" + 
+                cmdNumberUpdates + " | grep -v packages ;" + 
+                cmdListOfUpdates + " | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' | sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
 
 // SSH options when running the commands
 var sshConfig = {
@@ -40,14 +45,14 @@ var sshConfig = {
 
 // SSH promise definition
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5 || err.code == 1) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-function executeCommand(command){
+function executeCommand(command) {
     var d = D.q.defer();
     sshConfig.command = command;
     D.device.sendSSHCommand(sshConfig, function (out, err) {
@@ -55,12 +60,12 @@ function executeCommand(command){
             checkSshError(err);
             d.reject(err);
         } else {
-            
             d.resolve(out);
         }
     });
     return d.promise;
 }
+
 
 /**
 * @remote_procedure
@@ -69,8 +74,8 @@ function executeCommand(command){
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    executeCommand(cmdListOfUpdates)
-        .then(function(){
+    executeCommand(fullCommand)
+        .then(function () {
             D.success();
         })
         .catch(function (err) {
@@ -87,11 +92,11 @@ var updateListTable = D.createTable(
         { label: "New version" }
     ]
 );
- 
-function parseData(executionResult){
+
+function parseData(executionResult) {
     var listOfUpdates = executionResult.split(/\r?\n/);
     for (var i = 0; i < listOfUpdates.length; i++) {
-        var fields = listOfUpdates[i].replace(/\s+/g,' ').trim().split(" ");
+        var fields = listOfUpdates[i].replace(/\s+/g, ' ').trim().split(" ");
         var pkgName = fields[0];
         var pkgOldV = fields[1];
         var pkgNewV = fields[1];
@@ -103,7 +108,7 @@ function parseData(executionResult){
     var numberOfAvailableUpdatesLabel = "Number of Updates Available";
     var numberOfAvailableUpdatesValue = listOfUpdates.length;
     numberOfAvailableUpdates = [D.createVariable("available-updates-number", numberOfAvailableUpdatesLabel, numberOfAvailableUpdatesValue, null, D.valueType.NUMBER)];
-    D.success(numberOfAvailableUpdates,updateListTable);
+    D.success(numberOfAvailableUpdates, updateListTable);
 }
 
 /**
@@ -112,10 +117,12 @@ function parseData(executionResult){
 * @documentation Process data and deliver Linux Updates variables and table
 */
 function get_status() {
-    executeCommand(cmdListOfUpdates)
+    executeCommand(fullCommand)
         .then(parseData)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
+                
+     
 }
