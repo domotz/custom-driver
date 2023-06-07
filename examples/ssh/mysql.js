@@ -11,27 +11,27 @@
  * Centos 7
  * 
  * Please Note that:
- *  
- * - Your MySQL must run as systemd service for this command to work
- * - This works in Debian derivatives and Centos, other Linux distributions might different paths
+ *      - Your MySQL must run as systemd service for this command to work
+ *      - This works in Debian derivatives and Centos, other Linux distributions might different paths
+ *      - The username and password for MySQL admin are the same as the SSH host
  * 
  * The driver will create the following variables:
- * - Status
- * - Version
- * - Used Ram
- * - Uptime
- * - Threads
- * - Questions
- * - Opens
- * - Flush tables
- * - Open tables
- * - Average Queries
- * - Errors
+ *      - Status
+ *      - Version
+ *      - Used Ram
+ *      - Uptime
+ *      - Threads
+ *      - Questions
+ *      - Opens
+ *      - Flush tables
+ *      - Open tables
+ *      - Average Queries
+ *      - Errors
 **/
 
 // Ssh options and command to be run
 var command = "(service mysql status | grep Active:) || echo 'No service found'; " + // Your MySQL must run as systemd service for this command to work
-    "(ls /var/run/mysqld/mysqld.pid && pmap `cat /var/run/mysqld/mysqld.pid` ) | tail -1 2>/dev/null || echo 'No pid found';" +  // This works in Debian and derivatives, other distributions moght use another path
+    "(ls /var/run/mysqld/mysqld.pid && pmap `cat /var/run/mysqld/mysqld.pid` ) | tail -1 2>/dev/null || echo 'No pid found';" +  // This works in Debian and derivatives, other distributions might use another path
     "(mysqladmin -u "+D.device.username()+" --password='"+D.device.password()+"' -h 127.0.0.1 version) || echo 'Cannot run mysqladmin'";
 
 var sshConfig = {
@@ -75,13 +75,19 @@ function executeCommand(command) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
 function validate() {
-    console.info("Verifying device can respond correctly to command ... ");
-    executeCommand(command)
+    executeCommand("service mysql status")
         .then(function(output) {
-            if (!output || output.indexOf("is not recognized") !== -1) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            if (output && output.indexOf("Active: active") !== -1) {
+                return executeCommand(command);
             } else {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+        })
+        .then(function(output) {
+            if (output && output.indexOf("Cannot run mysqladmin") === -1) {
                 D.success();
+            } else {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
         })
         .catch(function(error) {
@@ -103,9 +109,6 @@ function get_status() {
 
 function reportData(data) {
     var variables = [];
-    if (data.status) {
-        variables.push(D.createVariable("status", "Status", data.status));
-    }
     if (data.version) {
         variables.push(D.createVariable("version", "Version", data.version));
     }
@@ -146,14 +149,7 @@ function isRunning(data) {
 
 function parse(output) {
     var ret = {errors: ""};
-    console.info("OUTPUT: " + output);
     var lines = output.split("\n");
-
-    try {
-        ret["status"] = _parseStatus(lines.shift());
-    } catch (e) {
-        ret["errors"] += "No service information (" + e.message + ")\n";
-    }
     try {
         ret["usedRam"] = _parseUsedRam(lines.shift());
     } catch (e) {
@@ -168,16 +164,6 @@ function parse(output) {
 
     ret.errors = ret.errors.trim();
     return ret;
-}
-
-function _parseStatus(line) {
-    line = (line || " ").trim();
-    if (line.indexOf("Active: ") !== 0) {
-        throw new Error(line);
-    }
-    line = line.split(" ");
-    return line[1] + " " + line[2];
-
 }
 
 function _parseUsedRam(line) {
