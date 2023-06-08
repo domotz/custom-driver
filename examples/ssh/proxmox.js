@@ -154,7 +154,9 @@ function parseData(data) {
  */
 function validate() {
     execCommand(cmdKVMsList)
-        .then(D.success)
+        .then(function(){
+            D.success();
+        })
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
