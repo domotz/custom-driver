@@ -6,19 +6,19 @@
  * 
  * Tested on Linux with the following specs:
  *      - Debian Linux 10
+ *      - Ubuntu 18.04.5 LTS
  *      - bash version 5.0.3(1)
  * 
  * Requires:
  *      - requires apt
  *      - requires sed, grep, and awk
- *      - PLEASE NOTE: it requires to be run as a user   
- *      - User must have sudo rights
+ *      - PLEASE NOTE: it requires to be run as a user part of the sudoers group without password prompt
  * 
  * Creates a Custom Driver Variable with the Number of Updates available
  * 
  * Creates a Custom Driver Table with the following columns:
- *  - Pkg Name
- *  - Old Version
+ *  - Package Name
+ *  - Current Version
  *  - New Version 
  * 
 **/
@@ -39,7 +39,6 @@ var fullCommand =
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    port: 22,
     timeout: 30000
 };
 
@@ -75,9 +74,7 @@ function executeCommand(command) {
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     executeCommand(fullCommand)
-        .then(function () {
-            D.success();
-        })
+        .then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
@@ -87,9 +84,9 @@ function validate() {
 var updateListTable = D.createTable(
     "Updates List",
     [
-        { label: "Pkg Name" },
-        { label: "Old version" },
-        { label: "New version" }
+        { label: "Package Name" },
+        { label: "Current Version" },
+        { label: "New Version" }
     ]
 );
 
@@ -99,7 +96,7 @@ function parseData(executionResult) {
         var fields = listOfUpdates[i].replace(/\s+/g, ' ').trim().split(" ");
         var pkgName = fields[0];
         var pkgOldV = fields[1];
-        var pkgNewV = fields[1];
+        var pkgNewV = fields[2];
         var recordId = D.crypto.hash(pkgName, "sha256", null, "hex").slice(0, 50);
         updateListTable.insertRecord(
             recordId, [pkgName, pkgOldV, pkgNewV]
