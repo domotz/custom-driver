@@ -45,7 +45,7 @@ var kvmsTable = D.createTable(
         { label: "Name" },
         { label: "Status" },
         { label: "Memory" , unit: "MB" },
-        { label: "Boot disk" , unit: "GB"},
+        { label: "Boot disk" , unit: "GB" },
         { label: "PID" },
         { label: "cores" },
         { label: "meta" },
@@ -67,7 +67,7 @@ function checkSshError(err) {
 
 /**
  * Executes a SSH command and returns a promise
- * @param {string} command  The SSH command to execute
+ * @param {string} command The SSH command to execute
  * @returns {Promise} A promise that resolves with the command output or rejects with an error
  */
 function execCommand(command) {
@@ -76,7 +76,7 @@ function execCommand(command) {
     D.device.sendSSHCommand(sshConfig, function (out, err) {
         if (err) {
             checkSshError(err);
-            d.reject(err);
+            d.reject(er);
         } else {
             d.resolve(out);
         }
@@ -100,7 +100,7 @@ function parseData(data) {
         var memory = values[3];
         var bootdisk = values[4];
         var pid = values[5];
-        var recordId = vmid + "-" + name;
+        var recordId = D.crypto.hash(vmid + "_" + name, "sha256", null, "hex").slice(0, 50);
         var promise = execCommand("qm config " + vmid)
             .then(function(configData) {
                 var configLines = configData.trim().split('\n');
