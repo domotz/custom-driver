@@ -2,6 +2,8 @@
  * this driver is designed to retrieve network speed data using the iperf3.
  * Communication protocol is SSH.
  * 
+ * the targetServer is used as iperf server to test the network performance
+ * 
  * This driver create a dynamic monitoring variables 
  *      Download speed: test for download speed.
  *      Upload speed: test for upload speed.
