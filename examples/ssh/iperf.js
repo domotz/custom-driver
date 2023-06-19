@@ -13,7 +13,8 @@
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 20000
+    timeout: 60000,
+    port: 27123
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
@@ -21,12 +22,18 @@ var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 // Define whether UDP is enabled on the device 
 var testUDPSpeed = true;
 
+// target server to test with
+var targetServer = {
+    url: "ping-90ms.online.net",
+    port: 5209
+};
+
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
-    { id: "download_speed", label: "Download speed", command: "iperf3 -f m -c localhost -R | grep sender | awk -F \" \" '{print $7}'" },
-    { id: "upload_speed", label: "Upload speed", command: "iperf3 -f m -c localhost | grep sender | awk -F \" \" '{print $7}'" },
-    { id: "download_speed_udp", label: "Download speed UDP", command: "iperf3 -f m -c localhost -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" },
-    { id: "upload_speed_udp", label: "Upload speed UDP", command: "iperf3 -f m -c localhost -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" }
+    { id: "download_speed", label: "Download speed", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " -R | grep sender | awk -F \" \" '{print $7}'" },
+    { id: "upload_speed", label: "Upload speed", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " | grep sender | awk -F \" \" '{print $7}'" },
+    { id: "download_speed_udp", label: "Download speed UDP", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" },
+    { id: "upload_speed_udp", label: "Upload speed UDP", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" }
 ];
 
 //Checking SSH errors and handling them
@@ -39,20 +46,20 @@ function checkSshError(err) {
 
 // Function for executing SSH command 
 function executeCommand(command) {
-    return function(result){
+    return function (result) {
         var d = D.q.defer();
         sshConfig.command = command;
         D.device.sendSSHCommand(sshConfig, function (out, err) {
             if (err) {
-                checkSshError(err);
-                d.reject(err);
+                console.error(err)
+                d.resolve()
             }
-            if(Array.isArray(result))
-                result.push(out)
+            if (Array.isArray(result))
+                result.push(out);
             d.resolve(result);
         });
         return d.promise;
-    }
+    };
 }
 
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
@@ -67,8 +74,8 @@ function execute() {
     }
 
     return commands.reduce(D.q.when, D.q([]))
-        .then(function(result){
-            return result.map(function(res, index){
+        .then(function (result) {
+            return result.filter(function(res) {return res != null}).map(function (res, index) {
                 return D.device.createVariable(execConfig[index].id, execConfig[index].label, res, "Mb/s");
             });
         });
