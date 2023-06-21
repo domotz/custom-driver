@@ -1,8 +1,10 @@
 /**
- * this driver is designed to retrieve network speed data using the iperf3.
+ * Domotz Custom Driver
+ * Name: IPerf3 
+ * Description: This driver is designed to retrieve network speed data using iPerf3.
+ * 
  * Communication protocol is SSH.
  * 
- * the targetServer is used as iperf server to test the network performance
  * 
  * This driver create a dynamic monitoring variables 
  *      Download speed: test for download speed.
@@ -10,13 +12,23 @@
  *      Download speed UDP: test for UDP download speed.
  *      Upload speed UDP: test for UDP upload speed. 
  * 
- * Tested with iperf3 version: v 3.7 under Ubuntu 22.04.1 LTS
+ * Tested on:
+ * - Ubuntu 22.04.1 LTS
+ * - with iperf3 version: v3.7
+ *
+ * 
+ * The driver is currently using a public iPerf3 server which might stop working in the future.
+ * If that is the case, you might try with another server which you might find at this URL: https://iperf.fr/iperf-servers.php 
+ * or instead, you might setup you own iPerf3 server. 
+ * 
+ * You can edit the targetServer object to configure the iPerf3 server to be used. 
+ * 
  */
 
 // Define SSH configuration
 var sshConfig = {
     timeout: 60000,
-    port: 27123
+    port: 22
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
@@ -24,7 +36,7 @@ var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 // Define whether UDP is enabled on the device 
 var testUDPSpeed = true;
 
-// target server to test with
+// Define here your target iPerf3 server host and port
 var targetServer = {
     url: "ping-90ms.online.net",
     port: 5209
