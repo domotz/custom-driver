@@ -1,10 +1,12 @@
 /**
  * This script can monitor the UPS Temperatury and Humidity.
- * Communication protocol is SNMP
+ * Communication protocol is SNMP V2
  * Creates a table with the following columns:
  *      - Probe Index: The index of the prob
  *      - Room Temperature: The current temperature reading from the probe
  *      - Room Humidity: The current humidity reading from the probe in percent
+ * 
+ * 
  */
 
 /**

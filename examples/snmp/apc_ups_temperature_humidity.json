@@ -1,0 +1,36 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "APC UPS Temperature and Humidity",
+    "description": "Monitor the UPS Temperatury and Humidity",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.0.0",
+        "others": [
+           "SNMP v2c",
+           "Smart-UPS X 3000",
+           ""
+        ]
+    },
+    "tags": [
+        "UPS monitoring",
+        "Temperature",
+        "Humidity",
+        ""
+    ],
+    "sample_period": 5000,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]"
+    },
+    "protocols": [
+        "SNMP"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "20.04.6"
+        }
+    ]
+}
