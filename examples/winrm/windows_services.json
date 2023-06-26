@@ -2,7 +2,7 @@
     "logo": "windows.svg",
     "version": "1.0.0",
     "name": "Windows Services Monitoring",
-    "description": "Monitors the status of services on a Windows machine",
+    "description": "Monitor the status of chosen services on a Windows machine",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -21,7 +21,6 @@
     "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
-        "table": "[21]"
     },
     "protocols": [
         "WINRM"

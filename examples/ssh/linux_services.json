@@ -1,0 +1,41 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux Services",
+    "description": "Monitor the status of the chosen services on a Linux host",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.0.0",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "sed",
+            "tail",
+            "systemctl",
+            "head",
+            "grep"
+        ]
+    },
+    "tags": [
+        "Services",
+        "Linux"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux",
+            "version": "Debian 10"
+        },
+        {
+            "name": "bash",
+            "version": "5.0.3(1)"
+        }
+    ]
+}

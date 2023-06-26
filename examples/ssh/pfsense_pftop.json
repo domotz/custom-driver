@@ -1,34 +1,35 @@
 {
-    "logo": "docker.svg",
+    "logo": "pfsense.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "This script create a dynamic monitoring variables using the command 'docker info'",
+    "name": "pfSense",
+    "description": "Monitor the pfSense process and the processes running on the FreeBSD server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.0.0",
         "others": [
-            "Docker Installed",
+            "FreeBSD",
+            "pfSense",
             "SSH Enabled"
         ]
     },
     "tags": [
-        "docker",
-        "ubuntu",
-        "software"
+        "pfSense",
+        "FreeBSD",
+        "software",
+        "firewall"
     ],
     "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Ubuntu",
-            "version": "20.04.6"
+            "name": "pfSense",
+            "version": "2.6.0-RELEASE"
         }
     ]
 }

@@ -2,7 +2,7 @@
     "logo": "windows.svg",
     "version": "1.0.0",
     "name": "Windows Audit Settings",
-    "description": "Monitors the audit settings on Windows",
+    "description": "Monitor the audit settings on Windows",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
