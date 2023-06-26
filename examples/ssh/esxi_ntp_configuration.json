@@ -1,5 +1,5 @@
 {
-    "logo": "vmware.svg",
+    "logo": "vmware-esxi.svg",
     "version": "1.0.0",
     "name": "VMWare Esxi Ntp configuration",
     "description": "Get the NTP configuration on a VMware Esxi host",

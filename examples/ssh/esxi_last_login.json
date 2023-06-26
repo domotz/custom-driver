@@ -1,5 +1,5 @@
 {
-    "logo": "vmware.svg",
+    "logo": "vmware-esxi.svg",
     "version": "1.0.0",
     "name": "VMWare Esxi Last Login",
     "description": "Get the Last Login line for a VMware Esxi host",

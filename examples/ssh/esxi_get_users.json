@@ -1,5 +1,5 @@
 {
-    "logo": "vmware.svg",
+    "logo": "vmware-esxi.svg",
     "version": "1.0.0",
     "name": "VMWare Esxi Users",
     "description": "Get Users configured on a VMware Esxi host",
