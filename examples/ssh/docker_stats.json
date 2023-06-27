@@ -2,7 +2,7 @@
     "logo": "docker.svg",
     "version": "1.0.0",
     "name": "Docker Containers CPU and Memory Utilization",
-    "description": "Monitor CPU and Memory % utilization for each docker container running on a host",
+    "description": "Monitor CPU and Memory utilization for each docker container running on a host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
