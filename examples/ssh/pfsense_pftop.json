@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "FreeBSD",
             "pfSense",
@@ -14,14 +14,16 @@
         ]
     },
     "tags": [
-        "pfSense",
-        "FreeBSD",
+        "pfsense",
+        "freebsd",
         "software",
-        "firewall"
+        "firewall",
+        "processes"
     ],
     "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
+        "table": "[12,999]"
     },
     "protocols": [
         "SSH"

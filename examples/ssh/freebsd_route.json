@@ -6,19 +6,22 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "FreeBSD",
             "SSH Enabled"
         ]
     },
     "tags": [
-        "FreeBSD",
+        "freebsd",
+        "routes",
+        "netstat",
         "software"
     ],
-    "sample_period": 300,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
+        "table": "[4,999]"
     },
     "protocols": [
         "SSH"

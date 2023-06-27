@@ -6,10 +6,10 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.10.0",
+        "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "Priviliedged User Required",
+            "Privileged User Required",
             "WinRM Enabled"
         ]
     },

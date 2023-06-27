@@ -6,16 +6,16 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "MySQL installed and running",
             "Linux",
-            "mysqladmin"
+            "MySQLAdmin"
         ]
     },
     "tags": [
-        "MySQL",
-        "Linux"
+        "mysql",
+        "linux"
     ],
     "sample_period": 300,
     "has_actions": false,
@@ -31,16 +31,16 @@
             "version": "10"
         },
         {
-            "name": "Linux Ubuntu",
+            "name": "Ubuntu",
             "version": "22.04"
         },
         {
-            "name": "Linux Centos",
+            "name": "CentOS",
             "version": "7"
         },
         {
             "name": "bash",
-            "version": "5.0.3(1)"
+            "version": "5.0.3"
         }
     ]
 }

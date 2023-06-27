@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "Docker Installed",
             "SSH Enabled"
@@ -15,11 +15,13 @@
     "tags": [
         "docker",
         "ubuntu",
+        "image",
         "software"
     ],
-    "sample_period": 300,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
+        "table": "[7,999]"
     },
     "protocols": [
         "SSH"
