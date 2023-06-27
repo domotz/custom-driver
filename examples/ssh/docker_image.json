@@ -1,8 +1,8 @@
 {
     "logo": "docker.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "This script create a dynamic monitoring variables using the command 'docker info'",
+    "name": "Docker Images Info",
+    "description": "Get Docker Images information",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -20,7 +20,6 @@
     "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
     },
     "protocols": [
         "SSH"
@@ -29,6 +28,10 @@
         {
             "name": "Ubuntu",
             "version": "20.04.6"
+        },
+        {
+            "name": "Docker",
+            "version": "19.03.15"
         }
     ]
 }

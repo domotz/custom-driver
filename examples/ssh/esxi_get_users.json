@@ -1,34 +1,32 @@
 {
-    "logo": "docker.svg",
+    "logo": "vmware-esxi.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "This script create a dynamic monitoring variables using the command 'docker info'",
+    "name": "VMWare Esxi Users",
+    "description": "Get Users configured on a VMware Esxi host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.0.0",
         "others": [
-            "Docker Installed",
+            "VMware Esxi",
             "SSH Enabled"
         ]
     },
     "tags": [
-        "docker",
-        "ubuntu",
+        "vmware",
         "software"
     ],
     "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Ubuntu",
-            "version": "20.04.6"
+            "name": "VMware Esxi",
+            "version": "7"
         }
     ]
 }

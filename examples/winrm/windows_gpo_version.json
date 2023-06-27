@@ -1,8 +1,8 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Updates",
-    "description": "Monitors the versions of selected GPOs, you can set the initial value as baseeline and get alerted if it changes. ",
+    "name": "Windows AD GPOs versions",
+    "description": "Monitor the versions of selected GPOs. You can set the initial value as baseeline and get alerted if it changes",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,

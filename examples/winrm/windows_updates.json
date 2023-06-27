@@ -2,7 +2,7 @@
     "logo": "windows.svg",
     "version": "1.0.0",
     "name": "Windows Updates",
-    "description": "This driver collects data about missing updates on a Windows system. It create variables with a break-down of categories and classifications of missing updates and a table with the list of missing updates data",
+    "description": "Collect data on missing updates on Windows",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,

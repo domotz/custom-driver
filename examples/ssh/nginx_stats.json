@@ -1,0 +1,42 @@
+{
+    "logo": "nginx.svg",
+    "version": "1.0.0",
+    "name": "Nginx Stats",
+    "description": "Monitor Nginx statistics",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.0.0",
+        "others": [
+            "Nginx",
+            "Linux",
+            "SSH Enabled",
+            "apt",
+            "awk",
+            "sed",
+            "grep",
+            "systemctl"
+        ]
+    },
+    "tags": [
+        "Nginx",
+        "Linux"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux Ubuntu",
+            "version":"22.04"
+        },
+        {
+            "name": "nginx",
+            "version": "1.14.0"
+        }
+    ]
+}

@@ -1,37 +1,37 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Monitor the count of Windows Active Directory privileged users",
-    "description": "Monitors the number of members of AD privileged groups",
+    "name": "Windows CPU usage",
+    "description": "Monitor the Pending Reboot state in Windows. It also provides a button to reboot the computer",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.10.0",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "Privilege required: AD User",
-            "WinRM Enabled"
+            "SSH Enabled"
         ]
     },
     "tags": [
         "windows",
-        "users",
-        "active-directory",
-        "software"
+        "software",
+        "cpu"
     ],
-    "sample_period": 86400,
+    "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[1]",
-        "table": "[2,999]"
     },
     "protocols": [
-        "WINRM"
+        "SSH"
     ],
     "tested_on": [
         {
             "name": "Microsoft Windows",
             "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
         }
     ]
 }

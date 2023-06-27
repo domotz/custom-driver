@@ -1,34 +1,32 @@
 {
-    "logo": "docker.svg",
+    "logo": "freebsd.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "This script create a dynamic monitoring variables using the command 'docker info'",
+    "name": "FreeBSD Processes",
+    "description": "Monitor the FreeBSD processes by extracting info with the 'top' command",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.0.0",
         "others": [
-            "Docker Installed",
+            "FreeBSD",
             "SSH Enabled"
         ]
     },
     "tags": [
-        "docker",
-        "ubuntu",
+        "FreeBSD",
         "software"
     ],
     "sample_period": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Ubuntu",
-            "version": "20.04.6"
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
         }
     ]
 }

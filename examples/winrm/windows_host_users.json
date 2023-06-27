@@ -2,7 +2,7 @@
     "logo": "windows.svg",
     "version": "1.0.0",
     "name": "Windows Host Users",
-    "description": "Monitors the status of all the existing users on a Windows machine",
+    "description": "Monitor the status of all the existing users on a Windows machine",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,

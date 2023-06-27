@@ -1,0 +1,28 @@
+{
+    "logo": "control4.svg",
+    "version": "1.0.0",
+    "name": "Control4 Zigbee",
+    "description": "Collect data for control4 zigbee devices such as status, zap information etc ",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.0.0",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "control4",
+        "zigbee",
+        "reboot"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+    ]
+}

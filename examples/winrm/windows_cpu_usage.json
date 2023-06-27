@@ -1,8 +1,8 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows CPU usage",
-    "description": "This driver retrieves the average CPU load average percentage of a Windows server.",
+    "name": "Windows CPU Usage",
+    "description": "Monitor the average CPU load average percentage of a Windows server.",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
