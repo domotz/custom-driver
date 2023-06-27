@@ -25,7 +25,8 @@
     ],
     "tested_on": [
         {
-            "name": "Crestron TS-1070"
+            "name": "Crestron TS-1070",
+            "version": "unknown"
         }
     ]
 }
