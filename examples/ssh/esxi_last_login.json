@@ -1,7 +1,7 @@
 {
     "logo": "vmware-esxi.svg",
     "version": "1.0.0",
-    "name": "VMWare ESXi Last Login",
+    "name": "VMware ESXi Last Login",
     "description": "Get the Last Login line for a VMware ESXi host",
     "category": "Software Integration",
     "requirements": {
@@ -13,8 +13,8 @@
         ]
     },
     "tags": [
-        "vmware",
         "esxi",
+        "vmware",
         "login",
         "user",
         "software"

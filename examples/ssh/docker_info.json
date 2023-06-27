@@ -2,7 +2,7 @@
     "logo": "docker.svg",
     "version": "1.0.0",
     "name": "Docker Info",
-    "description": "This script create a dynamic monitoring variables using the command 'docker info'",
+    "description": "Monitor running docker software information on a host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -15,6 +15,7 @@
     "tags": [
         "docker",
         "ubuntu",
+        "linux",
         "software"
     ],
     "sample_period": 1800,

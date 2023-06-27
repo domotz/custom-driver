@@ -2,7 +2,7 @@
     "logo": "windows.svg",
     "version": "1.0.0",
     "name": "Windows Updates",
-    "description": "Collect data on missing updates on Windows",
+    "description": "Collect data on missing updates for a windows host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,

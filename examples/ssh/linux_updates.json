@@ -1,7 +1,7 @@
 {
     "logo": "linux.svg",
     "version": "1.0.0",
-    "name": "Linux Services",
+    "name": "Linux Updates",
     "description": "Monitor the status of the Updates of a Linux machine",
     "category": "Software Integration",
     "requirements": {
