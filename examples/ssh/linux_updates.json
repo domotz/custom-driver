@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "Linux",
             "SSH Enabled",
@@ -17,12 +17,14 @@
         ]
     },
     "tags": [
-        "Updates",
-        "Linux"
+        "linux",
+        "updates",
+        "apt"
     ],
-    "sample_period": 300,
+    "sample_period": 3600,
     "has_actions": false,
     "expected_variables": {
+        "table": "[3,999]"
     },
     "protocols": [
         "SSH"
@@ -33,12 +35,12 @@
             "version": "10"
         },
         {
-            "name": "Linux Ubuntu",
+            "name": "Ubuntu",
             "version": "18.04.5 LTS"
         },
         {
             "name": "bash",
-            "version": "5.0.3(1)"
+            "version": "5.0.3"
         }
     ]
 }

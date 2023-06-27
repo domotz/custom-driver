@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "Nginx",
             "Linux",
@@ -19,20 +19,21 @@
         ]
     },
     "tags": [
-        "Nginx",
-        "Linux"
+        "nginx",
+        "linux",
+        "statistics",
+        "cpu"
     ],
     "sample_period": 300,
     "has_actions": false,
-    "expected_variables": {
-    },
+    "expected_variables": {},
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Linux Ubuntu",
-            "version":"22.04"
+            "name": "Ubuntu",
+            "version": "22.04"
         },
         {
             "name": "nginx",

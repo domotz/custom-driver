@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "Linux",
             "SSH Enabled",
@@ -18,12 +18,14 @@
         ]
     },
     "tags": [
-        "Services",
-        "Linux"
+        "linux",
+        "services",
+        "systemctl"
     ],
-    "sample_period": 300,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
+        "table": "[2,999]"
     },
     "protocols": [
         "SSH"
@@ -35,7 +37,7 @@
         },
         {
             "name": "bash",
-            "version": "5.0.3(1)"
+            "version": "5.0.3"
         }
     ]
 }

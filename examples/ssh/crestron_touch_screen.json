@@ -6,7 +6,7 @@
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "SSH Enabled"
         ]
@@ -16,16 +16,18 @@
         "touchscreen",
         "reboot"
     ],
-    "sample_period": 300,
-    "has_actions": false,
+    "sample_period": 1800,
+    "has_actions": true,
     "expected_variables": {
+        "table": "[40]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Crestron TS-1070"
+            "name": "Crestron TS-1070",
+            "version": "1.001.0019"
         }
     ]
 }

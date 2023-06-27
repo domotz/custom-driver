@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.0.0",
+        "sandbox_version": "1.12",
         "others": [
             "Docker Installed",
             "SSH Enabled"
@@ -17,7 +17,7 @@
         "ubuntu",
         "software"
     ],
-    "sample_period": 300,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
         "independent": "[78]"
@@ -29,6 +29,10 @@
         {
             "name": "Ubuntu",
             "version": "20.04.6"
+        },
+        {
+            "name": "Docker",
+            "version": "19.03.15"
         }
     ]
 }
