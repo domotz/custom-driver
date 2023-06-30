@@ -1,35 +1,38 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Sessions",
-    "description": "Monitor the list of current logged in users",
+    "name": "Windows Reachable Hosts",
+    "description": "Check if a list of hosts are reachable from the windows endpoint. Can be used for various case scenarios, including checking if a VPN connection is up or not",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "Privilege required: Administrator",
-            "WinRM Enabled"
+            "SSH Enabled"
         ]
     },
     "tags": [
         "windows",
-        "update",
-        "software"
+        "software",
+        "connectivity",
+        "vpn"
     ],
-    "sample_period": 300,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[5,999]"
     },
     "protocols": [
-        "WINRM"
+        "SSH"
     ],
     "tested_on": [
         {
             "name": "Microsoft Windows",
             "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
         }
     ]
 }

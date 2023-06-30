@@ -1,16 +1,16 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Updates",
-    "description": "Monitors the versions of selected GPOs, you can set the initial value as baseeline and get alerted if it changes. ",
+    "name": "Windows AD GPOs versions",
+    "description": "Monitor the versions of selected GPOs. You can set the initial value as baseeline and get alerted if it changes",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.10.0",
+        "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
             "WinRM Enabled",
-            "It must run agains a DC with PS GroupPolicy module installed",
+            "It must run against a DC with PS GroupPolicy module installed",
             "Required permissions: AD user"
         ]
     },

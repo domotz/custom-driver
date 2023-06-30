@@ -1,8 +1,8 @@
 {
     "logo": "docker.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "Monitor running docker software information on a host",
+    "name": "Docker Images Info",
+    "description": "Get Docker Images information",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -15,13 +15,13 @@
     "tags": [
         "docker",
         "ubuntu",
-        "linux",
+        "image",
         "software"
     ],
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
+        "table": "[7,999]"
     },
     "protocols": [
         "SSH"

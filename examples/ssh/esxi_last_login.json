@@ -1,39 +1,36 @@
 {
-    "logo": "docker.svg",
+    "logo": "vmware-esxi.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "Monitor running docker software information on a host",
+    "name": "VMware ESXi Last Login",
+    "description": "Get the Last Login line for a VMware ESXi host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Docker Installed",
+            "VMware ESXi",
             "SSH Enabled"
         ]
     },
     "tags": [
-        "docker",
-        "ubuntu",
-        "linux",
+        "esxi",
+        "vmware",
+        "login",
+        "user",
         "software"
     ],
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
+        "independent": "[1]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Ubuntu",
-            "version": "20.04.6"
-        },
-        {
-            "name": "Docker",
-            "version": "19.03.15"
+            "name": "VMware ESXi",
+            "version": "7"
         }
     ]
 }

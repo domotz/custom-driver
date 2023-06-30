@@ -1,39 +1,35 @@
 {
-    "logo": "docker.svg",
+    "logo": "freebsd.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "Monitor running docker software information on a host",
+    "name": "FreeBSD Network Routes",
+    "description": "Monitor the FreeBSD Network Routes by using the netstat command",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Docker Installed",
+            "FreeBSD",
             "SSH Enabled"
         ]
     },
     "tags": [
-        "docker",
-        "ubuntu",
-        "linux",
+        "freebsd",
+        "routes",
+        "netstat",
         "software"
     ],
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
+        "table": "[4,999]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Ubuntu",
-            "version": "20.04.6"
-        },
-        {
-            "name": "Docker",
-            "version": "19.03.15"
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
         }
     ]
 }

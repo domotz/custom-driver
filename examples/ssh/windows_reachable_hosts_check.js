@@ -39,7 +39,7 @@ function checkSshError(err) {
     if (err.message) console.error(err.message);
     if (err.code == 5) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-    } else if (err.code == 255){
+    } else if (err.code == 255) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
         console.error(err);
@@ -54,7 +54,7 @@ function checkSshError(err) {
  */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    D.device.sendSSHCommand(sshConfig, function(output, error){
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
             checkSshError(error);
         } else if (!output || output.indexOf("is not recognized") !== -1) {
@@ -76,7 +76,7 @@ function get_status() {
 }
 
 // Result parsing callback for variables data
-function parseResultCallback(output, error){
+function parseResultCallback(output, error) {
     if (error) {
         checkSshError(error);
     } else {

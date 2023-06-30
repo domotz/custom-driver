@@ -1,8 +1,8 @@
 {
     "logo": "docker.svg",
     "version": "1.0.0",
-    "name": "Docker Info",
-    "description": "Monitor running docker software information on a host",
+    "name": "Docker Containers CPU and Memory Utilization",
+    "description": "Monitor CPU and Memory utilization for each docker container running on a host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -15,13 +15,14 @@
     "tags": [
         "docker",
         "ubuntu",
-        "linux",
+        "cpu",
+        "memory",
         "software"
     ],
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[78]"
+        "table": "[3,999]"
     },
     "protocols": [
         "SSH"
