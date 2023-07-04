@@ -65,7 +65,6 @@ function executeCommand(command) {
     return d.promise;
 }
 
-
 /**
 * @remote_procedure
 * @label Validate Association
@@ -74,14 +73,23 @@ function executeCommand(command) {
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     executeCommand(fullCommand)
-        .then(function(){
-            D.success();
-        })
+        .then(parseValidateOutput)
+        .then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
+
+function parseValidateOutput(output) {
+    // Check if the output contains the expected response or data
+    if (output.trim() !== "") {
+        console.log("Validation successful");
+    } else {
+        console.log("Validation failed: Unexpected output");
+    }
+}
+
 
 var updateListTable = D.createTable(
     "Updates List",
