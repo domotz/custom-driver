@@ -28,7 +28,7 @@
 // Define SSH configuration
 var sshConfig = {
     timeout: 60000,
-    port: 22
+    port: 27123
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
@@ -37,17 +37,17 @@ var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 var testUDPSpeed = true;
 
 // Define here your target iPerf3 server host and port
-var targetServer = {
-    url: "ping-90ms.online.net",
-    port: 5209
-};
+var targetServers = [
+    { url: "ping-90ms.online.net", port: 5209 },
+    { url: "speed.as208196.net", port: 5209 }
+];
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
-    { id: "download_speed", label: "Download speed", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " -R | grep sender | awk -F \" \" '{print $7}'" },
-    { id: "upload_speed", label: "Upload speed", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " | grep sender | awk -F \" \" '{print $7}'" },
-    { id: "download_speed_udp", label: "Download speed UDP", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" },
-    { id: "upload_speed_udp", label: "Upload speed UDP", command: "iperf3 -f m -c " + targetServer.url + " -p " + targetServer.port + " -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" }
+    { id: "download_speed", label: "Download speed", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " -R | grep sender | awk -F \" \" '{print $7}'" },
+    { id: "upload_speed", label: "Upload speed", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " | grep sender | awk -F \" \" '{print $7}'" },
+    { id: "download_speed_udp", label: "Download speed UDP", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" },
+    { id: "upload_speed_udp", label: "Upload speed UDP", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" }
 ];
 
 //Checking SSH errors and handling them
@@ -65,8 +65,8 @@ function executeCommand(command) {
         sshConfig.command = command;
         D.device.sendSSHCommand(sshConfig, function (out, err) {
             if (err) {
-                console.error(err)
-                d.resolve()
+                console.error(err);
+                d.resolve();
             }
             if (Array.isArray(result))
                 result.push(out);
@@ -89,7 +89,7 @@ function execute() {
 
     return commands.reduce(D.q.when, D.q([]))
         .then(function (result) {
-            return result.filter(function(res) {return res != null}).map(function (res, index) {
+            return result.filter(function(res) {return res != null;}).map(function (res, index) {
                 return D.device.createVariable(execConfig[index].id, execConfig[index].label, res, "Mb/s");
             });
         });
@@ -122,7 +122,27 @@ function validate() {
 * @documentation This procedure is used for retrieving iperf3 results
 */
 function get_status() {
-    execute()
-        .then(D.success)
-        .catch(failure);
+    var serverIndex = 0;
+  
+    function tryNextServer() {
+        if (serverIndex >= targetServers.length) {
+            console.error("All servers are busy or unreachable.");
+            D.failure(D.errorType.GENERIC_ERROR);
+            return;
+        }
+  
+        targetServer = targetServers[serverIndex];
+  
+        execute()
+            .then(D.success)
+            .catch(function (err) {
+                if (err.include("the server is busy running a test")) {
+                    serverIndex++;
+                    tryNextServer();
+                } else {
+                    failure(err);
+                }
+            });
+    }
+    tryNextServer();
 }
