@@ -1,0 +1,36 @@
+{
+    "logo": "nginx.svg",
+    "version": "1.0.0",
+    "name": "Nginx Status",
+    "description": "Monitor Nginx metrics such as: Active, Accepted, and Handled Connections; total requests; etc.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Nginx Installed"
+        ]
+    },
+    "tags": [
+        "nginx",
+        "linux",
+        "connections",
+        "metrics"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "22.04"
+        },
+        {
+            "name": "nginx",
+            "version": "1.14.0"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "logo": "cisco.svg",
+    "version": "1.0.0",
+    "name": "Cisco Uptime and Reboot",
+    "description": "Monitor the uptime and issue a Reboot command to a Cisco device",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "cisco device",
+            "CISCO-MIB support",
+            "RFC2982-MIB support"       ]
+    },
+    "tags": [
+        "cisco",
+        "uptime",
+        "reboot"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "SNMP"
+    ],
+    "tested_on": [
+        {}
+    ]
+}
