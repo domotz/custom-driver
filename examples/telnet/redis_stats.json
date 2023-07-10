@@ -13,8 +13,8 @@
     "tags": [
         "redis",
         "clients",
-        "RDB",
-        "AOF"
+        "rdb",
+        "aof"
     ],
     "sample_period": 1800,
     "has_actions": false,
