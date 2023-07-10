@@ -8,11 +8,11 @@
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "raspberry",
+            "raspberry-pi",
             "pi-hole"        ]
     },
     "tags": [
-        "raspberry",
+        "raspberry-pi",
         "pi-hole",
         "ad-blocker"
     ],
