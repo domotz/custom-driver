@@ -8,7 +8,8 @@
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "cisco device",
+            "Cisco device",
+            "SNMP enabled",
             "CISCO-MIB support",
             "RFC2982-MIB support"       ]
     },
@@ -20,8 +21,6 @@
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {},
-    "protocols": [
-        "SNMP"
-    ],
+    "protocols": [],
     "tested_on": []
 }
