@@ -18,7 +18,5 @@
     "protocols": [
         "HTTP"
     ],
-    "tested_on": [
-        {}
-    ]
+    "tested_on": []
 }

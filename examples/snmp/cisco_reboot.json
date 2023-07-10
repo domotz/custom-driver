@@ -23,7 +23,5 @@
     "protocols": [
         "SNMP"
     ],
-    "tested_on": [
-        {}
-    ]
+    "tested_on": []
 }
