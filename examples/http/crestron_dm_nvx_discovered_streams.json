@@ -21,7 +21,7 @@
     "expected_variables": {
     },
     "protocols": [
-        "HTTP"
+        "HTTPS"
     ],
     "tested_on": [
         {
