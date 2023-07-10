@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows Monitor IP Latency
- * Description: Tis script is designe pings an IP address and retrieves the average latency and packet loss percentage.
+ * Description: This script is designe to ping an IP address and retrieves the average latency and packet loss percentage.
  *   
  * Communication protocol is WinRM
  * 
@@ -16,7 +16,7 @@
  **/
 
 var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "1.1.1.1", "192.168.0.1", "192.168.0.2", "192.168.0.3"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses = ["8.8.8.8", "1.1.1.1", "192.168.0.1", "192.168.0.64", "192.168.0.65"]; // List of IP addresses to ping and retrieve status for.
 var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
@@ -47,13 +47,15 @@ function checkWinRmError(err) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    winrmConfig.command = "ping -n " + pktno + " 8.8.8.8";
-    D.device.sendWinRMCommand(winrmConfig, function (output) {
-        if (output.error === null) {
-            D.success();
-        } else {
-            checkWinRmError(output.error);
-        }
+    ipAddresses.forEach(function (ipAddress) {
+        winrmConfig.command = "ping -n " + pktno + " " + ipAddress;
+        D.device.sendWinRMCommand(winrmConfig, function (output) {
+            if (output.error === null) {
+                D.success();
+            } else {
+                checkWinRmError(output.error);
+            }
+        });
     });
 }
 
