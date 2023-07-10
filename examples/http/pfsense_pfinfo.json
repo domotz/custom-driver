@@ -12,9 +12,9 @@
             "pfInfo"        ]
     },
     "tags": [
-        "pfSense",
-        "pfInfo",
-        "FreeBSD"
+        "pfsense",
+        "pfinfo",
+        "freebsd"
     ],
     "sample_period": 1800,
     "has_actions": false,
