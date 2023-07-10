@@ -1,0 +1,32 @@
+{
+    "logo": "crestron.svg",
+    "version": "1.0.0",
+    "name": "Crestron DM-NVX Discovered Steams",
+    "description": "Monitor Crestron DM-NVX general properties such as: Device Mode, Model, Name, Serial Number, Software Version",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Crestron DM-NVX device"
+        ]
+    },
+    "tags": [
+        "crestron",
+        "dm-nvx",
+        "nvx"
+    ],
+    "sample_period": 1800,
+    "has_actions": true,
+    "expected_variables": {
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Crestron DM-NVX-363",
+            "version": "2.0.0"
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Monitor Zoom services",
+    "description": "Monitor Zoom.us services via externalHostname",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "zoom"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {}
+    ]
+}

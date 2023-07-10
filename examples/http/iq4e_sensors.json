@@ -1,0 +1,28 @@
+{
+    "logo": "iq4e.svg",
+    "version": "1.0.0",
+    "name": "IQ4E Controller",
+    "description": "This script monitors IQ4E Controller sensors",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "IQ4E Controller device"
+        ]
+    },
+    "tags": [
+        "iq4w",
+        "sensors"
+    ],
+    "sample_period": 1800,
+    "has_actions": true,
+    "expected_variables": {
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {}
+    ]
+}

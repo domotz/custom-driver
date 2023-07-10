@@ -1,0 +1,31 @@
+{
+    "logo": "apache.svg",
+    "version": "1.0.0",
+    "name": "Apache2 Status",
+    "description": "Monitor Apache2 server: this script will show the Apache2 service status",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Apache2 Installed",
+            "apache mod_status enabled"        ]
+    },
+    "tags": [
+        "webserver",
+        "apache",
+        "software"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Apache",
+            "version": "2.4.41"
+        }
+    ]
+}

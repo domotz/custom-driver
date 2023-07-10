@@ -1,0 +1,28 @@
+{
+    "logo": "aws.svg",
+    "version": "1.0.0",
+    "name": "Aws CloudWatch Metrics",
+    "description": "Monitor AWS CloudWatch metrics: this script retrieves information about CPUUtilization, NetworkIn, NetworkOut, DiskReadOps, DiskWriteOps, DatabaseConnections, and many more.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "AWS"        ]
+    },
+    "tags": [
+        "aws",
+        "cpu",
+        "network",
+        "storage"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {}
+    ]
+}
