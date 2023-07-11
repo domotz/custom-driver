@@ -1,0 +1,40 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux Monitor IP Latency",
+    "description": "Monitor IP Latency from a host to another",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "ping"
+        ]
+    },
+    "tags": [
+        "linux",
+        "ip address",
+        "latency",
+        "packet loss"
+    ],
+    "sample_period": 30000,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[5]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux",
+            "version": "Debian 10"
+        },
+        {
+            "name": "bash",
+            "version": "5.1.16"
+        }
+    ]
+}
