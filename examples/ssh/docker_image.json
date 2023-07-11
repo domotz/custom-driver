@@ -16,7 +16,8 @@
         "docker",
         "ubuntu",
         "image",
-        "software"
+        "software",
+        "container"
     ],
     "sample_period": 1800,
     "has_actions": false,

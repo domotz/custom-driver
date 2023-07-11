@@ -1,0 +1,26 @@
+{
+    "logo": "ubiquity.svg",
+    "version": "1.0.0",
+    "name": "Ubiquiti EdgeOS Routers DHCP Leases",
+    "description": "This script extracts the DHCP Lease information for Ubiquiti EdgeOS Routers",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Ubiquiti EdgeOS Router device"
+        ]
+    },
+    "tags": [
+        "ubiquiti",
+        "sensors"
+    ],
+    "sample_period": 1800,
+    "has_actions": true,
+    "expected_variables": {
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": []
+}

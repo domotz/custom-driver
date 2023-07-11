@@ -1,32 +1,26 @@
 {
     "logo": "pfsense.svg",
     "version": "1.0.0",
-    "name": "pfSense",
-    "description": "Monitor the pfSense process and the processes running on the FreeBSD server",
+    "name": "Monitor pfSense with pfInfo",
+    "description": "Check pfInfo using the pfSense web application",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "FreeBSD",
             "pfSense",
-            "SSH Enabled"
-        ]
+            "pfInfo"        ]
     },
     "tags": [
         "pfsense",
-        "freebsd",
-        "software",
-        "firewall",
-        "processes"
+        "pfinfo",
+        "freebsd"
     ],
-    "sample_period": 300,
+    "sample_period": 1800,
     "has_actions": false,
-    "expected_variables": {
-        "table": "[12,999]"
-    },
+    "expected_variables": {},
     "protocols": [
-        "SSH"
+        "HTTPS"
     ],
     "tested_on": [
         {
