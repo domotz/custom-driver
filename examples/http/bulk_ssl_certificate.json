@@ -2,7 +2,7 @@
     "logo": "ssl-checker.svg",
     "version": "1.0.0",
     "name": "Bulk SSL/TLS Certificate Validation",
-    "description": "Check a cluster of sites if their certificate is valid and if there is any error with the Certificate Authority; check when the certificate expires;be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
+    "description": "Check whether a list of websites have valid SSL certificates and if there is any error with the Certificate Authority; check when the certificate expires; be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
@@ -23,7 +23,7 @@
     "has_actions": false,
     "expected_variables": {},
     "protocols": [
-        "HTTP"
+        "HTTPS"
     ],
     "tested_on": []
 }

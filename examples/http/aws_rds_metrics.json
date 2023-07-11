@@ -2,7 +2,7 @@
     "logo": "aws.svg",
     "version": "1.0.0",
     "name": "Aws RDS Metrics",
-    "description": "Monitor AWS Relational Database Service: this script retrieves information eneral information such as CPU, disk operations, and network properties",
+    "description": "Monitor AWS Relational Database Service: this script retrieves general information such as CPU, disk operations, and network properties",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -19,7 +19,7 @@
     "has_actions": false,
     "expected_variables": {},
     "protocols": [
-        "HTTP"
+        "HTTPS"
     ],
     "tested_on": []
 }

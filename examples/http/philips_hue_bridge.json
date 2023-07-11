@@ -9,7 +9,7 @@
         "sandbox_version": "1.12",
         "others": [
             "philips hue lights",
-            "philips huw bridge"        ]
+            "philips hue bridge"        ]
     },
     "tags": [
         "philips",
@@ -21,7 +21,7 @@
     "has_actions": false,
     "expected_variables": {},
     "protocols": [
-        "HTTP"
+        "HTTPS"
     ],
     "tested_on": []
 }

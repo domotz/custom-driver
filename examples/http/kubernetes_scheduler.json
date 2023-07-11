@@ -2,7 +2,7 @@
     "logo": "kubernetes.svg",
     "version": "1.0.0",
     "name": "Kubernetes Scheduler",
-    "description": "This script is able to extract information about the Kubernetes scheduler (such as CPU consumption, fds open and max, memory usage, etc)",
+    "description": "This script extracts information about the Kubernetes scheduler (such as CPU consumption, fds open and max, memory usage, etc)",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -20,7 +20,7 @@
     "has_actions": false,
     "expected_variables": {},
     "protocols": [
-        "HTTP"
+        "HTTPS"
     ],
     "tested_on": [
         {
