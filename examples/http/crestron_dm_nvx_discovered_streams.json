@@ -2,7 +2,7 @@
     "logo": "crestron.svg",
     "version": "1.0.0",
     "name": "Crestron DM-NVX Discovered Steams",
-    "description": "Monitor Crestron DM-NVX general properties such as: Device Mode, Model, Name, Serial Number, Software Version",
+    "description": "Monitor Crestron DM-NVX streaming properties such as: Bitrate, Resolution, and Multicast address",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,

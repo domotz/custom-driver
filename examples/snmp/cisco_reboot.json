@@ -19,7 +19,7 @@
         "reboot"
     ],
     "sample_period": 1800,
-    "has_actions": false,
+    "has_actions": true,
     "expected_variables": {},
     "protocols": [],
     "tested_on": []

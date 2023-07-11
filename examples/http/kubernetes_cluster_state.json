@@ -2,7 +2,7 @@
     "logo": "kubernetes.svg",
     "version": "1.0.0",
     "name": "Kubernetes Cluster State",
-    "description": "This script monitor Kubernetes state and work without any external scripts.",
+    "description": "This script monitors Kubernetes state",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
