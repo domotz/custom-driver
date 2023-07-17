@@ -28,7 +28,7 @@
 // Define SSH configuration
 var sshConfig = {
     timeout: 60000,
-    port: 27123
+    port: 22
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
