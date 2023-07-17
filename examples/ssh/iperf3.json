@@ -1,0 +1,45 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Iperf",
+    "description": "This script is designed to retrieve network speed data using the iperf3",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "iperf3 installed",
+            "the server iperf3 must be running"
+        ]
+    },
+    "tags": [
+        "iperf3",
+        "server",
+        "network",
+        "test",
+        "Download speed",
+        "Upload speed",
+        "Download speed UDP",
+        "Upload speed UDP"
+    ],
+    "sample_period": 60000,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2.999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "iperf",
+            "version": "3.7"
+        },
+        {
+            "name": "Ubuntu",
+            "version": "22.04"
+        }
+    ]
+}
+
+ 

@@ -123,7 +123,6 @@ function validate() {
 */
 function get_status() {
     var serverIndex = 0;
-  
     function tryNextServer() {
         if (serverIndex >= targetServers.length) {
             console.error("All servers are busy or unreachable.");
@@ -131,12 +130,12 @@ function get_status() {
             return;
         }
   
-        targetServer = targetServers[serverIndex];
-  
+        targetServer = targetServers[serverIndex];  
+        
         execute()
             .then(D.success)
             .catch(function (err) {
-                if (err.include("the server is busy running a test")) {
+                if (err.indexOf("the server is busy running a test. try again later")) {
                     serverIndex++;
                     tryNextServer();
                 } else {
