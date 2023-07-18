@@ -17,6 +17,7 @@
 
 var pktno = "2"; // Number of packets to send during the ping command.
 var ipAddresses = ["8.8.8.8", "1.1.1.1", "192.168.0.1", "192.168.0.2", "192.168.0.3"]; // List of IP addresses to ping and retrieve status for.
+
 // Set up the SSH command options
 var sshCommandOptions = {
     "prompt": "]",
@@ -40,6 +41,16 @@ function checkSshError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
+function executeCommand(command){
+    var d = D.q.defer();
+    sshCommandOptions.command = command;
+    D.device.sendSSHCommand(sshCommandOptions, function (output, error) {
+        if(error) checkSshError(error);
+        d.resolve(output);
+    });
+    return d.promise;
+}
+
 /**
  * Excuting a simple command to test access to device:
  * 'dir' list the files and directories within a specified directory
@@ -50,15 +61,13 @@ function checkSshError(err) {
 function validate() {
     var commandValidate = "dir";
     console.info("Verifying credentials ... ", commandValidate);
-    function loginCallback(output, error) {
-        if (error) {
-            checkSshError(error);
-        } else {
+    executeCommand(commandValidate)
+        .then(function () {
             D.success();
-        }
-    }
-    sshCommandOptions["command"] = commandValidate;
-    D.device.sendSSHCommand(sshCommandOptions, loginCallback);
+        })
+        .catch(function (error) {
+            checkSshError(error);
+        });
 }
 
 /**
@@ -68,29 +77,33 @@ function validate() {
  * It populates the Custom Driver table with the IP address, latency, and packet loss.
  */
 function get_status() {
-    var count = 0; 
-    ipAddresses.forEach(function(ipAddress) {
+    var commandes = ipAddresses.map(function (ipAddress) {
         console.info("Pinging " + ipAddress + " ... ");
-        var command =  "ping -n " + pktno + " " +ipAddress;
-        sshCommandOptions["command"]  = command;
-        function resultCallback(output, error) {
-            if (error) {
+        var command = "ping -n " + pktno + " " + ipAddress;
+        return executeCommand(command)
+            .then(function (output) {
+                parseOutput(output, ipAddress);
+            })
+            .catch(function (error) {
                 checkSshError(error);
-            } else {
-                // Parse the output to get the latency and packet loss
-                var matchLatency = /Average = (\d+)ms/.exec(output);
-                var latencyValue = matchLatency[1];
-                var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = (\d+)/.exec(output);
-                var packetLossValue = matchPacketLoss[1];
-            
-                var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
-                tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
-            }
-            count++;
-            if (count === ipAddresses.length) {
-                D.success(tableColumns);
-            }
-        }
-        D.device.sendSSHCommand(sshCommandOptions, resultCallback);
+            });
     });
+
+    D.q.all(commandes)
+        .then(function () {
+            D.success(tableColumns);
+        })
+        .catch(function (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
+}
+
+function parseOutput(output, ipAddress) {
+    var matchLatency = /Average = (\d+)ms/.exec(output);
+    var latencyValue = matchLatency[1];
+    var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = (\d+)/.exec(output);
+    var packetLossValue = matchPacketLoss[1];
+    var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
+    tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
 }
