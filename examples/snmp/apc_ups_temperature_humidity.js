@@ -5,27 +5,44 @@
  *      - Probe Index: The index of the prob
  *      - Room Temperature: The current temperature reading from the probe
  *      - Room Humidity: The current humidity reading from the probe in percent
- * 
- * 
  */
 
-/**
-* @remote_procedure
-* @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
-*/
-function validate(){
-    var iemStatusProbesTable = "1.3.6.1.4.1.318.1.1.10.2.3.2"; //A list of probes supported by the Environmental Monitor and their status
-    function getCallback(output, error){
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+var iemStatusProbesTableOID = "1.3.6.1.4.1.318.1.1.10.2.3.2";
+var probeIndexOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.1.1";
+var probeTempOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.4.1";
+var probeTempUnitsOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.5.1";
+var probeHumidityOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.6.1";
+
+function validateAndGetData() {
+    var d = D.q.defer();
+    D.device.createSNMPSession().walk(iemStatusProbesTableOID, function(out, err) {
+        if (err) {
+            console.error(err);
+            d.failure(D.errorType.GENERIC_ERROR);
+        } else if (!out) {
+            d.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else {
-            D.success();
+            d.resolve(out);
         }
-    }
-    var snmpSession = D.device.createSNMPSession();
-    snmpSession.walk(iemStatusProbesTable, getCallback);
+    });
+
+    return d.promise;
+}
+
+/**
+ * @remote_procedure
+ * @label Validate Association
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ */
+function validate(){
+    validateAndGetData()
+        .then(function(){
+            D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }  
 
 /**
@@ -34,36 +51,29 @@ function validate(){
 * @documentation This procedure collects UPS Temperatury and Humidity values and sets it in a table
 */
 function get_status() {
-    var iemStatusProbesTable = "1.3.6.1.4.1.318.1.1.10.2.3.2";
-    function getCallback(output, error) {
-        if (error) {
-            console.error("Walk error for oid", error);
-            D.failure(D.errorType.PARSING_ERROR);
-        } else {
-            var probes = output;
-            var probeNumber = probes["1.3.6.1.4.1.318.1.1.10.2.3.2.1.1.1"];
+    validateAndGetData()
+        .then(function(out) {
+            var probeNumber = out[probeIndexOID];
             var recordId = D.crypto.hash(probeNumber, "sha256", null, "hex").slice(0, 50);
             var iemStatusProbeNumber = "probe_" + probeNumber;
-            var iemStatusProbeCurrentTemp = probes["1.3.6.1.4.1.318.1.1.10.2.3.2.1.4.1"];  
-            var iemStatusProbeTempUnits = probes["1.3.6.1.4.1.318.1.1.10.2.3.2.1.5.1"];
-            var iemStatusProbeCurrentHumid = probes["1.3.6.1.4.1.318.1.1.10.2.3.2.1.6.1"];
+            var iemStatusProbeCurrentTemp = out[probeTempOID];
+            var iemStatusProbeTempUnits = out[probeTempUnitsOID];
+            var iemStatusProbeCurrentHumid = out[probeHumidityOID];
             var unitTemp;
             if (iemStatusProbeTempUnits == 2) {
-                unitTemp = "F"; 
+                unitTemp = "F";
             } else {
                 unitTemp = "C";
             }
-            var table = D.createTable("UPS Temperatury and Humidity", 
-                [
-                    {label: "Probe Index"},
-                    {label: "Room Temperature", unit: unitTemp},
-                    {label: "Room Humidity", unit: "%"}
-                ]
-            );
+            var table = D.createTable("UPS Temperature and Humidity", [
+                {label: "Probe Index"},
+                {label: "Room Temperature", unit: unitTemp},
+                {label: "Room Humidity", unit: "%"}
+            ]);
             table.insertRecord(recordId, [iemStatusProbeNumber, iemStatusProbeCurrentTemp, iemStatusProbeCurrentHumid]);
             D.success(table);
-        }
-    }
-    var snmpSession = D.device.createSNMPSession();
-    snmpSession.walk(iemStatusProbesTable, getCallback);
+        }).catch(function(err) {
+            console.error("Walk error for OID", err);
+            D.failure(D.errorType.PARSING_ERROR);       
+        });
 }
