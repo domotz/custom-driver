@@ -23,9 +23,9 @@
  * 
 **/
 
-var cmdSudoCheck = "echo '" + D.device.password() + "'|sudo -S -v"
-var cmdNumberUpdates = "echo '" + D.device.password() + "'|sudo -S apt update -qq 2>/dev/null"
-var cmdListOfUpdates = "echo '" + D.device.password() + "'|sudo -S apt list --upgradable -qq 2>/dev/null"
+var cmdSudoCheck = "echo '" + D.device.password() + "'|sudo -S -v";
+var cmdNumberUpdates = "echo '" + D.device.password() + "'|sudo -S apt update -qq 2>/dev/null";
+var cmdListOfUpdates = "echo '" + D.device.password() + "'|sudo -S apt list --upgradable -qq 2>/dev/null";
 var fullCommand = 
                 // break on sudo error
                 "set -e;" + 

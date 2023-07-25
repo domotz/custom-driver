@@ -96,22 +96,22 @@ function parseOutput(output) {
                     SecurityCount++;
                 }
                 switch (severity) {
-                    case "Critical":
-                        CriticalCount++;
-                        break;
-                    case "Important":
-                        ImportantCount++;
-                        break;
-                    case "Low":
-                        LowCount++;
-                        break;
-                    case "Moderate":
-                        ModerateCount++;
-                        break;
-                    case "Unspecified":
-                        UnspecifiedCount++;
-                        break;
-                    default:
+                case "Critical":
+                    CriticalCount++;
+                    break;
+                case "Important":
+                    ImportantCount++;
+                    break;
+                case "Low":
+                    LowCount++;
+                    break;
+                case "Moderate":
+                    ModerateCount++;
+                    break;
+                case "Unspecified":
+                    UnspecifiedCount++;
+                    break;
+                default:
                 }
                 missingUpdatesTable.insertRecord(
                     recordId, [title, severity, category, url]
