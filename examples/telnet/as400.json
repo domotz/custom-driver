@@ -1,0 +1,30 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "AS400",
+    "description": "This script can monitor the AS400 IBM servers errors list",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "as400",
+        "errors"
+    ],
+    "sample_period": 10000,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[10]"
+    },
+    "protocols": [
+        "TELNET"
+    ],
+    "tested_on": [
+        {
+            "name": "AS400",
+            "version": "BASE 5050, CODE  QSYS  V6R1M1 L00"
+        }
+    ]
+}
