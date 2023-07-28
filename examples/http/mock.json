@@ -30,5 +30,13 @@
         "independent": "[5]"
     },
     "protocols": [],
-    "tested_on": []
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type":"STRING",
+            "value":"default",
+            "name":"testParam",
+            "label":"description of the param"
+        }
+    ]
 }
