@@ -1,6 +1,6 @@
 {
     "logo": "docker.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "I AM Mocked",
     "description": "This is not a real driver",
     "category": "Hardware Integration",
