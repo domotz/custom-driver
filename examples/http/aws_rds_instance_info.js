@@ -78,21 +78,21 @@ function httpGet(params) {
             "Authorization": auth
         },
     },
-        function (err, response, body) {
-            if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode === 401 || response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            d.resolve(JSON.parse(body));
-        });
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -102,8 +102,8 @@ function httpGet(params) {
 function getInstanceData() {
     var payload = {};
     payload["Action"] = "DescribeDBInstances",
-        payload["Version"] = "2014-10-31",
-        payload["DBInstanceIdentifier"] = dbInstanceId;
+    payload["Version"] = "2014-10-31",
+    payload["DBInstanceIdentifier"] = dbInstanceId;
     return httpGet(prepareParams(payload))
         .then(function (data) {
             instanceInfo = data.DescribeDBInstancesResponse.DescribeDBInstancesResult.DBInstances;
