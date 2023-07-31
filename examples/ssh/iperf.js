@@ -48,11 +48,11 @@ function executeCommand(command) {
                 d.reject(err);
             }
             if(Array.isArray(result))
-                result.push(out)
+                result.push(out);
             d.resolve(result);
         });
         return d.promise;
-    }
+    };
 }
 
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
