@@ -22,7 +22,8 @@
         "mock",
         "hardware",
         "test",
-        "development"
+        "development",
+        "update"
     ],
     "sample_period": 300,
     "has_actions": false,
