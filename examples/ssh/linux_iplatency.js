@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Linux Monitor IP Latency
- * Description: This script is designed to ping an IP address and retrieve the average latency and packet loss percentage.
+ * Description: This script its designed to ping a list of IP addresses from a linux host machine and retrieve their average latency and packet loss percentage.
  *   
  * Communication protocol is SSH
  * 
@@ -15,7 +15,7 @@
  **/
 
 var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "1.1.1.1", "192.168.0.1", "192.168.0.1", "172.17.0.1"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses = ["8.8.8.8", "1.1.1.1"]; // List of IP addresses to ping and retrieve status for.
 
 // Set up the SSH command options
 var sshCommandOptions = {
@@ -39,31 +39,40 @@ function checkSshError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-function executeCommand(command){
+function executeCommand(command, ipAddress) {
     var d = D.q.defer();
     sshCommandOptions.command = command;
     D.device.sendSSHCommand(sshCommandOptions, function (output, error) {
-        if(error) checkSshError(error);
-        d.resolve(output);
+        if (error) {
+            if (error.output && error.output.indexOf("100% packet loss") >= 0) {
+                console.error("Error: 100% packet loss for address " + ipAddress); 
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                checkSshError(error);
+            }
+        } else {
+            d.resolve(output);
+        }
     });
     return d.promise;
 }
 
 /**
- * Excuting a simple command to test access to device:
- * 'ls' list the files and directories within a specified directory
- * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
- */
+* @remote_procedure
+* @label Validate Association
+* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
+*/
 function validate() {
-    var commandValidate = "ls";
-    console.info("Verifying credentials ... ", commandValidate); 
-    executeCommand(commandValidate)
-        .then(function(){
+    var command = ipAddresses.map(function (ipAddress) {
+        var command = "ping -c " + pktno + " " + ipAddress;
+        return executeCommand(command, ipAddress);
+    });
+
+    D.q.all(command)
+        .then(function () {
             D.success();
         })
-        .catch(function(error) {
+        .catch(function (error) {
             checkSshError(error);
         });
 }
@@ -78,7 +87,7 @@ function get_status() {
     var commandes  = ipAddresses.map(function (ipAddress) {
         console.info("Pinging " + ipAddress + " ... ");
         var command = "ping -c " + pktno + " " + ipAddress;
-        return executeCommand(command)
+        return executeCommand(command, ipAddress)
             .then(function (output) {
                 parseOutput(output, ipAddress);
             })

@@ -2,7 +2,7 @@
     "logo": "linux.svg",
     "version": "1.0.0",
     "name": "Linux Monitor IP Latency",
-    "description": "Monitor IP Latency from a host to another",
+    "description": "Monitor IP Latency from a linux host to a list of IP addresses",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -15,14 +15,14 @@
     },
     "tags": [
         "linux",
-        "ip address",
+        "ip-address",
         "latency",
-        "packet loss"
+        "packet-loss"
     ],
-    "sample_period": 30000,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[5]"
+        "table": "[6]"
     },
     "protocols": [
         "SSH"
