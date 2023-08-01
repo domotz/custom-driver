@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows Monitor IP Latency
- * Description: This script is designe to ping an IP address and retrieves the average latency and packet loss percentage.
+ * Description: This script its designed to ping a list of IP addresses from a windows host machine and retrieve the average latency and packet loss percentage.
  *   
  * Communication protocol is WinRM
  * 
@@ -16,7 +16,7 @@
  **/
 
 var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "1.1.1.1", "192.168.0.1", "192.168.0.64", "192.168.0.65"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses = ["8.8.8.8", "8.8.4.4"]; // List of IP addresses to ping and retrieve status for.
 var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
@@ -41,14 +41,19 @@ function checkWinRmError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-function executeCommand(command){
+function executeCommand(command, ipAddress){
     var d = D.q.defer();
     winrmConfig.command = command;
     D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
             d.resolve(output);
-        } else {
-            checkWinRmError(output.error);
+        }else {
+            if (output.error.indexOf("100% loss") >= 0) {
+                console.error("Error: 100% packet loss for address " + ipAddress);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                checkWinRmError(output.error);
+            }
         }
     });
     return d.promise;
@@ -57,12 +62,12 @@ function executeCommand(command){
 /**
 * @remote_procedure
 * @label Validate WinRM is working on device
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
 */
 function validate() {
     var command = ipAddresses.map(function (ipAddress) {
         var command = "ping -n " + pktno + " " + ipAddress;
-        return executeWinRMCommand(command);
+        return executeWinRMCommand(command, ipAddress);
     });
 
     D.q.all(command)
@@ -81,19 +86,19 @@ function validate() {
  * It populates the Custom Driver table with the IP address, latency, and packet loss.
  */
 function get_status() {
-    var commandes = ipAddresses.map(function (ipAddress) {
+    var commands = ipAddresses.map(function (ipAddress) {
         console.info("Pinging " + ipAddress + " ... ");
         var command = "ping -n " + pktno + " " + ipAddress;
-        return executeCommand(command)
+        return executeCommand(command, ipAddress)
             .then(function (output) {
                 parseOutput(output, ipAddress);
             })
-            .catch(function (error) {command;
+            .catch(function (error) {
                 checkWinRmError(error);
             });
     });
 
-    D.q.all(commandes)
+    D.q.all(commands)
         .then(function () {
             D.success(tableColumns);
         })
@@ -106,9 +111,9 @@ function get_status() {
 function parseOutput(output, ipAddress) {
     var outputData = output.outcome.stdout;
     var matchLatency = /Average = (\d+)ms/.exec(outputData);
-    var latencyValue = matchLatency[1];
+    var latencyValue = matchLatency ? matchLatency[1] : "N/A";
     var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = (\d+)/.exec(outputData);
-    var packetLossValue = matchPacketLoss[1];
+    var packetLossValue =  matchPacketLoss ? matchPacketLoss[1] : "N/A";
     var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
     tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
 }
