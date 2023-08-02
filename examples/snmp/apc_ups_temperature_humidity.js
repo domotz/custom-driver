@@ -1,14 +1,14 @@
 /**
  * This script can monitor the UPS Temperatury and Humidity.
  * Communication protocol is SNMP V2
- * Creates a table with the following columns:
- *      - Probe Index: The index of the prob
+ * Creates a custom driver variable:
+ *      - Probe Name: The descriptive name for the probe
  *      - Room Temperature: The current temperature reading from the probe
  *      - Room Humidity: The current humidity reading from the probe in percent
  */
-
+    
 var iemStatusProbesTableOID = "1.3.6.1.4.1.318.1.1.10.2.3.2";
-var probeIndexOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.1.1";
+var probNameOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.2.1";
 var probeTempOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.4.1";
 var probeTempUnitsOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.5.1";
 var probeHumidityOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.6.1";
@@ -18,14 +18,17 @@ function validateAndGetData() {
     D.device.createSNMPSession().walk(iemStatusProbesTableOID, function(out, err) {
         if (err) {
             console.error(err);
-            d.failure(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR);
         } else if (!out) {
-            d.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else {
-            d.resolve(out);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }  else {
+            if (err || out[probNameOID].err || out[probeTempOID].err || out[probeTempUnitsOID].err || out[probeHumidityOID].err) { 
+                D.failure(D.errorType.PARSING_ERROR);
+            } else {
+                d.resolve(out);
+            }
         }
     });
-
     return d.promise;
 }
 
@@ -53,25 +56,21 @@ function validate(){
 function get_status() {
     validateAndGetData()
         .then(function(out) {
-            var probeNumber = out[probeIndexOID];
-            var recordId = D.crypto.hash(probeNumber, "sha256", null, "hex").slice(0, 50);
-            var iemStatusProbeNumber = "probe_" + probeNumber;
-            var iemStatusProbeCurrentTemp = out[probeTempOID];
+            var variables = [];
             var iemStatusProbeTempUnits = out[probeTempUnitsOID];
-            var iemStatusProbeCurrentHumid = out[probeHumidityOID];
             var unitTemp;
             if (iemStatusProbeTempUnits == 2) {
                 unitTemp = "F";
             } else {
                 unitTemp = "C";
             }
-            var table = D.createTable("UPS Temperature and Humidity", [
-                {label: "Probe Index"},
-                {label: "Room Temperature", unit: unitTemp},
-                {label: "Room Humidity", unit: "%"}
-            ]);
-            table.insertRecord(recordId, [iemStatusProbeNumber, iemStatusProbeCurrentTemp, iemStatusProbeCurrentHumid]);
-            D.success(table);
+            var iemStatusProbeName = D.device.createVariable("probe_name", "Probe Name", out[probNameOID]);
+            var iemStatusProbeCurrentTemp = D.device.createVariable("probe_temperature", "Probe Temperature", out[probeTempOID], unitTemp);
+            var iemStatusProbeCurrentHumid = D.device.createVariable("probe_humidity", "Probe Humidity", out[probeHumidityOID], "%");
+            variables.push(iemStatusProbeName);
+            variables.push(iemStatusProbeCurrentTemp);
+            variables.push(iemStatusProbeCurrentHumid);
+            D.success(variables);
         }).catch(function(err) {
             console.error("Walk error for OID", err);
             D.failure(D.errorType.PARSING_ERROR);       
