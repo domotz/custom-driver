@@ -1,5 +1,5 @@
 {
-    "logo": "ubiquity.svg",
+    "logo": "ubiquiti.svg",
     "version": "1.0.0",
     "name": "Ubiquiti EdgeOS Routers DHCP Leases",
     "description": "This script extracts the DHCP Lease information for Ubiquiti EdgeOS Routers",
