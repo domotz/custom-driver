@@ -27,28 +27,65 @@
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 60000,
-    port: 22
+    timeout: 20000
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 
-// Define whether UDP is enabled on the device 
-var testUDPSpeed = true;
-
 // Define here your target iPerf3 server host and port
 var targetServers = [
-    { url: "ping-90ms.online.net", port: 5209 },
-    { url: "speed.as208196.net", port: 5209 }
+    { url: "ping-90ms.online.net", port: 5201 },
+    { url: "ping-90ms.online.net", port: 5202 },
+    { url: "ping-90ms.online.net", port: 5203 },
+    { url: "ping-90ms.online.net", port: 5204 },
+    { url: "iperf.astra.in.ua", port: 5201 },
+    { url: "iperf.astra.in.ua", port: 5202 },
+    { url: "iperf.astra.in.ua", port: 5203 },
+    { url: "iperf.astra.in.ua", port: 5204 }
 ];
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
-    { id: "download_speed", label: "Download speed", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " -R | grep sender | awk -F \" \" '{print $7}'" },
-    { id: "upload_speed", label: "Upload speed", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " | grep sender | awk -F \" \" '{print $7}'" },
-    { id: "download_speed_udp", label: "Download speed UDP", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " -u -R | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" },
-    { id: "upload_speed_udp", label: "Upload speed UDP", command: "iperf3 -f m -c " + targetServers[0].url + " -p " + targetServers[0].port + " -u | tail -n 4 | head -n 1 | awk -F \" \" '{print $7}'" }
-];
+    {
+        id: "download_speed",
+        label: "Download speed",
+        command: "iperf3 -f m -c {url} -p {port} -R",
+        extractor: tcpExtractor
+    },
+    {
+        id: "upload_speed",
+        label: "Upload speed",
+        command: "iperf3 -f m -c {url} -p {port}",
+        extractor: tcpExtractor
+    },
+    {
+        id: "download_speed_udp",
+        label: "Download speed UDP",
+        command: "iperf3 -f m -c {url} -p {port} -u -R",
+        extractor: udpExtractor
+    },
+    {
+        id: "upload_speed_udp",
+        label: "Upload speed UDP",
+        command: "iperf3 -f m -c {url} -p {port} -u",
+        extractor: udpExtractor
+    }
+]
+
+function tcpExtractor(data) {
+    var result = data.split("\n")
+        .filter(function (line) { return line.indexOf("sender") >= 0 })
+    return result.length > 0 ? result[0].split(/\s+/)[6] : null;
+}
+
+function udpExtractor(data) {
+    var result = data.split("\n")
+    var dataLength = result.length
+    result = result.filter(function (line, i) {
+        return i == dataLength - 4
+    })
+    return result.length > 0 ? result[0].split(/\s+/)[6] : null;
+}
 
 //Checking SSH errors and handling them
 function checkSshError(err) {
@@ -59,40 +96,59 @@ function checkSshError(err) {
 }
 
 // Function for executing SSH command 
-function executeCommand(command) {
+// this function test the iperf command, if the current server fails to respond the next will be called
+function executeCommand(commandTemplate, serverIndex, extractorFn) {
     return function (result) {
         var d = D.q.defer();
-        sshConfig.command = command;
-        D.device.sendSSHCommand(sshConfig, function (out, err) {
-            if (err) {
-                console.error(err);
-                d.resolve();
+        var command = commandTemplate
+
+        if (serverIndex !== null) {
+            if (serverIndex < targetServers.length) {
+                var server = targetServers[serverIndex]
+                command = command.replace("{url}", server.url).replace("{port}", server.port)
+                sshConfig.command = command;
+                D.device.sendSSHCommand(sshConfig, function (out, err) {
+                    if (err) {
+                        return d.reject(err);
+                    }
+                    if (extractorFn)
+                        result.push(extractorFn(out));
+                    d.resolve(result);
+                });
+            } else {
+                console.error("no more server to test with")
+                result.push(null)
+                d.resolve(result)
             }
-            if (Array.isArray(result))
-                result.push(out);
-            d.resolve(result);
+        }
+
+        return d.promise.catch(function (err) {
+            console.error(err.message);
+            return executeCommand(commandTemplate, serverIndex + 1, extractorFn)(result)
         });
-        return d.promise;
-    };
+    }
 }
 
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
 function execute() {
     var commands = [
-        executeCommand(execConfig[0].command),
-        executeCommand(execConfig[1].command),
+        executeCommand(execConfig[0].command, 0, tcpExtractor),
+        executeCommand(execConfig[1].command, 0, tcpExtractor),
+        executeCommand(execConfig[2].command, 0, udpExtractor),
+        executeCommand(execConfig[3].command, 0, udpExtractor)
     ];
-    if (testUDPSpeed) {
-        commands.push(executeCommand(execConfig[2].command));
-        commands.push(executeCommand(execConfig[3].command));
-    }
 
     return commands.reduce(D.q.when, D.q([]))
         .then(function (result) {
-            return result.filter(function(res) {return res != null;}).map(function (res, index) {
+            return result.filter(function (res) { return res != null; }).map(function (res, index) {
                 return D.device.createVariable(execConfig[index].id, execConfig[index].label, res, "Mb/s");
             });
+        }).then(function (vars) {
+            if (!vars.length)
+                failure("All target servers are not available")
+            return vars
         });
+
 
 }
 
@@ -109,7 +165,7 @@ function failure(err) {
 */
 function validate() {
     // Check if the iperf3 command is available
-    executeCommand("which iperf3")()
+    executeCommand("iperf3 -h", 0)()
         .then(function () {
             D.success();
         })
@@ -122,26 +178,7 @@ function validate() {
 * @documentation This procedure is used for retrieving iperf3 results
 */
 function get_status() {
-    var serverIndex = 0;
-    function tryNextServer() {
-        if (serverIndex >= targetServers.length) {
-            console.error("All servers are busy or unreachable.");
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
-  
-        targetServer = targetServers[serverIndex];  
-        
-        execute()
-            .then(D.success)
-            .catch(function (err) {
-                if (err.indexOf("the server is busy running a test. try again later")) {
-                    serverIndex++;
-                    tryNextServer();
-                } else {
-                    failure(err);
-                }
-            });
-    }
-    tryNextServer();
+    execute()
+        .then(D.success)
+        .catch(failure)
 }
