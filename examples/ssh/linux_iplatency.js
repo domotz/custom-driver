@@ -15,11 +15,11 @@
  **/
 
 var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "1.1.1.1"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses = ["8.8.8.8", "8.8.4.4", "8.8.8.33"]; // List of IP addresses to ping and retrieve status for.
 
 // Set up the SSH command options
 var sshCommandOptions = {
-    "timeout": 30000
+    "timeout": 10000,
 };
 
 var tableColumns = D.createTable(
@@ -39,18 +39,13 @@ function checkSshError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-function executeCommand(command, ipAddress) {
+function executeCommand(command) {
     var d = D.q.defer();
     sshCommandOptions.command = command;
     D.device.sendSSHCommand(sshCommandOptions, function (output, error) {
         if (error) {
-            if (error.output && error.output.indexOf("100% packet loss") >= 0) {
-                console.error("Error: 100% packet loss for address " + ipAddress); 
-                D.failure(D.errorType.GENERIC_ERROR);
-            } else {
-                checkSshError(error);
-            }
-        } else {
+            d.resolve(error);
+        }else{
             d.resolve(output);
         }
     });
@@ -63,18 +58,22 @@ function executeCommand(command, ipAddress) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
 */
 function validate() {
-    var command = ipAddresses.map(function (ipAddress) {
-        var command = "ping -c " + pktno + " " + ipAddress;
-        return executeCommand(command, ipAddress);
-    });
-
-    D.q.all(command)
-        .then(function () {
-            D.success();
-        })
-        .catch(function (error) {
-            checkSshError(error);
+    var command = "man -P cat ping"; 
+    executeCommand(command)
+        .then(parseValidateOutput)
+        .then(D.success)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
+}
+
+function parseValidateOutput(output) {
+    if (output.trim() !== "") {
+        console.log("Validation successful");
+    } else {
+        console.error("Validation failed: Unexpected output");
+    }
 }
 
 /**
@@ -85,7 +84,6 @@ function validate() {
  */
 function get_status() {
     var commandes  = ipAddresses.map(function (ipAddress) {
-        console.info("Pinging " + ipAddress + " ... ");
         var command = "ping -c " + pktno + " " + ipAddress;
         return executeCommand(command, ipAddress)
             .then(function (output) {
@@ -94,8 +92,7 @@ function get_status() {
             .catch(function (error) {
                 checkSshError(error);
             });
-    });
-      
+    });     
     D.q.all(commandes)
         .then(function () {
             D.success(tableColumns);
@@ -106,11 +103,20 @@ function get_status() {
         });
 }
 
-function parseOutput(output, ipAddress){
+function parseOutput(output, ipAddress) {
+    var latencyValue, packetLossValue;
     var matchLatency = /(\d+\.\d+)\/(\d+\.\d+)\/(\d+\.\d+)\/(\d+\.\d+) ms/.exec(output);
-    var latencyValue = matchLatency[2];
+    if (matchLatency && matchLatency.length >= 3) {
+        latencyValue = matchLatency[2];
+    } else {
+        latencyValue = "-1"; 
+    }       
     var matchPacketLoss = /(\d+)% packet loss/.exec(output);
-    var packetLossValue = matchPacketLoss[1];
+    if (matchPacketLoss && matchPacketLoss.length >= 2) {
+        packetLossValue = matchPacketLoss[1];
+    } else {
+        packetLossValue = "100"; 
+    }
     var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
     tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
 }
