@@ -8,8 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "iperf3 installed",
-            "the server iperf3 must be running"
+            "SSH Enabled"
         ]
     },
     "tags": [
@@ -25,7 +24,7 @@
     "sample_period": 120,
     "has_actions": false,
     "expected_variables": {
-        "table": "[2.999]"
+        "independent": "[4]"
     },
     "protocols": [
         "SSH"
