@@ -16,11 +16,12 @@
  **/
 
 var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "8.8.4.4"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses = ["8.8.8.8", "8.8.4.4", "8.8.8.33"]; // List of IP addresses to ping and retrieve status for.
 var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 30000
+    "timeout": 10000,
+    "port": 43173
 };
 
 var tableColumns = D.createTable(
@@ -41,42 +42,40 @@ function checkWinRmError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-function executeCommand(command, ipAddress){
+function executeCommand(command){
     var d = D.q.defer();
     winrmConfig.command = command;
     D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
             d.resolve(output);
         }else {
-            if (output.error.indexOf("100% loss") >= 0) {
-                console.error("Error: 100% packet loss for address " + ipAddress);
-                D.failure(D.errorType.GENERIC_ERROR);
-            } else {
-                checkWinRmError(output.error);
-            }
+            d.resolve({ error: output.error });
         }
     });
     return d.promise;
 }
 
 /**
-* @remote_procedure
-* @label Validate WinRM is working on device
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
-*/
+ * @remote_procedure
+ * @label Validate WinRM is working on device
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
+ */
 function validate() {
-    var command = ipAddresses.map(function (ipAddress) {
-        var command = "ping -n " + pktno + " " + ipAddress;
-        return executeWinRMCommand(command, ipAddress);
-    });
-
-    D.q.all(command)
-        .then(function () {
-            D.success();
-        })
-        .catch(function (error) {
-            checkWinRmError(error);
+    executeCommand("ping /?")
+        .then(parseValidateOutput)
+        .then(D.success)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
+}
+
+function parseValidateOutput(output) {
+    if (output.outcome.stdout.trim() !== "") {
+        console.log("Validation successful");
+    } else {
+        console.error("Validation failed: Unexpected output");
+    }
 }
 
 /**
@@ -87,17 +86,16 @@ function validate() {
  */
 function get_status() {
     var commands = ipAddresses.map(function (ipAddress) {
-        console.info("Pinging " + ipAddress + " ... ");
         var command = "ping -n " + pktno + " " + ipAddress;
-        return executeCommand(command, ipAddress)
+        return executeCommand(command)
             .then(function (output) {
                 parseOutput(output, ipAddress);
             })
             .catch(function (error) {
-                checkWinRmError(error);
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
             });
     });
-
     D.q.all(commands)
         .then(function () {
             D.success(tableColumns);
@@ -109,11 +107,17 @@ function get_status() {
 }
 
 function parseOutput(output, ipAddress) {
-    var outputData = output.outcome.stdout;
-    var matchLatency = /Average = (\d+)ms/.exec(outputData);
-    var latencyValue = matchLatency ? matchLatency[1] : "N/A";
-    var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = (\d+)/.exec(outputData);
-    var packetLossValue =  matchPacketLoss ? matchPacketLoss[1] : "N/A";
+    var latencyValue, packetLossValue;
+    if (output.error) {
+        latencyValue = "-1";
+        packetLossValue = "100";
+    } else {
+        var outputData = output.outcome.stdout;
+        var matchLatency = /Average = (\d+)ms/.exec(outputData);
+        latencyValue = matchLatency ? matchLatency[1] : "-";
+        var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = (\d+)/.exec(outputData);
+        packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
+    }
     var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
     tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
 }
