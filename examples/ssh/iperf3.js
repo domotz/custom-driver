@@ -27,7 +27,8 @@
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 20000
+    timeout: 20000,
+    port: 27123
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
@@ -35,13 +36,7 @@ var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 // Define here your target iPerf3 server host and port
 var targetServers = [
     { url: "ping-90ms.online.net", port: 5201 },
-    { url: "ping-90ms.online.net", port: 5202 },
-    { url: "ping-90ms.online.net", port: 5203 },
-    { url: "ping-90ms.online.net", port: 5204 },
-    { url: "iperf.astra.in.ua", port: 5201 },
-    { url: "iperf.astra.in.ua", port: 5202 },
-    { url: "iperf.astra.in.ua", port: 5203 },
-    { url: "iperf.astra.in.ua", port: 5204 }
+    { url: "iperf.astra.in.ua", port: 5201 }
 ];
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
@@ -165,11 +160,13 @@ function failure(err) {
 */
 function validate() {
     // Check if the iperf3 command is available
-    executeCommand("iperf3 -h", 0)()
-        .then(function () {
-            D.success();
-        })
-        .catch(failure);
+    sshConfig.command = "which iperf3"
+    D.device.sendSSHCommand(sshConfig, function (out, err) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        D.success()
+    });
 }
 
 /**
