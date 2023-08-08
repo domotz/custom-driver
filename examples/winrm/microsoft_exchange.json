@@ -1,0 +1,37 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Microsoft Exchange server ",
+    "description": "Monitor Microsoft Exchange Server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [ 
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "counter",
+        "path",
+        "instance-name",
+        "cooked-value",
+        "counter-type"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[152]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Exchange",
+            "version": "Server 2019 CU12"
+        }
+    ]
+}
