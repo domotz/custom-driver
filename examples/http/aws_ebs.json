@@ -1,6 +1,6 @@
 {
     "logo": "aws.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Aws EBS Metrics",
     "description": "Monitor AWS Elastic Book Store metrics: this script retrieves information about Burst Balance, Idle Time, Queue Lenght, Read operations, Write times",
     "category": "Software Integration",

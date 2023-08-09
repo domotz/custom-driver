@@ -1,6 +1,6 @@
 {
     "logo": "aws.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Aws Billing Metrics",
     "description": "Monitor AWS Billing metrics: this script retrieves billing metrics from AWS to monitor AWS cost and usage to ensure that the cost of AWS usage does not exceed the allocated budget",
     "category": "Software Integration",
