@@ -1,6 +1,6 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Linux Updates",
     "description": "Monitor the status of the Updates of a Linux machine",
     "category": "Software Integration",

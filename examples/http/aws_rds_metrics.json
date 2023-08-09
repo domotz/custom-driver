@@ -1,6 +1,6 @@
 {
     "logo": "aws.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Aws RDS Metrics",
     "description": "Monitor AWS Relational Database Service: this script retrieves general information such as CPU, disk operations, and network properties",
     "category": "Software Integration",
