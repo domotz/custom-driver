@@ -1,5 +1,5 @@
 /**
- * This script can monitor the UPS Temperatury and Humidity.
+ * This script can monitor the UPS Temperature and Humidity.
  * Communication protocol is SNMP V2
  * Creates a custom driver variable:
  *      - Probe Name: The descriptive name for the probe
@@ -24,7 +24,7 @@ function validateAndGetData() {
         } else if (!out) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else if (!(probNameOID in out) || !(probeTempOID in out) || !(probeTempUnitsOID in out) || !(probeHumidityOID in out)) {
-            console.error("Missing necessary OID valuvares in SNMP response");
+            console.error("Missing necessary OID in SNMP response");
             D.failure(D.errorType.PARSING_ERROR);
         }  else {
             d.resolve(out);
@@ -35,8 +35,8 @@ function validateAndGetData() {
 
 /**
  * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ * @label Host Device Is APC UPS
+ * @documentation This procedure is used to validate if the device is an APC UPS device with temperature and humidity data over SNMP
  */
 function validate(){
     validateAndGetData()
@@ -49,13 +49,12 @@ function validate(){
 
 /**
 * @remote_procedure
-* @label Get Device Variables
-* @documentation This procedure collects UPS Temperatury and Humidity values and sets it in a table
+* @label Get UPS Temperature and Humidity Sensor Values
+* @documentation This procedure collects UPS Temperature and Humidity values
 */
 function get_status() {
     validateAndGetData()
         .then(function(out) {
-            var variables = [];
             var iemStatusProbeTempUnits = out[probeTempUnitsOID];
             var unitTemp;
             if (iemStatusProbeTempUnits == 2) {
@@ -66,12 +65,9 @@ function get_status() {
             var iemStatusProbeName = D.device.createVariable("probe_name", "Probe Name", out[probNameOID]);
             var iemStatusProbeCurrentTemp = D.device.createVariable("probe_temperature", "Probe Temperature", out[probeTempOID], unitTemp);
             var iemStatusProbeCurrentHumid = D.device.createVariable("probe_humidity", "Probe Humidity", out[probeHumidityOID], "%");
-            variables.push(iemStatusProbeName);
-            variables.push(iemStatusProbeCurrentTemp);
-            variables.push(iemStatusProbeCurrentHumid);
-            D.success(variables);
+            D.success([iemStatusProbeName, iemStatusProbeCurrentTemp, iemStatusProbeCurrentHumid]);
         }).catch(function(err) {
             console.error("Walk error for OID", err);
-            D.failure(D.errorType.PARSING_ERROR);       
+            D.failure(D.errorType.PARSING_ERROR);
         });
 }

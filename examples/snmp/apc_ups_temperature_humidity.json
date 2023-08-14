@@ -12,7 +12,8 @@
         ]
     },
     "tags": [
-        "ups-monitoring",
+        "apc",
+        "ups",
         "temperature",
         "humidity"
     ],
