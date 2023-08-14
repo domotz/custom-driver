@@ -1,0 +1,26 @@
+{
+    "logo": "raspberry-pi-hole.svg",
+    "version": "1.0.0",
+    "name": "Monitor Pi-hole",
+    "description": "Monitor the status and daily statistics information for pi-hole https://pi-hole.net/",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "raspberry-pi",
+            "pi-hole"        ]
+    },
+    "tags": [
+        "raspberry-pi",
+        "pi-hole",
+        "ad-blocker"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": []
+}

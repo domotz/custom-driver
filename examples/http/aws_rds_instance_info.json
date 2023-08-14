@@ -1,0 +1,25 @@
+{
+    "logo": "aws.svg",
+    "version": "1.0.0",
+    "name": "Aws RDS Instance Info",
+    "description": "Monitor AWS Relational Database Service: this script retrieves information about the actual RDS instance properties such as storage, class, status, engine, etc.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "AWS RDS"        ]
+    },
+    "tags": [
+        "aws",
+        "rds",
+        "cloud"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": []
+}

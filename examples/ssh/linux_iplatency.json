@@ -1,0 +1,40 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux Monitor IP Latency",
+    "description": "Monitor IP Latency from a linux host to a list of IP addresses",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "Ping"
+        ]
+    },
+    "tags": [
+        "linux",
+        "ping",
+        "latency",
+        "packet-loss"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux",
+            "version": "Ubuntu 20.04 LTS"
+        },
+        {
+            "name": "bash",
+            "version": "5.1.16"
+        }
+    ]
+}

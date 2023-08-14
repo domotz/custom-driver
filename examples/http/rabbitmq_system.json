@@ -1,0 +1,35 @@
+{
+    "logo": "rabbitmq.svg",
+    "version": "1.0.0",
+    "name": "Monitor RabbitMQ System",
+    "description": "Check nodes and cluster metrics from RabbitMQ management plugin",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "rabbitmq"
+        ]
+    },
+    "tags": [
+        "rabbitmq",
+        "node",
+        "cluster"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "RabbitMQ",
+            "version": "3.11.5"
+        },
+        {
+            "name": "Linux Ubuntu",
+            "version": "22.04.1"
+        }
+    ]
+}

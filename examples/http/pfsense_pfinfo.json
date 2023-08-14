@@ -1,0 +1,35 @@
+{
+    "logo": "pfsense.svg",
+    "version": "1.0.0",
+    "name": "Monitor pfSense with pfInfo",
+    "description": "Check pfInfo using the pfSense web application",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "pfSense",
+            "pfInfo"        ]
+    },
+    "tags": [
+        "pfsense",
+        "pfinfo",
+        "freebsd"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "pfSense",
+            "version": "2.6.0-RELEASE"
+        },
+        {
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
+        }
+    ]
+}

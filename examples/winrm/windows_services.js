@@ -24,13 +24,13 @@
 // For Windows 10 computer (workstation) you may want to set the filter the following way:
 // var svcFilter = ["bits","Dnscache","Spooler","schedule","DHCP Client"]
 // For a server you may want to set the filter the following way:
-var svcFilter = ["LanmanServer", "dnscache", "Windows Time", "dhcp", "schedule", "RpcEptMapper", "MpsSvc"]
+var svcFilter = ["LanmanServer", "dnscache", "Windows Time", "dhcp", "schedule", "RpcEptMapper", "MpsSvc"];
 
 if (svcFilter !== '$null'){
     svcFilter = '@("' + svcFilter.join('","') + '")';
 }
 
-var getServices = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType | ConvertTo-Json'
+var getServices = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType | ConvertTo-Json';
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
