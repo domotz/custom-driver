@@ -10,19 +10,19 @@
         "others": [
             "Linux",
             "SSH Enabled",
-            "ping"
+            "Ping"
         ]
     },
     "tags": [
         "linux",
-        "ip-address",
+        "ping",
         "latency",
         "packet-loss"
     ],
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[6]"
+        "table": "[3,999]"
     },
     "protocols": [
         "SSH"
@@ -30,7 +30,7 @@
     "tested_on": [
         {
             "name": "Linux",
-            "version": "Debian 10"
+            "version": "Ubuntu 20.04 LTS"
         },
         {
             "name": "bash",

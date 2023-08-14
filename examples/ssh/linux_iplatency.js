@@ -14,8 +14,8 @@
  * 
  **/
 
-var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "8.8.4.4", "8.8.8.33"]; // List of IP addresses to ping and retrieve status for.
+var packetCount = 2; // Number of packets to send during the ping command.
+var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve status for.
 
 // Set up the SSH command options
 var sshCommandOptions = {
@@ -54,7 +54,7 @@ function executeCommand(command) {
 
 /**
 * @remote_procedure
-* @label Validate Association
+* @label Host Device Can Measure Latency
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
 */
 function validate() {
@@ -69,22 +69,23 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.log("Validation successful");
+    if (output.trim !== undefined && output.trim() !== "") {
+        console.info("Validation successful");
     } else {
-        console.error("Validation failed: Unexpected output");
+        console.error("Validation unsuccessful. Unexpected output: " + JSON.stringify(output));
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
     }
 }
 
 /**
  * @remote_procedure
- * @label Get IP Latency
+ * @label Measure IP Latency For IP Addresses
  * @documentation This procedure retrieves the latency of each IP address by sending ping commands.
  * It populates the Custom Driver table with the IP address, latency, and packet loss.
  */
 function get_status() {
-    var commandes  = ipAddresses.map(function (ipAddress) {
-        var command = "ping -c " + pktno + " " + ipAddress;
+    var commands  = ipAddresses.map(function (ipAddress) {
+        var command = "ping -c " + packetCount + " " + ipAddress;
         return executeCommand(command, ipAddress)
             .then(function (output) {
                 parseOutput(output, ipAddress);
@@ -93,13 +94,12 @@ function get_status() {
                 checkSshError(error);
             });
     });     
-    D.q.all(commandes)
+    D.q.all(commands)
         .then(function () {
             D.success(tableColumns);
         })
         .catch(function (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            checkSshError(error);
         });
 }
 
