@@ -26,7 +26,7 @@
         "table": "[3,999]"
     },
     "protocols": [
-        "WinRM"
+        "WINRM"
     ],
     "tested_on": [
         {
