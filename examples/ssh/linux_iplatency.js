@@ -19,7 +19,9 @@ var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve stat
 
 // Set up the SSH command options
 var sshCommandOptions = {
-    "timeout": 10000,
+    username: D.device.username(),
+    password: D.device.password(),
+    timeout: 10000,
 };
 
 var tableColumns = D.createTable(
@@ -73,7 +75,7 @@ function parseValidateOutput(output) {
         console.info("Validation successful");
     } else {
         console.error("Validation unsuccessful. Unexpected output: " + JSON.stringify(output));
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     }
 }
 

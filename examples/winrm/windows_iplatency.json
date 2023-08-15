@@ -1,0 +1,45 @@
+
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Monitor IP Latency",
+    "description": "Monitor IP Latency from windows host to a list of IP addresses",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled",
+            "Ping"
+        ]
+    },
+    "tags": [
+        "windows",
+        "ping",
+        "latency",
+        "packet-loss"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "11"
+        }
+    ]
+}
