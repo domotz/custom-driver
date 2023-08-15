@@ -11,19 +11,19 @@
         "others": [
             "Powershell Version 5.1.19041.2364",
             "WinRM Enabled",
-            "ping"
+            "Ping"
         ]
     },
     "tags": [
         "windows",
-        "ip-address",
+        "ping",
         "latency",
         "packet-loss"
     ],
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[6]"
+        "table": "[3,999]"
     },
     "protocols": [
         "WinRM"
@@ -36,6 +36,10 @@
         {
             "name": "Microsoft Windows",
             "version": "10"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "11"
         }
     ]
 }

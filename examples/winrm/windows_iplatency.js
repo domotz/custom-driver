@@ -7,7 +7,8 @@
  * 
  * Tested on Windows Versions:
  *      - Windows 10
- *      - Microsoft Windows Server 2019
+ *      - Windows 11
+ *      - Windows Server 2019
  * Powershell Version:
  *      - 5.1.19041.2364
  * 
@@ -15,13 +16,12 @@
  * 
  **/
 
-var pktno = "2"; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8", "8.8.4.4", "8.8.8.33"]; // List of IP addresses to ping and retrieve status for.
+var packetCount = 5; // Number of packets to send during the ping command.
+var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve status for.
 var winrmConfig = {
-    "username": D.device.username(),
-    "password": D.device.password(),
-    "timeout": 10000,
-    "port": 43173
+    username: D.device.username(),
+    password: D.device.password(),
+    timeout: 10000,
 };
 
 var tableColumns = D.createTable(
@@ -64,17 +64,17 @@ function validate() {
     executeCommand("ping /?")
         .then(parseValidateOutput)
         .then(D.success)
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
+        .catch(function (error) {
+            checkWinRmError(error);
         });
 }
 
 function parseValidateOutput(output) {
-    if (output.outcome.stdout.trim() !== "") {
-        console.log("Validation successful");
+    if (output.outcome !== undefined && output.outcome.stdout.trim() !== "") {
+        console.info("Validation successful");
     } else {
-        console.error("Validation failed: Unexpected output");
+        console.error("Validation unsuccessful. Unexpected output: " + JSON.stringify(output));
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     }
 }
 
@@ -86,7 +86,7 @@ function parseValidateOutput(output) {
  */
 function get_status() {
     var commands = ipAddresses.map(function (ipAddress) {
-        var command = "ping -n " + pktno + " " + ipAddress;
+        var command = "ping -n " + packetCount + " " + ipAddress;
         return executeCommand(command)
             .then(function (output) {
                 parseOutput(output, ipAddress);
@@ -101,8 +101,7 @@ function get_status() {
             D.success(tableColumns);
         })
         .catch(function (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            checkWinRmError(error);
         });
 }
 
@@ -115,7 +114,7 @@ function parseOutput(output, ipAddress) {
         var outputData = output.outcome.stdout;
         var matchLatency = /Average = (\d+)ms/.exec(outputData);
         latencyValue = matchLatency ? matchLatency[1] : "-";
-        var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = (\d+)/.exec(outputData);
+        var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = \d+ \((\d+)% loss\)/.exec(outputData);
         packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
     }
     var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
