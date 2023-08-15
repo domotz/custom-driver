@@ -16,7 +16,7 @@
  * 
  **/
 
-var packetCount = 5; // Number of packets to send during the ping command.
+var packetCount = 2; // Number of packets to send during the ping command.
 var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve status for.
 var winrmConfig = {
     username: D.device.username(),
