@@ -1,0 +1,34 @@
+{
+    "logo": "control4.svg",
+    "version": "1.0.0",
+    "name": "Control4 Zigbee",
+    "description": "Collect data for Control4 Zigbee devices such as status, zap information etc ",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled",
+            "Zigbee Server Running"
+        ]
+    },
+    "tags": [
+        "control4",
+        "ea5",
+        "zigbee"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[8,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "EA-5 Controller",
+            "version": "3.3.2.651066"
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Reachable Hosts",
+    "description": "Check if a list of hosts are reachable from the windows endpoint. Can be used for various case scenarios, including checking if a VPN connection is up or not",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "connectivity",
+        "vpn"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
+        }
+    ]
+}

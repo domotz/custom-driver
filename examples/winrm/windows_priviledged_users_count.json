@@ -1,12 +1,12 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Active Directory privileged users count",
+    "name": "Monitor the count of Windows Active Directory privileged users",
     "description": "Monitors the number of members of AD privileged groups",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.10.0",
+        "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
             "Privilege required: AD User",

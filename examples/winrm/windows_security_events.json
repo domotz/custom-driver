@@ -1,12 +1,12 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Security events monitoring",
-    "description": "Monitors the occurrences of Windows security events, some events are only raised if the related audit setting is enabled. More info on https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/advanced-security-auditing-faq",
+    "description": "Monitor the occurrences of Windows security events. Some events are only raised if the related audit setting is enabled. More info on https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/advanced-security-auditing-faq",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.10.0",
+        "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
             "WinRM Enabled",

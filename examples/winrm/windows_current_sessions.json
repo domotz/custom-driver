@@ -1,12 +1,12 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows current sessions",
-    "description": "Creates a Custom Driver table with the list of current logged in users",
+    "name": "Windows Sessions",
+    "description": "Monitor the list of current logged in users",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.10.0",
+        "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
             "Privilege required: Administrator",

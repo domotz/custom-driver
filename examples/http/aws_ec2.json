@@ -1,0 +1,26 @@
+{
+    "logo": "aws.svg",
+    "version": "1.0.1",
+    "name": "Aws EC2 Metrics",
+    "description": "Monitor AWS Elastic Compute Cloud Instance metrics: this script retrieves information about CPU utilization, network activity, disk I/O, and EBS performance",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "AWS EC2"        ]
+    },
+    "tags": [
+        "aws",
+        "elastic",
+        "cloud",
+        "ec2"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": []
+}
