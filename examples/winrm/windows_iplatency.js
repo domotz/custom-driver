@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows Monitor IP Latency
- * Description: This script its designed to ping a list of IP addresses from a windows host machine and retrieve the average latency and packet loss percentage.
+ * Description: This script is designed to ping a list of IP addresses from a windows host machine and retrieve the average latency and packet loss percentage.
  *   
  * Communication protocol is WinRM
  * 
