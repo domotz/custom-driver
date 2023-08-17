@@ -1,0 +1,47 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "IPerf3 Speed Test",
+    "description": "This script is designed to measure network speed data using the iperf3 towards pre-defined servers",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "IPerf3 Installed",
+            "IPerf3 Server Target Specified",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "iperf3",
+        "server",
+        "network",
+        "speedtest",
+        "speed-test",
+        "download",
+        "upload",
+        "tcp",
+        "udp"
+    ],
+    "sample_period": 7200,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[4]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "iperf",
+            "version": "3.7"
+        },
+        {
+            "name": "Ubuntu",
+            "version": "22.04"
+        }
+    ]
+}
+
+ 
