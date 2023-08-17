@@ -1,13 +1,15 @@
 {
     "logo": "",
     "version": "1.0.0",
-    "name": "Iperf",
-    "description": "This script is designed to retrieve network speed data using the iperf3",
+    "name": "IPerf3 Speed Test",
+    "description": "This script is designed to measure network speed data using the iperf3 towards pre-defined servers",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
+            "IPerf3 Installed",
+            "IPerf3 Server Target Specified",
             "SSH Enabled"
         ]
     },
@@ -16,12 +18,13 @@
         "server",
         "network",
         "speedtest",
+        "speed-test",
         "download",
         "upload",
         "tcp",
         "udp"
     ],
-    "sample_period": 120,
+    "sample_period": 7200,
     "has_actions": false,
     "expected_variables": {
         "independent": "[4]"

@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver
- * Name: IPerf3 
- * Description: This driver is designed to retrieve network speed data using iPerf3.
+ * Name: IPerf3 Speed Test
+ * Description: This script is designed to retrieve network speed data using iPerf3.
  * 
  * Communication protocol is SSH.
  * 
@@ -28,15 +28,13 @@
 // Define SSH configuration
 var sshConfig = {
     timeout: 20000,
-    port: 27123
 };
 
 var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
 
 // Define here your target iPerf3 server host and port
 var targetServers = [
-    { url: "ping-90ms.online.net", port: 5201 },
-    { url: "iperf.astra.in.ua", port: 5201 }
+    { url: "lon.speedtest.clouvider.net", port: 5205 },
 ];
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
@@ -44,25 +42,25 @@ var execConfig = [
     {
         id: "download_speed",
         label: "Download speed",
-        command: "iperf3 -f m -c {url} -p {port} -R",
+        command: "iperf3 -t 5 -f m -c {url} -p {port} -R",
         extractor: tcpExtractor
     },
     {
         id: "upload_speed",
         label: "Upload speed",
-        command: "iperf3 -f m -c {url} -p {port}",
+        command: "iperf3 -t 5  -f m -c {url} -p {port}",
         extractor: tcpExtractor
     },
     {
         id: "download_speed_udp",
         label: "Download speed UDP",
-        command: "iperf3 -f m -c {url} -p {port} -u -R",
+        command: "iperf3 -t 5  -f m -c {url} -p {port} -u -R",
         extractor: udpExtractor
     },
     {
         id: "upload_speed_udp",
         label: "Upload speed UDP",
-        command: "iperf3 -f m -c {url} -p {port} -u",
+        command: "iperf3 -t 5  -f m -c {url} -p {port} -u",
         extractor: udpExtractor
     }
 ]
@@ -135,7 +133,10 @@ function execute() {
 
     return commands.reduce(D.q.when, D.q([]))
         .then(function (result) {
-            return result.filter(function (res) { return res != null; }).map(function (res, index) {
+            return result.map(function (res, index) {
+                if (res == null){
+                    res = -1;
+                }
                 return D.device.createVariable(execConfig[index].id, execConfig[index].label, res, "Mb/s");
             });
         }).then(function (vars) {
@@ -148,8 +149,8 @@ function execute() {
 }
 
 //This function is a failure handler for SSH command execution. 
-function failure(err) {
-    console.log(err);
+function failure(error) {
+    console.error("Received Error: " + JSON.stringify(error));
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
@@ -161,11 +162,12 @@ function failure(err) {
 function validate() {
     // Check if the iperf3 command is available
     sshConfig.command = "which iperf3"
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            failure(error)
+        } else {
+            D.success()
         }
-        D.success()
     });
 }
 
