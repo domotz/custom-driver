@@ -1,6 +1,6 @@
 {
     "logo": "ssl-checker.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Bulk SSL/TLS Certificate Validation",
     "description": "Check whether a list of websites have valid SSL certificates and if there is any error with the Certificate Authority; check when the certificate expires; be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
     "category": "Software Integration",
@@ -25,5 +25,12 @@
     "protocols": [
         "HTTPS"
     ],
-    "tested_on": []
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "serversToCheck",
+            "label": "Server Host"
+        }
+    ]
 }
