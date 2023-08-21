@@ -30,7 +30,7 @@
         {
             "value_type": "LIST",
             "name": "serversToCheck",
-            "label": "Websites"
+            "label": "Server Host"
         }
     ]
 }
