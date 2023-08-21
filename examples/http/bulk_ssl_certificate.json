@@ -30,7 +30,7 @@
         {
             "value_type": "LIST",
             "name": "serversToCheck",
-            "label": "List of Servers for Certificate Check"
+            "label": "Server Host"
         }
     ]
 }
