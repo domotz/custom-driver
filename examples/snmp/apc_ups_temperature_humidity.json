@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "apc.svg",
     "version": "1.0.0",
     "name": "APC UPS Temperature and Humidity",
     "description": "Monitor the UPS Temperature and Humidity",
