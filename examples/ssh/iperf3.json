@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "iperf3.svg",
     "version": "1.0.0",
     "name": "IPerf3 Speed Test",
     "description": "This script is designed to measure network speed data using the iperf3 towards pre-defined servers",
