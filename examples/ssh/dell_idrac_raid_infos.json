@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "dell.svg",
     "version": "1.0.0",
     "name": "Dell iDRAC RAID Monitoring",
     "description": "Monitors the operational status of RAID controllers on a Dell server with iDRAC.",
