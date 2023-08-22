@@ -7,8 +7,11 @@
  * Tested under iDRAC version 7.0.3 21053776 U3 P70
  * 
  * Keyboard Interactive option: true/false (depends on iDRAC version).
+ * 
+ * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
+ *      - FQDD
  *      - Device Type
  *      - Primary Status
  *      - Product Name
@@ -25,7 +28,7 @@ var command = "racadm hwinventory";
 // SSH options when running the commands
 var sshConfig = {
     "prompt": "#",
-    "timeout": 40000,
+    "timeout": 100000,
     "keyboard_interactive": true
 };
 
@@ -59,6 +62,7 @@ function executeCommand(command) {
 var table = D.createTable(
     "RAID Info",
     [
+        { label: "FQDD" },
         { label: "Device Type" },
         { label: "Primary Status" },
         { label: "Product Name" },
@@ -108,6 +112,7 @@ function get_status() {
 
 function parseData(output) {
     var lines = output.split("\n");
+    console.log(lines);
     var data = {};
     var instanceIdRaid = false; // Flag to indicate if InstanceID: RAID is found
     for (var i = 0; i < lines.length; i++) {
@@ -116,8 +121,9 @@ function parseData(output) {
             instanceIdRaid = true;
             data = {}; 
         } else if (instanceIdRaid && line.length === 0) {
-            if (Object.keys(data).length > 0) {
-                var recordId = (data["InstanceID"] + "_" + data["Device Type"]).substring(0, 50);
+            if (data["Device Type"] === "Controller") {
+                var recordId = D.crypto.hash((data["InstanceID"]), "sha256", null, "hex").slice(0, 50);
+                var fqdd = data["FQDD"] || "-"; 
                 var deviceType = data["Device Type"] || "-"; 
                 var primaryStatus = data["PrimaryStatus"] || "-";
                 var productName = data["ProductName"] || "-";
@@ -129,6 +135,7 @@ function parseData(output) {
                 var securityStatus = data["SecurityStatus"] || "-";
                 table.insertRecord(
                     recordId, [
+                        fqdd,
                         deviceType,
                         primaryStatus,
                         productName,

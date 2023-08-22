@@ -15,6 +15,8 @@
     "tags": [
         "idrac",
         "raid",
+        "controller",
+        "fqdd",
         "device-type",
         "primary-status",
         "product-name",
@@ -25,10 +27,10 @@
         "encryption-mode",
         "security-status"
     ],
-    "sample_period": 1800,
+    "sample_period": 1000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[18]"
+        "table": "[9,999]"
     },
     "protocols": [
         "SSH"
