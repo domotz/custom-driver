@@ -1,0 +1,5 @@
+{
+    "numberParam": 1234,
+    "stringParam": "Hello Domotz!!",
+    "listParam": ["param1", "param2", "param3"]
+}
