@@ -31,7 +31,41 @@
         "independent": "[5]"
     },
     "protocols": [],
-    "tested_on": [],
+    "tested_on": [
+        {
+            "name": "Something 1",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 2",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 3",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 4",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 5",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 6",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 7",
+            "version": "Some Version"
+        },
+        {
+            "name": "Something 8",
+            "version": "Some Version"
+        }                        
+
+    ],
     "parameters": [
         {
             "value_type":"STRING",
