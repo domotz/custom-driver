@@ -117,6 +117,8 @@ function parseOutput(output, ipAddress) {
         var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = \d+ \((\d+)% loss\)/.exec(outputData);
         packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
     }
-    var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
+    var stringsToReplace = ['?', '*', '%', 'table', 'column', 'history'];
+    var regex = new RegExp(stringsToReplace.map(str => `\\b${str}\\b`).join('|'), 'g');
+    var recordId = ipAddress.replace(regex, '');
     tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
 }

@@ -1,7 +1,7 @@
 
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Monitor IP Latency",
     "description": "Monitor IP Latency from windows host to a list of IP addresses",
     "category": "Software Integration",
