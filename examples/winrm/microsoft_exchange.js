@@ -13,7 +13,7 @@
  * 
  * Creates a Custom Driver Table with the following columns:
  * 
- *      - Path: Performance counter path
+ *      - Id: Performance counter path
  *      - Instance Name: Instance name of the counter
  *      - Cooked Value: Cooked value of the counter
  *      - Counter Type: Type of the performance counter
@@ -77,8 +77,7 @@ var counterTypeMappings = {
 var winrmConfig = {
     "command": 'Get-Counter -Counter ' + counters.map(function(counter){return '"' + counter + '"';}).join(',') + ' | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue, CounterType } | ConvertTo-Json',
     "username": D.device.username(),
-    "password": D.device.password(),
-    "port": 43696
+    "password": D.device.password()
 };
 
 
@@ -86,7 +85,6 @@ var winrmConfig = {
 var table = D.createTable(
     "Microsoft Exchanges",
     [
-        { label: "Path" },
         { label: "Instance Name" },
         { label: "Cooked Value" },
         { label: "Counter Type" }
@@ -136,12 +134,12 @@ function parseOutput(output) {
         var jsonOutput = JSON.parse(JSON.stringify(JSON.parse(output.outcome.stdout)));
         while (k < jsonOutput.length) {
             var path = jsonOutput[k].Path;
-            var instanceName = jsonOutput[k].InstanceName;
+            var instanceName = jsonOutput[k].InstanceName || "-";
             var cookedValue = jsonOutput[k].CookedValue;
             var counterTypeCode = jsonOutput[k].CounterType;
             var counterType = counterTypeMappings[counterTypeCode] || "Unknown Counter Type";           
-            var recordId = D.crypto.hash(path, "sha256", null, "hex").slice(0, 50);
-            table.insertRecord(recordId, [path, instanceName, cookedValue, counterType]); 
+            var recordId = ("MSEX" + (k + 1) + ": " + path).slice(0,50);
+            table.insertRecord(recordId, [instanceName, cookedValue, counterType]); 
             k++;
         }
         D.success(table);
