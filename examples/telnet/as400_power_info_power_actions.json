@@ -1,0 +1,36 @@
+
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "AS400 Power Info and Power Actions",
+    "description": "Monitors AS400 IBM server power information and actions",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "as400",
+        "power-info",
+        "power-action",
+        "date",
+        "day",
+        "power-up",
+        "power-off"
+    ],
+    "sample_period": 10000,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[13]"
+    },
+    "protocols": [
+        "TELNET"
+    ],
+    "tested_on": [
+        {
+            "name": "AS400",
+            "version": "BASE 5050, CODE  QSYS  V6R1M1 L00"
+        }
+    ]
+}
