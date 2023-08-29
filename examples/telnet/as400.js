@@ -14,6 +14,9 @@
  *      - id: Problem ID
  *      - Codice riferimento sistema: System Reference Code
  *      - Data e ora di rilevazione: Date and Time of Detection
+ * 
+ * Creates a custom driver variable for AS400 errors: Number of errors
+ * 
 **/
 var telnet = D.device.sendTelnetCommand;
 var deviceUsername = D.device.username();
@@ -35,7 +38,6 @@ var table = D.createTable(
     ]
 );
 
-
 /**
  * Function to get AS400 information via telnet
  * @returns Promise that waits for the telnet command 
@@ -48,7 +50,7 @@ function getAS400Info() {
             console.error("error while executing command: " + telnetParams.command);
             failure(err);
         }
-        d.resolve(out.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, " "));
+        d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
     });
     return d.promise;
 }
@@ -60,7 +62,10 @@ function getAS400Info() {
  */
 function errorParsing(result) {
     var errorCount = result.split("READY").length - 1;
-    var errorCheckCmds = Array(errorCount).fill("5\r\n\r\n\x1B[B");
+    var errorCheckCmds = [];
+    for (var i = 0; i < errorCount; i++) {
+        errorCheckCmds.push("5\r\n\r\n\x1B[B");
+    }
     var errorCheck = errorCheckCmds.join("");
     telnetParams.command = command + errorCheck;
     var d = D.q.defer();
@@ -69,7 +74,7 @@ function errorParsing(result) {
             console.error("error while executing command: " + telnetParams.command);
             failure(err);
         }
-        d.resolve(out.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, " "));
+        d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
     });
 
     return d.promise;
@@ -83,7 +88,7 @@ function errorParsing(result) {
 function parseInfo(results) {
     var srcs = results.match(/SRC[^ ]*/g);
     var dates = results.match(/\d\d\/\d\d\/\d\d\s+\d\d:\d\d:\d\d/g);
-    var problemIds = results.match(/ID problema[\s\.\:]*\d{10}/g);
+    var problemIds = results.match(/ID problema[\s\.\:]*\d{10}/g);  
     for (var i = 0; i < problemIds.length; i++) {
         var problemIdRow = problemIds[i].split(" ");
         table.insertRecord(problemIdRow[problemIdRow.length - 1], [
@@ -91,8 +96,11 @@ function parseInfo(results) {
             dates[i]
         ]);
     }
-    return table;
-
+    var errorsCount = [
+        D.createVariable("NumberOfErrors", "Number of errors", problemIds.length)
+    ];
+    console.info("Number Of Errors: " + problemIds.length)
+    D.success(errorsCount, table);
 }
 
 // Function to handle errors
@@ -108,9 +116,16 @@ function failure(err) {
 */
 function validate() {
     getAS400Info()
-        .then(function () { D.success(); })
+        .then(function (output) {
+            if (output) {
+                console.info("Validation successful");
+                D.success();
+            } else {
+                console.error("Unexpected output from AS400");
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        })
         .catch(failure);
-
 }
 
 /**
