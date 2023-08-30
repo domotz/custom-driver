@@ -27,7 +27,6 @@ var command = "racadm hwinventory";
 
 // SSH options when running the commands
 var sshConfig = {
-    "prompt": "#",
     "timeout": 100000,
     "keyboard_interactive": true
 };
