@@ -12,10 +12,10 @@
  * 
  * Return a table with this columns:
  *      - id: Problem ID
- *      - Codice riferimento sistema: System Reference Code
- *      - Data e ora di rilevazione: Date and Time of Detection
+ *      - Error code: System Reference Code
+ *      - Error Date: Date and Time of Detection
  * 
- * Creates a custom driver variable for AS400 errors: Number of errors
+ * Creates a custom driver variable for AS400 errors: Errors No.
  * 
 **/
 var telnet = D.device.sendTelnetCommand;
@@ -33,8 +33,8 @@ var telnetParams = {
 var table = D.createTable(
     "AS400",
     [
-        { label: "Codice riferimento sistema" },
-        { label: "Data e ora di rilevazione" },
+        { label: "Error Code" },
+        { label: "Error Date" },
     ]
 );
 
@@ -76,7 +76,6 @@ function errorParsing(result) {
         }
         d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
     });
-
     return d.promise;
 }
 
@@ -97,7 +96,7 @@ function parseInfo(results) {
         ]);
     }
     var errorsCount = [
-        D.createVariable("NumberOfErrors", "Number of errors", problemIds.length)
+        D.createVariable("errorsNo", "Errors No", problemIds.length)
     ];
     console.info("Number Of Errors: " + problemIds.length)
     D.success(errorsCount, table);
