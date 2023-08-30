@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: AS400 Power Info and Power Actions
- * Description:  Monitors AS400 IBM server power information and actions
+ * Description:  Monitors power information and enables power actions (Reboot and Shoutdown) on an AS400 IBM server.
  *   
  * Communication protocol is telnet
  * 
@@ -30,7 +30,7 @@ var telnetParams = {
 };
 
 var table = D.createTable(
-    "Power Info and Power Actions",
+    "Power Info",
     [
         { label: "Date" },
         { label: "Day" },
@@ -57,9 +57,9 @@ function getAS400Info() {
 }
 
 /**
- * Function to parse errors from AS400 information
- * @param {[string]} result  list of information returned by the AS400 server
- * @returns Promise that waits for the error parsing 
+ * Function to handle AS400 menu option and retrieve power info
+ * @param {string} result - Information returned by the AS400 server
+ * @returns {Promise} A promise that resolves after parsing power info
  */
 function powerParsing(result) {
     var menuOptionIndex = result.indexOf("Immettere una opzione di menu");
@@ -79,49 +79,8 @@ function powerParsing(result) {
 }
 
 /**
-* @remote_procedure
-* @label Shutdown AS400 Server
-* @documentation This procedure sends a shutdown command to the AS400 server.
-*/
-function shutdownAS400Server() {
-    var shutdownCommand = "3\r\n";
-    telnetParams.command = command + shutdownCommand;
-    
-    telnet(telnetParams, function (out, err) {
-        if (err) {
-            console.error("Error while sending shutdown command: " + telnetParams.command);
-            failure(err);
-        } else {
-            console.info("Shutdown command sent successfully");
-            D.success();
-        }
-    });
-}
-
-/**
-* @remote_procedure
-* @label Reboot AS400 Server
-* @documentation This procedure reboots the AS400 server.
-*/
-function rebootAS400Server() {
-    var rebootCommand = "4\r\n"; 
-    telnetParams.command = command + rebootCommand;
-    
-    telnet(telnetParams, function (out, err) {
-        if (err) {
-            console.error("Error while sending reboot command: " + telnetParams.command);
-            failure(err);
-        } else {
-            console.info("Reboot command sent successfully");
-            D.success();
-        }
-    });
-}
-
-/**
- * Function to parse power actions from AS400 information
- * @param {string} result - Information returned by the AS400 server
- * @returns {Promise} A promise that resolves after parsing power actions 
+ * Function to parse AS400 power information and populate the table
+ * @param {string} results  Information returned by the AS400 server
  */
 function parseInfo(results) {
     var data = results.match(/(\d+\/\d+\/\d+)\s+(\w{3})(?:\s+(\d{2}:\d{2}:\d{2})\s+(\d{2}:\d{2}:\d{2}))?/g);
@@ -164,14 +123,48 @@ function validate() {
 }
 
 /**
- * Function to parse AS400 power information and populate the table
- * @param {string} results - Information returned by the AS400 server
- * @returns {void} Populates the table with AS400 power information
- */
+* @remote_procedure
+* @label Get AS400 Power Info
+* @documentation This procedure is used for retrieving AS400 power information
+*/
 function get_status() {
     getAS400Info()
         .then(powerParsing)
         .then(parseInfo)
         .then(D.success)
         .catch(failure);
+}
+
+/**
+ * @remote_procedure
+ * @label Reboot AS400
+ * @documentation This procedure initiate a reboot of the AS400 server
+ */
+function custom_1(){
+    telnetParams.command = telnetParams.command = command + "4\r\n\x1b[29~";
+    telnet(telnetParams, function (out, err) {
+        if (err) {
+            console.error("Error while sending reboot command: " + telnetParams.command);
+            failure(err);
+        } else {
+            D.success();
+        }
+    });
+}
+
+/**
+ * @remote_procedure
+ * @label Shutdown AS400 
+ * @documentation This procedure sends a shutdown command to the AS400 server.
+ */
+function custom_2(){
+    telnetParams.command = command + "3\r\n";
+    telnet(telnetParams, function (out, err) {
+        if (err) {
+            console.error("Error while sending shutdown command: " + telnetParams.command);
+            failure(err);
+        } else {
+            D.success();
+        }
+    });
 }

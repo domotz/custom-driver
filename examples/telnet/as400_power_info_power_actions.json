@@ -12,17 +12,18 @@
     },
     "tags": [
         "as400",
-        "power-info",
-        "power-action",
-        "date",
+        "power",
+        "reboot",
+        "shoutdown",
         "day",
+        "date",
         "power-up",
         "power-off"
     ],
     "sample_period": 10000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[13]"
+        "table": "[44]"
     },
     "protocols": [
         "TELNET"
