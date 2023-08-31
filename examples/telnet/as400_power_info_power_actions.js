@@ -141,7 +141,7 @@ function get_status() {
  * @documentation This procedure initiate a reboot of the AS400 server
  */
 function custom_1(){
-    telnetParams.command = telnetParams.command = command + "4\r\n\x1b[29~";
+    telnetParams.command = command + "4\r\n\x1b[29~";
     telnet(telnetParams, function (out, err) {
         if (err) {
             console.error("Error while sending reboot command: " + telnetParams.command);
@@ -158,7 +158,7 @@ function custom_1(){
  * @documentation This procedure sends a shutdown command to the AS400 server.
  */
 function custom_2(){
-    telnetParams.command = command + "3\r\n";
+    telnetParams.command = command + "3\r\n\x1b[29~";
     telnet(telnetParams, function (out, err) {
         if (err) {
             console.error("Error while sending shutdown command: " + telnetParams.command);
