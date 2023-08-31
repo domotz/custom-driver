@@ -1,0 +1,43 @@
+{
+    "logo": "dell.svg",
+    "version": "1.0.0",
+    "name": "Dell iDRAC CPUs Monitoring",
+    "description": "Monitors the operational status of cpus on a Dell server with iDRAC",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled",
+            "The keyboard_interactive option can be true or false depending on the iDRAC version"
+        ]
+    },
+    "tags": [
+        "idrac",
+        "cpu",
+        "fqdd",
+        "device-type",
+        "device-description",
+        "model",
+        "primary-status",
+        "cpu-status",
+        "max-clock-speed",
+        "current-clock-speed",
+        "virtualization-technology-enabled",
+        "hyper-threading-enabled" 
+    ],
+    "sample_period": 1000,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[10,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "DELL iDRAC",
+            "version": "7.0.3 21053776 U3 P70"
+        }
+    ]
+}
