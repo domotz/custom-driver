@@ -119,6 +119,6 @@ function parseOutput(output, ipAddress) {
     }
     var stringsToReplace = ['?', '*', '%', 'table', 'column', 'history'];
     var regex = new RegExp(stringsToReplace.map(str => `\\b${str}\\b`).join('|'), 'g');
-    var recordId = ipAddress.replace(regex, '');
+    var recordId = ipAddress.replace(regex, '').slice(0,50);
     tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);
 }
