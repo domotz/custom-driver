@@ -1,12 +1,11 @@
 /**
  * Domotz Custom Driver 
  * Name: Microsoft Exchange server 
- * Description: This script is for monitoring a Microsoft Exchange Server.
+ * Description: This script is used to monitor a Microsoft Exchange Server.
  *   
  * Communication protocol is WinRM
  * 
- * Tested on Windows Versions:
- *      - Windows 10
+ * Tested on:
  *      - Microsoft Exchange Server 2019 CU12
  * 
  * Powershell Version:
@@ -15,8 +14,8 @@
  * Creates a Custom Driver Table with the following columns:
  *      - Id: Performance counter path
  *      - Instance Name: Instance name of the counter
- *      - Cooked Value: Cooked value of the counter
- *      - Counter Type: Type of the performance counter
+ *      - Value: Value of the counter
+ *      - Unit: Type of the performance counter
  * 
  */
 
@@ -42,6 +41,8 @@ var counters = [
 ];
 
 // Counter type mappings
+// some of these has been changed to improve readability.
+// if changed, the original name is in a comment at right. 
 var counterTypeMappings = {
     0: "number", //NumberOfItemsHEX32
     256: "number.", //NumberOfItemsHEX64
