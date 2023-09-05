@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Microsoft Exchange server 
- * Description: This script for monitoring Microsoft Exchange Server.
+ * Description: This script is for monitoring a Microsoft Exchange Server.
  *   
  * Communication protocol is WinRM
  * 

@@ -1,8 +1,8 @@
 {
     "logo": "",
     "version": "1.0.0",
-    "name": "Microsoft Exchange server ",
-    "description": "Monitor Microsoft Exchange Server",
+    "name": "Microsoft Exchange Server (on-prem)",
+    "description": "This script is used to monitor an on-prem Microsoft Exchange Server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -14,11 +14,9 @@
     },
     "tags": [
         "windows",
-        "counter",
-        "path",
         "instance-name",
-        "cooked-value",
-        "counter-type"
+        "exchange",
+        "email-server"
     ],
     "sample_period": 300,
     "has_actions": false,
