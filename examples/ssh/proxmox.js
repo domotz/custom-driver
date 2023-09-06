@@ -100,13 +100,14 @@ function parseData(data) {
     lines.shift();
     var promises = [];
     lines.forEach(function(line) {
+        console.info(line)
         var values = line.trim().split(/\s+/);
         var vmid = values[0];
-        var name = values[1];
-        var status = values[2];
-        var memory = values[3];
-        var bootdisk = values[4];
-        var pid = values[5];
+        var name = values.slice(1,-4).join(" ");
+        var status = values[values.lenght-4];
+        var memory = values[values.lenght-3];
+        var bootdisk = values[values.lenght-2];
+        var pid = values[values.lenght-1];
         var recordId = sanitize(vmid + "_" + name)
         var promise = execCommand("qm config " + vmid)
             .then(function(configData) {
@@ -122,7 +123,7 @@ function parseData(data) {
                         config[key] = value;
                     });
                 }
-                kvmsTable.insertRecord(recordId, [vmid, name, status, memory, bootdisk, pid, config.cores, config.meta, config.net0, config.numa, config.ostype, config.sockets, config.error.code + " : " + config.error.message]);
+                kvmsTable.insertRecord(recordId, [vmid, name, status, memory, bootdisk, pid, config.cores, config.meta, config.net0, config.numa, config.ostype, config.sockets, config.error ? config.error.code + " : " + config.error.message : ""]);
             });
         promises.push(promise);
     });
