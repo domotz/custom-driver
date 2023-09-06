@@ -1,0 +1,32 @@
+{
+    "logo": "crestron.svg",
+    "version": "1.0.0",
+    "name": "Crestron TSW",
+    "description": "This script its designed to monitor the device's status and synchronization with external calendars.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Crestron TSW device"
+        ]
+    },
+    "tags": [
+        "crestron",
+        "tsw"
+    ],
+    "sample_period": 1800,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[4]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Crestron TSW-760",
+            "version": "3.002.1025"
+        }
+    ]
+}
