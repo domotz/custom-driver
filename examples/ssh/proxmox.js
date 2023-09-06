@@ -41,7 +41,6 @@ var sshConfig = {
 var kvmsTable = D.createTable(
     "KVMs",
     [
-        { label: "VMID" },
         { label: "Name" },
         { label: "Status" },
         { label: "Memory" , unit: "MB" },
@@ -100,15 +99,14 @@ function parseData(data) {
     lines.shift();
     var promises = [];
     lines.forEach(function(line) {
-        console.info(line)
-        var values = line.trim().split(/\s+/);
-        var vmid = values[0];
-        var name = values.slice(1,-4).join(" ");
-        var status = values[values.lenght-4];
-        var memory = values[values.lenght-3];
-        var bootdisk = values[values.lenght-2];
-        var pid = values[values.lenght-1];
-        var recordId = sanitize(vmid + "_" + name)
+        var values = line.match(/(\d+)\s+(.*?)\s+(\w+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+)/);
+        var vmid = values[1];
+        var name = values[2];
+        var status = values[3];
+        var memory = values[4];
+        var bootdisk = values[5];
+        var pid = values[6];
+        var recordId = sanitize(vmid);
         var promise = execCommand("qm config " + vmid)
             .then(function(configData) {
                 var config = {};
@@ -123,7 +121,20 @@ function parseData(data) {
                         config[key] = value;
                     });
                 }
-                kvmsTable.insertRecord(recordId, [vmid, name, status, memory, bootdisk, pid, config.cores, config.meta, config.net0, config.numa, config.ostype, config.sockets, config.error ? config.error.code + " : " + config.error.message : ""]);
+                kvmsTable.insertRecord(recordId, [ 
+                    name, 
+                    status, 
+                    memory,
+                    bootdisk, 
+                    pid, 
+                    config.cores || "-", 
+                    config.meta || "-", 
+                    config.net0 || "-", 
+                    config.numa || "-", 
+                    config.ostype || "-", 
+                    config.sockets || "-", 
+                    config.error ? config.error.code + " : " + config.error.message : ""
+                ]);
             });
         promises.push(promise);
     });
