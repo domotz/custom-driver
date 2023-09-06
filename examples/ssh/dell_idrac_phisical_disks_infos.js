@@ -118,17 +118,18 @@ function get_status() {
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
-    var instanceIdDisk = false; 
+    var instanceIdDisk = false;
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: Disk.") >= 0) {
-            console.log(line);
             instanceIdDisk = true;
-            data = {}; 
+            data = {};
         } else if (instanceIdDisk && line.length === 0) {
-            var recordId = D.crypto.hash((data["InstanceID"]), "sha256", null, "hex").slice(0, 50);
-            var fqdd = data["FQDD"] || "-"; 
-            var deviceType = data["Device Type"] || "-"; 
+            var stringsToReplace = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+            var regex = new RegExp(stringsToReplace.map(function(str){return '\\b'+str+'\\b';}).join('|'), 'g');
+            var recordId = (data["InstanceID"]).replace(regex, '').slice(0, 50);
+            var fqdd = data["FQDD"] || "-";
+            var deviceType = data["Device Type"] || "-";
             var deviceDescription = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var raidStatus = data["RaidStatus"] || "-";
