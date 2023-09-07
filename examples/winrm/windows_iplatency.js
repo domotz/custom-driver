@@ -17,17 +17,16 @@
  **/
 
 var packetCount = 2; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses = ["8.8.8.8","192.168.1.5","www.domotz.com"]; // List of IP addresses to ping and retrieve status for.
 var winrmConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    timeout: 10000,
+    timeout: 20000,
 };
 
 var tableColumns = D.createTable(
     "IP Latency",
     [
-        { label: "IP Address" },
         { label: "Latency", unit: "ms" },
         { label: "Packet Loss", unit: "%" }
     ]
@@ -117,8 +116,8 @@ function parseOutput(output, ipAddress) {
         var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = \d+ \((\d+)% loss\)/.exec(outputData);
         packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
     }
-    var stringsToReplace = ['?', '*', '%', 'table', 'column', 'history'];
-    var regex = new RegExp(stringsToReplace.map(str => `\\b${str}\\b`).join('|'), 'g');
-    var recordId = ipAddress.replace(regex, '').slice(0,50);
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordId = ipAddress.replace(recordIdSanitisationRegex, '').slice(0, 50);
     tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);
 }
