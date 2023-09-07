@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
- * Name: Crestron TSW
- * Description: This script its designed to monitor the device's status and synchronization with external calendars
+ * Name: Crestron Touch Screen (TSW)
+ * Description: This custom driver is designed to collect information for Crestron Touch Screen device's calendar synchronizations.
  *   
  * Communication protocol is HTTPS
  * 
@@ -14,25 +14,6 @@
  *      - ExchangeRegistrationStatus: Monitors the registration status of the device with Microsoft Exchange.
  *
  **/
-
-/**
- * @param {*} init object initialisation
- * @param {*} object object to clone
- * @returns cloned object
- */
-function clone(init, object) {
-    var toReturn = JSON.parse(JSON.stringify(object));
-    Object.keys(init).forEach(function (key) {
-        toReturn[key] = init[key];
-    });
-    return toReturn;
-}
-
-var http_config = {
-    protocol: "https",
-    jar: true,
-    rejectUnauthorized: false
-};
 
 //Processes the HTTP response and handles errors
 function processResponse(d) {
@@ -57,17 +38,20 @@ function processResponse(d) {
  */
 function login() {
     var d = D.q.defer();
-    var config = clone({
+    var config = {
         url: "/userlogin.html",
         headers: {
-            Origin: 'https://' + D.device.ip(),
-            Referer: 'https://' + D.device.ip() + '/userlogin.html'
+            Origin: "https://" + D.device.ip(),
+            Referer: "https://" + D.device.ip() + "/userlogin.html"
         },
         form: {
             login: D.device.username(),
             passwd: D.device.password(),
-        }
-    }, http_config);
+        },
+        protocol: "https",
+        jar: true,
+        rejectUnauthorized: false
+    };
 
     D.device.http.post(config, processResponse(d));
     return d.promise;
@@ -76,10 +60,12 @@ function login() {
 //Retrieves device information from the Crestron TSW.
 function getDevice() {
     var d = D.q.defer();
-    var config = clone({
-        url: "/Device"
-    }, http_config);
-
+    var config = {
+        url: "/Device",
+        protocol: "https",
+        jar: true,
+        rejectUnauthorized: false
+    };
     D.device.http.get(config, processResponse(d));
     return d.promise;
 }
@@ -88,10 +74,10 @@ function getDevice() {
 function extractVars(body) {
     var data = JSON.parse(body);
     return [
-        D.createVariable("CalendarSyncStatus", "CalendarSyncStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.CalendarSyncStatus),
-        D.createVariable("ConnectionStatus", "ConnectionStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatus),
-        D.createVariable("ConnectionStatusMessage", "ConnectionStatusMessage", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatusMessage),
-        D.createVariable("ExchangeRegistrationStatus", "ExchangeRegistrationStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.Exchange.Registration.ExchangeRegistrationStatus),
+        D.createVariable("calendar_sync_status", "CalendarSyncStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.CalendarSyncStatus, D.valueType.STRING ),
+        D.createVariable("connection_status", "ConnectionStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatus, D.valueType.STRING),
+        D.createVariable("connection_status_message", "ConnectionStatusMessage", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatusMessage, D.valueType.STRING),
+        D.createVariable("exchange_registration_status", "ExchangeRegistrationStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.Exchange.Registration.ExchangeRegistrationStatus, D.valueType.STRING),
     ];
 }
 
@@ -103,9 +89,18 @@ function extractVars(body) {
 function validate(){
     login()
         .then(getDevice)
-        .then(function () {
+        .then(function (deviceResponse) {
+            if (deviceResponse) {
+                console.info("Data available");
+            } else {
+                console.error("No data available");
+            }
             D.success();
         })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -117,5 +112,9 @@ function get_status() {
     login()
         .then(getDevice)
         .then(extractVars)
-        .then(D.success);
+        .then(D.success)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

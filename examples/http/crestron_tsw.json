@@ -1,8 +1,8 @@
 {
     "logo": "crestron.svg",
     "version": "1.0.0",
-    "name": "Crestron TSW",
-    "description": "This script its designed to monitor the device's status and synchronization with external calendars.",
+    "name": "Crestron Touch Screen (TSW)",
+    "description": "Collects information for crestron touch screen device's calendar syncronisations",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
@@ -13,10 +13,11 @@
     },
     "tags": [
         "crestron",
-        "tsw"
+        "tsw",
+        "touchscreen"
     ],
     "sample_period": 1800,
-    "has_actions": true,
+    "has_actions": false,
     "expected_variables": {
         "independent": "[4]"
     },
