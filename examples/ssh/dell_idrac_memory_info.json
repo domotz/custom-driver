@@ -5,7 +5,7 @@
     "description": "Monitors the operational status of memory on a Dell server with iDRAC",
     "category": "Hardware Integration",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "SSH Enabled",
@@ -13,11 +13,11 @@
         ]
     },
     "tags": [
+        "dell",
         "idrac",
         "memory",
-        "fqdd",
-        "device-table",
-        "device-description",
+        "type",
+        "description",
         "primary-status",
         "bank-label",
         "model",

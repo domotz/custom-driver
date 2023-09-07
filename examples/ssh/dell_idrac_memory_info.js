@@ -11,9 +11,8 @@
  * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
- *      - FQDD
- *      - Device Type
- *      - Device Description
+ *      - Type
+ *      - Description
  *      - Primary Status
  *      - Bank Label
  *      - Model
@@ -23,7 +22,6 @@
  *      - Size (in bytes)
  *      - Speed (in MHz)
  *      - Current Operating Speed (in MHz)
- * 
  */
 
 // SSH command to retrieve memory information
@@ -31,26 +29,27 @@ var command = "racadm hwinventory";
 
 // SSH options when running the command
 var sshConfig = {
+    "username": D.device.username(),
+    "password": D.device.password(),
     "timeout": 100000,
-    "keyboard_interactive": true
+    "keyboard_interactive": true,
 };
 
 // Custom Driver Table to store memory information
 var table = D.createTable(
     "Memory Info",
     [
-        { label: "FQDD" },
-        { label: "Device Type" },
-        { label: "Device Description" },
-        { label: "Primary Status" },
-        { label: "Bank Label" },
-        { label: "Model" },
-        { label: "Part Number" },
-        { label: "Serial Number" },
-        { label: "Manufacturer" },
-        { label: "Size", unit: "B" },
-        { label: "Speed", unit: "MHZ" },      
-        { label: "Current Operating Speed", unit: "MHZ" }            
+        { label: "Type", type: D.valueType.STRING},
+        { label: "Description", type: D.valueType.STRING },
+        { label: "Primary Status", type: D.valueType.STRING },
+        { label: "Bank Label", type: D.valueType.STRING },
+        { label: "Model", type: D.valueType.STRING },
+        { label: "Part Number", type: D.valueType.STRING },
+        { label: "Serial Number", type: D.valueType.STRING },
+        { label: "Manufacturer", type: D.valueType.STRING },
+        { label: "Size", unit: "B", type: D.valueType.NUMBER },
+        { label: "Speed", unit: "MHZ", type: D.valueType.NUMBER },      
+        { label: "Current Operating Speed", unit: "MHZ", type: D.valueType.NUMBER }       
     ]
 );
 
@@ -121,16 +120,17 @@ function parseData(output) {
     var lines = output.split("\n");
     var data = {};
     var instanceIdDimm = false; 
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: DIMM.") >= 0) {
             instanceIdDimm = true;
             data = {}; 
         } else if (instanceIdDimm && line.length === 0) {
-            var recordId = D.crypto.hash((data["InstanceID"]), "sha256", null, "hex").slice(0, 50);
-            var fqdd = data["FQDD"] || "-"; 
-            var deviceType = data["Device Type"] || "-"; 
-            var deviceDescription = data["DeviceDescription"] || "-";
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+            var type = data["Device Type"] || "-"; 
+            var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var bankLabel = data["BankLabel"] || "-";
             var model = data["Model"] || "-";
@@ -143,9 +143,8 @@ function parseData(output) {
             var currentOperatingSpeed = (data["CurrentOperatingSpeed"] || "").replace(/\D+/g, "") || "-";
             table.insertRecord(
                 recordId, [
-                    fqdd,
-                    deviceType,
-                    deviceDescription,
+                    type,
+                    description,
                     primaryStatus,
                     bankLabel,
                     model,
