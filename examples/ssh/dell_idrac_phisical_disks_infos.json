@@ -1,11 +1,11 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "name": "Dell iDRAC Physical Disk Monitoring",
     "description": "Monitors the operational status of physical disks on a Dell server with iDRAC",
     "category": "Hardware Integration",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "SSH Enabled",
@@ -13,16 +13,13 @@
         ]
     },
     "tags": [
+        "dell",
         "idrac",
         "physical-disk",
-        "fqdd",
-        "device-type",
-        "device-description",
-        "primary-status",
-        "raid-status",
-        "raid-types",
+        "disk",
+        "raid",
         "size",
-        "Used-size",
+        "used-size",
         "Free-size",
         "manufacturer",
         "model",
@@ -31,7 +28,7 @@
     "sample_period": 1000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[36,999]"
+        "table": "[11,999]"
     },
     "protocols": [
         "SSH"

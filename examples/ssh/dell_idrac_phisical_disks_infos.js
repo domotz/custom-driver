@@ -11,9 +11,8 @@
  * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
- *      - FQDD
- *      - Device Type
- *      - Device Description
+ *      - Type
+ *      - Description
  *      - Primary Status
  *      - RAID Status
  *      - RAID Types
@@ -30,6 +29,8 @@ var command = "racadm hwinventory";
 
 // SSH options when running the command
 var sshConfig = {
+    "username": D.device.username(),
+    "password": D.device.password(),
     "timeout": 100000,
     "keyboard_interactive": true
 };
@@ -65,18 +66,17 @@ function executeCommand(command) {
 var table = D.createTable(
     "Physical Disks Info",
     [
-        { label: "FQDD" },
-        { label: "Device Type" },
-        { label: "Device Description" },
-        { label: "Primary Status" },
-        { label: "Raid Status" },
-        { label: "RAID Types" },
-        { label: "Size", unit: "B"},
-        { label: "Used Size", unit: "B" },
-        { label: "Free Size", unit: "B" },
-        { label: "Manufacturer" },
-        { label: "Model" },      
-        { label: "Bus Protocol" }              
+        { label: "Type", type: D.valueType.STRING },
+        { label: "Description", type: D.valueType.STRING },
+        { label: "Primary Status", type: D.valueType.STRING },
+        { label: "Raid Status", type: D.valueType.STRING },
+        { label: "Raid Types", type: D.valueType.STRING },
+        { label: "Size", unit: "B", type: D.valueType.NUMBER },
+        { label: "Used Size", unit: "B", type: D.valueType.NUMBER },
+        { label: "Free Size", unit: "B", type: D.valueType.NUMBER },
+        { label: "Manufacturer", type: D.valueType.STRING },
+        { label: "Model", type: D.valueType.STRING },      
+        { label: "Bus Protocol", type: D.valueType.STRING }              
     ]
 );
 
@@ -119,18 +119,17 @@ function parseData(output) {
     var lines = output.split("\n");
     var data = {};
     var instanceIdDisk = false;
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: Disk.") >= 0) {
             instanceIdDisk = true;
             data = {};
         } else if (instanceIdDisk && line.length === 0) {
-            var stringsToReplace = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-            var regex = new RegExp(stringsToReplace.map(function(str){return '\\b'+str+'\\b';}).join('|'), 'g');
-            var recordId = (data["InstanceID"]).replace(regex, '').slice(0, 50);
-            var fqdd = data["FQDD"] || "-";
-            var deviceType = data["Device Type"] || "-";
-            var deviceDescription = data["DeviceDescription"] || "-";
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+            var type = data["Device Type"] || "-";
+            var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var raidStatus = data["RaidStatus"] || "-";
             var raidTypes = data["RAIDTypes"] || "-";
@@ -142,9 +141,8 @@ function parseData(output) {
             var busProtocol = data["BusProtocol"] || "-";
             table.insertRecord(
                 recordId, [
-                    fqdd,
-                    deviceType,
-                    deviceDescription,
+                    type,
+                    description,
                     primaryStatus,
                     raidStatus,
                     raidTypes,
