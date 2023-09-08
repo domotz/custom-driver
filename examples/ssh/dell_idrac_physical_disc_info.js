@@ -66,17 +66,17 @@ function executeCommand(command) {
 var table = D.createTable(
     "Physical Disks Info",
     [
-        { label: "Type", type: D.valueType.STRING },
-        { label: "Description", type: D.valueType.STRING },
-        { label: "Primary Status", type: D.valueType.STRING },
-        { label: "Raid Status", type: D.valueType.STRING },
-        { label: "Raid Types", type: D.valueType.STRING },
-        { label: "Size", unit: "B", type: D.valueType.NUMBER },
-        { label: "Used Size", unit: "B", type: D.valueType.NUMBER },
-        { label: "Free Size", unit: "B", type: D.valueType.NUMBER },
-        { label: "Manufacturer", type: D.valueType.STRING },
-        { label: "Model", type: D.valueType.STRING },      
-        { label: "Bus Protocol", type: D.valueType.STRING }              
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Raid Status", valueType: D.valueType.STRING },
+        { label: "Raid Types", valueType: D.valueType.STRING },
+        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Used Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Free Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Manufacturer", valueType: D.valueType.STRING },
+        { label: "Model", valueType: D.valueType.STRING },      
+        { label: "Bus Protocol", valueType: D.valueType.STRING }              
     ]
 );
 
@@ -120,14 +120,14 @@ function parseData(output) {
     var data = {};
     var instanceIdDisk = false;
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: Disk.") >= 0) {
             instanceIdDisk = true;
             data = {};
         } else if (instanceIdDisk && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
             var type = data["Device Type"] || "-";
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
