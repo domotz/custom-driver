@@ -1,6 +1,6 @@
 /**
  * Name: Dell iDRAC CPUs Monitoring
- * Description: Monitors the operational status of cpus on a Dell server with iDRAC
+ * Description: Monitors the operational status of CPUs on a Dell server with iDRAC
  * 
  * Communication protocol is SSH.
  * 
@@ -11,9 +11,8 @@
  * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
- *      - FQDD
- *      - Device Type
- *      - Device Description
+ *      - Type
+ *      - Description
  *      - Model
  *      - Primary Status
  *      - CPU Status
@@ -29,24 +28,25 @@ var command = "racadm hwinventory";
 
 // SSH options when running the command
 var sshConfig = {
+    "username": D.device.username(),
+    "password": D.device.password(),
     "timeout": 100000,
     "keyboard_interactive": true,
 };
 
 // Custom Driver Table to store cpus information
 var table = D.createTable(
-    "CPUs Info",
+    "CPU Info",
     [
-        { label: "FQDD" },
-        { label: "Device Type" },
-        { label: "Device Description" },
-        { label: "Model" },
-        { label: "Primary Status" },
-        { label: "CPU Status" },
-        { label: "Max Clock Speed", unit: "MHZ" },      
-        { label: "Current Clock Speed", unit: "MHZ" }, 
-        { label: "Virt Tech Enabled" },
-        { label: "Hyper Threading Enabled" }
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "CPU Status", valueType: D.valueType.STRING },
+        { label: "Max Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER },      
+        { label: "Current Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER }, 
+        { label: "Virt Tech Enabled", valueType: D.valueType.STRING },
+        { label: "Hyper Threading Enabled", valueType: D.valueType.STRING }
     ]
 );
 
@@ -112,21 +112,22 @@ function get_status() {
         });
 }
 
-// Parse cpus information output
+// Parse cpu information output
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
     var instanceIdCpu = false; 
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: CPU.Socket") >= 0) {
             instanceIdCpu = true;
             data = {}; 
         } else if (instanceIdCpu && line.length === 0) {
-            var recordId = D.crypto.hash((data["InstanceID"]), "sha256", null, "hex").slice(0, 50);
-            var fqdd = data["FQDD"] || "-"; 
-            var deviceType = data["Device Type"] || "-"; 
-            var deviceDescription = data["DeviceDescription"] || "-"; 
+            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+            var type = data["Device Type"] || "-"; 
+            var description = data["DeviceDescription"] || "-"; 
             var model = data["Model"] || "-"; 
             var primaryStatus = data["PrimaryStatus"] || "-"; 
             var cpuStatus = data["CPUStatus"] || "-"; 
@@ -136,9 +137,8 @@ function parseData(output) {
             var hyperThreadingEnabled = data["HyperThreadingEnabled"] || "-";           
             table.insertRecord(
                 recordId, [
-                    fqdd,
-                    deviceType,
-                    deviceDescription,
+                    type,
+                    description,
                     model,
                     primaryStatus,
                     cpuStatus,

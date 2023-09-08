@@ -5,7 +5,7 @@
     "description": "Monitors the operational status of cpus on a Dell server with iDRAC",
     "category": "Hardware Integration",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "SSH Enabled",
@@ -14,10 +14,10 @@
     },
     "tags": [
         "idrac",
+        "dell",
         "cpu",
-        "fqdd",
-        "device-type",
-        "device-description",
+        "type",
+        "description",
         "model",
         "primary-status",
         "cpu-status",
@@ -29,7 +29,7 @@
     "sample_period": 1000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[10,999]"
+        "table": "[9,999]"
     },
     "protocols": [
         "SSH"
