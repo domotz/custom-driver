@@ -5,7 +5,7 @@
     "description": "Monitors the operational status of fans on a Dell server with iDRAC",
     "category": "Hardware Integration",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "SSH Enabled",
@@ -14,21 +14,21 @@
     },
     "tags": [
         "idrac",
+        "dell",
         "fan",
-        "fqdd",
-        "deviceType",
-        "deviceDescription",
-        "primaryStatus",
-        "redundancyStatus",
-        "activeCooling",
-        "variableSpeed",
+        "type",
+        "description",
+        "primary-status",
+        "redundancy-status",
+        "active-cooling",
+        "variable-speed",
         "pwm",
-        "currentReading"   
+        "current-reading"   
     ],
     "sample_period": 1000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[27,999]"
+        "table": "[8,999]"
     },
     "protocols": [
         "SSH"

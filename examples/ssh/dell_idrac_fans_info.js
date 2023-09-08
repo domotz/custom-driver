@@ -11,9 +11,8 @@
  * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
- *      - FQDD
- *      - Device Type
- *      - Device Description
+ *      - Type
+ *      - Description
  *      - Primary Status
  *      - Redundancy Status
  *      - Active Cooling
@@ -27,6 +26,8 @@ var command = "racadm hwinventory";
 
 // SSH options when running the command
 var sshConfig = {
+    "username": D.device.username(),
+    "password": D.device.password(),
     "timeout": 100000,
     "keyboard_interactive": true
 };
@@ -35,15 +36,14 @@ var sshConfig = {
 var table = D.createTable(
     "Fans Info",
     [
-        { label: "FQDD" },
-        { label: "Device Type" },
-        { label: "Device Description" },
-        { label: "Primary Status" },
-        { label: "Redundancy Status" },
-        { label: "Active Cooling" },
-        { label: "Variable Speed"},
-        { label: "PWM", unit: "%" },
-        { label: "Current Reading", unit: "RPM" }            
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Redundancy Status", valueType: D.valueType.STRING },
+        { label: "Active Cooling", valueType: D.valueType.STRING },
+        { label: "Variable Speed", valueType: D.valueType.STRING },
+        { label: "PWM", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Current Reading", unit: "RPM", valueType: D.valueType.NUMBER }      
     ]
 );
 
@@ -114,16 +114,17 @@ function parseData(output) {
     var lines = output.split("\n");
     var data = {};
     var instanceIdFan = false; 
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: Fan.") >= 0) {
             instanceIdFan = true;
             data = {}; 
         } else if (instanceIdFan && line.length === 0) {
-            var recordId = D.crypto.hash((data["InstanceID"]), "sha256", null, "hex").slice(0, 50);
-            var fqdd = data["FQDD"] || "-"; 
-            var deviceType = data["Device Type"] || "-"; 
-            var deviceDescription = data["DeviceDescription"] || "-";
+            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+            var type = data["Device Type"] || "-"; 
+            var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var redundancyStatus = data["RedundancyStatus"] || "-";
             var activeCooling = data["ActiveCooling"] || "-";
@@ -132,9 +133,8 @@ function parseData(output) {
             var currentReading = (data["CurrentReading"] || "").replace(/\D+/g, "") || "-";
             table.insertRecord(
                 recordId, [
-                    fqdd,
-                    deviceType,
-                    deviceDescription,
+                    type,
+                    description,
                     primaryStatus,
                     redundancyStatus,
                     activeCooling,
