@@ -11,11 +11,10 @@
  * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
- *      - FQDD
- *      - Device Type
+ *      - Type
  *      - Primary Status
  *      - Product Name
- *      - Device Description
+ *      - Description
  *      - Support RAID10 Uneven Spans
  *      - Cache Size
  *      - Driver Version
@@ -27,6 +26,8 @@ var command = "racadm hwinventory";
 
 // SSH options when running the commands
 var sshConfig = {
+    "username": D.device.username(),
+    "password": D.device.password(),
     "timeout": 100000,
     "keyboard_interactive": true
 };
@@ -61,16 +62,15 @@ function executeCommand(command) {
 var table = D.createTable(
     "RAID Info",
     [
-        { label: "FQDD" },
-        { label: "Device Type" },
-        { label: "Primary Status" },
-        { label: "Product Name" },
-        { label: "Device Description" },
-        { label: "Support RAID10 Uneven Spans" },
-        { label: "Cache Size"},
-        { label: "Driver Version" },
-        { label: "Encryption Mode" },
-        { label: "Security Status" }        
+        { label: "Type", valueType: D.valueType.STRING},
+        { label: "Primary Status", valueType: D.valueType.STRING},
+        { label: "Product Name", valueType: D.valueType.STRING},
+        { label: "Description", valueType: D.valueType.STRING},
+        { label: "Support RAID10 Uneven Spans", valueType: D.valueType.STRING},
+        { label: "Cache Size", unit: "B", valueType: D.valueType.NUMBER},
+        { label: "Driver Version", valueType: D.valueType.STRING},
+        { label: "Encryption Mode", valueType: D.valueType.STRING},
+        { label: "Security Status", valueType: D.valueType.STRING},    
     ]
 );
 
@@ -113,7 +113,9 @@ function parseData(output) {
     var lines = output.split("\n");
     console.log(lines);
     var data = {};
-    var instanceIdRaid = false; // Flag to indicate if InstanceID: RAID is found
+    var instanceIdRaid = false; 
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: RAID.") >= 0) {
@@ -121,26 +123,28 @@ function parseData(output) {
             data = {}; 
         } else if (instanceIdRaid && line.length === 0) {
             if (data["Device Type"] === "Controller") {
-                var recordId = D.crypto.hash((data["InstanceID"]), "sha256", null, "hex").slice(0, 50);
-                var fqdd = data["FQDD"] || "-"; 
-                var deviceType = data["Device Type"] || "-"; 
+                var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+                var type = data["Device Type"] || "-"; 
                 var primaryStatus = data["PrimaryStatus"] || "-";
                 var productName = data["ProductName"] || "-";
-                var deviceDescription = data["DeviceDescription"] || "-";
+                var description = data["DeviceDescription"] || "-";
                 var supportRAID10UnevenSpans = data["SupportRAID10UnevenSpans"] || "-";
-                var cacheSizeInMB = data["CacheSizeInMB"] || "-";
+                var cacheSizeInMB = (data["CacheSizeInMB"] || "").replace(/\D+/g, "") || "-";
+                console.log(cacheSizeInMB)
+                var cacheSize = cacheSizeInMB * Math.pow(1024, 2);
+                console.log(cacheSize)
+
                 var driverVersion = data["DriverVersion"] || "-";
                 var encryptionMode = data["EncryptionMode"] || "-";
                 var securityStatus = data["SecurityStatus"] || "-";
                 table.insertRecord(
                     recordId, [
-                        fqdd,
-                        deviceType,
+                        type,
                         primaryStatus,
                         productName,
-                        deviceDescription,
+                        description,
                         supportRAID10UnevenSpans,
-                        cacheSizeInMB,
+                        cacheSize,
                         driverVersion,
                         encryptionMode,
                         securityStatus
