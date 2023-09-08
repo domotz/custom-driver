@@ -32,10 +32,8 @@ var telnetParams = {
 var table = D.createTable(
     "Power Info",
     [
-        { label: "Date" },
-        { label: "Day" },
-        { label: "Power Up" },
-        { label: "Power Off" }
+        { label: "Power On (time)" },
+        { label: "Power Off (time)" }
     ]
 );
 
@@ -84,15 +82,20 @@ function powerParsing(result) {
  */
 function parseInfo(results) {
     var data = results.match(/(\d+\/\d+\/\d+)\s+(\w{3})(?:\s+(\d{2}:\d{2}:\d{2})\s+(\d{2}:\d{2}:\d{2}))?/g);
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 1; i < data.length; i++) {
         var item = data[i];
         var splitData = item.split(/\s+/);
+        console.info(item);
+        console.info(splitData);
         var date = splitData[0] || "-";
         var day = splitData[1] || "-";
-        var powerUp = splitData[2] || "-";
-        var powerOff = splitData[3] || "-";
-        var recordId = D.crypto.hash(date + "_"+ day, "sha256", null, "hex").slice(0, 50);
-        table.insertRecord(recordId,[date, day, powerUp, powerOff]);
+        var powerUp = splitData[2] || " ";
+        var powerOff = splitData[3] || " ";
+        var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+        var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+        var scheduledDate= day + " - "+ date;
+        var recordId = scheduledDate.replace(recordIdSanitisationRegex, '').slice(0, 50);
+        table.insertRecord(recordId,[powerUp, powerOff]);
     }
     D.success(table);
 }
@@ -137,8 +140,8 @@ function get_status() {
 
 /**
  * @remote_procedure
- * @label Reboot AS400
- * @documentation This procedure initiate a reboot of the AS400 server
+ * @label REBOOT
+ * @documentation Pressing this button reboots of the AS400 server.
  */
 function custom_1(){
     telnetParams.command = command + "4\r\n\x1b[29~";
@@ -154,8 +157,8 @@ function custom_1(){
 
 /**
  * @remote_procedure
- * @label Shutdown AS400 
- * @documentation This procedure sends a shutdown command to the AS400 server.
+ * @label SHUTDOWN 
+ * @documentation Pressing this button will shutdown the AS400 server.
  */
 function custom_2(){
     telnetParams.command = command + "3\r\n\x1b[29~";
