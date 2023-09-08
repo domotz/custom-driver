@@ -1,6 +1,6 @@
 /**
- * Name: Dell iDRAC Physical Disk Monitoring
- * Description: Monitors the operational status of physical disks on a Dell server with iDRAC.
+ * Name: Dell iDRAC Memory Monitoring
+ * Description: Monitors the operational status of memory on a Dell server with iDRAC
  * 
  * Communication protocol is SSH.
  * 
@@ -14,17 +14,17 @@
  *      - Type
  *      - Description
  *      - Primary Status
- *      - RAID Status
- *      - RAID Types
- *      - Size
- *      - Used Size
- *      - Free Size
- *      - Manufacturer
+ *      - Bank Label
  *      - Model
- *      - Bus Protocol
+ *      - Part Number
+ *      - Serial Number
+ *      - Manufacturer
+ *      - Size (in bytes)
+ *      - Speed (in MHz)
+ *      - Current Operating Speed (in MHz)
  */
 
-// SSH command to retrieve hardware inventory
+// SSH command to retrieve memory information
 var command = "racadm hwinventory";
 
 // SSH options when running the command
@@ -32,10 +32,28 @@ var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 100000,
-    "keyboard_interactive": true
+    "keyboard_interactive": true,
 };
 
-// SSH promise definition
+// Custom Driver Table to store memory information
+var table = D.createTable(
+    "Memory Info",
+    [
+        { label: "Type", valueType: D.valueType.STRING},
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Bank Label", valueType: D.valueType.STRING },
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Part Number", valueType: D.valueType.STRING },
+        { label: "Serial Number", valueType: D.valueType.STRING },
+        { label: "Manufacturer", valueType: D.valueType.STRING },
+        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Speed", unit: "MHZ", valueType: D.valueType.NUMBER },      
+        { label: "Current Operating Speed", unit: "MHZ", valueType: D.valueType.NUMBER }       
+    ]
+);
+
+//Handle SSH errors
 function checkSshError(err) {
     if(err.message) console.error(err.message);
     if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -62,24 +80,6 @@ function executeCommand(command) {
     return d.promise;
 }
 
-// Custom Driver Table to store physical disk information
-var table = D.createTable(
-    "Physical Disks Info",
-    [
-        { label: "Type", valueType: D.valueType.STRING },
-        { label: "Description", valueType: D.valueType.STRING },
-        { label: "Primary Status", valueType: D.valueType.STRING },
-        { label: "Raid Status", valueType: D.valueType.STRING },
-        { label: "Raid Types", valueType: D.valueType.STRING },
-        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Used Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Free Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Manufacturer", valueType: D.valueType.STRING },
-        { label: "Model", valueType: D.valueType.STRING },
-        { label: "Bus Protocol", valueType: D.valueType.STRING }
-    ]
-);
-
 /**
  * @remote_procedure
  * @label Validate Association
@@ -103,8 +103,8 @@ function parseValidateOutput(output) {
 
 /**
  * @remote_procedure
- * @label Get Physical Disk Info
- * @documentation Retrieves operational status of physical disks on a Dell server with iDRAC.
+ * @label Get Memory Info
+ * @documentation Retrieves operational status of memory modules on a Dell server with iDRAC.
  */
 function get_status() {
     executeCommand(command)
@@ -115,48 +115,50 @@ function get_status() {
         });
 }
 
+// Parse memory information output
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
-    var instanceIdDisk = false;
+    var instanceIdDimm = false; 
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
-        if (line.indexOf("[InstanceID: Disk.") >= 0) {
-            instanceIdDisk = true;
-            data = {};
-        } else if (instanceIdDisk && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
-            var type = data["Device Type"] || "-";
+        if (line.indexOf("[InstanceID: DIMM.") >= 0) {
+            instanceIdDimm = true;
+            data = {}; 
+        } else if (instanceIdDimm && line.length === 0) {
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+            var type = data["Device Type"] || "-"; 
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
-            var raidStatus = data["RaidStatus"] || "-";
-            var raidTypes = data["RAIDTypes"] || "-";
-            var size = (data["SizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var freeSize = (data["FreeSizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var manufacturer = data["Manufacturer"] || "-";
+            var bankLabel = data["BankLabel"] || "-";
             var model = data["Model"] || "-";
-            var busProtocol = data["BusProtocol"] || "-";
+            var partNumber = data["PartNumber"] || "-";
+            var serialNumber = data["SerialNumber"] || "-";
+            var manufacturer = data["Manufacturer"] || "-";
+            var size = (data["Size"] || "").replace(/\D+/g, "") || "-";
+            var sizeInBytes = size * Math.pow(1024, 2);
+            var speed = (data["Speed"] || "").replace(/\D+/g, "") || "-";
+            var currentOperatingSpeed = (data["CurrentOperatingSpeed"] || "").replace(/\D+/g, "") || "-";
             table.insertRecord(
                 recordId, [
                     type,
                     description,
                     primaryStatus,
-                    raidStatus,
-                    raidTypes,
-                    size,
-                    usedSize,
-                    freeSize,
-                    manufacturer,
+                    bankLabel,
                     model,
-                    busProtocol
+                    partNumber,
+                    serialNumber,
+                    manufacturer,
+                    sizeInBytes,
+                    speed,
+                    currentOperatingSpeed
                 ]
             );
             data = {};
-            instanceIdDisk = false;
-        } else if (instanceIdDisk) {
+            instanceIdDimm = false;
+        } else if (instanceIdDimm) {
             var keyValue = line.split('=');
             if (keyValue.length === 2) {
                 var key = keyValue[0].trim();
