@@ -117,8 +117,8 @@ function parseOutput(output, ipAddress) {
         var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = \d+ \((\d+)% loss\)/.exec(outputData);
         packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
     }
-    var stringsToReplace = ['?', '*', '%', 'table', 'column', 'history'];
-    var regex = new RegExp(stringsToReplace.map(str => `\\b${str}\\b`).join('|'), 'g');
-    var recordId = ipAddress.replace(regex, '').slice(0,50);
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordId = ipAddress.replace(recordIdSanitizationRegex, '').slice(0, 50);
     tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);
 }
