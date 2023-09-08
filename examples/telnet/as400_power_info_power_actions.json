@@ -1,10 +1,10 @@
 
 {
-    "logo": "",
+    "logo": "ibm-iseries.svg",
     "version": "1.0.0",
-    "name": "AS400 Power Info and Power Actions",
-    "description": "Monitors AS400 IBM server power information and actions",
-    "category": "Software Integration",
+    "name": "IBM ISeries AS400 Power Info and Power Actions",
+    "description": "Monitor IBM ISeries, AS400 IBM server (ITALIAN VERSION): this script checks the scheduled Power Information and provides a way to issue Power Actions (reboot, shutdown) interactively",
+    "category": "Hardware Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
@@ -12,9 +12,12 @@
     },
     "tags": [
         "as400",
+        "ibm",
+        "iseries",
         "power",
         "reboot",
-        "shoutdown",
+        "shutdown",
+        "scheduled",
         "day",
         "date",
         "power-up",
@@ -30,7 +33,7 @@
     ],
     "tested_on": [
         {
-            "name": "AS400",
+            "name": "OS400",
             "version": "BASE 5050, CODE  QSYS  V6R1M1 L00"
         }
     ]
