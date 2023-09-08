@@ -39,17 +39,17 @@ var sshConfig = {
 var table = D.createTable(
     "Memory Info",
     [
-        { label: "Type", type: D.valueType.STRING},
-        { label: "Description", type: D.valueType.STRING },
-        { label: "Primary Status", type: D.valueType.STRING },
-        { label: "Bank Label", type: D.valueType.STRING },
-        { label: "Model", type: D.valueType.STRING },
-        { label: "Part Number", type: D.valueType.STRING },
-        { label: "Serial Number", type: D.valueType.STRING },
-        { label: "Manufacturer", type: D.valueType.STRING },
-        { label: "Size", unit: "B", type: D.valueType.NUMBER },
-        { label: "Speed", unit: "MHZ", type: D.valueType.NUMBER },      
-        { label: "Current Operating Speed", unit: "MHZ", type: D.valueType.NUMBER }       
+        { label: "Type", valueType: D.valueType.STRING},
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Bank Label", valueType: D.valueType.STRING },
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Part Number", valueType: D.valueType.STRING },
+        { label: "Serial Number", valueType: D.valueType.STRING },
+        { label: "Manufacturer", valueType: D.valueType.STRING },
+        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Speed", unit: "MHZ", valueType: D.valueType.NUMBER },      
+        { label: "Current Operating Speed", unit: "MHZ", valueType: D.valueType.NUMBER }       
     ]
 );
 

@@ -13,8 +13,8 @@
         ]
     },
     "tags": [
-        "dell",
         "idrac",
+        "dell",
         "memory",
         "type",
         "description",
@@ -26,12 +26,12 @@
         "manufacturer",
         "size",
         "speed",
-        "current-operating-speed"
+        "operating-speed"
     ],
     "sample_period": 1000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[96]"
+        "table": "[11,999]"
     },
     "protocols": [
         "SSH"

@@ -23,7 +23,7 @@
         "Free-size",
         "manufacturer",
         "model",
-        "bus-protocol"    
+        "bus-protocol"
     ],
     "sample_period": 1000,
     "has_actions": false,

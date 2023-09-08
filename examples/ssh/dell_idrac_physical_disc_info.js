@@ -75,8 +75,8 @@ var table = D.createTable(
         { label: "Used Size", unit: "B", valueType: D.valueType.NUMBER },
         { label: "Free Size", unit: "B", valueType: D.valueType.NUMBER },
         { label: "Manufacturer", valueType: D.valueType.STRING },
-        { label: "Model", valueType: D.valueType.STRING },      
-        { label: "Bus Protocol", valueType: D.valueType.STRING }              
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Bus Protocol", valueType: D.valueType.STRING }
     ]
 );
 
