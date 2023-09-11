@@ -17,8 +17,7 @@
  *  - Service Status
  * 
 **/
-
-var includedServices = ["snmpd", "ssh", "zabbix"]; //Define the services you want to include. If empty all services are retrieved
+var includedServices  = D.getParameter('services');
 var command = "systemctl --all --type=service | sed -e 's/.service//' | tail -n +2 | awk '{print $1,$4}' | head -n -6 | grep -v 'inactive\\|systemd-fsck'";
 
 // Filter the services based on the includedServices array
@@ -37,7 +36,6 @@ var sshConfig = {
 var table = D.createTable(
     "Services List",
     [
-        { label: "Service Name" },
         { label: "Status" }
     ]
 ); 
@@ -97,21 +95,16 @@ function get_status() {
  */
 function parseOutput(output){     
     var result = output.split(/\r?\n/);
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < result.length; i++) {
         var fields = result[i].replace(/\s+/g," ").trim().split(" ");
         var serviceName = fields[0];
         var serviceStatus = fields[1];
-        var recordId = _getRecordIdForService(i, serviceName);
+        var recordId = serviceName.replace(recordIdSanitizationRegex, '').slice(0, 50);
         table.insertRecord(
-            recordId, [serviceName, serviceStatus]
+            recordId, [serviceStatus]
         );
     }
     D.success(table);
-}
-
-// Helper function to generate record ID for a service
-function _getRecordIdForService(index, serviceName) {
-    var idString = index + "_" + serviceName;
-    var hashedId = D.crypto.hash(idString, "sha256", null, "hex").toLowerCase().slice(0, 50);
-    return hashedId;
 }

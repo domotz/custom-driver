@@ -1,6 +1,6 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Linux Services",
     "description": "Monitor the status of the chosen services on a Linux host",
     "category": "Software Integration",
@@ -38,6 +38,13 @@
         {
             "name": "bash",
             "version": "5.0.3"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "services",
+            "label": "Included Services"
         }
     ]
 }
