@@ -41,5 +41,12 @@
             "name": "Microsoft Windows",
             "version": "11"
         }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "ipAddressesToCheck",
+            "label": "IP Adsresses"
+        }
     ]
 }
