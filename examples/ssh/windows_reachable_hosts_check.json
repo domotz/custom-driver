@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Reachable Hosts",
     "description": "Check if a list of hosts are reachable from the windows endpoint. Can be used for various case scenarios, including checking if a VPN connection is up or not",
     "category": "Software Integration",
@@ -33,6 +33,13 @@
         {
             "name": "Microsoft Windows",
             "version": "10"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "hostsToCheck",
+            "label": "Reachable Hosts"
         }
     ]
 }
