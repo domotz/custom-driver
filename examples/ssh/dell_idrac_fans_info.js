@@ -1,6 +1,6 @@
 /**
- * Name: Dell iDRAC Physical Disk Monitoring
- * Description: Monitors the operational status of physical disks on a Dell server with iDRAC.
+ * Name: Dell iDRAC Fan Monitoring
+ * Description: Monitors the operational status of fans on a Dell server with iDRAC
  * 
  * Communication protocol is SSH.
  * 
@@ -14,17 +14,14 @@
  *      - Type
  *      - Description
  *      - Primary Status
- *      - RAID Status
- *      - RAID Types
- *      - Size
- *      - Used Size
- *      - Free Size
- *      - Manufacturer
- *      - Model
- *      - Bus Protocol
+ *      - Redundancy Status
+ *      - Active Cooling
+ *      - Variable Speed
+ *      - PWM
+ *      - Current Reading
  */
 
-// SSH command to retrieve hardware inventory
+// SSH command to retrieve fan information
 var command = "racadm hwinventory";
 
 // SSH options when running the command
@@ -35,7 +32,22 @@ var sshConfig = {
     "keyboard_interactive": true
 };
 
-// SSH promise definition
+// Custom Driver Table to store fan information
+var table = D.createTable(
+    "Fans Info",
+    [
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Redundancy Status", valueType: D.valueType.STRING },
+        { label: "Active Cooling", valueType: D.valueType.STRING },
+        { label: "Variable Speed", valueType: D.valueType.STRING },
+        { label: "PWM", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Current Reading", unit: "RPM", valueType: D.valueType.NUMBER }      
+    ]
+);
+
+//Handle SSH errors
 function checkSshError(err) {
     if(err.message) console.error(err.message);
     if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -62,24 +74,6 @@ function executeCommand(command) {
     return d.promise;
 }
 
-// Custom Driver Table to store physical disk information
-var table = D.createTable(
-    "Physical Disks Info",
-    [
-        { label: "Type", valueType: D.valueType.STRING },
-        { label: "Description", valueType: D.valueType.STRING },
-        { label: "Primary Status", valueType: D.valueType.STRING },
-        { label: "Raid Status", valueType: D.valueType.STRING },
-        { label: "Raid Types", valueType: D.valueType.STRING },
-        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Used Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Free Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Manufacturer", valueType: D.valueType.STRING },
-        { label: "Model", valueType: D.valueType.STRING },
-        { label: "Bus Protocol", valueType: D.valueType.STRING }
-    ]
-);
-
 /**
  * @remote_procedure
  * @label Validate Association
@@ -103,8 +97,8 @@ function parseValidateOutput(output) {
 
 /**
  * @remote_procedure
- * @label Get Physical Disk Info
- * @documentation Retrieves operational status of physical disks on a Dell server with iDRAC.
+ * @label Get Fan Info
+ * @documentation Retrieves operational status of fans on a Dell server with iDRAC.
  */
 function get_status() {
     executeCommand(command)
@@ -115,48 +109,43 @@ function get_status() {
         });
 }
 
+// Parse fan information output
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
-    var instanceIdDisk = false;
+    var instanceIdFan = false; 
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
-        if (line.indexOf("[InstanceID: Disk.") >= 0) {
-            instanceIdDisk = true;
-            data = {};
-        } else if (instanceIdDisk && line.length === 0) {
+        if (line.indexOf("[InstanceID: Fan.") >= 0) {
+            instanceIdFan = true;
+            data = {}; 
+        } else if (instanceIdFan && line.length === 0) {
             var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
-            var type = data["Device Type"] || "-";
+            var type = data["Device Type"] || "-"; 
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
-            var raidStatus = data["RaidStatus"] || "-";
-            var raidTypes = data["RAIDTypes"] || "-";
-            var size = (data["SizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var freeSize = (data["FreeSizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var manufacturer = data["Manufacturer"] || "-";
-            var model = data["Model"] || "-";
-            var busProtocol = data["BusProtocol"] || "-";
+            var redundancyStatus = data["RedundancyStatus"] || "-";
+            var activeCooling = data["ActiveCooling"] || "-";
+            var variableSpeed = data["VariableSpeed"] || "-";
+            var pwm = (data["PWM"] || "").replace("%", "") || "-";
+            var currentReading = (data["CurrentReading"] || "").replace(/\D+/g, "") || "-";
             table.insertRecord(
                 recordId, [
                     type,
                     description,
                     primaryStatus,
-                    raidStatus,
-                    raidTypes,
-                    size,
-                    usedSize,
-                    freeSize,
-                    manufacturer,
-                    model,
-                    busProtocol
+                    redundancyStatus,
+                    activeCooling,
+                    variableSpeed,
+                    pwm,
+                    currentReading
                 ]
             );
             data = {};
-            instanceIdDisk = false;
-        } else if (instanceIdDisk) {
+            instanceIdFan = false;
+        } else if (instanceIdFan) {
             var keyValue = line.split('=');
             if (keyValue.length === 2) {
                 var key = keyValue[0].trim();

@@ -1,6 +1,6 @@
 /**
- * Name: Dell iDRAC Physical Disk Monitoring
- * Description: Monitors the operational status of physical disks on a Dell server with iDRAC.
+ * Name: Dell iDRAC CPUs Monitoring
+ * Description: Monitors the operational status of CPUs on a Dell server with iDRAC
  * 
  * Communication protocol is SSH.
  * 
@@ -13,18 +13,17 @@
  * Creates a Custom Driver Table with the following columns:
  *      - Type
  *      - Description
- *      - Primary Status
- *      - RAID Status
- *      - RAID Types
- *      - Size
- *      - Used Size
- *      - Free Size
- *      - Manufacturer
  *      - Model
- *      - Bus Protocol
+ *      - Primary Status
+ *      - CPU Status
+ *      - Max Clock Speed
+ *      - Current Clock Speed
+ *      - Virtualization Technology Enabled
+ *      - Hyper Threading Enabled
+ * 
  */
 
-// SSH command to retrieve hardware inventory
+// SSH command to retrieve cpus information
 var command = "racadm hwinventory";
 
 // SSH options when running the command
@@ -32,10 +31,26 @@ var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 100000,
-    "keyboard_interactive": true
+    "keyboard_interactive": true,
 };
 
-// SSH promise definition
+// Custom Driver Table to store cpus information
+var table = D.createTable(
+    "CPU Info",
+    [
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "CPU Status", valueType: D.valueType.STRING },
+        { label: "Max Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER },      
+        { label: "Current Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER }, 
+        { label: "Virt Tech Enabled", valueType: D.valueType.STRING },
+        { label: "Hyper Threading Enabled", valueType: D.valueType.STRING }
+    ]
+);
+
+//Handle SSH errors
 function checkSshError(err) {
     if(err.message) console.error(err.message);
     if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -62,24 +77,6 @@ function executeCommand(command) {
     return d.promise;
 }
 
-// Custom Driver Table to store physical disk information
-var table = D.createTable(
-    "Physical Disks Info",
-    [
-        { label: "Type", valueType: D.valueType.STRING },
-        { label: "Description", valueType: D.valueType.STRING },
-        { label: "Primary Status", valueType: D.valueType.STRING },
-        { label: "Raid Status", valueType: D.valueType.STRING },
-        { label: "Raid Types", valueType: D.valueType.STRING },
-        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Used Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Free Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Manufacturer", valueType: D.valueType.STRING },
-        { label: "Model", valueType: D.valueType.STRING },
-        { label: "Bus Protocol", valueType: D.valueType.STRING }
-    ]
-);
-
 /**
  * @remote_procedure
  * @label Validate Association
@@ -103,8 +100,8 @@ function parseValidateOutput(output) {
 
 /**
  * @remote_procedure
- * @label Get Physical Disk Info
- * @documentation Retrieves operational status of physical disks on a Dell server with iDRAC.
+ * @label Get CPUs Info
+ * @documentation Retrieves operational status of CPUs on a Dell server with iDRAC.
  */
 function get_status() {
     executeCommand(command)
@@ -115,48 +112,45 @@ function get_status() {
         });
 }
 
+// Parse cpu information output
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
-    var instanceIdDisk = false;
+    var instanceIdCpu = false; 
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
-        if (line.indexOf("[InstanceID: Disk.") >= 0) {
-            instanceIdDisk = true;
-            data = {};
-        } else if (instanceIdDisk && line.length === 0) {
+        if (line.indexOf("[InstanceID: CPU.Socket") >= 0) {
+            instanceIdCpu = true;
+            data = {}; 
+        } else if (instanceIdCpu && line.length === 0) {
             var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
-            var type = data["Device Type"] || "-";
-            var description = data["DeviceDescription"] || "-";
-            var primaryStatus = data["PrimaryStatus"] || "-";
-            var raidStatus = data["RaidStatus"] || "-";
-            var raidTypes = data["RAIDTypes"] || "-";
-            var size = (data["SizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var freeSize = (data["FreeSizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var manufacturer = data["Manufacturer"] || "-";
-            var model = data["Model"] || "-";
-            var busProtocol = data["BusProtocol"] || "-";
+            var type = data["Device Type"] || "-"; 
+            var description = data["DeviceDescription"] || "-"; 
+            var model = data["Model"] || "-"; 
+            var primaryStatus = data["PrimaryStatus"] || "-"; 
+            var cpuStatus = data["CPUStatus"] || "-"; 
+            var maxClockSpeed = (data["MaxClockSpeed"] || "").replace(/\D+/g, "") || "-";
+            var currentClockSpeed = (data["CurrentClockSpeed"] || "").replace(/\D+/g, "") || "-";
+            var virtualizationTechnologyEnabled = data["VirtualizationTechnologyEnabled"] || "-"; 
+            var hyperThreadingEnabled = data["HyperThreadingEnabled"] || "-";           
             table.insertRecord(
                 recordId, [
                     type,
                     description,
-                    primaryStatus,
-                    raidStatus,
-                    raidTypes,
-                    size,
-                    usedSize,
-                    freeSize,
-                    manufacturer,
                     model,
-                    busProtocol
+                    primaryStatus,
+                    cpuStatus,
+                    maxClockSpeed,
+                    currentClockSpeed,
+                    virtualizationTechnologyEnabled,
+                    hyperThreadingEnabled
                 ]
             );
             data = {};
-            instanceIdDisk = false;
-        } else if (instanceIdDisk) {
+            instanceIdCpu = false;
+        } else if (instanceIdCpu) {
             var keyValue = line.split('=');
             if (keyValue.length === 2) {
                 var key = keyValue[0].trim();

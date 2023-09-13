@@ -1,8 +1,8 @@
 {
     "logo": "dell.svg",
     "version": "1.0.0",
-    "name": "Dell iDRAC Physical Disk Monitoring",
-    "description": "Monitors the operational status of physical disks on a Dell server with iDRAC",
+    "name": "Dell iDRAC Memory Monitoring",
+    "description": "Monitors the operational status of memory on a Dell server with iDRAC",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
@@ -15,15 +15,18 @@
     "tags": [
         "idrac",
         "dell",
-        "physical-disk",
-        "disk",
-        "raid",
-        "size",
-        "used-size",
-        "free-size",
-        "manufacturer",
+        "memory",
+        "type",
+        "description",
+        "primary-status",
+        "bank-label",
         "model",
-        "bus-protocol"
+        "part-number",
+        "serial-number",
+        "manufacturer",
+        "size",
+        "speed",
+        "operating-speed"
     ],
     "sample_period": 1000,
     "has_actions": false,

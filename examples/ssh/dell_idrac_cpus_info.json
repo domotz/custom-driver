@@ -1,8 +1,8 @@
 {
     "logo": "dell.svg",
     "version": "1.0.0",
-    "name": "Dell iDRAC Physical Disk Monitoring",
-    "description": "Monitors the operational status of physical disks on a Dell server with iDRAC",
+    "name": "Dell iDRAC CPUs Monitoring",
+    "description": "Monitors the operational status of cpus on a Dell server with iDRAC",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
@@ -15,20 +15,21 @@
     "tags": [
         "idrac",
         "dell",
-        "physical-disk",
-        "disk",
-        "raid",
-        "size",
-        "used-size",
-        "free-size",
-        "manufacturer",
+        "cpu",
+        "type",
+        "description",
         "model",
-        "bus-protocol"
+        "primary-status",
+        "cpu-status",
+        "max-clock-speed",
+        "current-clock-speed",
+        "virtualization-technology-enabled",
+        "hyper-threading-enabled" 
     ],
     "sample_period": 1000,
     "has_actions": false,
     "expected_variables": {
-        "table": "[11,999]"
+        "table": "[9,999]"
     },
     "protocols": [
         "SSH"
