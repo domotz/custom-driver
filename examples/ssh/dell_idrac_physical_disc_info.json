@@ -20,7 +20,7 @@
         "raid",
         "size",
         "used-size",
-        "Free-size",
+        "free-size",
         "manufacturer",
         "model",
         "bus-protocol"
@@ -36,7 +36,7 @@
     "tested_on": [
         {
             "name": "DELL iDRAC",
-            "version": "7.0.3 21053776 U3 P70"
+            "version": "7.0.3 21053776"
         }
     ]
 }
