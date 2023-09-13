@@ -27,7 +27,7 @@
         "encryption-mode",
         "security-status"
     ],
-    "sample_period": 1000,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
         "table": "[9,999]"

@@ -25,7 +25,7 @@
         "model",
         "bus-protocol"
     ],
-    "sample_period": 1000,
+    "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
         "table": "[11,999]"
