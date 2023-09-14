@@ -81,24 +81,31 @@ function powerParsing(result) {
  * @param {string} results  Information returned by the AS400 server
  */
 function parseInfo(results) {
-    var data = results.match(/(\d+\/\d+\/\d+)\s+(\w{3})(?:\s+(\d{2}:\d{2}:\d{2})\s+(\d{2}:\d{2}:\d{2}))?/g);
-    for (var i = 1; i < data.length; i++) {
-        var item = data[i];
-        var splitData = item.split(/\s+/);
-        console.info(item);
-        console.info(splitData);
-        var date = splitData[0] || "-";
-        var day = splitData[1] || "-";
-        var powerUp = splitData[2] || " ";
-        var powerOff = splitData[3] || " ";
+    var data = results.split("80H").map(function(result) {
+        var match = result.match(/(\d\d\/\d\d\/\d\d)*\s+(...)\s+(\d\d:\d\d:\d\d|.*30H)\s+(\d\d:\d\d:\d\d)*\s+/);
+        return match ? {
+            date: match[1],
+            day: match[2],
+            powerOn: match[3],
+            powerOff: match[4]
+        } : null;
+    }).filter(function(item) {
+        return item !== null;
+    });
+
+    data.forEach(function(item) {
+        if (item.powerOn) {
+            item.powerOn = item.powerOn.replace(/[[0-9;]*[a-zA-Z]/g, "-");
+        }
         var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
         var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-        var scheduledDate= day + " - "+ date;
+        var scheduledDate = item.date + "-" + item.day;
         var recordId = scheduledDate.replace(recordIdSanitisationRegex, '').slice(0, 50);
-        table.insertRecord(recordId,[powerUp, powerOff]);
-    }
-    D.success(table);
+        table.insertRecord(recordId, [item.powerOn || "-", item.powerOff || "-"]);
+    });   
+    D.success(table);  
 }
+
 
 // Function to handle errors
 function failure(err) {
@@ -138,7 +145,7 @@ function get_status() {
         .catch(failure);
 }
 
-/**
+/** 
  * @remote_procedure
  * @label REBOOT
  * @documentation Pressing this button reboots of the AS400 server.
