@@ -12,7 +12,6 @@
  *      - Boot disk : Boot disk usage in GB
  *      - PID : Process ID
  *      - cores : Number of CPU cores
- *      - meta : Meta information
  *      - net0 : Network interface information
  *      - numa : NUMA (Non-Uniform Memory Access) information
  *      - ostype : Operating system type
@@ -43,16 +42,15 @@ var kvmsTable = D.createTable(
     [
         { label: "Name" },
         { label: "Status" },
-        { label: "Memory" , unit: "MB" },
-        { label: "Boot disk" , unit: "GB" },
+        { label: "Memory", unit: "MB" },
+        { label: "Boot disk", unit: "GB" },
         { label: "PID" },
-        { label: "cores" },
-        { label: "meta" },
-        { label: "net0" },
-        { label: "numa" },
-        { label: "ostype" },
-        { label: "sockets" } ,
-        { label: "error" } 
+        { label: "Processors" },
+        { label: "Net0 MAC" }, 
+        { label: "Net0 bridge" }, 
+        { label: "Numa" },
+        { label: "Ostype" },
+        { label: "Error" }
     ]
 );
  
@@ -110,29 +108,50 @@ function parseData(data) {
         var promise = execCommand("qm config " + vmid)
             .then(function(configData) {
                 var config = {};
-                if (configData.err){
+                if (configData.err) {
                     config.error = configData.err;
-                }else{
+                } else {
                     var configLines = configData.trim().split('\n');
                     configLines.forEach(function(configLine) {
-                        var configValues = configLine.trim().split(":");
+                        var configValues = configLine.trim().split(": ");
                         var key = configValues[0].trim();
                         var value = configValues[1].trim();
                         config[key] = value;
                     });
                 }
-                kvmsTable.insertRecord(recordId, [ 
-                    name, 
-                    status, 
+                var totalProcessors = config.cores * config.sockets; 
+                var processors;
+                if (config.cores !== undefined && config.sockets !== undefined) {
+                    processors = totalProcessors + " (" + (config.sockets || "-") + " sockets, " + (config.cores || "-") + " cores)";
+                } else {
+                    processors = "-";
+                }
+                var net0Config = config.net0 ? config.net0.split(',') : null;
+                var net0MAC = "";
+                var net0Bridge = "";
+                if (net0Config) {
+                    for (var i = 0; i < net0Config.length; i++) {
+                        var keyValue = net0Config[i].split('=');
+                        var key = keyValue[0].trim();
+                        var value = keyValue[1].trim();
+                        if (key === "virtio") {
+                            net0MAC = value;
+                        } else if (key === "bridge") {
+                            net0Bridge = value;
+                        }
+                    }
+                }
+                kvmsTable.insertRecord(recordId, [
+                    name,
+                    status,
                     memory,
-                    bootdisk, 
-                    pid, 
-                    config.cores || "-", 
-                    config.meta || "-", 
-                    config.net0 || "-", 
-                    config.numa || "-", 
-                    config.ostype || "-", 
-                    config.sockets || "-", 
+                    bootdisk,
+                    pid,
+                    processors,
+                    net0MAC || "-",
+                    net0Bridge || "-",
+                    config.numa || "-",
+                    config.ostype || "-",
                     config.error ? config.error.code + " : " + config.error.message : ""
                 ]);
             });
@@ -169,7 +188,7 @@ function parseData(data) {
             D.success(result, kvmsTable);
         });
 }
- 
+
 /**
   * @remote_procedure
   * @label Validate Association
