@@ -1,0 +1,33 @@
+{
+    "logo": "crestron.svg",
+    "version": "1.0.0",
+    "name": "Crestron Touch Screen (TSW)",
+    "description": "Collects information for crestron touch screen device's calendar syncronisations",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Crestron TSW device"
+        ]
+    },
+    "tags": [
+        "crestron",
+        "tsw",
+        "touchscreen"
+    ],
+    "sample_period": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[4]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Crestron TSW-760",
+            "version": "3.002.1025"
+        }
+    ]
+}
