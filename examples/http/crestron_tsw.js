@@ -74,10 +74,10 @@ function getDevice() {
 function extractVars(body) {
     var data = JSON.parse(body);
     return [
-        D.createVariable("calendar_sync_status", "CalendarSyncStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.CalendarSyncStatus, D.valueType.STRING ),
-        D.createVariable("connection_status", "ConnectionStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatus, D.valueType.STRING),
-        D.createVariable("connection_status_message", "ConnectionStatusMessage", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatusMessage, D.valueType.STRING),
-        D.createVariable("exchange_registration_status", "ExchangeRegistrationStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.Exchange.Registration.ExchangeRegistrationStatus, D.valueType.STRING),
+        D.createVariable("calendar_sync_status", "CalendarSyncStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.CalendarSyncStatus, null, D.valueType.STRING ),
+        D.createVariable("connection_status", "ConnectionStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatus, null, D.valueType.STRING),
+        D.createVariable("connection_status_message", "ConnectionStatusMessage", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatusMessage, null, D.valueType.STRING),
+        D.createVariable("exchange_registration_status", "ExchangeRegistrationStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.Exchange.Registration.ExchangeRegistrationStatus, null, D.valueType.STRING),
     ];
 }
 
@@ -92,10 +92,11 @@ function validate(){
         .then(function (deviceResponse) {
             if (deviceResponse) {
                 console.info("Data available");
+                D.success();
             } else {
                 console.error("No data available");
+                D.failure(D.errorType.GENERIC_ERROR);
             }
-            D.success();
         })
         .catch(function (err) {
             console.error(err);
