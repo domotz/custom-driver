@@ -11,29 +11,24 @@
  * 
  * Requires:
  *      - requires apt
- *      - requires sed, grep, and awk
+ *      - requires grep
  *      - PLEASE NOTE: it requires to be run as a user part of the sudoers group without password prompt
  * 
  * Creates a Custom Driver Variable with the Number of Updates available
  * 
  * Creates a Custom Driver Table with the following columns:
- *  - Package Name
  *  - Current Version
  *  - New Version 
  * 
 **/
 
-var cmdSudoCheck = "echo '" + D.device.password() + "'|sudo -S -v";
-var cmdNumberUpdates = "echo '" + D.device.password() + "'|sudo -S apt update -qq 2>/dev/null";
-var cmdListOfUpdates = "echo '" + D.device.password() + "'|sudo -S apt list --upgradable -qq 2>/dev/null";
-var fullCommand = 
-                // break on sudo error
-                "set -e;" + 
-                cmdSudoCheck + ";"+
-                // if sudo is ok run the command
-                "set +e;" + 
-                cmdNumberUpdates + " | grep -v packages ;" + 
-                cmdListOfUpdates + " | grep -v 'Listing' | sed 's\/\\\/\/ \/g' | sed 's\/\\[\/ \/g' | sed 's\/\\]\/ \/g' | awk -F ' ' '{print $1,$7,$3}'";
+var packageFilters = D.getParameter('packageFilters');
+var cmdListUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst";
+
+if (packageFilters.length > 0) {
+    var packages = packageFilters.join("\\|");
+    cmdListUpdates += " | grep -E " + packages;
+}
 
 // SSH options when running the commands
 var sshConfig = {
@@ -41,6 +36,14 @@ var sshConfig = {
     password: D.device.password(),
     timeout: 30000
 };
+
+var updateListTable = D.createTable(
+    "Updates List",
+    [
+        { label: "Current Version" },
+        { label: "New Version" },
+    ]
+);
 
 // SSH promise definition
 function checkSshError(err) {
@@ -72,7 +75,7 @@ function executeCommand(command) {
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    executeCommand(fullCommand)
+    executeCommand(cmdListUpdates)
         .then(parseValidateOutput)
         .then(D.success)
         .catch(function (err) {
@@ -82,7 +85,6 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    // Check if the output contains the expected response or data
     if (output.trim() !== "") {
         console.log("Validation successful");
     } else {
@@ -90,32 +92,30 @@ function parseValidateOutput(output) {
     }
 }
 
-
-var updateListTable = D.createTable(
-    "Updates List",
-    [
-        { label: "Package Name" },
-        { label: "Current Version" },
-        { label: "New Version" }
-    ]
-);
-
 function parseData(executionResult) {
     var listOfUpdates = executionResult.split(/\r?\n/);
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < listOfUpdates.length; i++) {
-        var fields = listOfUpdates[i].replace(/\s+/g, ' ').trim().split(" ");
-        var pkgName = fields[0];
-        var pkgOldV = fields[1];
-        var pkgNewV = fields[2];
-        var recordId = D.crypto.hash(pkgName, "sha256", null, "hex").slice(0, 50);
+        var fields = listOfUpdates[i].replace(/[\[\]()]/g, "").split(" ");
+        var pkgName = fields[1];
+        var pkgOldV = fields[2];
+        var pkgNewV = fields[3]; 
+        var recordId = pkgName.replace(recordIdSanitizationRegex, '').slice(0, 50);
         updateListTable.insertRecord(
-            recordId, [pkgName, pkgOldV, pkgNewV]
+            recordId, [pkgOldV, pkgNewV]
         );
     }
-    var numberOfAvailableUpdatesLabel = "Number of Updates Available";
-    var numberOfAvailableUpdatesValue = listOfUpdates.length;
-    numberOfAvailableUpdates = [D.createVariable("available-updates-number", numberOfAvailableUpdatesLabel, numberOfAvailableUpdatesValue, null, D.valueType.NUMBER)];
-    D.success(numberOfAvailableUpdates, updateListTable);
+    var variables = [];
+
+    for (var j = 0; j < packageFilters.length; j++) {
+        var packageName = packageFilters[j];
+        var count = listOfUpdates.filter(function (update) {
+            return update.indexOf("Inst " + packageName) !== -1;
+        }).length;  
+        variables.push(D.createVariable(packageName, packageName, count, null, D.valueType.NUMBER));    
+    }
+    D.success(variables,updateListTable); 
 }
 
 /**
@@ -124,12 +124,10 @@ function parseData(executionResult) {
 * @documentation Process data and deliver Linux Updates variables and table
 */
 function get_status() {
-    executeCommand(fullCommand)
+    executeCommand(cmdListUpdates)
         .then(parseData)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
-                
-     
 }
