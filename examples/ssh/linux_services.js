@@ -30,13 +30,14 @@ if (includedServices.length > 0) {
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    timeout: 5000
+    timeout: 10000
 };
 
 var table = D.createTable(
     "Services List",
     [
-        { label: "Status" }
+        { label: "Name", valueType: D.valueType.STRING},
+        { label: "Status", valueType: D.valueType.STRING}
     ]
 ); 
 // SSH promise definition
@@ -103,7 +104,7 @@ function parseOutput(output){
         var serviceStatus = fields[1];
         var recordId = serviceName.replace(recordIdSanitizationRegex, '').slice(0, 50);
         table.insertRecord(
-            recordId, [serviceStatus]
+            recordId, [serviceName, serviceStatus]
         );
     }
     D.success(table);
