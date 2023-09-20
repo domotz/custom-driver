@@ -1,21 +1,10 @@
 /** 
- * Name: Proxmox monitoring 
- * Description: Monitors status and properties of a Virtual Machines Proxmox.
+ * Name: Proxmox VE General
+ * Description: Monitors general and performance properties of a Virtual Machines Proxmox.
  *   
  * Communication protocol is SSH.
  * 
- * Creates a Custom Driver Table with the following columns:
- *      - VMID : Virtual Machine ID
- *      - Name : Virtual Machine Name
- *      - Status : Virtual Machine Status
- *      - Memory : Memory usage in MB
- *      - Boot disk : Boot disk usage in GB
- *      - PID : Process ID
- *      - cores : Number of CPU cores
- *      - net0 : Network interface information
- *      - numa : NUMA (Non-Uniform Memory Access) information
- *      - ostype : Operating system type
- *      - sockets : Number of CPU sockets
+ * Tested under Proxmox version 8.0.3
  * 
  * Creates custom driver variables:
  *      - Version : Proxmox serverVersion
@@ -26,9 +15,9 @@
  *      - AVERAGE SEEK TIME : The average seek time of the storage device in milliseconds (ms).
  *      - FSYNCS/SECOND : The number of file system sync operations per second.
  *      - DNS EXT : The external DNS (Domain Name System) resolution time in milliseconds (ms).
+ * 
  **/
 
-var cmdKVMsList = "qm list";
 var cmdPVEVersion = "pveversion";
 var cmdPVEPerf = "pveperf";
 var sshConfig = {
@@ -36,23 +25,6 @@ var sshConfig = {
     password: D.device.password(),
     timeout: 120000
 };
- 
-var kvmsTable = D.createTable(
-    "KVMs",
-    [
-        { label: "Name" },
-        { label: "Status" },
-        { label: "Memory", unit: "MB" },
-        { label: "Boot disk", unit: "GB" },
-        { label: "PID" },
-        { label: "Processors" },
-        { label: "Net0 MAC" }, 
-        { label: "Net0 bridge" }, 
-        { label: "Numa" },
-        { label: "Ostype" },
-        { label: "Error" }
-    ]
-);
  
 //Checks and handles SSH errors
 function checkSshError(err) {
@@ -66,15 +38,15 @@ function checkSshError(err) {
 /**
   * Executes a SSH command and returns a promise
   * @param {string} command The SSH command to execute
-  * @returns {Promise} A promise that resolves with the command output or rejects with an error
+  *  promise that resolves with the command output or rejects with an error
   */
-function execCommand(command) {
+function executeCommand(command) {
     var d = D.q.defer();
     sshConfig.command = command;
     D.device.sendSSHCommand(sshConfig, function (out, err) {
         if (err) {
-            console.error(err);
-            d.resolve({err: err});
+            checkSshError(err);
+            d.reject(err);
         } else {
             d.resolve(out);
         }
@@ -82,111 +54,40 @@ function execCommand(command) {
     return d.promise;
 }
 
-function sanitize(str){
-    var stringsToReplace = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var regex = new RegExp("("+stringsToReplace.join('|')+")", 'g');
-    return str.replace(regex, '').slice(0, 50);
+function execute(){
+    return D.q.all([
+        executeCommand(cmdPVEVersion),
+        executeCommand(cmdPVEPerf)
+    ]);
 }
- 
+
 /**
-  * @description Parses the output of the SSH command and populates the KVMs table
   * @param {string} data The output of the SSH command
+  * Parses the output of the SSH command 
   */
 function parseData(data) {
-    var lines = data.trim().split('\n');
-    lines.shift();
-    var promises = [];
-    lines.forEach(function(line) {
-        var values = line.match(/(\d+)\s+(.*?)\s+(\w+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+)/);
-        var vmid = values[1];
-        var name = values[2];
-        var status = values[3];
-        var memory = values[4];
-        var bootdisk = values[5];
-        var pid = values[6];
-        var recordId = sanitize(vmid);
-        var promise = execCommand("qm config " + vmid)
-            .then(function(configData) {
-                var config = {};
-                if (configData.err) {
-                    config.error = configData.err;
-                } else {
-                    var configLines = configData.trim().split('\n');
-                    configLines.forEach(function(configLine) {
-                        var configValues = configLine.trim().split(": ");
-                        var key = configValues[0].trim();
-                        var value = configValues[1].trim();
-                        config[key] = value;
-                    });
-                }
-                var totalProcessors = config.cores * config.sockets; 
-                var processors;
-                if (config.cores !== undefined && config.sockets !== undefined) {
-                    processors = totalProcessors + " (" + (config.sockets || "-") + " sockets, " + (config.cores || "-") + " cores)";
-                } else {
-                    processors = "-";
-                }
-                var net0Config = config.net0 ? config.net0.split(',') : null;
-                var net0MAC = "";
-                var net0Bridge = "";
-                if (net0Config) {
-                    for (var i = 0; i < net0Config.length; i++) {
-                        var keyValue = net0Config[i].split('=');
-                        var key = keyValue[0].trim();
-                        var value = keyValue[1].trim();
-                        if (key === "virtio") {
-                            net0MAC = value;
-                        } else if (key === "bridge") {
-                            net0Bridge = value;
-                        }
-                    }
-                }
-                kvmsTable.insertRecord(recordId, [
-                    name,
-                    status,
-                    memory,
-                    bootdisk,
-                    pid,
-                    processors,
-                    net0MAC || "-",
-                    net0Bridge || "-",
-                    config.numa || "-",
-                    config.ostype || "-",
-                    config.error ? config.error.code + " : " + config.error.message : ""
-                ]);
-            });
-        promises.push(promise);
+    var variables = []; 
+    var config = {};
+    var lines = data[1].split('\n');
+    lines.forEach(function (line) {
+        var parts = line.split(':');
+        if (parts.length === 2) {
+            var key = parts[0].trim();
+            var value = parseFloat(parts[1].trim());
+            config[key] = value;
+        }
+        variables = [
+            D.createVariable("version", "Version", data[0]),
+            D.createVariable("cpu_bogomips", 'CPU BOGOMIPS', config["CPU BOGOMIPS"]),
+            D.createVariable("regex_second", 'REGEX/SECOND', config["REGEX/SECOND"]),
+            D.createVariable("hd_size", 'HD SIZE', config["HD SIZE"], "GB"),
+            D.createVariable("buffered_reads", 'BUFFERED READS', config["BUFFERED READS"], "MB/sec"),
+            D.createVariable("average_seek_time", 'AVERAGE SEEK TIME', config["AVERAGE SEEK TIME"], "ms"),
+            D.createVariable("fsync_second", 'FSYNCS/SECOND', config["FSYNCS/SECOND"]),
+            D.createVariable("dns_ext", 'DNS EXT', config["DNS EXT"], "ms")
+        ];
     });
-    var pveVersionPromise = execCommand(cmdPVEVersion);
-    var pvePerfPromise = execCommand(cmdPVEPerf)
-        .then(function(perfData) {
-            var pvePerf = perfData.trim().split('\n');
-            var config = {};
-            pvePerf.forEach(function(result) {
-                var configValues = result.trim().split(":");
-                var key = configValues[0].trim();
-                var value = parseFloat(configValues[1].trim());
-                config[key] = value;
-            });
-            return config;
-        });
- 
-    D.q.all([pveVersionPromise, pvePerfPromise])
-        .then(function(results) {
-            var pveVersionResult = results[0];     
-            var pvePerfResult = results[1];
-            var result = [
-                D.createVariable("version", "Version", pveVersionResult),
-                D.createVariable("cpu_bogomips", 'CPU BOGOMIPS', pvePerfResult["CPU BOGOMIPS"]),
-                D.createVariable("regex_second", 'REGEX/SECOND', pvePerfResult["REGEX/SECOND"]),
-                D.createVariable("hd_size", 'HD SIZE', pvePerfResult["HD SIZE"], "GB"),
-                D.createVariable("buffered_reads", 'BUFFERED READS', pvePerfResult["BUFFERED READS"], "MB/sec"),
-                D.createVariable("average_seek_time", 'AVERAGE SEEK TIME', pvePerfResult["AVERAGE SEEK TIME"], "ms"),
-                D.createVariable("fsync_second", 'FSYNCS/SECOND', pvePerfResult["FSYNCS/SECOND"]),
-                D.createVariable("dns_ext", 'DNS EXT', pvePerfResult["DNS EXT"], "ms")
-            ];
-            D.success(result, kvmsTable);
-        });
+    D.success(variables);
 }
 
 /**
@@ -195,26 +96,25 @@ function parseData(data) {
   * @documentation This procedure is used to validate if the SSH command is executed successfully.
   */
 function validate() {
-    execCommand(cmdKVMsList)
-        .then(function(){
-            D.success();
+    executeCommand(cmdPVEVersion)
+        .then(function (data) {
+            if (data && data[0] && data[1]) {
+                D.success();
+            } else {
+                console.error("SSH command execution failed.");
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
         })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(checkSshError);
 }
  
 /**
   * @remote_procedure
   * @label Get Device Variables
-  * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server.
+  * @documentation This procedure is used to retrieve general and performance properties from the Proxmox server.
   */
 function get_status() {
-    execCommand(cmdKVMsList)
+    execute()
         .then(parseData)
-        .catch(function(err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(checkSshError);
 }

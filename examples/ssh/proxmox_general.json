@@ -1,0 +1,36 @@
+{
+    "logo": "proxmox.svg",
+    "version": "1.0.0",
+    "name": "Proxmox VE General",
+    "description": "Monitors general and performance properties of a Virtual Machines Proxmox",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Proxmox",
+            "VM",
+            "hypervisor"
+        ]
+    },
+    "tags": [
+        "proxmox",
+        "vm",
+        "pveversion",
+        "pveperf"
+    ],
+    "sample_period": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[8]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Proxmox",
+            "version": "8.0.3"
+        }
+    ]
+}
