@@ -1,8 +1,8 @@
 {
     "logo": "docker.svg",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "name": "I AM Mocked v04",
-    "description": "This is not a real driver, description changed",
+    "description": "This is not a real driver, with timeout",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
@@ -73,5 +73,6 @@
             "name":"testParam",
             "label":"description of the param"
         }
-    ]
+    ],
+    "execution_timeout_s": 60
 }
