@@ -1,6 +1,6 @@
 {
     "logo": "ssl-checker.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "SSL/TLS Certificate Validation",
     "description": "Check if a site certificate is valid and if there is any error with the Certificate Authority; check when the certificate expires;be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
     "category": "Software Integration",
