@@ -35,8 +35,6 @@ var targetServerHost = D.getParameter('targetServerHost');
 var targetServerPort = D.getParameter('targetServerPort');
 
 var sshConfig = {
-    username: D.device.username(),
-    password: D.device.password(),
     timeout: 30000
 };
 
@@ -54,7 +52,6 @@ function executeCommand(command) {
     D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
             console.error("Command execution error: " + error);
-            checkSshError(error);
             d.reject(error);
         } else {
             d.resolve(output);
