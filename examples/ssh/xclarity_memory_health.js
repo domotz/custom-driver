@@ -97,7 +97,7 @@ function parseData(output) {
     for (var i = 2; i < lines.length-1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+        var recordId = (values[0] + "-" + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50);
         var status =  values[2]; 
         var type = values[3];
         var capacity = parseInt(values[4]);
