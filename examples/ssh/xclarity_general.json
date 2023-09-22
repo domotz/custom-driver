@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "lenovo_xclarity.svg",
     "version": "1.0.0",
     "name": "XClarity General/Health Monitoring",
     "description": "Retrieves general and health information from Lenovo XClarity server",
@@ -25,7 +25,7 @@
     "sample_period": 1800,
     "has_actions": false,
     "expected_variables": {
-        "idependent": "[7]"
+        "independent": "[7]"
     },
     "protocols": [
         "SSH"
