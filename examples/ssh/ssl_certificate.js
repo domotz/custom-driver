@@ -31,10 +31,11 @@ var table = D.createTable(
     ]
 );
 
-var targetServerHost = D.getParameter('targetServerHost');
-var targetServerPort = D.getParameter('targetServerPort');
+var serversToCheck = D.getParameter('serversToCheck');
 
 var sshConfig = {
+    username: D.device.username(),
+    password: D.device.password(),
     timeout: 30000
 };
 
@@ -46,8 +47,9 @@ function checkSshError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-function executeCommand(command) {
+function executeCommand(host) {
     var d = D.q.defer();
+    var command = 'echo | openssl s_client -servername ' + host + ' -connect ' + host + ' 2>/dev/null | openssl x509 -enddate -issuer -noout';
     sshConfig.command = command;
     D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
@@ -59,6 +61,7 @@ function executeCommand(command) {
     });
     return d.promise;
 }
+
 
 function parseValidateOutput(output) {
     if (output !== "") {
@@ -75,11 +78,9 @@ function parseValidateOutput(output) {
 */
 function validate() {
     var promises = [];
-    for (var i = 0; i < targetServerHost.length; i++) {
-        var host = targetServerHost[i];
-        var port = targetServerPort[i];
-        var command = "openssl s_client -showcerts -connect " + host + ":" + port + " < /dev/null";
-        promises.push(executeCommand(command));
+    for (var i = 0; i < serversToCheck.length; i++) {
+        var host = serversToCheck[i];
+        promises.push(executeCommand(host));
     }
     D.q.all(promises)
         .then(parseValidateOutput)
@@ -95,37 +96,31 @@ function validate() {
 function get_status() {
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    var promises = []; 
-    for (var i = 0; i < targetServerHost.length; i++) {
-        var host = targetServerHost[i];
-        var port = targetServerPort[i];
-        var command = "openssl s_client -showcerts -connect " + host + ":" + port + " < /dev/null";
-        promises.push(executeCommand(command));
-    }
-
-    D.q.all(promises)
-        .then(function (results) {
-            for (var i = 0; i < results.length; i++) {
-                var certificateInfo = results[i];
-                var certificates = certificateInfo.split('-----END CERTIFICATE-----\n');
-                var certificate = certificates[0];
-                var issuerRegEx = certificate.match(/O = ([^,]+)/);
-                var issuer = issuerRegEx[1]
-                var expiryRegEx = certificate.match(/NotAfter: (.+)/);
-                var expiry = expiryRegEx[1]
+    var promises = serversToCheck.map(function (host) {
+        return executeCommand(host)
+            .then(function (certificateInfo) {
+                var issuerRegEx = certificateInfo.match(/O = ([^,]+)/);
+                var issuer = issuerRegEx ? issuerRegEx[1] : '-';
+                var expiryRegEx = certificateInfo.match(/notAfter=(.+)/);
+                var expiry = expiryRegEx ? expiryRegEx[1] : '-';
                 var expiryDate = new Date(expiry);
                 var currentDate = new Date();
                 var remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
                 var isValid = remainingDays > 0;
-                var serverRegEx = certificateInfo.match(/subject=CN = (.+)/);
-                var serverName = serverRegEx[1]
-                var authErrRegEx = certificateInfo.match(/Verification: (.+)/);
-                var authErr = authErrRegEx[1]
-                var recordId = serverName.replace(recordIdSanitizationRegex, '').slice(0, 50);
+                var authError = "-";
+                var server = host.split(":");
+                var recordId = server[0].replace(recordIdSanitizationRegex, '').slice(0, 50);
                 table.insertRecord(
-                    recordId, [issuer, expiry, remainingDays, isValid, authErr]
-                );}
-            
+                    recordId, [issuer, expiry, remainingDays, isValid , authError ]
+                );
+            })
+            .catch(function (err) {
+                console.error("Error retrieving SSL certificate for host '" + host + "': " + err);
+            });
+    });
+
+    D.q.all(promises)
+        .then(function () {
             D.success(table);
         })
         .catch(checkSshError);
