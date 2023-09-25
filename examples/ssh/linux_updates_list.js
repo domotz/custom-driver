@@ -1,24 +1,14 @@
 /** 
- * Name: Linux Updates Monitoring
- * Description: Monitors the status of the Updates of a Linux machine
- *   
- * Communication protocol is SSH, using the Linux bash command.
+ * Name: Linux Updates List
+ * Description: Display the list of Updates available in a Linux host
  * 
- * Tested on Linux with the following specs:
- *      - Debian Linux 10
- *      - Ubuntu 18.04.5 LTS
- *      - bash version 5.0.3(1)
+ * Communication protocol is SSH
  * 
- * Requires:
- *      - requires apt
- *      - requires grep
- *      - PLEASE NOTE: it requires to be run as a user part of the sudoers group without password prompt
- * 
- * Creates a Custom Driver Variable with the Number of Updates available
+ * Tested on Linux version:  22.04
  * 
  * Creates a Custom Driver Table with the following columns:
- *  - Current Version
- *  - New Version 
+ *      - Current Version
+ *      - New Version 
  * 
 **/
 
@@ -78,10 +68,7 @@ function validate() {
     executeCommand(cmdListUpdates)
         .then(parseValidateOutput)
         .then(D.success)
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(checkSshError);
 }
 
 function parseValidateOutput(output) {
@@ -106,28 +93,16 @@ function parseData(executionResult) {
             recordId, [pkgOldV, pkgNewV]
         );
     }
-    var variables = [];
-
-    for (var j = 0; j < packageFilters.length; j++) {
-        var packageName = packageFilters[j];
-        var count = listOfUpdates.filter(function (update) {
-            return update.indexOf("Inst " + packageName) !== -1;
-        }).length;  
-        variables.push(D.createVariable(packageName, packageName, count, null, D.valueType.NUMBER));    
-    }
-    D.success(variables,updateListTable); 
+    D.success(updateListTable); 
 }
 
 /**
 * @remote_procedure
 * @label Get Linux Updates
-* @documentation Process data and deliver Linux Updates variables and table
+* @documentation Process data and deliver Linux Updates table
 */
 function get_status() {
     executeCommand(cmdListUpdates)
         .then(parseData)
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(checkSshError);
 }
