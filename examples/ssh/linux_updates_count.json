@@ -1,0 +1,43 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.1",
+    "name": "Linux Updates Count",
+    "description": "Retrieve the count of available updates on a Linux host",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "apt",
+            "grep"
+        ]
+    },
+    "tags": [
+        "linux",
+        "updates",
+        "apt"
+    ],
+    "sample_period": 3600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux",
+            "version": "22.04"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "packageFilters",
+            "label": "Count Updates"
+        }
+    ]
+}
