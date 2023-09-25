@@ -22,9 +22,7 @@
  * 
  **/
 
-// Define here the list of hosts/ips you would like to check
-var hostsToCheck = ["www.notworkingnetaddress.com", "www.google.com", "www.microsoft.com.it", "129.312.32.31"];
-
+var hostsToCheck  = D.getParameter('hostsToCheck');
 // SSH options when running the commands
 var sshConfig = {
     // SSh command run on the endpoint
