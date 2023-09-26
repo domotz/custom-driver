@@ -1,8 +1,8 @@
 {
     "logo": "docker.svg",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "name": "I AM Mocked v04",
-    "description": "This is not a real driver, with timeout",
+    "description": "This is not a real driver, with timeout and new sample period",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
@@ -25,7 +25,7 @@
         "development",
         "update"
     ],
-    "sample_period_s": 300,
+    "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
         "independent": "[5]"
