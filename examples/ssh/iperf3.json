@@ -24,7 +24,7 @@
         "tcp",
         "udp"
     ],
-    "sample_period": 7200,
+    "sample_period_s": 7200,
     "has_actions": false,
     "expected_variables": {
         "independent": "[4]"

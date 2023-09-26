@@ -20,7 +20,7 @@
         "firewall",
         "processes"
     ],
-    "sample_period": 300,
+    "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
         "table": "[12,999]"
