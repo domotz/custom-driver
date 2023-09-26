@@ -98,7 +98,7 @@ function parseData(output) {
         if (localStorage) variables.push(D.createVariable("localStorage", "Local Storage", localStorage[1], null, D.valueType.STRING) );
         if (processors) variables.push(D.createVariable("processors", "Processors", processors[1], null, D.valueType.STRING));
         if (memory) variables.push(D.createVariable("memory", "Memory", memory[1], null, D.valueType.STRING));
-        if (system) variables.push(D.createVariable("system", "system", system[1], null, D.valueType.STRING));
+        if (system) variables.push(D.createVariable("system", "System", system[1], null, D.valueType.STRING));
     }
     D.success(variables);
 }

@@ -1,5 +1,5 @@
 {
-    "logo": "lenovo_xclarity.svg",
+    "logo": "lenovo-xclarity.svg",
     "version": "1.0.0",
     "name": "XClarity General/Health Monitoring",
     "description": "Retrieves general and health information from Lenovo XClarity server",
@@ -19,6 +19,7 @@
         "local-storage",
         "processors",
         "memory",
+        "system",
         "state",
         "restarts"
     ],
