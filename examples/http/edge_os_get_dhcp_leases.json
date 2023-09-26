@@ -15,7 +15,7 @@
         "ubiquiti",
         "sensors"
     ],
-    "sample_period": 1800,
+    "sample_period_s": 1800,
     "has_actions": true,
     "expected_variables": {
     },
