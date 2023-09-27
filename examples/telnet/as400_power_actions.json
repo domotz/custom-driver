@@ -2,8 +2,8 @@
 {
     "logo": "ibm-iseries.svg",
     "version": "1.0.0",
-    "name": "IBM ISeries AS400 Power Info and Power Actions",
-    "description": "Monitor IBM ISeries, AS400 IBM server (ITALIAN VERSION): this script checks the scheduled Power Information and provides a way to issue Power Actions (reboot, shutdown) interactively",
+    "name": "IBM ISeries AS400 Power Actions",
+    "description": "Monitor IBM ISeries, AS400 IBM server (ITALIAN VERSION): this script provides a way to issue Power Actions (reboot, shutdown) directly from the Domotz app",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": false,
@@ -17,17 +17,13 @@
         "power",
         "reboot",
         "shutdown",
-        "scheduled",
-        "day",
-        "date",
         "power-up",
         "power-off"
     ],
-    "sample_period": 10000,
-    "has_actions": false,
-    "expected_variables": {
-        "table": "[44]"
-    },
+    "sample_period_s": 86400,
+    "has_actions": true,
+    "execution_time_s": 30,
+    "expected_variables": {},
     "protocols": [
         "TELNET"
     ],

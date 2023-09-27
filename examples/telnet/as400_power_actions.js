@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
- * Name: AS400 Power Info and Power Actions
- * Description:  Monitors power information and enables power actions (Reboot and Shoutdown) on an AS400 IBM server.
+ * Name: AS400 Power Actions
+ * Description:  Enables power actions (Reboot and Shoutdown) on an AS400 IBM server from the Domotz app.
  *   
  * Communication protocol is telnet
  * 
@@ -9,11 +9,6 @@
  *       *BASE   5050     
  *       *CODE   QSYS      V6R1M1 L00
  * 
- * Returns a table with the following columns:
- *   - Date
- *   - Day
- *   - Power Up
- *   - Power Off
  * 
 **/
 
@@ -24,18 +19,12 @@ var command = deviceUsername + "\t" + devicePassword + "\r\n\r\ngo power\r\n";
 
 // Telnet parameters for communication with the AS400 server
 var telnetParams = {
+    port: 23,
     negotiationMandatory: false,
     shellPrompt: /.*Utente.*/,
     timeout: 10000
 };
 
-var table = D.createTable(
-    "Power Info",
-    [
-        { label: "Power On (time)" },
-        { label: "Power Off (time)" }
-    ]
-);
 
 /**
  * Function to get AS400 power information via telnet
@@ -49,63 +38,10 @@ function getAS400Info() {
             console.error("error while executing command: " + telnetParams.command);
             failure(err);
         }
-        d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
+        d.resolve(out);
     });
     return d.promise;
 }
-
-/**
- * Function to handle AS400 menu option and retrieve power info
- * @param {string} result - Information returned by the AS400 server
- * @returns {Promise} A promise that resolves after parsing power info
- */
-function powerParsing(result) {
-    var menuOptionIndex = result.indexOf("Immettere una opzione di menu");
-    if (menuOptionIndex !== -1) {
-        var optionCommand = "1\r\n";
-        telnetParams.command = command + optionCommand; 
-        var d = D.q.defer();
-        telnet(telnetParams, function (out, err) {
-            if (err) {
-                console.error("error while executing command: " + telnetParams.command);
-                failure(err);
-            }
-            d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
-        });
-        return d.promise;
-    }
-}
-
-/**
- * Function to parse AS400 power information and populate the table
- * @param {string} results  Information returned by the AS400 server
- */
-function parseInfo(results) {
-    var data = results.split("80H").map(function(result) {
-        var match = result.match(/(\d\d\/\d\d\/\d\d)*\s+(...)\s+(\d\d:\d\d:\d\d|.*30H)\s+(\d\d:\d\d:\d\d)*\s+/);
-        return match ? {
-            date: match[1],
-            day: match[2],
-            powerOn: match[3],
-            powerOff: match[4]
-        } : null;
-    }).filter(function(item) {
-        return item !== null;
-    });
-
-    data.forEach(function(item) {
-        if (item.powerOn) {
-            item.powerOn = item.powerOn.replace(/[[0-9;]*[a-zA-Z]/g, "-");
-        }
-        var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-        var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-        var scheduledDate = item.date + "-" + item.day;
-        var recordId = scheduledDate.replace(recordIdSanitisationRegex, '').slice(0, 50);
-        table.insertRecord(recordId, [item.powerOn || "-", item.powerOff || "-"]);
-    });   
-    D.success(table);  
-}
-
 
 // Function to handle errors
 function failure(err) {
@@ -139,8 +75,6 @@ function validate() {
 */
 function get_status() {
     getAS400Info()
-        .then(powerParsing)
-        .then(parseInfo)
         .then(D.success)
         .catch(failure);
 }
