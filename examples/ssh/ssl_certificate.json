@@ -26,7 +26,7 @@
         "table": "[5,999]"
     },
     "protocols": [
-        "ssh"
+        "SSH"
     ],
     "tested_on": [
         {
