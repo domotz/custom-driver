@@ -1,7 +1,7 @@
 {
     "logo": "ssl-checker.svg",
     "version": "1.0.0",
-    "name": "SSL Certificate Expiration check",
+    "name": "OpenSSL - SSL/TLS Certificate Monitoring",
     "description": "Check whether a list of servers have valid SSL certificates and if there is any error with the Certificate Authority; check when the certificate expires; be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
     "category": "Software Integration",
     "requirements": {
@@ -16,8 +16,9 @@
     },
     "tags": [
         "linux",
-        "certificate",
+        "openssl",
         "ssl",
+        "certificate",
         "tls"
     ],
     "sample_period": 1800,
