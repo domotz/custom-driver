@@ -27,8 +27,7 @@
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 20000,
-    port: 27123
+    timeout: 20000
 };
 
 // List of iperf3 servers that the host will test with (ip_or_dns:port)
