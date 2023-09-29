@@ -27,11 +27,14 @@
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 20000
+    timeout: 20000,
+    port: 27123
 };
 
-var targetServerUrl = D.getParameter('targetServerUrl');
-var targetServerPort = D.getParameter('targetServerPort');
+// List of iperf3 servers that the host will test with (ip_or_dns:port)
+// if the port is not specified the default one will be used "5201"
+var targetServerUrl = D.getParameter('targetServer');
+var defaultIperfPort = 5201;
 
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
@@ -39,25 +42,25 @@ var execConfig = [
     {
         id: "download_speed",
         label: "Download speed",
-        command: "iperf3 -t 5 -f m -c " + targetServerUrl + " -p " + targetServerPort + " -R",
+        command: "iperf3 -t 5 -f m -c {url} -p {port} -R",
         extractor: tcpExtractor
     },
     {
         id: "upload_speed",
         label: "Upload speed",
-        command: "iperf3 -t 5  -f m -c " + targetServerUrl + " -p " + targetServerPort,
+        command: "iperf3 -t 5  -f m -c {url} -p {port}",
         extractor: tcpExtractor
     },
     {
         id: "download_speed_udp",
         label: "Download speed UDP",
-        command: "iperf3 -t 5  -f m -c " + targetServerUrl + " -p " + targetServerPort + " -u -R",
+        command: "iperf3 -t 5  -f m -c {url} -p {port} -u -R",
         extractor: udpExtractor
     },
     {
         id: "upload_speed_udp",
         label: "Upload speed UDP",
-        command: "iperf3 -t 5  -f m -c " + targetServerUrl + " -p " + targetServerPort + " -u",
+        command: "iperf3 -t 5  -f m -c {url} -p {port} -u",
         extractor: udpExtractor
     }
 ];
@@ -95,7 +98,9 @@ function executeCommand(commandTemplate, serverIndex, extractorFn) {
         if (serverIndex !== null) {
             if (serverIndex < targetServerUrl.length) {
                 var server = targetServerUrl[serverIndex];
-                command = command.replace("{url}", server.url).replace("{port}", server.port);
+                var hostPort = server.split(":");
+
+                command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
                 sshConfig.command = command;
                 D.device.sendSSHCommand(sshConfig, function (out, err) {
                     if (err) {

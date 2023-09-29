@@ -45,13 +45,8 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "targetServerUrl",
-            "label": "Target Server Url"
-        },
-        {
-            "value_type": "Number",
-            "name": "targetServerPort",
-            "label": "Target Server Port"
+            "name": "targetServer",
+            "label": "Target iperf3 server"
         }
     ]
 }
