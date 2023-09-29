@@ -34,9 +34,7 @@ var table = D.createTable(
 var serversToCheck = D.getParameter('serversToCheck');
 
 var sshConfig = {
-    username: D.device.username(),
-    password: D.device.password(),
-    timeout: 30000
+    timeout: 10000,
 };
 
 function checkSshError(err) {
@@ -54,7 +52,7 @@ function executeCommand(host) {
     D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
             console.error("Command execution error: " + error);
-            d.reject(error);
+            d.resolve({error: error.message});
         } else {
             d.resolve(output);
         }
@@ -64,11 +62,13 @@ function executeCommand(host) {
 
 
 function parseValidateOutput(output) {
-    if (output !== "") {
-        console.info("Validation successful");
-    } else {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    for(var i = 0; i<output.length; i++){
+        if(!output[i].error){
+            console.info("Validation successful");
+            return D.success();
+        }
     }
+    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
 }
 
 /**
@@ -84,7 +84,6 @@ function validate() {
     }
     D.q.all(promises)
         .then(parseValidateOutput)
-        .then(D.success)
         .catch(checkSshError);
 }
 
@@ -99,20 +98,26 @@ function get_status() {
     var promises = serversToCheck.map(function (host) {
         return executeCommand(host)
             .then(function (certificateInfo) {
-                var issuerRegEx = certificateInfo.match(/O = ([^,]+)/);
-                var issuer = issuerRegEx ? issuerRegEx[1] : '-';
-                var expiryRegEx = certificateInfo.match(/notAfter=(.+)/);
-                var expiry = expiryRegEx ? expiryRegEx[1] : '-';
-                var expiryDate = new Date(expiry);
-                var currentDate = new Date();
-                var remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
-                var isValid = remainingDays > 0;
                 var authError = "-";
-                var server = host.split(":");
-                var recordId = server[0].replace(recordIdSanitizationRegex, '').slice(0, 50);
-                table.insertRecord(
-                    recordId, [issuer, expiry, remainingDays, isValid , authError ]
-                );
+                var recordId = host.replace(recordIdSanitizationRegex, '').replace(":", "_").slice(0, 50);
+                if(certificateInfo.error){
+                    authError = certificateInfo.error;
+                    table.insertRecord(
+                        recordId, ['N/A', 'N/A', 'N/A', 'N/A' , authError ]
+                    );
+                }else{
+                    var issuerRegEx = certificateInfo.match(/O = ([^,]+)/);
+                    var issuer = issuerRegEx ? issuerRegEx[1] : '-';
+                    var expiryRegEx = certificateInfo.match(/notAfter=(.+)/);
+                    var expiry = expiryRegEx ? expiryRegEx[1] : '-';
+                    var expiryDate = new Date(expiry);
+                    var currentDate = new Date();
+                    var remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
+                    var isValid = remainingDays > 0;
+                    table.insertRecord(
+                        recordId, [issuer, expiry, remainingDays, isValid , authError ]
+                    );
+                }
             })
             .catch(function (err) {
                 console.error("Error retrieving SSL certificate for host '" + host + "': " + err);
