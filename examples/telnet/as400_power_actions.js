@@ -19,7 +19,6 @@ var command = deviceUsername + "\t" + devicePassword + "\r\n\r\ngo power\r\n";
 
 // Telnet parameters for communication with the AS400 server
 var telnetParams = {
-    port: 23,
     negotiationMandatory: false,
     shellPrompt: /.*Utente.*/,
     timeout: 10000
@@ -75,14 +74,16 @@ function validate() {
 */
 function get_status() {
     getAS400Info()
-        .then(D.success)
+        .then(function(){
+            D.success()
+        })
         .catch(failure);
 }
 
 /** 
  * @remote_procedure
- * @label REBOOT
- * @documentation Pressing this button reboots of the AS400 server.
+ * @label Reboot
+ * @documentation this button reboots the AS400 server.
  */
 function custom_1(){
     telnetParams.command = command + "4\r\n\x1b[29~";
@@ -98,7 +99,7 @@ function custom_1(){
 
 /**
  * @remote_procedure
- * @label SHUTDOWN 
+ * @label Shutdown 
  * @documentation Pressing this button will shutdown the AS400 server.
  */
 function custom_2(){
