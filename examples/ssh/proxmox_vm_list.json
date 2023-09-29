@@ -19,7 +19,8 @@
         "qm-list",
         "qm-config"
     ],
-    "sample_period": 300,
+    "sample_period_s": 300,
+    "execution_time_s": 120,
     "has_actions": false,
     "expected_variables": {
         "table": "[11,999]"
