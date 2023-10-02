@@ -6,8 +6,6 @@
  * 
  * Tested under Lenovo XClarity version 8.42
  * 
- * Keyboard Interactive option: true/false (depends on XClarity version).
- * 
  * Creates a Custom Driver table with the following columns:
  *      - ID (FRU Name): The identifier for the memory
  *      - Status: The current health status of the memory
