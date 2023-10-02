@@ -6,8 +6,6 @@
  * 
  * Tested under Lenovo XClarity version 8.42
  * 
- * Keyboard Interactive option: true/false (depends on XClarity version).
- * 
  * Creates a Custom Driver variables:
  *      - State: The current state of the system
  *      - Restarts: The number of system restarts or reboots

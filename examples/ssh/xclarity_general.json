@@ -8,8 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "SSH Enabled",
-            "The keyboard_interactive option can be true or false depending on the XClarity version"
+            "SSH Enabled"
         ]
     },
     "tags": [
