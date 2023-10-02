@@ -6,8 +6,6 @@
  * 
  * Tested under Lenovo XClarity version 8.42
  * 
- * Keyboard Interactive option: true/false (depends on XClarity version).
- * 
  * Creates a Custom Driver table with the following columns:
  *      - ID (Name): The identifier of each power supply
  *      - Status: The current status of each power supply
@@ -25,7 +23,7 @@ var sshConfig = {
 };
 
 // Create a custom table to store power supply health information
-var processorHealthTable = D.createTable(
+var powerTable = D.createTable(
     "Power Supply Health Info",
     [
         { label: "Status", valueType: D.valueType.STRING},
@@ -96,9 +94,9 @@ function parseData(output) {
         var recordId = (values[0] + "-" + values[1] + values[2]).replace(recordIdSanitisationRegex, '').slice(0, 50);
         var status =  values[3]; 
         var ratedPower =  values[4]; 
-        processorHealthTable.insertRecord(
+        powerTable.insertRecord(
             recordId, [status, ratedPower]
         );
     }
-    D.success(processorHealthTable);
+    D.success(powerTable);
 }

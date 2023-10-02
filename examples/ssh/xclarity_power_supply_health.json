@@ -8,7 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "SSH Enabled",
+            "SSH Enabled"
         ]
     },
     "tags": [
