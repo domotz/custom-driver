@@ -6,10 +6,9 @@
  * 
  * Tested under Lenovo XClarity version 8.42
  * 
- * Keyboard Interactive option: true/false (depends on XClarity version).
- * 
  * Creates a Custom Driver table with the following columns:
- *      - Temperature: Current value
+ *      - Temperature F: Current value in Fahrenheit 
+ *      - Temperature C: Current value in Celsius
  *      - Warning Reset: Positive-going Threshold Hysteresis value
  *      - Warning: Upper non-critical Threshold
  *      - Soft Shutdown: Upper critical Threshold
@@ -30,7 +29,8 @@ var sshConfig = {
 var temperaturesTable = D.createTable(
     "Temperatures",
     [
-        { label: "Temperature"},
+        { label: "Temperature F", unit: "F" },
+        { label: "Temperature C", unit: "C" },
         { label: "Warning Reset"},      
         { label: "Warning"},
         { label: "Soft Shutdown"},
@@ -99,6 +99,9 @@ function parseData(output) {
         var line = lines[i].trim();
         var parts = line.split(/\s+/);
         var temperature = parts.slice(-3)[0];
+        var temps = temperature.split('/');
+        var temperatureFahrenheit = parseFloat(temps[0]);
+        var temperatureCelsius = parseFloat(temps[1]);
         var warningReset = parts.slice(-5)[0];
         var warning = parts.slice(-4)[0];
         var softShutdown = parts.slice(-2)[0];
@@ -106,7 +109,7 @@ function parseData(output) {
         var name = (parts.slice(0, -5).join(" ")).replace(/ /g, '-');
         var recordId = name.replace(recordIdSanitisationRegex, '').slice(0, 50);
         temperaturesTable.insertRecord(
-            recordId, [temperature, warningReset, warning, softShutdown, hardShutdown]
+            recordId, [temperatureFahrenheit.toFixed(0), temperatureCelsius.toFixed(0), warningReset, warning, softShutdown, hardShutdown]
         );
     }
     D.success(temperaturesTable);

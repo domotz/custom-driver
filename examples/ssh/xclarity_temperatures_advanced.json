@@ -9,8 +9,8 @@
         "sandbox_version": "1.12",
         "others": [
             "SSH Enabled",
-            "The keyboard_interactive option can be true or false depending on the XClarity version",
-            "Temperature (Current value)", 
+            "Temperature F (Current value in Fahrenheit)", 
+            "Temperature C (Current value in Celsius)",
             "Warning reset (Positive-going Threshold Hysteresis value)", 
             "Warning (Upper non-critical Threshold)", 
             "Soft Shutdown (Upper critical Threshold)", 
@@ -22,7 +22,7 @@
         "lenovo",
         "temps"
     ],
-    "sample_period": 1800,
+    "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
         "independent": "[5,999]"
