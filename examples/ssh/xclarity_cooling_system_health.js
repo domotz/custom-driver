@@ -6,8 +6,6 @@
  * 
  * Tested under Lenovo XClarity version 8.42
  * 
- * Keyboard Interactive option: true/false (depends on XClarity version).
- * 
  * Creates a Custom Driver table with the following columns:
  *      - ID (FAN): Identifier for the cooling system
  *      - Speed: Current speed of the cooling system

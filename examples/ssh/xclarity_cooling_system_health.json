@@ -1,5 +1,5 @@
 {
-    "logo": "lenovo_xclarity.svg",
+    "logo": "lenovo-xclarity.svg",
     "version": "1.0.0",
     "name": "XClarity Cooling System Health",
     "description": "Monitor cooling system health on Lenovo XClarity server",
@@ -8,8 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "SSH Enabled",
-            "The keyboard_interactive option can be true or false depending on the XClarity version"
+            "SSH Enabled"
         ]
     },
     "tags": [
