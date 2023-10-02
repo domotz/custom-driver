@@ -6,8 +6,6 @@
  * 
  * Tested under Lenovo XClarity version 8.42
  * 
- * Keyboard Interactive option: true/false (depends on XClarity version).
- * 
  * Creates a Custom Driver table with the following columns:
  *      - ID (FRU Name): The identifier of the processor
  *      - Status: The health status of the processor
