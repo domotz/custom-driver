@@ -1,0 +1,36 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Microsoft Exchange Server (on-prem) - Messages Queued for Delivery",
+    "description": "This script is used to monitor the messages queued for delivery on-prem Microsoft Exchange Server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [ 
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "instance-name",
+        "exchange",
+        "email-server",
+        "queues"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2,999]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Exchange",
+            "version": "Server 2019 CU12"
+        }
+    ]
+}
