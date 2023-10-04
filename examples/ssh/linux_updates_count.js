@@ -14,7 +14,7 @@
  * 
 **/
 
-var packageNames = ["python", "git"];
+var packageNames = D.getParameter("packageNames")
 var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade ";
 
 if (packageNames.length > 0) {
