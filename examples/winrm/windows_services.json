@@ -30,5 +30,12 @@
             "name": "Microsoft Windows",
             "version": "Server 2019"
         }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "servicesList",
+            "label": "Service"
+        }
     ]
 }
