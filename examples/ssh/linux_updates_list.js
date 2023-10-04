@@ -1,10 +1,14 @@
 /** 
- * Name: Linux Updates List
+ * Name: Linux Updates List (apt-based)
  * Description: Display the list of Updates available in a Linux host
  * 
  * Communication protocol is SSH
  * 
- * Tested on Linux version:  22.04
+ * Tested on Linux: Ubuntu 22.04.3 LTS"
+ * 
+ * Requires:
+ *    - requires apt
+ *    - requires grep
  * 
  * Creates a Custom Driver Table with the following columns:
  *      - Current Version
@@ -31,7 +35,7 @@ var updateListTable = D.createTable(
     "Updates List",
     [
         { label: "Current Version" },
-        { label: "New Version" },
+        { label: "New Version" }
     ]
 );
 

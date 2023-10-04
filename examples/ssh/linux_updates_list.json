@@ -1,7 +1,7 @@
 {
     "logo": "linux.svg",
     "version": "1.0.1",
-    "name": "Linux Updates List",
+    "name": "Linux Updates List (apt-based)",
     "description": "Display the list of Updates available in a Linux host",
     "category": "Software Integration",
     "requirements": {
@@ -29,8 +29,8 @@
     ],
     "tested_on": [
         {
-            "name": "Linux",
-            "version": "22.04"
+            "name": "Ubuntu",
+            "version": "22.04.3 LTS"
         }
     ],
     "parameters": [
