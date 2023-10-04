@@ -1,20 +1,27 @@
 /** 
- * Name: Linux Updates Count
+ * Name: Linux Updates Count (apt-based)
  * Description: Retrieve the count of available updates on a Linux host
  * 
  * Communication protocol is SSH
  * 
- * Tested on Linux version:  22.04
+ * Tested on Linux: Ubuntu 22.04.3 LTS"
+ * 
+ * Requires:
+ *    - requires apt
+ *    - requires grep
  * 
  * Creates custom driver variables for the count of available updates for specified packages
  * 
 **/
-var packageFilters = D.getParameter('packageFilters');
-var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst";
 
-if (packageFilters.length > 0) {
-    var packages = packageFilters.join("\\|");
-    cmdCountUpdates += " | grep -E " + packages;
+var packageNames = ["python", "git"];
+var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade ";
+
+if (packageNames.length > 0) {
+    var packages = packageNames.join("\\|");
+    cmdCountUpdates += "| /bin/grep ^Inst | grep -E " + packages;
+} else {
+    cmdCountUpdates += "| /bin/grep ^Inst";
 }
 
 // SSH options when running the commands
@@ -57,10 +64,7 @@ function validate() {
     executeCommand(cmdCountUpdates)
         .then(parseValidateOutput)
         .then(D.success)
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(checkSshError);
 }
 
 function parseValidateOutput(output) {
@@ -72,10 +76,9 @@ function parseValidateOutput(output) {
 }
 
 function parseData(executionResult) {
-    var variables = [];
-    console.log(executionResult);
-    for (var j = 0; j < packageFilters.length; j++) {
-        var packageName = packageFilters[j];
+    variables = [];
+    for (var j = 0; j < packageNames.length; j++) {
+        var packageName = packageNames[j];
         var count = executionResult.split("\n").filter(function (update) {
             return update.indexOf("Inst " + packageName) !== -1;
         }).length;
@@ -86,14 +89,11 @@ function parseData(executionResult) {
 
 /**
 * @remote_procedure
-* @label Get Linux Updates
+* @label Get Linux Updates Count
 * @documentation  Retrieves the count of available updates and creates variables
 */
 function get_status() {
     executeCommand(cmdCountUpdates)
         .then(parseData)
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+        .catch(checkSshError);
 }
