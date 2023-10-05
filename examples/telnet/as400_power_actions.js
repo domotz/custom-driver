@@ -9,6 +9,9 @@
  *       *BASE   5050     
  *       *CODE   QSYS      V6R1M1 L00
  * 
+ * Create a custom driver variables:
+ *    - Reboot: Indicates the availability of the reboot functionality for the AS400 server.
+ *    - Shutdown: Indicates the availability of the shutdown functionality for the AS400 server.
  * 
 **/
 
@@ -24,7 +27,8 @@ var telnetParams = {
     timeout: 10000
 };
 
-
+var reboot = false;
+var shutdown = false;
 /**
  * Function to get AS400 power information via telnet
  * @returns {Promise} A promise that resolves after executing the telnet command 
@@ -37,7 +41,13 @@ function getAS400Info() {
             console.error("error while executing command: " + telnetParams.command);
             failure(err);
         }
-        d.resolve(out);
+        if (out.indexOf("Spegnimento immediato del sistema") !== -1) {
+            shutdown = true;
+        }
+        if (out.indexOf("Spegnimento immediato del sistema e successiva accensione") !== -1) {
+            reboot = true;
+        }
+        d.resolve({ reboot: reboot, shutdown: shutdown }); 
     });
     return d.promise;
 }
@@ -55,14 +65,17 @@ function failure(err) {
 */
 function validate() {
     getAS400Info()
-        .then(function (output) {
-            if (output) {
-                console.info("Validation successful");
-                D.success();
+        .then(function () {
+            if (reboot && shutdown) {
+                console.info("Reboot and Shutdown functionality available");
+            } else if (reboot) {
+                console.info("Reboot functionality available, but shutdown is not available");
+            } else if (shutdown) {
+                console.info("Shutdown functionality available, but reboot is not available");
             } else {
-                console.error("Unexpected output from AS400");
-                D.failure(D.errorType.GENERIC_ERROR);
+                console.error("Neither Reboot nor Shutdown functionality is available");
             }
+            D.success();
         })
         .catch(failure);
 }
@@ -74,12 +87,15 @@ function validate() {
 */
 function get_status() {
     getAS400Info()
-        .then(function(){
-            D.success()
+        .then(function(result){
+            var variables = [
+                D.createVariable("reboot", "Reboot", result.reboot),
+                D.createVariable("shutdown", "Shutdown", result.shutdown)
+            ];
+            D.success(variables);
         })
         .catch(failure);
 }
-
 /** 
  * @remote_procedure
  * @label Reboot
