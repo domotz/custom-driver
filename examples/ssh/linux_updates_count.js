@@ -34,8 +34,8 @@ var sshConfig = {
 // SSH promise definition
 function checkSshError(err) {
     if (err.message) console.error(err.message);
-    if (err.code == 5 || err.code == 1) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255 || err.code == 1) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
