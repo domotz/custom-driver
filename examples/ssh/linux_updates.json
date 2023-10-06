@@ -21,7 +21,7 @@
         "updates",
         "apt"
     ],
-    "sample_period": 3600,
+    "sample_period_s": 3600,
     "has_actions": false,
     "expected_variables": {
         "table": "[3,999]"

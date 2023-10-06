@@ -17,7 +17,7 @@
         "ea5",
         "zigbee"
     ],
-    "sample_period": 1800,
+    "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
         "table": "[8,999]"

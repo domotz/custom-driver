@@ -19,7 +19,7 @@
         "active-directory",
         "software"
     ],
-    "sample_period": 86400,
+    "sample_period_s": 86400,
     "has_actions": false,
     "expected_variables": {
         "independent": "[1]",

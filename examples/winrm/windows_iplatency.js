@@ -1,8 +1,8 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows Monitor IP Latency
- * Description: This script is designed to ping a list of IP addresses from a windows host machine and retrieve the average latency and packet loss percentage.
- *   
+ * Description: This script is designed to ping a list of IP addresses specified in the 'ipAddressesToCheck' variable from a Windows host machine and retrieve the average latency and packet loss percentage
+ * 
  * Communication protocol is WinRM
  * 
  * Tested on Windows Versions:
@@ -17,17 +17,16 @@
  **/
 
 var packetCount = 2; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve status for.
+var ipAddressesToCheck  = D.getParameter('ipAddressesToCheck');
 var winrmConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    timeout: 10000,
+    timeout: 10000
 };
 
 var tableColumns = D.createTable(
     "IP Latency",
     [
-        { label: "IP Address" },
         { label: "Latency", unit: "ms" },
         { label: "Packet Loss", unit: "%" }
     ]
@@ -85,7 +84,7 @@ function parseValidateOutput(output) {
  * It populates the Custom Driver table with the IP address, latency, and packet loss.
  */
 function get_status() {
-    var commands = ipAddresses.map(function (ipAddress) {
+    var commands = ipAddressesToCheck.map(function (ipAddress) {
         var command = "ping -n " + packetCount + " " + ipAddress;
         return executeCommand(command)
             .then(function (output) {
@@ -117,6 +116,8 @@ function parseOutput(output, ipAddress) {
         var matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = \d+ \((\d+)% loss\)/.exec(outputData);
         packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
     }
-    var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
-    tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordId = ipAddress.replace(recordIdSanitizationRegex, '').slice(0, 50);
+    tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);
 }

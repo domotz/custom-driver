@@ -5,7 +5,7 @@
     "description": "Check if a site certificate is valid and if there is any error with the Certificate Authority; check when the certificate expires;be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
     "category": "Software Integration",
     "requirements": {
-        "credentials": true,
+        "credentials": false,
         "sandbox_version": "1.12",
         "others": [
             "website",
@@ -18,7 +18,7 @@
         "ssl",
         "tls"
     ],
-    "sample_period": 1800,
+    "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {},
     "protocols": [
