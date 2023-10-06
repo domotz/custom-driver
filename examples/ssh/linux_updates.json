@@ -1,8 +1,8 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.1",
-    "name": "Linux Updates",
-    "description": "Monitor the status of the Updates of a Linux machine",
+    "version": "1.0.2",
+    "name": "Linux Updates List (apt-based)",
+    "description": "Display the list of Updates available in a Linux host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -11,8 +11,6 @@
             "Linux",
             "SSH Enabled",
             "apt",
-            "awk",
-            "sed",
             "grep"
         ]
     },
@@ -22,25 +20,25 @@
         "apt"
     ],
     "sample_period_s": 3600,
+    "execution_time_s": 60,    
     "has_actions": false,
     "expected_variables": {
-        "table": "[3,999]"
+        "table": "[2,999]"
     },
     "protocols": [
         "SSH"
     ],
     "tested_on": [
         {
-            "name": "Linux Debian",
-            "version": "10"
-        },
-        {
             "name": "Ubuntu",
-            "version": "18.04.5 LTS"
-        },
+            "version": "22.04.3 LTS"
+        }
+    ],
+    "parameters": [
         {
-            "name": "bash",
-            "version": "5.0.3"
+            "value_type": "LIST",
+            "name": "packagesFilter",
+            "label": "Package Name"
         }
     ]
 }
