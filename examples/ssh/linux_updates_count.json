@@ -1,8 +1,8 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.2",
-    "name": "Linux Updates List (apt-based)",
-    "description": "Display the list of Updates available in a Linux host",
+    "version": "1.0.0",
+    "name": "Linux Updates Count (apt-based)",
+    "description": "Retrieve the count of available updates on a Linux host",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -20,10 +20,9 @@
         "apt"
     ],
     "sample_period_s": 3600,
-    "execution_time_s": 60,    
     "has_actions": false,
     "expected_variables": {
-        "table": "[2,999]"
+        "independent": "[1,50]"
     },
     "protocols": [
         "SSH"
