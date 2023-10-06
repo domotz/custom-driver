@@ -18,7 +18,8 @@
         "services",
         "software"
     ],
-    "sample_period_s": 300,
+    "sample_period_s": 3600,
+    "execution_time_s": 60,
     "has_actions": false,
     "expected_variables": {
     },
