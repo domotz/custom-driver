@@ -40,12 +40,17 @@ function checkSshError(err) {
 function executeCommand(command) {
     var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, err) {
-        if (err) {
-            checkSshError(err);
-        } else {
-            d.resolve(output);
-        }                  
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            checkSshError(error);
+        } else {           
+            if (output && output.indexOf("Error: Command not recognized")!==-1) {
+                console.error("Validation failed: Command not supported");
+                D.failure(D.errorType.PARSING_ERROR);
+            } else {
+                d.resolve(output);
+            }           
+        }                
     });
     return d.promise;
 }
@@ -57,15 +62,8 @@ function executeCommand(command) {
  */
 function validate() {
     executeCommand(command)
-        .then(parseValidateOutput)
         .then(D.success)
         .catch(checkSshError);
-}
-
-function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
 }
 
 /**
@@ -90,10 +88,10 @@ function parseData(output) {
         var processors = lines[i].match(/Processors\s+(.*)/);
         var memory = lines[i].match(/Memory\s+(.*)/);
         var system = lines[i].match(/System\s+(.*)/); 
-        if (state) variables.push(D.createVariable("state", "State", state[1], null, D.valueType.STRING))
+        if (state) variables.push(D.createVariable("state", "State", state[1], null, D.valueType.STRING));
         if (restarts) variables.push(D.createVariable("restarts", "Restarts", restarts[1], null, D.valueType.NUMBER));
-        if (coolingDevices) variables.push(D.createVariable("coolingDevices", "Cooling Devices", coolingDevices[1], null, D.valueType.STRING));
-        if (localStorage) variables.push(D.createVariable("localStorage", "Local Storage", localStorage[1], null, D.valueType.STRING) );
+        if (coolingDevices) variables.push(D.createVariable("cooling_devices", "Cooling Devices", coolingDevices[1], null, D.valueType.STRING));
+        if (localStorage) variables.push(D.createVariable("local_storage", "Local Storage", localStorage[1], null, D.valueType.STRING) );
         if (processors) variables.push(D.createVariable("processors", "Processors", processors[1], null, D.valueType.STRING));
         if (memory) variables.push(D.createVariable("memory", "Memory", memory[1], null, D.valueType.STRING));
         if (system) variables.push(D.createVariable("system", "System", system[1], null, D.valueType.STRING));
