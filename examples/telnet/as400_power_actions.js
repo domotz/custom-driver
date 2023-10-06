@@ -84,7 +84,7 @@ function validate() {
 function get_status() {
     getAS400Info()
         .then(function(){
-            D.success(variables);
+            D.success();
         })
         .catch(failure);
 }
