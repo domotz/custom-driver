@@ -36,8 +36,8 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "packageFilters",
-            "label": "List Updates"
+            "name": "packagesFilter",
+            "label": "Package Name"
         }
     ]
 }

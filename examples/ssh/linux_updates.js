@@ -16,11 +16,11 @@
  * 
 **/
 
-var packageFilters = D.getParameter('packageFilters');
+var packagesFilter = D.getParameter('packagesFilter');
 var cmdListUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst";
 
-if (packageFilters.length > 0) {
-    var packages = packageFilters.join("\\|");
+if (packagesFilter.length > 0) {
+    var packages = packagesFilter.join("\\|");
     cmdListUpdates += " | grep -E " + packages;
 }
 
@@ -42,8 +42,8 @@ var updateListTable = D.createTable(
 // SSH promise definition
 function checkSshError(err) {
     if (err.message) console.error(err.message);
-    if (err.code == 5 || err.code == 1) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255 || err.code == 1) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
