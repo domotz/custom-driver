@@ -34,8 +34,8 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "servicesList",
-            "label": "Service"
+            "name": "servicesFilter",
+            "label": "Service Name"
         }
     ]
 }

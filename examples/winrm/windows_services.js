@@ -23,7 +23,7 @@
 // For Windows 10 computer (workstation) you may want to set the filter the following way:
 // var svcFilter = ["bits","Dnscache","Spooler","schedule","DHCP Client"]
 // For a server you may want to set the filter the following way:
-var svcFilter = D.getParameter('servicesList');
+var svcFilter = D.getParameter('servicesFilter');
 
 if (svcFilter !== '$null'){
     svcFilter = '@("' + svcFilter.join('","') + '")';
