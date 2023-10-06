@@ -83,11 +83,7 @@ function validate() {
 */
 function get_status() {
     getAS400Info()
-        .then(function(result){
-            var variables = [
-                D.createVariable("reboot", "Reboot", result.reboot),
-                D.createVariable("shutdown", "Shutdown", result.shutdown)
-            ];
+        .then(function(){
             D.success(variables);
         })
         .catch(failure);
