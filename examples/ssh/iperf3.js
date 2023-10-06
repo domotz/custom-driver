@@ -27,15 +27,14 @@
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 20000,
+    timeout: 20000
 };
 
-var downloadSpeed, uploadSpeed, downloadSpeedUDP, uploadSpeedUDP;
+// List of iperf3 servers that the host will test with (ip_or_dns:port)
+// if the port is not specified the default one will be used "5201"
+var targetServerUrl = D.getParameter('targetServer');
+var defaultIperfPort = 5201;
 
-// Define here your target iPerf3 server host and port
-var targetServers = [
-    { url: "lon.speedtest.clouvider.net", port: 5205 },
-];
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
@@ -63,20 +62,20 @@ var execConfig = [
         command: "iperf3 -t 5  -f m -c {url} -p {port} -u",
         extractor: udpExtractor
     }
-]
+];
 
 function tcpExtractor(data) {
     var result = data.split("\n")
-        .filter(function (line) { return line.indexOf("sender") >= 0 })
+        .filter(function (line) { return line.indexOf("sender") >= 0; });
     return result.length > 0 ? result[0].split(/\s+/)[6] : null;
 }
 
 function udpExtractor(data) {
-    var result = data.split("\n")
-    var dataLength = result.length
+    var result = data.split("\n");
+    var dataLength = result.length;
     result = result.filter(function (line, i) {
-        return i == dataLength - 4
-    })
+        return i == dataLength - 4;
+    });
     return result.length > 0 ? result[0].split(/\s+/)[6] : null;
 }
 
@@ -93,12 +92,14 @@ function checkSshError(err) {
 function executeCommand(commandTemplate, serverIndex, extractorFn) {
     return function (result) {
         var d = D.q.defer();
-        var command = commandTemplate
+        var command = commandTemplate;
 
         if (serverIndex !== null) {
-            if (serverIndex < targetServers.length) {
-                var server = targetServers[serverIndex]
-                command = command.replace("{url}", server.url).replace("{port}", server.port)
+            if (serverIndex < targetServerUrl.length) {
+                var server = targetServerUrl[serverIndex];
+                var hostPort = server.split(":");
+
+                command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
                 sshConfig.command = command;
                 D.device.sendSSHCommand(sshConfig, function (out, err) {
                     if (err) {
@@ -109,17 +110,17 @@ function executeCommand(commandTemplate, serverIndex, extractorFn) {
                     d.resolve(result);
                 });
             } else {
-                console.error("no more server to test with")
-                result.push(null)
-                d.resolve(result)
+                console.error("no more server to test with");
+                result.push(null);
+                d.resolve(result);
             }
         }
 
         return d.promise.catch(function (err) {
             console.error(err.message);
-            return executeCommand(commandTemplate, serverIndex + 1, extractorFn)(result)
+            return executeCommand(commandTemplate, serverIndex + 1, extractorFn)(result);
         });
-    }
+    };
 }
 
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
@@ -141,11 +142,9 @@ function execute() {
             });
         }).then(function (vars) {
             if (!vars.length)
-                failure("All target servers are not available")
-            return vars
+                failure("All target servers are not available");
+            return vars;
         });
-
-
 }
 
 //This function is a failure handler for SSH command execution. 
@@ -161,12 +160,12 @@ function failure(error) {
 */
 function validate() {
     // Check if the iperf3 command is available
-    sshConfig.command = "which iperf3"
+    sshConfig.command = "which iperf3";
     D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
-            failure(error)
+            failure(error);
         } else {
-            D.success()
+            D.success();
         }
     });
 }
@@ -179,5 +178,5 @@ function validate() {
 function get_status() {
     execute()
         .then(D.success)
-        .catch(failure)
+        .catch(failure);
 }

@@ -17,7 +17,7 @@
         "software",
         "cpu"
     ],
-    "sample_period": 300,
+    "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
         "independent": "[1]"

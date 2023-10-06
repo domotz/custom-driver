@@ -6,7 +6,7 @@
     "description": "(ITALIAN VERSION) Monitor IBM ISeries server (AS400). This script checks the scheduled Power Information and provides the Power Actions to reboot or shutdown.",
     "category": "Hardware Integration",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.12",
         "others": []
     },
@@ -17,13 +17,13 @@
         "power",
         "reboot",
         "shutdown",
+        "power-up",
         "power-off"
     ],
-    "sample_period": 1800,
+    "sample_period_s": 86400,
     "has_actions": true,
-    "expected_variables": {
-        "table": "[4,999]"
-    },
+    "execution_time_s": 30,
+    "expected_variables": {},
     "protocols": [
         "TELNET"
     ],

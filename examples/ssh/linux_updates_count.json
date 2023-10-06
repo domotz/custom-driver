@@ -22,7 +22,7 @@
     "sample_period_s": 3600,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[1,999]"
+        "independent": "[1,50]"
     },
     "protocols": [
         "SSH"
@@ -36,7 +36,7 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "packageNames",
+            "name": "packagesFilter",
             "label": "Package Name"
         }
     ]

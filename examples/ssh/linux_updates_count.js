@@ -14,11 +14,11 @@
  * 
 **/
 
-var packageNames = D.getParameter("packageNames")
+var packagesFilter = D.getParameter("packagesFilter")
 var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade ";
 
-if (packageNames.length > 0) {
-    var packages = packageNames.join("\\|");
+if (packagesFilter.length > 0) {
+    var packages = packagesFilter.join("\\|");
     cmdCountUpdates += "| /bin/grep ^Inst | grep -E " + packages;
 } else {
     cmdCountUpdates += "| /bin/grep ^Inst";
@@ -77,8 +77,8 @@ function parseValidateOutput(output) {
 
 function parseData(executionResult) {
     variables = [];
-    for (var j = 0; j < packageNames.length; j++) {
-        var packageName = packageNames[j];
+    for (var j = 0; j < packagesFilter.length; j++) {
+        var packageName = packagesFilter[j];
         var count = executionResult.split("\n").filter(function (update) {
             return update.indexOf("Inst " + packageName) !== -1;
         }).length;
