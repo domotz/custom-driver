@@ -67,15 +67,11 @@ function validate() {
     getAS400Info()
         .then(function () {
             if (reboot && shutdown) {
-                console.info("Reboot and Shutdown functionality available");
-            } else if (reboot) {
-                console.info("Reboot functionality available, but shutdown is not available");
-            } else if (shutdown) {
-                console.info("Shutdown functionality available, but reboot is not available");
+                D.success();
             } else {
-                console.error("Neither Reboot nor Shutdown functionality is available");
+                console.error("Missing mandatory functionality Reboot: " + reboot + " or Shutdown: " + shutdown);
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
             }
-            D.success();
         })
         .catch(failure);
 }
