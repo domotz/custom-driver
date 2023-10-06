@@ -1,0 +1,30 @@
+{
+    "logo": "apache.svg",
+    "version": "1.0.0",
+    "name": "Apache2 Processes Details",
+    "description": "Monitor Apache2 server. This script will generate a table with the following columns:  Child Server number, process ID, Number of accesses this connection, Mode of operation, CPU usage, Seconds since beginning of most recent request, Milliseconds required to process most recent request,  Sum of milliseconds required to process all requests, Kilobytes transferred this connection, Megabytes transferred this child, Total megabytes transferred this slot, Client, Protocol, Virtual Host, Request. Please note that This script requires to open server-status path in the apache server https://httpd.apache.org/docs/current/mod/mod_status.html",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Apache2 Installed"        ]
+    },
+    "tags": [
+        "webserver",
+        "apache",
+        "software"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Apache",
+            "version": "2.4.41"
+        }
+    ]
+}

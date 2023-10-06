@@ -84,21 +84,21 @@ function httpGet(params) {
             "Authorization": auth
         }
     },
-        function (err, response, body) {
-            if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode === 401 || response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            d.resolve(body);
-        });
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(body);
+    });
     return d.promise;
 }
 
@@ -108,11 +108,11 @@ function httpGet(params) {
 function getVolumesData(nextToken) {
     var payload = {};
     payload["Action"] = "DescribeVolumes",
-        payload["MaxResults"] = 100,
-        payload["Version"] = "2016-11-15",
-        payload["Filter.1.Name"] = "attachment.instance-id",
-        payload["Filter.1.Value"] = instanceId,
-        payload["NextToken"] = nextToken;
+    payload["MaxResults"] = 100,
+    payload["Version"] = "2016-11-15",
+    payload["Filter.1.Name"] = "attachment.instance-id",
+    payload["Filter.1.Value"] = instanceId,
+    payload["NextToken"] = nextToken;
     return httpGet(prepareParams(payload))
         .then(function (data) {
             var $ = D.htmlParse(data);

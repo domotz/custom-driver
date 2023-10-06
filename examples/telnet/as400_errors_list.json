@@ -1,0 +1,34 @@
+{
+    "logo": "ibm-iseries.svg",
+    "version": "1.0.0",
+    "name": "IBM ISeries AS400 Error List (IT)",
+    "description": "(ITALIAN VERSION) Monitor the IBM iSeries IBM server (AS400). This script collects the error list reported on the device.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "The device cli interface must be in italian."
+        ]
+    },
+    "tags": [
+        "as400",
+        "ibm",
+        "iseries",
+        "errors"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[20]"
+    },
+    "protocols": [
+        "TELNET"
+    ],
+    "tested_on": [
+        {
+            "name": "OS/400",
+            "version": "5050 QSYS V6R1M1 L00"
+        }
+    ]
+}

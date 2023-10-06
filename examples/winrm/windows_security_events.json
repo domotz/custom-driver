@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Security events monitoring",
     "description": "Monitor the occurrences of Windows security events. Some events are only raised if the related audit setting is enabled. More info on https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/advanced-security-auditing-faq",
     "category": "Software Integration",
@@ -20,7 +20,7 @@
         "event",
         "software"
     ],
-    "sample_period": 3600,
+    "sample_period_s": 3600,
     "has_actions": false,
     "expected_variables": {
         "table": "[20]"

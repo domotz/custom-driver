@@ -1,0 +1,37 @@
+{
+    "logo": "kubernetes.svg",
+    "version": "1.0.0",
+    "name": "Kubernetes API Metrics",
+    "description": "This script extracts kubernetes API metrics: client requests, cpu usage, fds count, trhread count, virtual memory, TLS handshake errors",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Kubernetes Installed"
+            ]
+    },
+    "tags": [
+        "kubernetes",
+        "orchestration",
+        "container",
+        "node",
+        "pod"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "minikube",
+            "version": "1.28.0"
+        },
+        {
+            "name": "Ubuntu",
+            "version": "22.04.1"
+        }
+    ]
+}

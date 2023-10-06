@@ -17,9 +17,10 @@
         "ubuntu",
         "cpu",
         "memory",
-        "software"
+        "software",
+        "container"
     ],
-    "sample_period": 1800,
+    "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
         "table": "[3,999]"

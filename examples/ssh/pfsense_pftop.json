@@ -20,7 +20,7 @@
         "firewall",
         "processes"
     ],
-    "sample_period": 300,
+    "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
         "table": "[12,999]"
@@ -32,6 +32,10 @@
         {
             "name": "pfSense",
             "version": "2.6.0-RELEASE"
+        },
+        {
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
         }
     ]
 }

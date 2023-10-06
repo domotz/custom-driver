@@ -1,0 +1,32 @@
+{
+    "logo": "crestron.svg",
+    "version": "1.0.0",
+    "name": "Crestron DM-NVX Ip Table",
+    "description": "This script show the devices connected to the Crestron devices, and dynamically creates a table that contains the Connected Devices over IP with the following columns: Ip Address, Model, Status",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Crestron DM-NVX device"
+        ]
+    },
+    "tags": [
+        "crestron",
+        "dm-nvx",
+        "nvx"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": true,
+    "expected_variables": {
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Crestron DM-NVX-363",
+            "version": "2.0.0"
+        }
+    ]
+}

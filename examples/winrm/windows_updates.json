@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Updates",
     "description": "Collect data on missing updates for a windows host",
     "category": "Software Integration",
@@ -18,7 +18,7 @@
         "update",
         "software"
     ],
-    "sample_period": 86400,
+    "sample_period_s": 86400,
     "has_actions": false,
     "expected_variables": {
         "independent": "[6]",
