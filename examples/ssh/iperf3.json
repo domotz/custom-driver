@@ -1,6 +1,6 @@
 {
     "logo": "iperf3.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "IPerf3 Speed Test",
     "description": "This script is designed to measure network speed data using the iperf3 towards pre-defined servers",
     "category": "Software Integration",
@@ -40,6 +40,13 @@
         {
             "name": "Ubuntu",
             "version": "22.04"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "targetServer",
+            "label": "Target iperf3 server"
         }
     ]
 }
