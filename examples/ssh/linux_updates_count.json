@@ -1,0 +1,43 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux Updates Count (apt-based)",
+    "description": "Retrieve the count of available updates on a Linux host",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "apt",
+            "grep"
+        ]
+    },
+    "tags": [
+        "linux",
+        "updates",
+        "apt"
+    ],
+    "sample_period_s": 3600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,50]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "22.04.3 LTS"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "packagesFilter",
+            "label": "Package Name"
+        }
+    ]
+}
