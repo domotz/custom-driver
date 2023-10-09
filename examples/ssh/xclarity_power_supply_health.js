@@ -67,9 +67,12 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
+    if (output && output.indexOf("Error: Command not recognized") !== -1) {
+        console.info("Validation failed: Command not supported");
+        D.failure(D.errorType.PARSING_ERROR);
+    }else {
+        console.info("Validation successful: Command is supported");
+    }
 }
 
 /**
@@ -91,7 +94,7 @@ function parseData(output) {
     for (var i = 2; i < lines.length-1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + "-" + values[1] + values[2]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+        var recordId = (values[0] + " " + values[1] + values[2]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
         var status =  values[3]; 
         var ratedPower =  values[4]; 
         powerTable.insertRecord(
