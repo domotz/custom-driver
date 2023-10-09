@@ -28,7 +28,7 @@ var processorHealthTable = D.createTable(
     "Processors Health Info",
     [
         { label: "Status", valueType: D.valueType.STRING},
-        { label: "Clock Speed", unit: "MHz", valueType: D.valueType.NUMBER },      
+        { label: "Clock Speed", unit: "MHz", valueType: D.valueType.NUMBER }  
     ]
 );
 
@@ -56,7 +56,6 @@ function executeCommand(command) {
 }
 
 /**
- * 
  * @remote_procedure
  * @label Validate Processors Health
  * @documentation Validates the connection and command execution
@@ -69,9 +68,12 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
+    if (output && output.indexOf("Error: Command not recognized") !== -1) {
+        console.info("Validation failed: Command not supported");
+        D.failure(D.errorType.PARSING_ERROR);
+    }else {
+        console.info("Validation successful: Command is supported");
+    }
 }
 
 /**
@@ -93,7 +95,7 @@ function parseData(output) {
     for (var i = 2; i < lines.length-1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + "-" + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
         var status =  values[2]; 
         var clockSpeed = parseInt(values[3]);
         processorHealthTable.insertRecord(

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "name": "XClarity Processors Health",
     "description": "Monitor processors health on Lenovo XClarity server",
-    "category": "Software Integration",
+    "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
