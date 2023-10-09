@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "name": "XClarity Memory Health",
     "description": "Monitor memory health on Lenovo XClarity servers",
-    "category": "Software Integration",
+    "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",

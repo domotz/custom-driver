@@ -11,7 +11,6 @@
  *      - Status: The current health status of the memory
  *      - Type: The type or model of the memory 
  *      - Capacity: The total capacity of the memory
- * 
  */
 
 // Define the command to be executed on the XClarity server
@@ -71,9 +70,12 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
+    if (output && output.indexOf("Error: Command not recognized") !== -1) {
+        console.info("Validation failed: Command not supported");
+        D.failure(D.errorType.PARSING_ERROR);
+    }else {
+        console.info("Validation successful: Command is supported");
+    }
 }
 
 /**
@@ -95,7 +97,7 @@ function parseData(output) {
     for (var i = 2; i < lines.length-1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + "-" + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
         var status =  values[2]; 
         var type = values[3];
         var capacity = parseInt(values[4]);
