@@ -8,8 +8,8 @@
  * 
  * Creates a Custom Driver table with the following columns:
  *      - ID (FAN): Identifier for the cooling system
- *      - Speed: Current speed of the cooling system
- *      - Speed (% of maximum): Speed of the cooling system as a percentage of the maximum speed
+ *      - Speed Value: Current speed of the cooling system
+ *      - Speed Percentage: Speed of the cooling system as a percentage of the maximum speed
  *      - Status: Status of the cooling system 
  */
 
@@ -27,8 +27,8 @@ var sshConfig = {
 var coolingSystemTable = D.createTable(
     "Cooling System Health",
     [
-        { label: "Speed", unit: "RPM", valueType: D.valueType.NUMBER },
-        { label: "Speed (% of maximum)", unit: "%", valueType: D.valueType.NUMBER },      
+        { label: "Speed Value", unit: "RPM", valueType: D.valueType.NUMBER },
+        { label: "Speed Percentage", unit: "%", valueType: D.valueType.NUMBER },      
         { label: "Status", valueType: D.valueType.STRING },
     ]
 );
@@ -69,9 +69,12 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
+    if (output && output.indexOf("Error: Command not recognized") !== -1) {
+        console.info("Validation failed: Command not supported");
+        D.failure(D.errorType.PARSING_ERROR);
+    }else {
+        console.info("Validation successful: Command is supported");
+    }
 }
 
 /**
@@ -93,12 +96,12 @@ function parseData(output) {
     for (var i = 2; i < lines.length-1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + values[1] + "-" + values[2]).replace(recordIdSanitisationRegex, '').slice(0, 50);
-        var speed = values[3];
-        var speedMax = values[4];
+        var recordId = (values[0] + values[1] + " " + values[2]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+        var speedValue = values[3];
+        var speedPercentage = values[4];
         var status =  values[5]; 
         coolingSystemTable.insertRecord(
-            recordId, [speed, speedMax , status]
+            recordId, [speedValue, speedPercentage , status]
         );
     }
     D.success(coolingSystemTable);
