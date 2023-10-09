@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "name": "XClarity Storage Health",
     "description": "Monitors the health status of storage systems on Lenovo XClarity server",
-    "category": "Software Integration",
+    "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",

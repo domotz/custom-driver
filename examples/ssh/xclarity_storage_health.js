@@ -32,12 +32,17 @@ function checkSshError(err) {
 function executeCommand(command) {
     var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, err) {
-        if (err) {
-            checkSshError(err);
-        } else {
-            d.resolve(output);
-        }                  
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            checkSshError(error);
+        } else {           
+            if (output && output.indexOf("Error: Command not recognized")!==-1) {
+                console.error("Validation failed: Command not supported");
+                D.failure(D.errorType.PARSING_ERROR);
+            } else {
+                d.resolve(output);
+            }           
+        }                
     });
     return d.promise;
 }
@@ -49,15 +54,8 @@ function executeCommand(command) {
  */
 function validate() {
     executeCommand(command)
-        .then(parseValidateOutput)
         .then(D.success)
         .catch(checkSshError);
-}
-
-function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
 }
 
 /**
@@ -79,11 +77,11 @@ function parseData(output) {
     for (var i = 3; i < lines.length-2; i++) {
         var line = lines[i].trim();
         var parts = line.split(/\s+/);
-        var fruName = parts.slice(0, -1).join(" "); // Join all parts except the last one as FRU Name
-        var status = parts.slice(-1)[0]; // Get the last part as Status
-        var identifier =  fruName.replace(/ /g, '').toLowerCase();
+        var fruName = parts.slice(0, -1).join(" "); // The FRU (Field Replaceable Unit) name
+        var status = parts.slice(-1)[0]; 
+        var identifier =  fruName.replace(/ /g, '-').toLowerCase();
+        console.log(identifier);
         drivesData.push(D.createVariable(identifier, fruName, status, null, D.valueType.STRING ));
     }
     D.success(drivesData);
 }
-
