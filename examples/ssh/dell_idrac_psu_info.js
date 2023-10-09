@@ -116,7 +116,7 @@ function parseData(output) {
             instanceIdPsu = true;
             data = {}; 
         } else if (instanceIdPsu && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
             var description = data["DeviceDescription"] || "-"; 
             var primaryStatus = data["PrimaryStatus"] || "-"; 
             var totalOutputPower = (data["TotalOutputPower"] || "").replace(/\D+/g, "") || "-";
