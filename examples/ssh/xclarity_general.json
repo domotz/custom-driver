@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "name": "XClarity General/Health Monitoring",
     "description": "Retrieves general and health information from Lenovo XClarity server",
-    "category": "hardware integration",
+    "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
