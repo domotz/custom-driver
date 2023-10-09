@@ -29,12 +29,12 @@ var sshConfig = {
 var temperaturesTable = D.createTable(
     "Temperatures",
     [
-        { label: "Temperature F", unit: "F" },
-        { label: "Temperature C", unit: "C" },
-        { label: "Warning Reset"},      
-        { label: "Warning"},
-        { label: "Soft Shutdown"},
-        { label: "Hard Shutdown"}
+        { label: "Temperature F", unit: "F", valueType: D.valueType.NUMBER },
+        { label: "Temperature C", unit: "C", valueType: D.valueType.NUMBER },
+        { label: "Warning Reset", valueType: D.valueType.STRING },      
+        { label: "Warning", valueType: D.valueType.STRING },
+        { label: "Soft Shutdown", valueType: D.valueType.STRING },
+        { label: "Hard Shutdown", valueType: D.valueType.STRING }
     ]
 );
 
@@ -63,7 +63,7 @@ function executeCommand(command) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Processors Health
  * @documentation Validates the connection and command execution
  */
 function validate() {
@@ -74,10 +74,14 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
-        console.info("Validation successful");
-    } 
+    if (output && output.indexOf("Error: Command not recognized") !== -1) {
+        console.info("Validation failed: Command not supported");
+        D.failure(D.errorType.PARSING_ERROR);
+    }else {
+        console.info("Validation successful: Command is supported");
+    }
 }
+
 
 /**
  * @remote_procedure
@@ -106,8 +110,8 @@ function parseData(output) {
         var warning = parts.slice(-4)[0];
         var softShutdown = parts.slice(-2)[0];
         var hardShutdown = parts.slice(-1)[0];
-        var name = (parts.slice(0, -5).join(" ")).replace(/ /g, '-');
-        var recordId = name.replace(recordIdSanitisationRegex, '').slice(0, 50);
+        var name = (parts.slice(0, -5).join(" "));
+        var recordId = name.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
         temperaturesTable.insertRecord(
             recordId, [temperatureFahrenheit.toFixed(0), temperatureCelsius.toFixed(0), warningReset, warning, softShutdown, hardShutdown]
         );

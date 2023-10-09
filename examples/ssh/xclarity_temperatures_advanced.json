@@ -3,18 +3,12 @@
     "version": "1.0.0",
     "name": "XClarity Temperatures",
     "description": "Monitor temperature information on a Lenovo XClarity server",
-    "category": "Software Integration",
+    "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "SSH Enabled",
-            "Temperature F (Current value in Fahrenheit)", 
-            "Temperature C (Current value in Celsius)",
-            "Warning reset (Positive-going Threshold Hysteresis value)", 
-            "Warning (Upper non-critical Threshold)", 
-            "Soft Shutdown (Upper critical Threshold)", 
-            "Hard Shutdown (Upper non-recoverable Threshold)"
+            "SSH Enabled"
         ]
     },
     "tags": [
