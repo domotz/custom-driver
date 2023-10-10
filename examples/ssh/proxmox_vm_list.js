@@ -31,17 +31,17 @@ var sshConfig = {
 var kvmsTable = D.createTable(
     "Virtual Machines List",
     [
-        { label: "Name" },
-        { label: "Status" },
-        { label: "Memory", unit: "MB" },
-        { label: "Boot Disk Size", unit: "GB" },
-        { label: "PID" },
-        { label: "Processors" },
-        { label: "Net0 MAC" }, 
-        { label: "Net0 bridge" }, 
-        { label: "Numa" },
-        { label: "Ostype" },
-        { label: "Error(s)" }
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Memory", unit: "MB", valueType: D.valueType.NUMBER },
+        { label: "Boot Disk Size", unit: "GB", valueType: D.valueType.NUMBER },
+        { label: "PID", valueType: D.valueType.NUMBER },
+        { label: "Processors", valueType: D.valueType.STRING },
+        { label: "Net0 MAC", valueType: D.valueType.STRING }, 
+        { label: "Net0 bridge", valueType: D.valueType.STRING }, 
+        { label: "Numa", valueType: D.valueType.NUMBER },
+        { label: "Ostype", valueType: D.valueType.STRING },
+        { label: "Error(s)", valueType: D.valueType.STRING }
     ]
 );
  
@@ -75,7 +75,7 @@ function executeCommand(command) {
 function sanitize(output){
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50);
+    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
  
 /**
@@ -142,7 +142,7 @@ function parseData(data) {
                     net0Bridge || "-",
                     config.numa || "-",
                     config.ostype || "-",
-                    config.error ? config.error.code + " : " + config.error.message : ""
+                    config.error ? config.error.code + " : " + config.error.message : "-"
                 ]);
             });
         promises.push(promise);
@@ -156,25 +156,25 @@ function parseData(data) {
 /**
   * @remote_procedure
   * @label Validate Association
-  * @documentation This procedure is used to validate if the SSH command is executed successfully.
+  * @documentation This procedure is used to validate if the SSH command is executed successfully
   */
 function validate() {
     executeCommand(cmdKVMsList)
-    .then(function (data) {
-        if (data) {
-            D.success();
-        } else {
-            console.error("SSH command execution failed");
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-    })
-    .catch(checkSshError);
+        .then(function (data) {
+            if (data) {
+                D.success();
+            } else {
+                console.error("SSH command execution failed");
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        })
+        .catch(checkSshError);
 }
  
 /**
   * @remote_procedure
   * @label Get Device Variables
-  * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server.
+  * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server
   */
 function get_status() {
     executeCommand(cmdKVMsList)
