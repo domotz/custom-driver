@@ -1,0 +1,36 @@
+{
+    "logo": "lenovo-xclarity.svg",
+    "version": "1.0.0",
+    "name": "XClarity Cooling System Health",
+    "description": "Monitor cooling system health on Lenovo XClarity server",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "xclarity",
+        "lenovo",
+        "cooling",
+        "health",
+        "speed",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Lenovo XClarity",
+            "version": "8.42"
+        }
+    ]
+}
