@@ -2,7 +2,7 @@
 {
     "logo": "ibm-iseries.svg",
     "version": "1.0.0",
-    "name": "IBM ISeries AS400 Power Info Actions (IT)",
+    "name": "IBM ISeries AS400 Power Actions (IT)",
     "description": "(ITALIAN VERSION) Monitor IBM ISeries server (AS400). This script checks the scheduled Power Information and provides the Power Actions to reboot or shutdown.",
     "category": "Hardware Integration",
     "requirements": {
