@@ -1,0 +1,39 @@
+{
+    "logo": "lenovo-xclarity.svg",
+    "version": "1.0.0",
+    "name": "XClarity General/Health Monitoring",
+    "description": "Retrieves general and health information from Lenovo XClarity server",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "xclarity",
+        "lenovo",
+        "cooling-devices",
+        "local-storage",
+        "processors",
+        "memory",
+        "system",
+        "state",
+        "restarts"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[7]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Lenovo XClarity",
+            "version": "8.42"
+        }
+    ]
+}
