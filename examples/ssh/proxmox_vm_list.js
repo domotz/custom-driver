@@ -25,7 +25,7 @@ var cmdKVMsList = "qm list";
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
-    timeout: 120000
+    timeout: 60000
 };
  
 var kvmsTable = D.createTable(
@@ -55,16 +55,16 @@ function checkSshError(err) {
 }
  
 /**
-  * @param {string} command The SSH command to execute
-  * Return a promise that resolves with the command output or rejects with an error
-  */
+ * @param {string} command The SSH command to execute
+ * Return a promise that resolves with the command output or rejects with an error
+ */
 function executeCommand(command) {
     var d = D.q.defer();
     sshConfig.command = command;
     D.device.sendSSHCommand(sshConfig, function (out, err) {
         if (err) {
             console.error(err);
-            d.resolve({err: err});
+            d.resolve({err: err.message});
         } else {
             d.resolve(out);
         }
@@ -79,9 +79,9 @@ function sanitize(output){
 }
  
 /**
-  * Parses the output of the SSH command and populates the KVMs table
-  * @param {string} data The output of the SSH command
-  */
+ * Parses the output of the SSH command and populates the KVMs table
+ * @param {string} data The output of the SSH command
+ */
 function parseData(data) {
     var lines = data.trim().split('\n');
     lines.shift();
@@ -154,28 +154,31 @@ function parseData(data) {
 }
 
 /**
-  * @remote_procedure
-  * @label Validate Association
-  * @documentation This procedure is used to validate if the SSH command is executed successfully
-  */
+ * @remote_procedure
+ * @label Validate Association
+ * @documentation This procedure is used to validate if the SSH command is executed successfully
+ */
 function validate() {
     executeCommand(cmdKVMsList)
-        .then(function (data) {
-            if (data) {
-                D.success();
-            } else {
-                console.error("SSH command execution failed");
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-        })
+        .then(parseValidateOutput)
+        .then(D.success)
         .catch(checkSshError);
 }
- 
+
+function parseValidateOutput(output) {
+    if (!output.err) {
+        console.info("Validation successful");
+    } else {
+        console.error("Validation failed");
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    }
+}
+
 /**
-  * @remote_procedure
-  * @label Get Device Variables
-  * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server
-  */
+ * @remote_procedure
+ * @label Get Device Variables
+ * @documentation This procedure is used to retrieve the status of Virtual Machines from the Proxmox server
+ */
 function get_status() {
     executeCommand(cmdKVMsList)
         .then(parseData)
