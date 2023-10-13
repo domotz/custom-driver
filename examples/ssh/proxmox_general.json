@@ -8,18 +8,16 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Proxmox",
-            "VM",
-            "hypervisor"
+            "Proxmox"
         ]
     },
     "tags": [
         "proxmox",
-        "vm",
         "pveversion",
         "pveperf"
     ],
-    "sample_period_s": 300,
+    "sample_period_s": 1800,
+    "execution_time_s": 120,
     "has_actions": false,
     "expected_variables": {
         "independent": "[8]"
