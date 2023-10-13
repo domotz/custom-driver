@@ -30,8 +30,7 @@
         {
             "value_type": "LIST",
             "name": "serversToCheck",
-            "label": "Server Host",
-            "value": ["portal.domotz.com", "google.com"]
+            "label": "Server Host"
         }
     ]
 }
