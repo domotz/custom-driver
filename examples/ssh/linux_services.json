@@ -44,7 +44,8 @@
         {
             "value_type": "LIST",
             "name": "services",
-            "label": "Service"
+            "label": "Service",
+            "value": ["apache", "http", "mysql", "snmp", "ssh", "zabbix"]
         }
     ]
 }
