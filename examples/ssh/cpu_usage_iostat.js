@@ -23,11 +23,11 @@
 // Define a command to start the 'iostat' utility in the background,
 // collect CPU statistics every 5 seconds for 2 minutes, and redirect its output to a temporary file.
 var command = "nohup iostat -c 5 24 > /tmp/dootz_iostat_cpus.output & echo done";
+var commandTimeout = 5000
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: 5000,
-    port: 27123
+    timeout: commandTimeout,
 };
 
 // this will contains the last result
@@ -54,7 +54,7 @@ function executeCommand(command, ignoreTimeout) {
         sshConfig.command = command;
         D.device.sendSSHCommand(sshConfig, function (output, error) {
             if (error) {
-                if(error.code == 124 && ignoreTimeout){
+                if(error.message == "Timeout of " + commandTimeout + "ms expired" && ignoreTimeout){
                     return d.resolve();
                 }
                 checkSshError(error);
