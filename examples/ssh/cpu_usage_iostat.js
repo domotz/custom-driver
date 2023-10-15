@@ -22,14 +22,16 @@
 
 // Define a command to start the 'iostat' utility in the background,
 // collect CPU statistics every 5 seconds for 2 minutes, and redirect its output to a temporary file.
-var command = "nohup timeout 120s iostat -c 5 > /tmp/dootz_iostat_cpus.output &";
+var command = "nohup iostat -c 5 24 > /tmp/dootz_iostat_cpus.output & echo done";
 
 // Define SSH configuration
 var sshConfig = {
-    username: D.device.username(),
-    password: D.device.password(),
-    timeout: 150000
+    timeout: 5000,
+    port: 27123
 };
+
+// this will contains the last result
+var variables;
 
 // Checks for SSH errors and handles them.
 function checkSshError(err) {
@@ -37,25 +39,38 @@ function checkSshError(err) {
     if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
     if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 // Executes an SSH command on the remote device.
-function executeCommand(command) {
-    var d = D.q.defer();
-    sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) checkSshError(error);
-        d.resolve(output);
-    });
-    return d.promise;
+/**
+ * 
+ * @param {*} command contains the command to execute
+ * @param {*} ignoreTimeout ignore ssh timeout error code this is needed to run nohup process without waiting it to finish 
+ * @returns 
+ */
+function executeCommand(command, ignoreTimeout) {
+    return function () {
+        var d = D.q.defer();
+        sshConfig.command = command;
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                if(error.code == 124 && ignoreTimeout){
+                    return d.resolve();
+                }
+                checkSshError(error);
+                return d.reject(error);
+            }
+            d.resolve(output);
+        });
+        return d.promise;
+    };
 }
 
 // Checks if 'iostat' is installed on the remote device based on the provided output.
 function checkIfIostatInstalled() {
-    var checkCommand = "which iostat"; 
-    return executeCommand(checkCommand)
-        .then(function(output){
+    var checkCommand = "which iostat";
+    return executeCommand(checkCommand)()
+        .then(function (output) {
             if (output.trim() === "") {
                 console.error("iostat is not installed");
                 D.failure(D.errorType.GENERIC_ERROR);
@@ -84,18 +99,28 @@ function validate() {
 // Checks if 'iostat' is running on the remote device, starts it if necessary, and collects data
 function checkIostatRunning() {
     return checkIfIostatInstalled()
+        .then(executeCommand(command, true))
         .then(function () {
-            return executeCommand(command)
-                .then(function () {
-                    console.log("iostat started successfully");
-                })
-                .catch(function (err) {
-                    console.error("Error starting iostat");
-                    console.error(err);
-                    D.failure(D.errorType.GENERIC_ERROR);
-                });
+            console.log("iostat started successfully");
+        }).catch(function (err) {
+            console.error("Error starting iostat");
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
+
+function readfile() {
+    return executeCommand("cat /tmp/dootz_iostat_cpus.output")()
+        .catch(executeCommand("iostat -c 1 1"));
+}
+
+function truncate(){
+    return executeCommand("truncate -s 0 /tmp/dootz_iostat_cpus.output")()
+        .catch(function(){
+            console.warn("/tmp/dootz_iostat_cpus.output doesn't exists");
+        });
+}
+
 
 // Calculates the average CPU utilization from 'iostat' data
 function calculateAverage(data) {
@@ -109,14 +134,14 @@ function calculateAverage(data) {
     var count = 0;
     for (var i = 2; i < lines.length; i++) {
         var line = lines[i];
-        if (line.indexOf('avg-cpu:')) {
-            var parts = line.split(/\s+/);
+        if (line.indexOf('avg-cpu:') >= 0) {
+            var parts = lines[i+1].split(/\s+/);
             var user = parseFloat(parts[1]);
             var nice = parseFloat(parts[2]);
             var system = parseFloat(parts[3]);
             var iowait = parseFloat(parts[4]);
             var steal = parseFloat(parts[5]);
-            var idle = parseFloat(parts[6]);      
+            var idle = parseFloat(parts[6]);
             if (!isNaN(user) && !isNaN(nice) && !isNaN(system) && !isNaN(iowait) && !isNaN(steal) && !isNaN(idle)) {
                 sumUser += user;
                 sumNice += nice;
@@ -125,7 +150,7 @@ function calculateAverage(data) {
                 sumSteal += steal;
                 sumIdle += idle;
                 count++;
-            }       
+            }
         }
     }
 
@@ -135,7 +160,7 @@ function calculateAverage(data) {
     var avgIowait = sumIowait / count;
     var avgSteal = sumSteal / count;
     var avgIdle = sumIdle / count;
-    var variables = [
+    variables = [
         D.createVariable("user", "User", avgUser.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("nice", "Nice", avgNice.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("system", "System", avgSystem.toFixed(2), "%", D.valueType.NUMBER),
@@ -143,8 +168,8 @@ function calculateAverage(data) {
         D.createVariable("steal", "Steal", avgSteal.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("idle", "Idle", avgIdle.toFixed(2), "%", D.valueType.NUMBER)
     ];
-    D.success(variables);
 }
+
 
 
 /**
@@ -157,20 +182,12 @@ function calculateAverage(data) {
  * 4. Empties the contents of the file to prepare for the next data collection.
  */
 function get_status() {
-    checkIostatRunning()
-        .then(function () {
-            return executeCommand("cat /tmp/dootz_iostat_cpus.output")
-                .then(function (output) {
-                    return calculateAverage(output);
-                })
-                .catch(function (err) {
-                    console.error("Error reading iostat output file");
-                    console.error(err);
-                    D.failure(D.errorType.GENERIC_ERROR);
-                })
-                .then(function () {
-                    return executeCommand("truncate -s 0 /tmp/dootz_iostat_cpus.output");
-                });
+    readfile()
+        .then(calculateAverage)
+        .then(truncate)
+        .then(checkIostatRunning)
+        .then(function(){
+            D.success(variables);
         })
         .catch(function () {
             console.error("iostat is not running");
