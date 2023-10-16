@@ -12,22 +12,23 @@
  * 'iostat' should be installed on the remote device (using this command "sudo apt install sysstat")
  * 
  * Creates a Custom Driver Variables: 
+ *      - Used(total): Total used CPU usage
  *      - User: The percentage of CPU time spent executing user processes
  *      - Nice: The percentage of CPU time spent on processes with a "nice" priority setting
  *      - System: The percentage of CPU time used by system processes, including the kernel
  *      - Iowait: The percentage of CPU time that the CPU is waiting for input/output operations to complete 
  *      - Steal: The percentage of time the virtual machine process is waiting on the physical CPU for its CPU time
- *      - Idle: The percentage of CPU capacity not being used
+ *      - Free (idle): The percentage of CPU capacity not being used
  */
 
 // Define a command to start the 'iostat' utility in the background,
 // collect CPU statistics every 5 seconds for 2 minutes, and redirect its output to a temporary file.
 var command = "nohup iostat -c 5 24 > /tmp/dootz_iostat_cpus.output & echo done";
-var commandTimeout = 5000
+var commandTimeout = 5000;
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: commandTimeout,
+    timeout: commandTimeout
 };
 
 // this will contains the last result
@@ -72,14 +73,14 @@ function checkIfIostatInstalled() {
     return executeCommand(checkCommand)()
         .then(function (output) {
             if (output.trim() === "") {
-                console.error("iostat is not installed");
+                console.error("iostat command is not available (it requires the sysstat package installed)");
                 D.failure(D.errorType.GENERIC_ERROR);
             } else {
-                console.log("iostat is installed");
+                console.log("iostat command available");
             }
         })
         .catch(function (err) {
-            console.error("Error checking if iostat is installed");
+            console.error("Error checking if iostat is available");
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
@@ -121,7 +122,6 @@ function truncate(){
         });
 }
 
-
 // Calculates the average CPU utilization from 'iostat' data
 function calculateAverage(data) {
     var lines = data.split('\n');
@@ -160,13 +160,16 @@ function calculateAverage(data) {
     var avgIowait = sumIowait / count;
     var avgSteal = sumSteal / count;
     var avgIdle = sumIdle / count;
+    var totalUsage = avgUser + avgNice + avgSystem + avgSteal;
+
     variables = [
+        D.createVariable("total-usage", "Used (total)", totalUsage.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("user", "User", avgUser.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("nice", "Nice", avgNice.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("system", "System", avgSystem.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("iowait", "Iowait", avgIowait.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("steal", "Steal", avgSteal.toFixed(2), "%", D.valueType.NUMBER),
-        D.createVariable("idle", "Idle", avgIdle.toFixed(2), "%", D.valueType.NUMBER)
+        D.createVariable("idle", "Free (idle)", avgIdle.toFixed(2), "%", D.valueType.NUMBER)
     ];
 }
 
