@@ -21,7 +21,7 @@ var counters = "\\MSExchangeIS Store(*)\\RPC Average Latency";
 
 // WinRM configuration
 var winrmConfig = {
-    "command": 'Get-Counter -Counter "' + counters + '" | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue, CounterType } | ConvertTo-Json',
+    "command": 'Get-Counter -Counter "' + counters + '" | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue } | ConvertTo-Json',
     "username": D.device.username(),
     "password": D.device.password()
 };
@@ -77,7 +77,7 @@ function parseOutput(output) {
             var instanceName = jsonOutput[k].InstanceName || "-";
             var value = jsonOutput[k].CookedValue;
             var uid = sanitize(instanceName);
-            variable = D.device.createVariable(uid, instanceName, value, "rpc", D.valueType.NUMBER);
+            variable = D.device.createVariable(uid, instanceName, value, "", D.valueType.NUMBER);
             variables.push(variable);
             k++;
         }
