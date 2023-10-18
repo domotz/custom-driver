@@ -1,0 +1,32 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Switch Configured VLANs",
+    "description": "This script show a list of the configured VLANs on a Switch",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+           "SNMP enabled"
+        ]
+    },
+    "tags": [
+        "switch",
+        "vlan"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,999]"
+    },
+    "protocols": [
+        "SNMP"
+    ],
+    "tested_on": [
+        {
+            "name": "EdgeSwitch 24 Lite",
+            "version": "1.9.3"
+        }
+    ]
+}
