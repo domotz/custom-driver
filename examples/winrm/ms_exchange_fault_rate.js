@@ -79,11 +79,17 @@ function parseOutput(output) {
         var variables = [];
         var jsonOutput = JSON.parse(output.outcome.stdout);
         while (k < jsonOutput.length) {
-            var msitem = (jsonOutput[k].Path).replace(/.*?\\(.*?)\\/g, "").replace("database", "");
+            var path = jsonOutput[k].Path;
             var instanceName = jsonOutput[k].InstanceName || "-";
             var value = jsonOutput[k].CookedValue;
-            var uid = sanitize(instanceName.replace(/\s/g, "") + msitem);
-            console.log(uid);
+
+            if (path.indexOf("stalls") !== -1) {
+                instanceName += " (Fault Stalls)";
+            } else {
+                instanceName += " (Faults)";
+            }
+
+            var uid = sanitize(instanceName);
             variable = D.device.createVariable(uid, instanceName, value, "", D.valueType.NUMBER);
             variables.push(variable);
             k++;
