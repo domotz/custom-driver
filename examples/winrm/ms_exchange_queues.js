@@ -16,11 +16,11 @@
  *      - Value: Value of the counter
  */
 
-var counters = ["\\MSExchangeTransport Queues(*)\\Messages Queued For Delivery"];
+var counters = "\\MSExchangeTransport Queues(*)\\Messages Queued For Delivery";
 
 // WinRM configuration
 var winrmConfig = {
-    "command": 'Get-Counter -Counter "' + counters + '" | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue, CounterType } | ConvertTo-Json',
+    "command": 'Get-Counter -Counter "' + counters + '" | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue } | ConvertTo-Json',
     "username": D.device.username(),
     "password": D.device.password()
 };
