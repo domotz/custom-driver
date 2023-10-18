@@ -78,11 +78,16 @@ function parseOutput(output) {
         var variables = [];
         var jsonOutput = JSON.parse(output.outcome.stdout);
         while (k < jsonOutput.length) {
-            var msitem = (jsonOutput[k].Path).replace(/\\\\(.*?)\\/g, "").replace("msexchange database", "").replace(/\\/g, "-");
+            var path = jsonOutput[k].Path;
+            var msitem = path.replace(/\\\\(.*?)\\/g, "").replace("msexchange database", "").replace(/\\/g, "-");
             var instanceName = jsonOutput[k].InstanceName || "-";
             var value = jsonOutput[k].CookedValue;
             var uid = sanitize(msitem);
-            variable = D.device.createVariable(uid, instanceName, value, "", D.valueType.NUMBER);
+            if (path.indexOf("reads") !== -1){
+                variable = D.device.createVariable(uid, instanceName + " (Reads)", value, "", D.valueType.NUMBER);
+            } else {
+                variable = D.device.createVariable(uid, instanceName + " (Writes)", value, "", D.valueType.NUMBER);
+            }
             variables.push(variable);
             k++;
         }
