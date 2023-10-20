@@ -1,6 +1,6 @@
 {
     "logo": "ms-exchange.svg",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "name": "Microsoft Exchange Server (on-prem) - Messages Queued for Delivery",
     "description": "This script is used to monitor the messages queued for delivery on-prem Microsoft Exchange Server",
     "category": "Software Integration",
@@ -23,7 +23,7 @@
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[1.999]"
+        "independent": "[6]"
     },
     "protocols": [
         "WINRM"

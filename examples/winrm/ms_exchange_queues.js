@@ -76,7 +76,7 @@ function parseOutput(output) {
             var instanceName = jsonOutput[k].InstanceName || "-";
             var value = jsonOutput[k].CookedValue;
             var uid = sanitize(instanceName);
-            variable = D.device.createVariable(uid, instanceName, value, "message", D.valueType.NUMBER);
+            variable = D.device.createVariable(uid, instanceName, value, "messages", D.valueType.NUMBER);
             variables.push(variable);
             k++;
         }
