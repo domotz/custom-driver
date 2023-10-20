@@ -24,7 +24,7 @@
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[2.999]"
+        "table": "[3.999]"
     },
     "protocols": [
         "WINRM"

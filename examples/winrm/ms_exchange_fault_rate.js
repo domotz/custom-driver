@@ -13,7 +13,8 @@
  * 
  * Creates a Custom Driver Table with the following columns:
  *      - Instance Name: Instance name of the database
- *      - Value: Value of the counter
+ *      - Page Faults: The value of the "Database Page Faults/sec" counter, representing the rate of page faults per second
+ *      - Page Fault Stalls: The value of the "Database Page Fault Stalls/sec" counter, representing the rate of page fault stalls per second
  * 
  */
 
@@ -29,6 +30,15 @@ var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password()
 };
+
+var table = D.createTable(
+    "Fault Rate",
+    [
+        { label: "Instance Name", type: D.valueType.STRING },
+        { label: "Page faults", unit: "rate/s", type: D.valueType.NUMBER },
+        { label: "Page fault stalls", unit: "rate/s", type: D.valueType.NUMBER }
+    ]
+);
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
@@ -65,7 +75,6 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
-
 function sanitize(output){
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
@@ -75,26 +84,29 @@ function sanitize(output){
 // Parses the output of the WinRM command and extracts data
 function parseOutput(output) {
     if (output.error === null) {
-        var k = 0;
-        var variables = [];
         var jsonOutput = JSON.parse(output.outcome.stdout);
-        while (k < jsonOutput.length) {
-            var path = jsonOutput[k].Path;
-            var instanceName = jsonOutput[k].InstanceName || "-";
-            var value = jsonOutput[k].CookedValue;
-
-            if (path.indexOf("stalls") !== -1) {
-                instanceName += " (Fault Stalls)";
-            } else {
-                instanceName += " (Faults)";
+        var data = {};
+        for (var i = 0; i < jsonOutput.length; i++) {
+            var instanceName = jsonOutput[i].InstanceName;
+            var cookedValue = jsonOutput[i].CookedValue;
+            var path = jsonOutput[i].Path;
+            if (path.indexOf("database page faults") !== -1) {
+                data[instanceName] = data[instanceName] || {};
+                data[instanceName].pageFaults = cookedValue;
+            } else if (path.indexOf("database page fault stalls") !== -1) {
+                data[instanceName] = data[instanceName] || {};
+                data[instanceName].pageFaultStalls = cookedValue;
             }
-
-            var uid = sanitize(instanceName);
-            variable = D.device.createVariable(uid, instanceName, value, "", D.valueType.NUMBER);
-            variables.push(variable);
-            k++;
         }
-        D.success(variables);
+
+        for (instanceName in data) {
+            console.log(instanceName);
+            var recordId = sanitize(instanceName.replace(" - ", "-"));
+            var instanceData = data[instanceName];
+            table.insertRecord(recordId, [instanceName, instanceData.pageFaults, instanceData.pageFaultStalls ]);
+        }
+
+        D.success(table);
     } else {
         console.error(output.error);
         checkWinRmError(output.error);
