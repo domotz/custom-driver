@@ -116,12 +116,11 @@ function parseOutput(output) {
         var jsonOutput = JSON.parse(output.outcome.stdout);
         while (k < jsonOutput.length) {
             var path = jsonOutput[k].Path;
-            var msExchangeItem = path.replace(/.*?msexchange/, "");
+            var msExchangeItem = path.replace(/.*?msexchange/, " ").replace(/\\/g, " ").replace(/(\/sec|\(sec\))/g ,"").replace("service availability", "service").trim();
             var instanceName = jsonOutput[k].InstanceName;
             var counterType = jsonOutput[k].CounterType;
-            var name = msExchangeItem.replace(/\\(.*)/g, "").trim();
-            var uid = sanitize(msExchangeItem.replace(/\\/g, " "));
-            var label = instanceName ? instanceName + " " + name : name;
+            var uid = sanitize(msExchangeItem);
+            var label = instanceName ? instanceName + " " + msExchangeItem : msExchangeItem;
             var value = jsonOutput[k].CookedValue;
             var unit = counterTypeMappings[counterType];     
             variable = D.device.createVariable(uid, label , value, unit, D.valueType.NUMBER);

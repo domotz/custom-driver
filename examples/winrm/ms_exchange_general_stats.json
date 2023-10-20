@@ -19,10 +19,10 @@
         "exchange",
         "email-server"
     ],
-    "sample_period_s": 1800,
+    "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[1.999]"
+        "independent": "[1,999]"
     },
     "protocols": [
         "WINRM"
