@@ -26,10 +26,10 @@
 var svcFilter = D.getParameter('servicesFilter');
 
 if (svcFilter !== '$null'){
-    svcFilter = '@("' + svcFilter.join('","') + '")';
+    svcFilter = 'ConvertTo-Json @(@("' + svcFilter.join('","') + '")';
 }
 
-var getServices = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType | ConvertTo-Json';
+var getServices = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType)';
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
@@ -115,30 +115,28 @@ function populateTable(svcName, displayname, status, startType) {
 function parseOutput(output) {
     if (output.error === null) {
         var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
-        if (jsonOutput) {
-            var k = 0;
-            while (k < jsonOutput.length) {
-                populateTable(
-                    jsonOutput[k].ServiceName,
-                    jsonOutput[k].DisplayName,
-                    jsonOutput[k].Status.toString(),
-                    jsonOutput[k].StartType.toString()
-                );
-                k++;
-            }
-        } else {
+        var listOfServices = JSON.parse(jsonOutput.outcome.stdout);
+
+        for (var k = 0; k < listOfServices.length; k++) {
             populateTable(
-                jsonOutput.ServiceName,
-                jsonOutput.DisplayName,
-                jsonOutput.Status.toString(),
-                jsonOutput.StartType.toString()
+                listOfServices[k].ServiceName,
+                listOfServices[k].DisplayName,
+                listOfServices[k].Status.toString(),
+                listOfServices[k].StartType.toString()
             );
+        }
+        var stderr = jsonOutput.outcome.stderr;
+        if (stderr !== null) {
+            var errorList = stderr.split('Get-Service :');
+            for (var k = 0; k < errorList.length; k++) {
+                if (errorList[k] !== '') {
+                    console.error(errorList[k]);
+                }
+            }
         }
         D.success(svcTable);
     } else {
         console.error(output.error);
         D.failure();
     }
-
 }
