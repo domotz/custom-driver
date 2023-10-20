@@ -13,7 +13,8 @@
  * 
  * Creates a Custom Driver Table with the following columns:
  *      - Instance Name: Instance name of the database
- *      - Value: Value of the counter
+ *      - Average Read Latency: The value of the "I/O Database Reads Average Latency" counter, representing the average latency for read operations
+ *      - Average Write Latency: The value of the "I/O Database Writes Average Latency" counter, representing the average latency for write operations
  * 
  */
 
@@ -29,6 +30,15 @@ var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password()
 };
+
+var table = D.createTable(
+    "Database Reads / Writes Average Latency",
+    [
+        { label: "Instance Name", type: D.valueType.STRING },
+        { label: "Average Read Latency", type: D.valueType.NUMBER },
+        { label: "Average Write Latency", type: D.valueType.NUMBER }
+    ]
+);
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
@@ -74,24 +84,26 @@ function sanitize(output){
 // Parses the output of the WinRM command and extracts data
 function parseOutput(output) {
     if (output.error === null) {
-        var k = 0;
-        var variables = [];
         var jsonOutput = JSON.parse(output.outcome.stdout);
-        while (k < jsonOutput.length) {
-            var path = jsonOutput[k].Path;
-            var msitem = path.replace(/\\\\(.*?)\\/g, "").replace("msexchange database", "").replace(/\\/g, "-");
-            var instanceName = jsonOutput[k].InstanceName || "-";
-            var value = jsonOutput[k].CookedValue;
-            var uid = sanitize(msitem);
-            if (path.indexOf("reads") !== -1){
-                variable = D.device.createVariable(uid, instanceName + " (Reads)", value, "", D.valueType.NUMBER);
-            } else {
-                variable = D.device.createVariable(uid, instanceName + " (Writes)", value, "", D.valueType.NUMBER);
+        var data = {};
+        for (var i = 0; i < jsonOutput.length; i++) {
+            var instanceName = jsonOutput[i].InstanceName;
+            var cookedValue = jsonOutput[i].CookedValue;
+            var path = jsonOutput[i].Path;
+            if (path.indexOf("database reads average latency") !== -1) {
+                data[instanceName] = data[instanceName] || {};
+                data[instanceName].readsLatency = cookedValue;
+            } else if (path.indexOf("database writes average latency") !== -1) {
+                data[instanceName] = data[instanceName] || {};
+                data[instanceName].writesLatency = cookedValue;
             }
-            variables.push(variable);
-            k++;
         }
-        D.success(variables);
+        for (instanceName in data) {
+            var recordId = sanitize(instanceName.replace(" - ", "-"));
+            var instanceData = data[instanceName];
+            table.insertRecord(recordId, [instanceName, instanceData.readsLatency, instanceData.writesLatency ]);
+        }
+        D.success(table);
     } else {
         console.error(output.error);
         checkWinRmError(output.error);
