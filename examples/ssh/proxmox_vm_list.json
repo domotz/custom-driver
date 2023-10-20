@@ -2,7 +2,7 @@
     "logo": "proxmox.svg",
     "version": "1.0.0",
     "name": "Proxmox VE VMs List",
-    "description": "Diplays a list of all the VMs and their properties in a Proxmox server",
+    "description": "Displays a list of all the VMs and their properties in a Proxmox server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -15,7 +15,8 @@
     },
     "tags": [
         "proxmox",
-        "vm",
+        "virtual",
+        "vm-list",
         "qm-list",
         "qm-config"
     ],
