@@ -13,7 +13,8 @@
  * 
  * Creates a Custom Driver Table with the following columns:
  *      - Instance Name: Instance name of the LDAP operation
- *      - Value: Value of the LDAP operation time 
+ *      - LDAP Read Time: The value of the "LDAP Read Time" counter, representing the time taken for LDAP read operations
+ *      - LDAP Search Time: The value of the "LDAP Search Time" counter, representing the time taken for LDAP search operations
  * 
  */
 
@@ -29,6 +30,15 @@ var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password()
 };
+
+var table = D.createTable(
+    "LDAP Read and Search Time",
+    [
+        { label: "Instance Name", type: D.valueType.STRING },
+        { label: "LDAP Read Time", type: D.valueType.NUMBER },
+        { label: "LDAP Search Time", type: D.valueType.NUMBER }
+    ]
+);
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
@@ -74,26 +84,28 @@ function sanitize(output){
 // Parses the output of the WinRM command and extracts data
 function parseOutput(output) {
     if (output.error === null) {
-        var k = 0;
-        var variables = [];
         var jsonOutput = JSON.parse(output.outcome.stdout);
-        while (k < jsonOutput.length) {
-            var path = jsonOutput[k].Path;
-            var instanceName = jsonOutput[k].InstanceName || "-";
-            var value = jsonOutput[k].CookedValue;
-
-            if (path.indexOf("read") !== -1) {
-                instanceName += " (Read Time)";
-            } else {
-                instanceName += " (Search Time)";
+        var data = {};
+        for (var i = 0; i < jsonOutput.length; i++) {
+            var instanceName = jsonOutput[i].InstanceName;
+            var cookedValue = jsonOutput[i].CookedValue;
+            var path = jsonOutput[i].Path;
+            if (path.indexOf("ldap read time") !== -1) {
+                data[instanceName] = data[instanceName] || {};
+                data[instanceName].ldapReadTime = cookedValue;
+            } else if (path.indexOf("ldap search time") !== -1) {
+                data[instanceName] = data[instanceName] || {};
+                data[instanceName].ldapSearchTime = cookedValue;
             }
-
-            var uid = sanitize(instanceName);
-            variable = D.device.createVariable(uid, instanceName, value, "", D.valueType.NUMBER);
-            variables.push(variable);
-            k++;
         }
-        D.success(variables);
+
+        for (instanceName in data) {
+            var recordId = sanitize(instanceName);
+            var instanceData = data[instanceName];
+            table.insertRecord(recordId, [instanceName, instanceData.ldapReadTime, instanceData.ldapSearchTime ]);
+        }
+
+        D.success(table);
     } else {
         console.error(output.error);
         checkWinRmError(output.error);
