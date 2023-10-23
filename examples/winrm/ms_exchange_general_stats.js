@@ -19,7 +19,6 @@
 
 // List of performance counters to monitor
 var counters = [
-    "\\MSExchange OWA\\Current Unique Users",  
     "\\MSExchange OWA\\Requests/sec",
     "\\MSExchange Availability Service\\Availability Requests (sec)",
     "\\MSExchange MapiHttp Emsmdb\\User Count",
