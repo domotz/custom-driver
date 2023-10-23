@@ -46,41 +46,16 @@ function getAllCertificateData() {
 function getCertificateData(targetServer) {
     var d = D.q.defer();
     var website = D.createExternalDevice(targetServer);
-    website.http.get(
+    website.http.getTLSCertificate(
         {
             url: "/",
-            headers: {
-                connection: "keep-alive",
-                "keep-alive": "timeout=2, max=1"
-            },
-            rejectUnauthorized: false,
-            protocol: "https"
         }, function (err, resp) {
             if (err) {
                 console.error(err);
                 return d.resolve();
             }
-            var data = null;
-            if (resp && resp.connection && resp.connection.getPeerCertificate) {
-                var cert = resp.connection.getPeerCertificate();
-                if (cert && Object.keys(cert).length) {
-                    try {
-                        data = {
-                            server: targetServer,
-                            issuer: cert.issuer.O,
-                            expiry: cert.valid_to,
-                            valid: !resp.connection.authorizationError,
-                            certError: resp.connection.authorizationError
-                        };
-                    } catch (e) {
-                        console.warn(e);
-                        console.warn("failed to retrieve ssl certificate information for " + targetServer);
-                    }
-                }
-            } else {
-                console.warn("failed to retrieve ssl certificate information for " + targetServer);
-            }
-            d.resolve(data);
+            resp.server = targetServer;
+            d.resolve(resp);
         });
 
     return d.promise;

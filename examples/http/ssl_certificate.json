@@ -6,7 +6,7 @@
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
-        "sandbox_version": "1.12",
+        "sandbox_version": "1.14",
         "others": [
             "website",
             "ssl",

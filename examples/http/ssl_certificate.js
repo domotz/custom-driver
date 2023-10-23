@@ -19,39 +19,16 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
  */
 function getCertificateData() {
     var d = D.q.defer();
-    D.device.http.get(
+    D.device.http.getTLSCertificate(
         {
             url: "/",
-            headers: {
-                "connection": "keep-alive",
-                "keep-alive": "timeout=2, max=1"
-            },
-            rejectUnauthorized: false,
-            protocol: "https"
         }, function (err, resp) {
             if (err) {
                 console.error(""+err);
                 D.failure();
             }
-            var cert;
-            if (!resp.connection || !(cert = resp.connection.getPeerCertificate())){
-                return d.reject("No certification found for this device");
-            }
-            if (
-                cert.issuer &&
-                cert.valid_to &&
-                resp.connection) {
-                d.resolve({
-                    issuer: cert.issuer.O,
-                    expiry: cert.valid_to,
-                    valid: !resp.connection.authorizationError,
-                    certError: resp.connection.authorizationError
-                });
-            } else {
-                d.reject("Missing certificate information");
-            }
+            d.resolve(resp);
         });
-
     return d.promise;
 }
 
