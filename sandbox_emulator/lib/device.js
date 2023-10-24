@@ -332,10 +332,12 @@ function createDevice(device, agentDriverSettings, myConsole) {
                 return request.delete(options, callback);
             },
             getTLSCertificate(options, callback) {
-                myConsole.info("Performing GET towards:" + options.url);
-                options = buildRequest(options);
-                options.rejectUnauthorized = false;
+                options = !options ? {}: options;
                 options.protocol = 'https';
+                options.url = options.url || '/';
+                options.rejectUnauthorized = false;
+                options = buildRequest(options);
+                myConsole.info("Performing GET towards:" + options.url);
                 request.get(options, function (err) {
                     if (err) {
                         callback(err);

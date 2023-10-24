@@ -19,10 +19,7 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
  */
 function getCertificateData() {
     var d = D.q.defer();
-    D.device.http.getTLSCertificate(
-        {
-            url: "/",
-        }, function (err, resp) {
+    D.device.http.getTLSCertificate({}, function (err, resp) {
             if (err) {
                 console.error(""+err);
                 D.failure();

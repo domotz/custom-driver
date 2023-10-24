@@ -46,10 +46,7 @@ function getAllCertificateData() {
 function getCertificateData(targetServer) {
     var d = D.q.defer();
     var website = D.createExternalDevice(targetServer);
-    website.http.getTLSCertificate(
-        {
-            url: "/",
-        }, function (err, resp) {
+    website.http.getTLSCertificate({}, function (err, resp) {
             if (err) {
                 console.error(err);
                 return d.resolve();
