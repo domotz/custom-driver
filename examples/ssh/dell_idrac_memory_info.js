@@ -32,7 +32,7 @@ var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 100000,
-    "keyboard_interactive": true,
+    "keyboard_interactive": true
 };
 
 // Custom Driver Table to store memory information
@@ -128,7 +128,7 @@ function parseData(output) {
             instanceIdDimm = true;
             data = {}; 
         } else if (instanceIdDimm && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50);
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
             var type = data["Device Type"] || "-"; 
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
