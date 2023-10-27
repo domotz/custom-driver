@@ -122,7 +122,7 @@ function parseData(output) {
             instanceIdFan = true;
             data = {}; 
         } else if (instanceIdFan && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
             var type = data["Device Type"] || "-"; 
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
