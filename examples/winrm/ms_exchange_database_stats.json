@@ -1,7 +1,7 @@
 {
     "logo": "ms-exchange.svg",
     "version": "1.0.0",
-    "name": "Microsoft Exchange Server (on-prem) - Database Stats",
+    "name": "Microsoft Exchange Server (on-prem) - Database Latency (R/W)",
     "description": "This script is used to monitor database statistics from a Microsoft Exchange Server",
     "category": "Software Integration",
     "requirements": {
@@ -14,16 +14,15 @@
     },
     "tags": [
         "windows",
-        "instance-name",
         "microsoft",
         "exchange",
-        "email-server",
-        "database"
+        "database",
+        "email-server"
     ],
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3.999]"
+        "table": "[3,999]"
     },
     "protocols": [
         "WINRM"
