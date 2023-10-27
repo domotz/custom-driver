@@ -111,7 +111,6 @@ function get_status() {
 
 function parseData(output) {
     var lines = output.split("\n");
-    console.log(lines);
     var data = {};
     var instanceIdRaid = false; 
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
@@ -123,17 +122,14 @@ function parseData(output) {
             data = {}; 
         } else if (instanceIdRaid && line.length === 0) {
             if (data["Device Type"] === "Controller") {
-                var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+                var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
                 var type = data["Device Type"] || "-"; 
                 var primaryStatus = data["PrimaryStatus"] || "-";
                 var productName = data["ProductName"] || "-";
                 var description = data["DeviceDescription"] || "-";
                 var supportRAID10UnevenSpans = data["SupportRAID10UnevenSpans"] || "-";
                 var cacheSizeInMB = (data["CacheSizeInMB"] || "").replace(/\D+/g, "") || "-";
-                console.log(cacheSizeInMB)
                 var cacheSize = cacheSizeInMB * Math.pow(1024, 2);
-                console.log(cacheSize)
-
                 var driverVersion = data["DriverVersion"] || "-";
                 var encryptionMode = data["EncryptionMode"] || "-";
                 var securityStatus = data["SecurityStatus"] || "-";
