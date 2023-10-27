@@ -287,7 +287,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
             get: function (options, callback) {
                 myConsole.info("Performing GET towards:" + options.url);
                 options = buildRequest(options);
-                request.get(options, callback);
+                return request.get(options, callback);
             },
             /**
              * Executes an HTTP POST request towards the device.
@@ -301,7 +301,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
             post: function (options, callback) {
                 myConsole.info("Performing POST towards:" + options.url);
                 options = buildRequest(options);
-                request.post(options, callback);
+                return request.post(options, callback);
             },
             /**
              * Executes an HTTP PUT request towards the device.
@@ -315,7 +315,7 @@ function createDevice(device, agentDriverSettings, myConsole) {
             put: function (options, callback) {
                 myConsole.info("Performing PUT towards:" + options.url);
                 options = buildRequest(options);
-                request.put(options, callback);
+                return request.put(options, callback);
             },
             /**
              * Executes an HTTP DELETE request towards the device.
@@ -329,8 +329,29 @@ function createDevice(device, agentDriverSettings, myConsole) {
             delete: function (options, callback) {
                 myConsole.info("Performing DELETE towards:" + options.url);
                 options = buildRequest(options);
-                request.delete(options, callback);
-            }            
+                return request.delete(options, callback);
+            },
+            getTLSCertificate(options, callback) {
+                options = !options ? {}: options;
+                options.protocol = 'https';
+                options.url = options.url || '/';
+                options.rejectUnauthorized = false;
+                options = buildRequest(options);
+                myConsole.info("Performing GET towards:" + options.url);
+                request.get(options, function (err) {
+                    if (err) {
+                        callback(err);
+                    }
+                }).on('response', function (resp) {
+                    var cert = resp.connection.getPeerCertificate();
+                    callback(null, {
+                        issuer: cert.issuer.O,
+                        expiry: cert.valid_to,
+                        valid: !resp.connection.authorizationError,
+                        certError: resp.connection.authorizationError
+                    });
+                });
+            }
         },
         /**
          * Creates a custom driver variable to be sent in the D.success callback.
