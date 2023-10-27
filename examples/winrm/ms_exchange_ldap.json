@@ -1,7 +1,7 @@
 {
     "logo": "ms-exchange.svg",
     "version": "1.0.0",
-    "name": "Microsoft Exchange Server (on-prem) - LDAP (Lightweight Directory Access Protocol) Read / Search Time",
+    "name": "Microsoft Exchange Server (on-prem) - LDAP Read/Search Time",
     "description": "This script is used to monitor LDAP (Lightweight Directory Access Protocol) read and search times on a Microsoft Exchange Server",
     "category": "Software Integration",
     "requirements": {
@@ -14,7 +14,6 @@
     },
     "tags": [
         "windows",
-        "instance-name",
         "microsoft",
         "exchange",
         "email-server",
