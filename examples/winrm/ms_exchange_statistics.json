@@ -1,0 +1,36 @@
+{
+    "logo": "ms-exchange.svg",
+    "version": "1.0.0",
+    "name": "Microsoft Exchange Server (on-prem) - Statistics",
+    "description": "This script is used to monitor general statistics on a Microsoft Exchange Server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [ 
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "microsoft",
+        "exchange",
+        "email-server"
+    ],
+    "sample_period_s": 900,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[4,999]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Exchange",
+            "version": "Server 2019 CU12"
+        }
+    ]
+}
