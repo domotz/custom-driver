@@ -1,20 +1,21 @@
 /**
- * Name: Switch Configured VLANs
- * Description: This script show a list of the configured VLANs on a Switch
+ * Name: Switch Configured VLAN List
+ * Description: This script retrieves the list of configured VLANs from a switch and stores it in a variable
  * 
  * Communication protocol is SNMP 
  * 
- * Creates a custom driver variable section with:
- *    - VLAN ID
- *    - VLAN NAME
+ * Creates a custom driver variable to store the VLAN list.
  * 
- * Tested under EdgeSwitch 24 Lite version 1.9.3
+ * Tested on:
+ *   - Cisco CBS 350 - 28 Port  
+ *   - Ubiquiti EdgeSwitch 24 Lite version 1.9.3
+ *   - HP Aruba ProCurve 2530-24G
  * 
  */
 
-//Get VLAN names and ids
+//Get VLAN ids
 var dot1qVlanStaticName = "1.3.6.1.2.1.17.7.1.4.3.1.1";
-                    
+
 function validateAndGetData() {
     var d = D.q.defer();
     D.device.createSNMPSession().walk(dot1qVlanStaticName, function(out, err) {
@@ -23,7 +24,7 @@ function validateAndGetData() {
             D.failure(D.errorType.GENERIC_ERROR);
         } else if (!out) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }  else {
+        } else {
             d.resolve(out);
         }
     });
@@ -32,7 +33,7 @@ function validateAndGetData() {
 
 /**
  * @remote_procedure
- * @label Host Device supports VLANs
+ * @label Checks if the device supports VLANs
  * @documentation This procedure is used to validate if the device supports VLANs
  */
 function validate(){
@@ -45,20 +46,20 @@ function validate(){
 }  
 /**
 * @remote_procedure
-* @label Get Vlan List
-* @documentation This procedure collects VLAN information
+* @label Gets Vlan List
+* @documentation This procedure collects VLAN information and stores it in a variable.
 */
 function get_status() {
     validateAndGetData()
         .then(function(out) {
-            var vlanID, vlanName;
-            variables = [];
+            var vlanList = [];
             for (var key in out) {
                 var parts = key.split(".");
-                vlanID = parts[parts.length - 1];
-                vlanName = out[key] || "-";
-                variables.push(D.createVariable(vlanID, "Vlan " + vlanID , "", vlanName));
+                var vlanID = parts[parts.length - 1];
+                var vlans = "VLAN" + vlanID;
+                vlanList.push(vlans);
             }
+            var variables = [D.createVariable("vlans", "VLANs", vlanList.join(" | "))];
             D.success(variables);
         })
         .catch(function(err) {

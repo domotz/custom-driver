@@ -1,8 +1,8 @@
 {
     "logo": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Switch Configured VLANs",
-    "description": "This script show a list of the configured VLANs on a Switch",
+    "description": "This script retrieves the list of configured VLANs from a switch and stores it in a variable",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": false,
@@ -25,8 +25,16 @@
     ],
     "tested_on": [
         {
+            "name": "Cisco CBS",
+            "version": "350 - 28 Port"
+        },
+        {
             "name": "EdgeSwitch 24 Lite",
             "version": "1.9.3"
+        },
+        {
+            "name": "HP Aruba ProCurve",
+            "version": "2530-24G"
         }
     ]
 }
