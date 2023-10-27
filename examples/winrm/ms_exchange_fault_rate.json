@@ -1,8 +1,8 @@
 {
     "logo": "ms-exchange.svg",
     "version": "1.0.0",
-    "name": "Microsoft Exchange Server (on-prem) - Fault rate",
-    "description": "This script is used to monitor database Fault rates from a Microsoft Exchange Server",
+    "name": "Microsoft Exchange Server (on-prem) - Fault Rate",
+    "description": "This script is used to monitor database fault rates from a Microsoft Exchange Server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -24,7 +24,7 @@
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3.999]"
+        "table": "[3,999]"
     },
     "protocols": [
         "WINRM"

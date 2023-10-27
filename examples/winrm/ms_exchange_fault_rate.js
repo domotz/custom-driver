@@ -32,7 +32,7 @@ var winrmConfig = {
 };
 
 var table = D.createTable(
-    "Fault Rate",
+    "Database Page Faults",
     [
         { label: "Instance Name", type: D.valueType.STRING },
         { label: "Page faults", unit: "rate/s", type: D.valueType.NUMBER },
@@ -69,7 +69,7 @@ function validate() {
 /**
  * @remote_procedure
  * @label Get Database Fault rates
- * @documentation This procedure retrieves the current fault rates of the Microsoft Exchange Server by querying performance counters
+ * @documentation This procedure retrieves the current Database Page Faults of the Microsoft Exchange Server by querying performance counters
  */
 function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
@@ -100,12 +100,11 @@ function parseOutput(output) {
         }
 
         for (instanceName in data) {
-            console.log(instanceName);
+            console.debug("Instance Name is" + instanceName);
             var recordId = sanitize(instanceName.replace(" - ", "-"));
             var instanceData = data[instanceName];
             table.insertRecord(recordId, [instanceName, instanceData.pageFaults, instanceData.pageFaultStalls ]);
         }
-
         D.success(table);
     } else {
         console.error(output.error);
