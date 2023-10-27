@@ -1,8 +1,8 @@
 /**
  * Domotz Custom Driver 
  * Name: Linux Monitor IP Latency
- * Description: This script its designed to ping a list of IP addresses from a linux host machine and retrieve their average latency and packet loss percentage.
- *   
+ * Description: This script its designed to ping a list of IP addresses specified in the 'ipAddresses' variable from a linux host machine and retrieve their average latency and packet loss percentage.
+ * 
  * Communication protocol is SSH
  * 
  * Tested on Linux Distributions:
@@ -15,19 +15,18 @@
  **/
 
 var packetCount = 2; // Number of packets to send during the ping command.
-var ipAddresses = ["8.8.8.8"]; // List of IP addresses to ping and retrieve status for.
+var ipAddresses  = D.getParameter('ipAddressesToCheck');
 
 // Set up the SSH command options
 var sshCommandOptions = {
     username: D.device.username(),
     password: D.device.password(),
-    timeout: 10000,
+    timeout: 10000
 };
 
 var tableColumns = D.createTable(
     "IP Latency",
     [
-        { label: "IP Address" },
         { label: "Latency", unit: "ms" },
         { label: "Packet Loss", unit: "%" }
     ]
@@ -104,6 +103,11 @@ function get_status() {
             checkSshError(error);
         });
 }
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+}
 
 function parseOutput(output, ipAddress) {
     var latencyValue, packetLossValue;
@@ -119,6 +123,6 @@ function parseOutput(output, ipAddress) {
     } else {
         packetLossValue = "100"; 
     }
-    var recordId = D.crypto.hash(ipAddress, "sha256", null, "hex").slice(0, 50);
-    tableColumns.insertRecord(recordId, [ipAddress, latencyValue, packetLossValue]);
+    var recordId = sanitize(ipAddress);
+    tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);
 }
