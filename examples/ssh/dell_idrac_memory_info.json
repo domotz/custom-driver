@@ -1,6 +1,6 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Dell iDRAC Memory Monitoring",
     "description": "Monitors the operational status of memory on a Dell server with iDRAC",
     "category": "Hardware Integration",
