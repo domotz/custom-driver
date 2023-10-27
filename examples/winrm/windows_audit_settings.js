@@ -124,7 +124,6 @@ filter = '@("' + filter.join('","') + '")';
 var auditTable = D.createTable(
     "Audit Settings",
     [
-        { label: "Audit Name" },
         { label: "Category" },
         { label: "Subcategory" },
         { label: "Setting" }
@@ -166,29 +165,30 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+}
 /**
  * Parses the output of the audit tool and inserts the audit results into the audit table.
  * @param {Object} output The output of the audit tool.
  */
-
 function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var category;
         var subcategory;
         var setting;
-        var auditName;
         var recordId;
-        var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        var jsonOutput = JSON.parse(output.outcome.stdout);
         if (jsonOutput) {
             while (k < jsonOutput.length) {
                 category = jsonOutput[k].category;
                 subcategory = jsonOutput[k].subcat;
                 setting = jsonOutput[k].setting;
-                auditName = (category + "_" + subcategory).replace(" ", "_");
-                recordId = D.crypto.hash(auditName, "sha256", null, "hex").toLowerCase().slice(0, 50);
-                auditTable.insertRecord(recordId, [auditName, category, subcategory, setting]);
+                recordId = sanitize(category + " " + subcategory);
+                auditTable.insertRecord(recordId, [category, subcategory, setting]);
                 k++;
             }
         } else {
