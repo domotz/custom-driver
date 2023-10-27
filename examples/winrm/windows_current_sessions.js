@@ -78,11 +78,18 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+}
+
 /**
  * Parses the output of a system command that lists logged-in users and adds the relevant information to a table.
  * @param {Object} output The output of the system command, including stdout and an error object.
  */
 function parseOutput(output) {
+    console.log(JSON.stringify(output))
     if (output.error === null) {
         var outputLines = output.outcome.stdout.split(/\r?\n/);
         var line = "";
@@ -107,7 +114,7 @@ function parseOutput(output) {
                     idxOffset = 1;
                 }
                 username = words[0];
-                recordId = D.crypto.hash(username, "sha256", null, "hex").slice(0, 50);
+                recordId = sanitize(username);
                 sessionId = words[1 + idxOffset];
                 status = words[2 + idxOffset];
                 idleTime = words[3 + idxOffset];

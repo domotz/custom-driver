@@ -1,0 +1,38 @@
+{
+    "logo": "proxmox.svg",
+    "version": "1.0.0",
+    "name": "Proxmox VE VMs List",
+    "description": "Displays a list of all the VMs and their properties in a Proxmox server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Proxmox",
+            "VM",
+            "hypervisor"
+        ]
+    },
+    "tags": [
+        "proxmox",
+        "virtual",
+        "vm-list",
+        "qm-list",
+        "qm-config"
+    ],
+    "sample_period_s": 1800,
+    "execution_time_s": 120,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[11,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Proxmox",
+            "version": "8.0.3"
+        }
+    ]
+}

@@ -31,7 +31,7 @@ var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 100000,
-    "keyboard_interactive": true,
+    "keyboard_interactive": true
 };
 
 // Custom Driver Table to store cpus information
@@ -118,14 +118,14 @@ function parseData(output) {
     var data = {};
     var instanceIdCpu = false; 
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: CPU.Socket") >= 0) {
             instanceIdCpu = true;
             data = {}; 
         } else if (instanceIdCpu && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();;
             var type = data["Device Type"] || "-"; 
             var description = data["DeviceDescription"] || "-"; 
             var model = data["Model"] || "-"; 

@@ -1,0 +1,35 @@
+{
+    "logo": "lenovo-xclarity.svg",
+    "version": "1.0.0",
+    "name": "XClarity Storage Health",
+    "description": "Monitors the health status of storage systems on Lenovo XClarity server",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "xclarity",
+        "lenovo",
+        "storage",
+        "health",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Lenovo XClarity",
+            "version": "8.42"
+        }
+    ]
+}
