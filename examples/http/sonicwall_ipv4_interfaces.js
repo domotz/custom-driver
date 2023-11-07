@@ -27,8 +27,8 @@ var table = D.createTable(
         { label: "Ip Address" },
         { label: "Gateway" },
         { label: "Zone" },
-        { label: "User Login" },
-        { label: "Management" }
+        { label: "Management" },
+        { label: "User Login" }
     ]
 );
 
@@ -96,8 +96,10 @@ function sanitize(output){
 function extractData(body) {
     var data = JSON.parse(body);
     data.interfaces.forEach(function (item) {
-        var name = item.ipv4.name.toLowerCase();
-        if (interface_name[0].toLowerCase() === "all" || interface_name.indexOf(name) !== -1) {
+        var name = item.ipv4.name;
+        if (interface_name[0].toLowerCase() === "all" || interface_name.some(function(res) {
+            return res.toLowerCase() === name.toLowerCase();
+        })) {      
             var comment = item.ipv4.comment;
             var recordId = sanitize(comment ? name + "-" + comment : name);
             var ipAssignmentMode = item.ipv4.ip_assignment.mode;
@@ -106,14 +108,14 @@ function extractData(body) {
             var ipAddress = ip + " - " + netmask;
             var gateway = ipAssignmentMode.static && ipAssignmentMode.static.gateway || "-";
             var zone = item.ipv4.ip_assignment.zone || "-";
-            var userLogin = extractValue(item.ipv4.user_login) || "-";
             var management = extractValue(item.ipv4.management) || "-";
+            var userLogin = extractValue(item.ipv4.user_login) || "-";
             table.insertRecord(recordId, [
                 ipAddress,
                 gateway,
                 zone,
-                userLogin,
-                management
+                management.replace(/true/g, "Yes").replace(/false/g, "No"),
+                userLogin.replace(/true/g, "Yes").replace(/false/g, "No")
             ]);
         }
     });
