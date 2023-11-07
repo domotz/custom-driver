@@ -96,23 +96,30 @@ function sanitize(output){
 function extractData(body) {
     var data = JSON.parse(body);
     data.nat_policies.forEach(function (item) {
-        var name = item.ipv4.name.toLowerCase();
-        if (policy_name[0].toLowerCase() === "all" || policy_name.indexOf(name) !== -1) {
+        var name = item.ipv4.name;
+        if (policy_name[0].toLowerCase() === "all" || policy_name.some(function(res) {
+            return res.toLowerCase() === name.toLowerCase();
+        })) {    
             var uid = item.ipv4.uuid;
             var recordId = sanitize(name + "-" + uid);
-            var description = item.ipv4.comment;
-            var enabled = item.ipv4.enable;
+            var description = item.ipv4.comment || "-";
+            var enabled;
+            if (item.ipv4.enable === true || item.ipv4.enable === "true") {
+                enabled = "Yes";
+            } else if (item.ipv4.enable === false || item.ipv4.enable === "false") {
+                enabled = "No";
+            }  
             var inbound = item.ipv4.inbound;
             var outbound = item.ipv4.outbound;
-            var source = formatField(item.ipv4.source);
-            var destination = formatField(item.ipv4.destination);
+            var source = extractValue(item.ipv4.source);
+            var destination = extractValue(item.ipv4.destination);
             table.insertRecord(recordId, [
                 description,
                 enabled,
                 inbound,
                 outbound,
-                source,
-                destination
+                source.replace(/true/g, "Yes").replace(/false/g, "No"),
+                destination.replace(/true/g, "Yes").replace(/false/g, "No")
             ]);
         }
     });
@@ -121,10 +128,10 @@ function extractData(body) {
 }
 
 // If the field is an object, it extracts the first key and its corresponding value
-function formatField(field) {
+function extractValue(field) {
     if (typeof field === "object") {
         var keys = Object.keys(field);
-        return keys[0] + " : " + field[keys[0]];
+        return keys + " : " + field[keys];
     }
     return field;
 }
