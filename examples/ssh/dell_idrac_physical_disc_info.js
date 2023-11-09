@@ -17,6 +17,7 @@
  *      - RAID Status
  *      - RAID Types
  *      - Size
+ *      - Usage
  *      - Used Size
  *      - Free Size
  *      - Manufacturer
@@ -71,8 +72,9 @@ var table = D.createTable(
         { label: "Primary Status", valueType: D.valueType.STRING },
         { label: "Raid Status", valueType: D.valueType.STRING },
         { label: "Raid Types", valueType: D.valueType.STRING },
-        { label: "Size", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Used Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Size", unit: "GB", valueType: D.valueType.NUMBER },
+        { label: "Usage", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Used Size", unit: "GB", valueType: D.valueType.NUMBER },
         { label: "Free Size", unit: "B", valueType: D.valueType.NUMBER },
         { label: "Manufacturer", valueType: D.valueType.STRING },
         { label: "Model", valueType: D.valueType.STRING },
@@ -116,6 +118,7 @@ function get_status() {
 }
 
 function parseData(output) {
+    console.log(output)
     var lines = output.split("\n");
     var data = {};
     var instanceIdDisk = false;
@@ -127,18 +130,26 @@ function parseData(output) {
             instanceIdDisk = true;
             data = {};
         } else if (instanceIdDisk && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50);
+            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
             var type = data["Device Type"] || "-";
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var raidStatus = data["RaidStatus"] || "-";
             var raidTypes = data["RAIDTypes"] || "-";
-            var size = (data["SizeInBytes"] || "").replace(/\D+/g, "") || "-";
-            var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "") || "-";
+            var size = (data["SizeInBytes"] || "").replace(/\D+/g, "");
+            size = (size / 1073741824) || "-";
+            var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "") ;
+            usedSize = (usedSize / 1073741824) || "-"
             var freeSize = (data["FreeSizeInBytes"] || "").replace(/\D+/g, "") || "-";
             var manufacturer = data["Manufacturer"] || "-";
             var model = data["Model"] || "-";
             var busProtocol = data["BusProtocol"] || "-";
+            var usage = "-";
+            if (usedSize !== "-" && size !== "-") {
+                var usedSizeBytes = parseFloat(usedSize);
+                var totalSizeBytes = parseFloat(size);
+                usage = ((usedSizeBytes / totalSizeBytes) * 100).toFixed(2);
+            }
             table.insertRecord(
                 recordId, [
                     type,
@@ -147,6 +158,7 @@ function parseData(output) {
                     raidStatus,
                     raidTypes,
                     size,
+                    usage,
                     usedSize,
                     freeSize,
                     manufacturer,
