@@ -11,17 +11,13 @@
 var table = D.createTable(
     "Server Response Time",
     [
-        { label: "Server URL" },
         { label: "Response Status" },
         { label: "Response Time" , unit: "ms", type: D.valueType.NUMBER}
     ]
 );
 
 // List of servers to check the response time
-var urls = [
-    "https://www.facebook.com",
-    "https://www.google.com",
-];
+var urls = D.getParameter("serverUrls");
 
 /** 
  * @returns promise that resolves when all response times have been obtained
@@ -48,6 +44,8 @@ function responseTime(url) {
     var start = new Date();
     website.http.get({
         url: path,
+        timeout: 5000,
+        time: true,
         port: port
     }, function (err, resp) {
         var data = {
@@ -59,11 +57,23 @@ function responseTime(url) {
             console.error(err);
             return d.resolve(data);
         }
-        data.responseTime = new Date() - start;
+        if(resp && resp.elapsedTime){
+            data.responseTime = resp.elapsedTime;
+        }else{
+            data.responseTime = new Date() - start;
+        }
+        
         d.resolve(data);
     });
     return d.promise;
 }
+
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+}
+
 
 /**
  * @param {Array} result  Array of objects containing server response time data
@@ -74,9 +84,9 @@ function fillTable(result) {
     }).forEach(function (data) {
         // the id should be generated as base 64 string which is applied the the requested url
         // because the url could have some special chars and it's length could exceed 50
-        var recordId = D._unsafe.buffer.from(data.server).toString('base64').substring(0, 50);
+        var recordId = sanitize(data.server);
         table.insertRecord(
-            recordId, [data.server, data.statusCode, data.responseTime]
+            recordId, [data.statusCode, data.responseTime]
         );
     });
     D.success(table);
@@ -93,7 +103,7 @@ function failure(err) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    getResponseTimes()
+    check()
         .then(function () {
             D.success();
         })
