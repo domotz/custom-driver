@@ -122,13 +122,14 @@ function getStartEndDates() {
         .then(function (output) {
             var dates = output.trim().split(" ");
             startDate = dates[0];
-            endDate = dates[3];    
+            endDate = dates[3];
         })
         .catch(function () {
             console.error("Error getting the start and end dates");
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
+
 
 function truncate(){
     return executeCommand("truncate -s 0 /tmp/domotz_iostat_cpus.output")()
@@ -206,8 +207,12 @@ function get_status() {
         .then(function () {
             var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
             var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
-            variables.push(startDateVariable);
-            variables.push(endDateVariable);
+            if (startDate === "-") {
+                variables.push(endDateVariable);
+            } else {
+                variables.push(startDateVariable);
+                variables.push(endDateVariable);
+            }
             D.success(variables);
         })
         .catch(function () {
