@@ -1,10 +1,10 @@
 /**
- * this driver monitor the performance of web services by measuring their response time.
+ * Name: Web Services Performance
+ * Description: monitor the performance of web services by measuring their response time
  * 
  * Return a table with this columns:
- *  - Server: The URL of the server being checked.
- *  - Status: The status code of the HTTP response, or -1 if an error occurred.
- *  - Response Time: The response time for each urls.
+ *  - Response Status: The status code of the HTTP response, or -1 if an error occurred
+ *  - Response Time: The response time for each urls
  */
 
 // Table to store the response times of the URLs
@@ -62,8 +62,8 @@ function responseTime(url) {
         }else{
             data.responseTime = new Date() - start;
         }
-        
         d.resolve(data);
+
     });
     return d.promise;
 }
@@ -74,7 +74,6 @@ function sanitize(output){
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
-
 /**
  * @param {Array} result  Array of objects containing server response time data
  */
@@ -82,8 +81,6 @@ function fillTable(result) {
     result.filter(function (data) {
         return data;
     }).forEach(function (data) {
-        // the id should be generated as base 64 string which is applied the the requested url
-        // because the url could have some special chars and it's length could exceed 50
         var recordId = sanitize(data.server);
         table.insertRecord(
             recordId, [data.statusCode, data.responseTime]
@@ -98,12 +95,12 @@ function failure(err) {
 }
 
 /**
-* @remote_procedure
-* @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
-*/
+ * @remote_procedure
+ * @label Validate Association
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ */
 function validate() {
-    check()
+    getResponseTimes()
         .then(function () {
             D.success();
         })
@@ -112,7 +109,7 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get Device Variables
+ * @label Get Response Times 
  * @documentation This procedure is used for testing the response time of web servecices.
  */
 function get_status() {
