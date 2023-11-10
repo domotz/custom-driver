@@ -1,0 +1,34 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall - VPN Stats info",
+    "description": "Monitors VPN sessions for Sonicwall devices and populates a custom table with session information",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "ssl-vpn",
+        "sessions"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5119-R4713"
+        }
+    ]
+}
