@@ -78,7 +78,8 @@ function validate() {
         .catch(checkSshError);
 }
 
-function calculateAverage(data) {
+//Parses the output of the 'pidstat' command to extract CPU usage data for each process
+function parsePidstatOutput(data) {
     var lines = data.split("\n");
     for (var i = 3; i < lines.length; i++) {
         var line = lines[i].trim().split(/\s+/);
@@ -95,15 +96,10 @@ function calculateAverage(data) {
  * @documentation This procedure retrieves CPU usage for the specified processes and returns data
  */
 function get_status() {
-    var promises = processList.map(function (processName) {
-        var command = "pidstat -C " + processName;
-        return executeCommand(command)
-            .then(function (data) {
-                return calculateAverage(data);
-            });
-    });
-    D.q.all(promises)
-        .then(function () {
+    var command = "pidstat -C " + processList.join("\\|");
+    executeCommand(command)
+        .then(function (data) {
+            parsePidstatOutput(data);
             D.success(variables);
         })
         .catch(checkSshError);
