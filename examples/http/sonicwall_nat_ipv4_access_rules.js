@@ -108,7 +108,7 @@ function extractData(body) {
             var enabled;
             if (item.ipv4.enable === true || item.ipv4.enable === "true") {
                 enabled = "Yes";
-            } else if (item.ipv4.enable === false || item.ipv4.enable === "false") {
+            } else {
                 enabled = "No";
             }                   
             var from = item.ipv4.from;
