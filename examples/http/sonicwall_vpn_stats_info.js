@@ -13,6 +13,9 @@
  *      - Remote IP Address: Remote IP address of the VPN session
  *      - Logged in: Timestamp when the user logged in to the VPN session
  * 
+ * Creates a custom Driver Variable: 
+ *      - VPN sessions count: Number of active VPN sessions
+ * 
  **/
 
 var table = D.createTable(
@@ -83,9 +86,11 @@ function sanitize(output){
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
-//Extracts data from the HTTP response and populates the custom table.
+//Extracts data from the HTTP response and populates the custom table
+//Creates a variable for the count of VPN sessions
 function extractData(body) {
     var data = JSON.parse(body);
+    var vpnsessioncount = 0;
     for (var i = 0; i < data.length; i++) {
         var session = data[i];
         var recordId = sanitize(session.user_name); 
@@ -94,8 +99,10 @@ function extractData(body) {
             session.client_wan_ip,
             session.logged_in
         ]);
+        vpnsessioncount++;
     }
-    D.success(table);
+    var vpnSessionVariable = [(D.createVariable("vpnsessioncount", "VPN sessions count", vpnsessioncount,null, D.valueType.NUMBER))];
+    D.success(vpnSessionVariable, table);
 }
 
 /**
