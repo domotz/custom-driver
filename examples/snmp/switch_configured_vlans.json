@@ -1,6 +1,6 @@
 {
     "logo": "",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "name": "Switch Configured VLANs",
     "description": "This script retrieves the list of configured VLANs from a switch and stores it in a variable",
     "category": "Hardware Integration",
@@ -18,7 +18,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[1,999]"
+        "independent": "[1]"
     },
     "protocols": [
         "SNMP"

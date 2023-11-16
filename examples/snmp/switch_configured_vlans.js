@@ -19,12 +19,14 @@ var dot1qVlanStaticName = "1.3.6.1.2.1.17.7.1.4.3.1.1";
 function validateAndGetData() {
     var d = D.q.defer();
     D.device.createSNMPSession().walk(dot1qVlanStaticName, function(out, err) {
-        if (err) {
-            console.error(err);
+         if (err) {
+            console.error("Error during SNMP walk:", err);
             D.failure(D.errorType.GENERIC_ERROR);
-        } else if (!out) {
+        } else if (!out || Object.keys(out).length === 0) {
+            console.error("Empty response or no data received during SNMP walk");
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else {
+            console.log("SNMP walk successful");
             d.resolve(out);
         }
     });
@@ -38,9 +40,7 @@ function validateAndGetData() {
  */
 function validate(){
     validateAndGetData()
-        .then(function(){
-            D.success()
-        })
+        .then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
@@ -58,10 +58,9 @@ function get_status() {
             for (var key in out) {
                 var parts = key.split(".");
                 var vlanID = parts[parts.length - 1];
-                var vlans = "VLAN" + vlanID;
-                vlanList.push(vlans);
+                vlanList.push(vlanID);
             }
-            var variables = [D.createVariable("vlans", "VLANs", vlanList.join(" | "))];
+            var variables = [D.createVariable("vlans", "List of VLAN IDs", vlanList.join(", "))];
             D.success(variables);
         })
         .catch(function(err) {
