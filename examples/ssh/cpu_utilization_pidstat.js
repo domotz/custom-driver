@@ -67,6 +67,7 @@ function sanitize(output){
     var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -81,10 +82,16 @@ function validate() {
 //Parses the output of the 'pidstat' command to extract CPU usage data for each process
 function parsePidstatOutput(data) {
     var lines = data.split("\n");
+    var header = lines[2].trim().split(/\s+/);
+    var pidIndex = header.indexOf("PID");
+    var cpuUsageIndex = header.indexOf("%CPU");
+    var commandIndex = header.indexOf("Command");
     for (var i = 3; i < lines.length; i++) {
         var line = lines[i].trim().split(/\s+/);
-        var cpuUsage = line[7];
-        var processName = line[2] + "-" + line[9];
+        var pid = line[pidIndex];
+        var cpuUsage = line[cpuUsageIndex];
+        var command = line[commandIndex];
+        var processName = pid + "-" + sanitize(command);     
         var uid = sanitize(processName);
         variables.push(D.createVariable(uid, processName, cpuUsage, "%", D.valueType.NUMBER));
     }
