@@ -35,6 +35,15 @@ function getResponseTimes() {
 function responseTime(url) {
     var d = D.q.defer();
     var parts = url.split("/");
+    if (parts.length < 3) {
+        console.error("Invalid URL format:", url);
+        d.resolve({
+            server: url,
+            statusCode: -1,
+            responseTime: -1
+        });
+        return d.promise;
+    }
     var address = parts[2];
     var addressParts = address.split(":");
     address = addressParts[0];
