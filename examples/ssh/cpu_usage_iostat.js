@@ -120,11 +120,15 @@ function getStartEndDates() {
                 startDate = dates[0];
                 endDate = dates[3];
             }
-
+            if (startDate !== null) {
+                var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
+                variables.push(startDateVariable);
+            }
+            var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
+            variables.push(endDateVariable);
         })
-        .catch(function (err) {
-            console.error("Error getting the start and end dates:", err.message);
-            D.failure(D.errorType.GENERIC_ERROR);
+        .catch(function () {
+            console.warn("/tmp/domotz_iostat_cpus.output doesn't exist");
         });
 }
 
@@ -210,16 +214,11 @@ function validate() {
 function get_status() {
     readfile()
         .then(calculateAverage)
+        .then(getStartEndDates)
         .then(truncate)
         .then(checkIostatRunning)
-        .then(getStartEndDates)
         .then(function () {
-            if (startDate !== null) {
-                var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
-                variables.push(startDateVariable);
-            }
-            var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
-            variables.push(endDateVariable);
+            
             D.success(variables);
         })
         .catch(function () {
