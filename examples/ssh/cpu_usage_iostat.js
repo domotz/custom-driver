@@ -87,17 +87,6 @@ function checkIfIostatInstalled() {
         });
 }
 
-/**
- * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate the script execution by checking if 'iostat' is installed
- */
-function validate() {
-    checkIfIostatInstalled()
-        .then(D.success)
-        .catch(checkSshError);
-}
-
 // Checks if 'iostat' is running on the remote device, starts it if necessary, and collects data
 function checkIostatRunning() {
     return checkIfIostatInstalled()
@@ -111,6 +100,8 @@ function checkIostatRunning() {
         });
 }
 
+// This function attempts to read the content of the file '/tmp/domotz_iostat_cpus.output'.
+// If the file is found, it returns its content. Otherwise, it falls back to collecting historical data
 function readfile() {
     return executeCommand("cat /tmp/domotz_iostat_cpus.output")()
         .catch(executeCommand("iostat -c 1 1"));
@@ -121,16 +112,23 @@ function getStartEndDates() {
     return executeCommand("stat -c '%w %y' /tmp/domotz_iostat_cpus.output")()
         .then(function (output) {
             var dates = output.trim().split(" ");
-            startDate = dates[0];
-            endDate = dates[3];
+            if(dates[0]== "-"){
+                startDate = null;
+                endDate = dates[1];
+            }
+            else {
+                startDate = dates[0];
+                endDate = dates[3];
+            }
+
         })
-        .catch(function () {
-            console.error("Error getting the start and end dates");
+        .catch(function (err) {
+            console.error("Error getting the start and end dates:", err.message);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
-
+// This function truncates the content of the file '/tmp/domotz_iostat_cpus.output' to zero bytes.
 function truncate(){
     return executeCommand("truncate -s 0 /tmp/domotz_iostat_cpus.output")()
         .catch(function(){
@@ -191,6 +189,17 @@ function calculateAverage(data) {
 
 /**
  * @remote_procedure
+ * @label Validate Association
+ * @documentation This procedure is used to validate the script execution by checking if 'iostat' is installed
+ */
+function validate() {
+    checkIfIostatInstalled()
+        .then(D.success)
+        .catch(checkSshError);
+}
+
+/**
+ * @remote_procedure
  * @label Get CPU usage
  * @documentation Retrieves the CPU usage statistics by reading a temporary file containing iostat output. This function performs the following steps:
  * 1. Checks if the iostat process is running.
@@ -199,20 +208,18 @@ function calculateAverage(data) {
  * 4. Empties the contents of the file to prepare for the next data collection.
  */
 function get_status() {
-    getStartEndDates()
-        .then(readfile)
+    readfile()
         .then(calculateAverage)
         .then(truncate)
         .then(checkIostatRunning)
+        .then(getStartEndDates)
         .then(function () {
-            var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
-            var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
-            if (startDate === "-") {
-                variables.push(endDateVariable);
-            } else {
+            if (startDate !== null) {
+                var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
                 variables.push(startDateVariable);
-                variables.push(endDateVariable);
             }
+            var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
+            variables.push(endDateVariable);
             D.success(variables);
         })
         .catch(function () {
