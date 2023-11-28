@@ -19,12 +19,15 @@
  *      - Iowait: The percentage of CPU time that the CPU is waiting for input/output operations to complete 
  *      - Steal: The percentage of time the virtual machine process is waiting on the physical CPU for its CPU time
  *      - Free (idle): The percentage of CPU capacity not being used
+ *      - Start Date: The start date of the data collection period.
+ *      - End Date: The end date of the data collection period.
  */
 
 // Define a command to start the 'iostat' utility in the background,
 // collect CPU statistics every 5 seconds for 2 minutes, and redirect its output to a temporary file.
-var command = "nohup iostat -c 5 24 > /tmp/dootz_iostat_cpus.output & echo done";
+var command = "nohup iostat -c 5 60 > /tmp/domotz_iostat_cpus.output & echo done";
 var commandTimeout = 5000;
+var startDate, endDate; // Variables to store start and end dates
 
 // Define SSH configuration
 var sshConfig = {
@@ -44,10 +47,8 @@ function checkSshError(err) {
 
 // Executes an SSH command on the remote device.
 /**
- * 
  * @param {*} command contains the command to execute
  * @param {*} ignoreTimeout ignore ssh timeout error code this is needed to run nohup process without waiting it to finish 
- * @returns 
  */
 function executeCommand(command, ignoreTimeout) {
     return function () {
@@ -86,17 +87,6 @@ function checkIfIostatInstalled() {
         });
 }
 
-/**
- * @remote_procedure
- * @label Validate Association
- * @documentation This procedure is used to validate the script execution by checking if 'iostat' is installed
- */
-function validate() {
-    checkIfIostatInstalled()
-        .then(D.success)
-        .catch(checkSshError);
-}
-
 // Checks if 'iostat' is running on the remote device, starts it if necessary, and collects data
 function checkIostatRunning() {
     return checkIfIostatInstalled()
@@ -110,15 +100,43 @@ function checkIostatRunning() {
         });
 }
 
+// This function attempts to read the content of the file '/tmp/domotz_iostat_cpus.output'.
+// If the file is found, it returns its content. Otherwise, it falls back to collecting historical data
 function readfile() {
-    return executeCommand("cat /tmp/dootz_iostat_cpus.output")()
+    return executeCommand("cat /tmp/domotz_iostat_cpus.output")()
         .catch(executeCommand("iostat -c 1 1"));
 }
 
+// This function retrieves the start and end dates of a file by executing the 'stat' command.
+function getStartEndDates() {
+    return executeCommand("stat -c '%w %y' /tmp/domotz_iostat_cpus.output")()
+        .then(function (output) {
+            var dates = output.trim().split(" ");
+            if(dates[0]== "-"){
+                startDate = null;
+                endDate = dates[1];
+            }
+            else {
+                startDate = dates[0];
+                endDate = dates[3];
+            }
+            if (startDate !== null) {
+                var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
+                variables.push(startDateVariable);
+            }
+            var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
+            variables.push(endDateVariable);
+        })
+        .catch(function () {
+            console.warn("/tmp/domotz_iostat_cpus.output doesn't exist");
+        });
+}
+
+// This function truncates the content of the file '/tmp/domotz_iostat_cpus.output' to zero bytes.
 function truncate(){
-    return executeCommand("truncate -s 0 /tmp/dootz_iostat_cpus.output")()
+    return executeCommand("truncate -s 0 /tmp/domotz_iostat_cpus.output")()
         .catch(function(){
-            console.warn("/tmp/dootz_iostat_cpus.output doesn't exists");
+            console.warn("/tmp/domotz_iostat_cpus.output doesn't exists");
         });
 }
 
@@ -169,27 +187,38 @@ function calculateAverage(data) {
         D.createVariable("system", "System", avgSystem.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("iowait", "Iowait", avgIowait.toFixed(2), "%", D.valueType.NUMBER),
         D.createVariable("steal", "Steal", avgSteal.toFixed(2), "%", D.valueType.NUMBER),
-        D.createVariable("idle", "Free (idle)", avgIdle.toFixed(2), "%", D.valueType.NUMBER)
+        D.createVariable("idle", "Free (idle)", avgIdle.toFixed(2), "%", D.valueType.NUMBER)       
     ];
 }
 
-
+/**
+ * @remote_procedure
+ * @label Validate Association
+ * @documentation This procedure is used to validate the script execution by checking if 'iostat' is installed
+ */
+function validate() {
+    checkIfIostatInstalled()
+        .then(D.success)
+        .catch(checkSshError);
+}
 
 /**
  * @remote_procedure
  * @label Get CPU usage
  * @documentation Retrieves the CPU usage statistics by reading a temporary file containing iostat output. This function performs the following steps:
  * 1. Checks if the iostat process is running.
- * 2. If iostat is running, it reads the contents of the file ("/tmp/dootz_iostat_cpus.output").
+ * 2. If iostat is running, it reads the contents of the file ("/tmp/domotz_iostat_cpus.output").
  * 3. Calculates the average CPU usage from the iostat output.
  * 4. Empties the contents of the file to prepare for the next data collection.
  */
 function get_status() {
     readfile()
         .then(calculateAverage)
+        .then(getStartEndDates)
         .then(truncate)
         .then(checkIostatRunning)
-        .then(function(){
+        .then(function () {
+            
             D.success(variables);
         })
         .catch(function () {

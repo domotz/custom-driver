@@ -1,6 +1,6 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Linux CPU Usage - Iostat",
     "description": "Monitor the average CPU usage of a linux server using the iostat package",
     "category": "Software Integration",
@@ -19,13 +19,14 @@
         "nohup",
         "cat",
         "truncate",
-        "cpu"
+        "cpu",
+        "stat"
     ],
     "sample_period_s": 600,
     "execution_time_s": 120,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[6]"
+        "independent": "[9]"
     },
     "protocols": [
         "SSH"
