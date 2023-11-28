@@ -1,0 +1,35 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "OPNSense General / Monitoring",
+    "description": "Retrieves information about an OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "OPENSens"
+        ]
+    },
+    "tags": [
+        "opensense",
+        "firmware",
+        "cpu-usage",
+        "memory-usage",
+        "swap-usage"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FreeBSD OPNsense",
+            "version": "13.2-RELEASE-p5"
+        }
+    ]
+}
