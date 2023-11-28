@@ -92,7 +92,7 @@ function parseData(executionResult) {
         var pkgName = fields[1];
         var pkgOldV = fields[2];
         var pkgNewV = fields[3]; 
-        var recordId = pkgName.replace(recordIdSanitizationRegex, '').slice(0, 50);
+        var recordId = pkgName.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();;
         updateListTable.insertRecord(
             recordId, [pkgOldV, pkgNewV]
         );
@@ -109,4 +109,4 @@ function get_status() {
     executeCommand(cmdListUpdates)
         .then(parseData)
         .catch(checkSshError);
-}
+}       

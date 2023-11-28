@@ -1,0 +1,36 @@
+{
+    "logo": "lenovo-xclarity.svg",
+    "version": "1.0.0",
+    "name": "XClarity Processors Health",
+    "description": "Monitor processors health on Lenovo XClarity server",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "xclarity",
+        "lenovo",
+        "processor",
+        "health",
+        "status",
+        "clock-speed"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Lenovo XClarity",
+            "version": "8.42"
+        }
+    ]
+}

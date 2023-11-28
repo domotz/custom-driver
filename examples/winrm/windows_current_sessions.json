@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Sessions",
     "description": "Monitor the list of current logged in users",
     "category": "Software Integration",

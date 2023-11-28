@@ -1,6 +1,6 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Linux Monitor IP Latency",
     "description": "Monitor IP Latency from a linux host to a list of IP addresses",
     "category": "Software Integration",
@@ -22,7 +22,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3,999]"
+        "table": "[2,999]"
     },
     "protocols": [
         "SSH"
@@ -35,6 +35,13 @@
         {
             "name": "bash",
             "version": "5.1.16"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "ipAddressesToCheck",
+            "label": "IP Address"
         }
     ]
 }

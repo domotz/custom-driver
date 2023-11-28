@@ -40,6 +40,7 @@ var table = D.createTable(
         { label: "Status", valueType: D.valueType.STRING}
     ]
 ); 
+
 // SSH promise definition
 function checkSshError(err) {
     if(err.message) console.error(err.message);
@@ -97,12 +98,12 @@ function get_status() {
 function parseOutput(output){     
     var result = output.split(/\r?\n/);
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < result.length; i++) {
         var fields = result[i].replace(/\s+/g," ").trim().split(" ");
         var serviceName = fields[0];
         var serviceStatus = fields[1];
-        var recordId = serviceName.replace(recordIdSanitizationRegex, '').slice(0, 50);
+        var recordId = serviceName.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
         table.insertRecord(
             recordId, [serviceName, serviceStatus]
         );
