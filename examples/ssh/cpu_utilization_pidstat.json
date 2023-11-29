@@ -1,0 +1,45 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux CPU Usage Per process - pidstat",
+    "description": "This script Retrieves CPU usage for specified processes on a remote Linux device using 'pidstat'",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "pidstat"
+        ]
+    },
+    "tags": [
+        "linux",
+        "pidstat",
+        "cpu"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "22.04.1 LTS"
+        },
+        {
+            "name": "bash",
+            "version": "5.1.16"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "processList",
+            "label": "Process Name"
+        }
+    ]
+}
