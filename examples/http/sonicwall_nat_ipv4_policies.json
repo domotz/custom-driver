@@ -1,0 +1,42 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall - NAT IPV4 Policies",
+    "description": "Monitors the Network Address Translation (NAT) policies for IPv4 on a SonicWall device",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS",
+            "IPv4"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "nat-policies",
+        "ipv4"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[6,999]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5119-R4713"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "policy_name",
+            "label": "Policy Name"
+        }
+    ]
+}
