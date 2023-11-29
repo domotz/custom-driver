@@ -14,13 +14,14 @@
     },
     "tags": [
         "sonicwall",
-        "ssl-vpn",
-        "sessions"
+        "vpn",
+        "session"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3,999]"
+        "independent": "[1]",
+        "table": "[3]"
     },
     "protocols": [
         "HTTPS"
