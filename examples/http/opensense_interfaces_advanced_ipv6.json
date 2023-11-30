@@ -1,0 +1,42 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "OPENSense Interfaces Stats Advanced IPV6",
+    "description": "Retrieves advanced IPv6 interface statistics from an OPNsense firewall",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "OPENSens",
+            "Firewall"
+        ]
+    },
+    "tags": [
+        "opensense",
+        "farewall",
+        "interfaces",
+        "ipv6"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": true,
+    "expected_variables": {
+        "table": "[6,999]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FreeBSD OPNsense",
+            "version": "13.2-RELEASE-p5"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "interfaceName",
+            "label": "Interface Name"
+        }
+    ]
+}
