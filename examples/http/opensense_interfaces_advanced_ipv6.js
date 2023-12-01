@@ -65,7 +65,6 @@ function getInterfaces() {
     return d.promise;
 }
 
-
 function sanitize(output){
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
@@ -76,9 +75,9 @@ function sanitize(output){
 function extractData(data) {
     for (var interface in data.interfaces) {
         if (interface !== "all"){
-            if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(res) {
-                return res.toLowerCase() === interface.toLowerCase();
-            })) {   
+            if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(name) {
+                return (interface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+            })) { 
                 var recordId = sanitize(interface);
                 var cleared = data.interfaces[interface].cleared;
                 var references = data.interfaces[interface].references;
