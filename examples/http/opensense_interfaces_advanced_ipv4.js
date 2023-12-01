@@ -74,10 +74,10 @@ function sanitize(output){
 // Function to extract and insert Interfaces Stats data into the custom driver table for Advanced IPv4
 function extractData(data) {
     for (var interface in data.interfaces) {
-        if (interface !== "all"){
-            if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(res) {
-                return res.toLowerCase() === interface.toLowerCase();
-            })) {   
+        if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(name) {
+            return (interface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+        })) {
+            if (interface !== "all"){
                 var recordId = sanitize(interface);
                 var cleared = data.interfaces[interface].cleared;
                 var references = data.interfaces[interface].references;
@@ -85,6 +85,7 @@ function extractData(data) {
                 var in4_pass_bytes = data.interfaces[interface].in4_pass_bytes;
                 var out4_block_bytes = data.interfaces[interface].out4_block_bytes;
                 var out4_pass_bytes = data.interfaces[interface].out4_pass_bytes;
+    
                 table.insertRecord(recordId, [
                     cleared,
                     references,
@@ -96,7 +97,7 @@ function extractData(data) {
             }
         }
     }
-    
+
     D.success(table);
 }
 
