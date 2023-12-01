@@ -26,8 +26,8 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "serverUrls",
-            "label": "Server Url"
+            "name": "urls",
+            "label": "Url"
         }
     ]
 }

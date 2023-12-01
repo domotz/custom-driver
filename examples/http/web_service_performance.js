@@ -17,7 +17,7 @@ var table = D.createTable(
 );
 
 // List of servers to check the response time
-var urls = D.getParameter("serverUrls");
+var urls = D.getParameter("urls");
 
 /** 
  * @returns promise that resolves when all response times have been obtained
@@ -34,12 +34,28 @@ function getResponseTimes() {
  */
 function responseTime(url) {
     var d = D.q.defer();
-    var parts = url.split("/");
-    var address = parts[2];
-    var addressParts = address.split(":");
-    address = addressParts[0];
-    var port = addressParts[1] || "";
-    var path = "/";
+    var address, port, path;
+
+    var hasProtocol = /^https?:\/\//i.test(url);
+
+    if (!hasProtocol) {
+        url = "http://" + url;
+    }
+    var urlParts = /^https?:\/\/([^:/]+)(?::(\d+))?([^#]*)/.exec(url);
+
+    if (urlParts) {
+        address = urlParts[1];
+        port = urlParts[2] || "";
+        path = urlParts[3] || "/";
+    } else {
+        console.error("Invalid URL format");
+        return d.resolve({
+            server: url,
+            statusCode: -1,
+            responseTime: -1
+        });
+    }
+    
     var website = D.createExternalDevice(address);
     var start = new Date();
     website.http.get({
@@ -49,7 +65,7 @@ function responseTime(url) {
         port: port
     }, function (err, resp) {
         var data = {
-            server: url,
+            server: hasProtocol ? url : url.replace(/^https?:\/\//i, ''),
             statusCode: resp ? resp.statusCode : -1,
             responseTime: -1
         };
@@ -57,14 +73,14 @@ function responseTime(url) {
             console.error(err);
             return d.resolve(data);
         }
-        if(resp && resp.elapsedTime){
+        if (resp && resp.elapsedTime) {
             data.responseTime = resp.elapsedTime;
-        }else{
+        } else {
             data.responseTime = new Date() - start;
         }
         d.resolve(data);
-
     });
+
     return d.promise;
 }
 
