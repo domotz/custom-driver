@@ -30,5 +30,12 @@
             "name": "FreeBSD OPNsense",
             "version": "13.2-RELEASE-p5"
         }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "ruleName",
+            "label": "Rule Name"
+        }
     ]
 }

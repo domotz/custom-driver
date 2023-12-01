@@ -15,6 +15,11 @@
  * 
  **/
 
+// ruleName: Set it to 'ALL' to retrieve all NAT rules,
+// or specify a list of rules to filter and display only the selected rules.
+var ruleName = D.getParameter("ruleName");
+
+
 // Function to make an HTTP GET request to retrieve OPNSense Nat Rules
 function getRules() {
     var d = D.q.defer();
@@ -68,17 +73,21 @@ function extractData(data) {
     if (data && data.rules && data.rules["nat rules"]) {
         var natRules = data.rules["nat rules"];
         for (var key in natRules) {
-            var evaluations = natRules[key].evaluations;
-            var bytes = natRules[key].bytes;
-            var states = natRules[key].states;
-            var stateCreations = natRules[key].state_creations;
-            var recordId = sanitize(key);
-            table.insertRecord(recordId, [
-                evaluations,
-                bytes,
-                states,
-                stateCreations
-            ]);
+            if (ruleName[0].toLowerCase() === "all" || ruleName.some(function(name) {
+                return (key.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+            })) {
+                var evaluations = natRules[key].evaluations;
+                var bytes = natRules[key].bytes;
+                var states = natRules[key].states;
+                var stateCreations = natRules[key].state_creations;
+                var recordId = sanitize(key);
+                table.insertRecord(recordId, [
+                    evaluations,
+                    bytes,
+                    states,
+                    stateCreations
+                ]);
+            }
         }
         D.success(table);
     } else {
