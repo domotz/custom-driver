@@ -7,7 +7,7 @@
  * Tested on Linux: Ubuntu 22.04.3 LTS"
  * 
  * Creates a Custom Driver Table with the following columns:
- *   - Mountpoint: The mount point of the disk partition.
+ *   - ID: The mount point of the disk partition.
  *   - Percentage Used: The percentage of disk space used on the partition.
  *   - Type: The filesystem type of the partition.
  *   - Size: The total size of the partition.
@@ -29,7 +29,6 @@ var sshConfig = {
 var table = D.createTable(
     "Disk Partitions Usage",
     [
-        { label: "Mountpoint" },
         { label: "Percentage Used", unit: "%" },
         { label: "Type" },
         { label: "Size" },
@@ -75,14 +74,12 @@ function parseData(output) {
     lines.shift();
     lines.forEach(function (line) {
         var values = line.trim().split(/\s+/);
-        var mountedOn = values[6];
+        var recordId = values[6];
         var usePercentage = values[5].replace(/[^\d,.]/g, "");
         var type = values[1];
         var size = values[2];
         var available = values[4];
-        var recordId = values[0] + mountedOn;
-
-        table.insertRecord(recordId, [mountedOn, usePercentage, type, size, available]);
+        table.insertRecord(recordId, [usePercentage, type, size, available]);
     });
     
     D.success(table);
