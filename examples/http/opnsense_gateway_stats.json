@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "opnsense.svg",
     "version": "1.0.0",
     "name": "OPNSense Gateway statistics",
     "description": "Retrieves gateway statistics from an OPNsense firewall, including information such as gateway name, address, status, ping response delay, standard deviation of ping response time, and packet loss percentage.",
@@ -8,14 +8,19 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPENSens"
+            "OPNsense",
+            "Firewall"
         ]
     },
     "tags": [
-        "opensense",
+        "opnsense",
+        "firewall",
         "gateway",
+        "address",
+        "status",
         "rtt",
-        "rttd"
+        "rttd",
+        "packet-loss"
     ],
     "sample_period_s": 1800,
     "has_actions": true,

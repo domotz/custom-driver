@@ -16,7 +16,7 @@
  *
  **/
 
-//Function to make an HTTP POST request to retrieve OPNSense gateway statistics
+//Function to make an HTTP POST request to retrieve OPNsense gateway statistics
 function gatewayStats() {
     var d = D.q.defer();
     D.device.http.post({
@@ -87,7 +87,7 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate OPENSense Device
+ * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
 function validate(){
@@ -109,7 +109,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense Gateway Statistics
+ * @label Get OPNsense Gateway Statistics
  * @documentation  This procedure retrieves OPNsense gateway statistics.
  */
 function get_status() {
