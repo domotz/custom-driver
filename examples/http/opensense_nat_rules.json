@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "opnsense.svg",
     "version": "1.0.0",
     "name": "OPNSense Nat Rules",
     "description": "Retrieves NAT rules data from an OPNsense firewall",
