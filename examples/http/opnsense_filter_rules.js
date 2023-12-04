@@ -19,7 +19,7 @@
 // or specify a list of rules to filter and display only the selected rules.
 var ruleName = D.getParameter("ruleName");
 
-// Function to make an HTTP GET request to retrieve OPNSense Filter Rules
+// Function to make an HTTP GET request to retrieve OPNsense Filter Rules
 function getRules() {
     var d = D.q.defer();
     D.device.http.get({
@@ -97,7 +97,7 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate OPENSense Device
+ * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
 function validate(){
@@ -119,7 +119,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense Filter Rules
+ * @label Get OPNsense Filter Rules
  * @documentation This procedure retrieves filter rules data from an OPNsense firewall 
  */
 function get_status() {
