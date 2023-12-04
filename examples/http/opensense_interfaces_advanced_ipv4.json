@@ -1,19 +1,19 @@
 {
     "logo": "opnsense.svg",
     "version": "1.0.0",
-    "name": "OPENSense Interfaces Stats Advanced IPV4",
-    "description": "Retrieves advanced IPv6 interface statistics from an OPNsense firewall",
+    "name": "OPNSense Interfaces Stats IPV4",
+    "description": "Retrieves IPv6 interface statistics from an OPNsense firewall",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPENSens",
+            "OPENSense",
             "Firewall"
         ]
     },
     "tags": [
-        "opensense",
+        "opnsense",
         "farewall",
         "interfaces",
         "ipv4"

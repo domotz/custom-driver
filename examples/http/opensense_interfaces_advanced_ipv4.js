@@ -1,6 +1,6 @@
 /**
  * Domotz Custom Driver 
- * Name: OPENSense Interfaces Stats Advanced IPV4
+ * Name: OPNSense Interfaces Stats IPV4
  * Description: This script is designed for retrieving advanced IPv4 interface statistics from an OPNsense firewall.
  * 
  * Communication protocol is HTTPS
