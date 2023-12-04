@@ -115,7 +115,7 @@ function checkPidstatRunning() {
 // using 'pidstat' with a 1 second interval for 1 iteration on the specified processes.
 function readfile() {
     return executeCommand("cat /tmp/domotz_pidstat_cpus.output")()
-        .catch(executeCommand("pidstat -u 1 1 -C " + process_list.join("\\|")));
+        .catch(executeCommand("pidstat -u 1 1 | head -n " + top_no_processes));
 }
 
 // This function retrieves the start and end dates of a file by executing the 'stat' command.
@@ -147,29 +147,38 @@ function truncate(){
         });
 }
 
-// Retrieves the average CPU utilization for each process from 'pidstat' data
-function AverageCpuUsage(output) {
-    var lines = output.trim().split('\n');
-    var averageLineIndex = -1;
-    for (var i = 0; i < lines.length; i++) {
-        if (lines[i].indexOf('Average:') !== -1) {
-            averageLineIndex = i;
-            break;
+// Calculates the average CPU utilization from 'pidstat' data
+function calculateAverage(output) {
+    console.log(output);
+    var lines = output.split('\n');
+    var pidSum = {};  
+    var pidCount = {};  
+    var pidCommand = {};
+
+    var header = lines[2].trim().split(/\s+/);
+    var pidIndex = header.indexOf("PID");
+    var cpuUsageIndex = header.indexOf("%CPU");
+    var commandIndex = header.indexOf("Command"); 
+
+    for (var i = 3; i < lines.length; i++) {
+        var parts = lines[i].trim().split(/\s+/);
+        var pid = parts[pidIndex];
+        var cpuUsage = parts[cpuUsageIndex];
+        var command = parts[commandIndex];
+
+        if (!isNaN(parseFloat(cpuUsage))) {
+            pidSum[pid] = pidSum[pid] || 0;
+            pidCount[pid] = pidCount[pid] || 0;
+            pidCommand[pid] = pidCommand[pid] || command;
+            
+            pidSum[pid] += parseFloat(cpuUsage);
+            pidCount[pid]++;
         }
     }
 
-    var averageData = lines.slice(averageLineIndex);
-    var header = averageData[0].trim().split(/\s+/);
-    var pidIndex = header.indexOf("PID");
-    var cpuUsageIndex = header.indexOf("%CPU");
-    var commandIndex = header.indexOf("Command");
-
-    for (var j = 1; j < averageData.length; j++) {
-        var line = averageData[j].trim().split(/\s+/);
-        var pid = line[pidIndex];
-        var cpuUsage = line[cpuUsageIndex];
-        var command = line[commandIndex];
-        table.insertRecord(pid, [command, cpuUsage]);
+    for (pid in pidSum) {
+        var averageCpu = pidSum[pid] / pidCount[pid];
+        table.insertRecord(pid, [pidCommand[pid], averageCpu.toFixed(2)]);
     }
 }
 
@@ -196,7 +205,7 @@ function validate() {
  */
 function get_status() {
     readfile()
-        .then(AverageCpuUsage)
+        .then(calculateAverage)
         .then(truncate)
         .then(getStartEndDates)
         .then(checkPidstatRunning)
