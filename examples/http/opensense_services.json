@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "opnsense.svg",
     "version": "1.0.0",
     "name": "OPNSense Services",
     "description": "Retrieves a list of services running on an OPNsense firewall, along with their status.",
