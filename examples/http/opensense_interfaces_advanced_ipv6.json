@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "opnsense.svg",
     "version": "1.0.0",
     "name": "OPENSense Interfaces Stats Advanced IPV6",
     "description": "Retrieves advanced IPv6 interface statistics from an OPNsense firewall",
