@@ -26,7 +26,7 @@ function processResponse(d) {
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
-        if (response.statusCode == 401) {
+        if (response.statusCode == 401 || response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
         if (response.statusCode != 200) {

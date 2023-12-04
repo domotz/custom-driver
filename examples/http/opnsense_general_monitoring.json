@@ -8,11 +8,13 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPENSens"
+            "OPNsens",
+            "Firewall"
         ]
     },
     "tags": [
-        "opensense",
+        "opnsense",
+        "firewall",
         "firmware",
         "cpu-usage",
         "memory-usage",
