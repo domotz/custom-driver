@@ -20,7 +20,7 @@
 var ruleName = D.getParameter("ruleName");
 
 
-// Function to make an HTTP GET request to retrieve OPNSense Nat Rules
+// Function to make an HTTP GET request to retrieve OPNsense Nat Rules
 function getRules() {
     var d = D.q.defer();
     D.device.http.get({
@@ -98,7 +98,7 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate OPENSense Device
+ * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
 function validate(){
@@ -120,7 +120,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense Nat Rules
+ * @label Get OPNsense Nat Rules
  * @documentation This procedure retrieves NAT rules data from an OPNsense firewall
  */
 function get_status() {

@@ -8,13 +8,13 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPENSens",
+            "OPNsense",
             "Firewall"
         ]
     },
     "tags": [
-        "opensense",
-        "farewall",
+        "opnsense",
+        "firewall",
         "nat-rules"
     ],
     "sample_period_s": 1800,
