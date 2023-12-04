@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "opnsense.svg",
     "version": "1.0.0",
     "name": "OPNSense General / Monitoring",
     "description": "Retrieves information about an OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage",
