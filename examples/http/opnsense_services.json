@@ -8,11 +8,12 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPENSens"
+            "OPNsense",
+            "Firewall"
         ]
     },
     "tags": [
-        "opensense",
+        "opnsense",
         "firewall",
         "services"
     ],

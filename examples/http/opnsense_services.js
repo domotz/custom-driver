@@ -11,7 +11,7 @@
  *
  **/
 
-// Function to make an HTTP GET request to retrieve OPNSense services
+// Function to make an HTTP GET request to retrieve OPNsense services
 function getServices() {
     var d = D.q.defer();
     D.device.http.get({
@@ -62,7 +62,7 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate OPENSense Device
+ * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
 function validate(){
@@ -84,8 +84,8 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense Services
- * @documentation his procedure retrieves OPNsense Services.
+ * @label Get OPNsense Services
+ * @documentation This procedure retrieves OPNsense Services.
  */
 function get_status() {
     getServices()
