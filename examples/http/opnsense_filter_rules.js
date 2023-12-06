@@ -15,7 +15,7 @@
  * 
  **/
 
-// ruleName: Set it to 'ALL' to retrieve all filter rules,
+// ruleName: Set it to 'ALL' to retrieve all rules,
 // or specify a list of rules to filter and display only the selected rules.
 var ruleName = D.getParameter("ruleName");
 
@@ -54,10 +54,10 @@ function getRules() {
 var table = D.createTable(
     "Filter Rules",
     [
-        { label: "Evaluations" },
-        { label: "Bytes" },
-        { label: "States" },
-        { label: "States creation" }
+        { label: "Evaluations", type: D.valueType.NUMBER },
+        { label: "Bytes", unit: "B", type: D.valueType.NUMBER },
+        { label: "States", type: D.valueType.NUMBER },
+        { label: "States creation", type: D.valueType.NUMBER }
     ]
 );
 
