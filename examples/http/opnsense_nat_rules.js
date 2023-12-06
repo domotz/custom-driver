@@ -55,10 +55,10 @@ function getRules() {
 var table = D.createTable(
     "Nat Rules",
     [
-        { label: "Evaluations" },
-        { label: "Bytes" },
-        { label: "States" },
-        { label: "States creation" }
+        { label: "Evaluations", type: D.valueType.NUMBER },
+        { label: "Bytes", unit: "B", type: D.valueType.NUMBER },
+        { label: "States", type: D.valueType.NUMBER },
+        { label: "States creation", type: D.valueType.NUMBER }
     ]
 );
 
