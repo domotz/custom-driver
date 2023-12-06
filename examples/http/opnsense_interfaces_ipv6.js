@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
- * Name: OPNSense Interfaces Stats Advanced IPV6
- * Description: This script is designed for retrieving advanced IPv6 interface statistics from an OPNsense firewall.
+ * Name: OPNSense Interfaces Stats IPV6
+ * Description: This script is designed for retrieving IPv6 interface statistics from an OPNsense firewall.
  * 
  * Communication protocol is HTTPS
  * 
@@ -21,20 +21,20 @@
 // or specify a list of interfaces to filter and display only the selected interfaces.
 var interfaceName = D.getParameter("interfaceName");
 
-// Define the table with labeled columns for Advanced IPv6
+// Custom Driver Table to store IPv6 Interface Statistics
 var table = D.createTable(
     "Interfaces Advanced IPV6",
     [
         { label: "Cleared", type: D.valueType.DATETIME },
         { label: "References", type: D.valueType.NUMBER },
-        { label: "In traffic (ipv6 block)", type: D.valueType.NUMBER },
-        { label: "In traffic (ipv6 pass)", type: D.valueType.NUMBER },
-        { label: "Out traffic (ipv6 block)", type: D.valueType.NUMBER },
-        { label: "Out traffic (ipv6 pass)", type: D.valueType.NUMBER }
+        { label: "In traffic (ipv6 block)", unit: "B", type: D.valueType.NUMBER },
+        { label: "In traffic (ipv6 pass)", unit: "B", type: D.valueType.NUMBER },
+        { label: "Out traffic (ipv6 block)", unit: "B", type: D.valueType.NUMBER },
+        { label: "Out traffic (ipv6 pass)", unit: "B", type: D.valueType.NUMBER }
     ]
 );
 
-// Function to make an HTTP GET request to retrieve OPNSense Interfaces Stats for Advanced IPv6
+// Function to make an HTTP GET request to retrieve OPNsense Interfaces Stats for IPv6
 function getInterfaces() {
     var d = D.q.defer();
     D.device.http.get({
@@ -71,7 +71,7 @@ function sanitize(output){
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
-// Function to extract and insert Interfaces Stats data into the custom driver table for Advanced IPv6
+// Function to extract and insert Interfaces Stats data into the custom driver table for IPv6
 function extractData(data) {
     for (var interface in data.interfaces) {
         if (interface !== "all"){
@@ -101,7 +101,7 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate OPENSense Device
+ * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
 function validate(){
@@ -123,8 +123,8 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense Interfaces Stats for Advanced IPv6
- * @documentation This procedure retrieves Interfaces Stats data from an OPNsense firewall for Advanced IPv6
+ * @label Get OPNsense Interfaces Stats for IPv6
+ * @documentation This procedure retrieves Interfaces Stats data from an OPNsense firewall for IPv6
  */
 function get_status() {
     getInterfaces()
