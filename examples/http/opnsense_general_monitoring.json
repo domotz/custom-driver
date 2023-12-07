@@ -8,20 +8,19 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPNsense",
-            "Firewall"
+            "OPNsense"
         ]
     },
     "tags": [
         "opnsense",
         "firewall",
         "firmware",
-        "cpu-usage",
-        "memory-usage",
-        "swap-usage"
+        "cpu",
+        "memory",
+        "swap"
     ],
     "sample_period_s": 1800,
-    "has_actions": true,
+    "has_actions": false,
     "expected_variables": {
         "independent": "[5]"
     },
