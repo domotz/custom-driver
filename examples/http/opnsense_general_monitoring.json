@@ -2,13 +2,13 @@
     "logo": "opnsense.svg",
     "version": "1.0.0",
     "name": "OPNSense General / Monitoring",
-    "description": "Retrieves information about an OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage",
+    "description": "Retrieves general information about OPNsense including product version, firmware updates, CPU usage, memory usage, etc.",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPNsens",
+            "OPNsense",
             "Firewall"
         ]
     },
