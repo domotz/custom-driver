@@ -2,7 +2,7 @@
     "logo": "linux.svg",
     "version": "1.0.0",
     "name": "Linux CPU Usage Per process - pidstat",
-    "description": "This script Retrieves CPU usage for specified processes on a remote Linux device using 'pidstat'",
+    "description": "This script retrieves CPU usage for chosen processes on Linux using 'pidstat'",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
