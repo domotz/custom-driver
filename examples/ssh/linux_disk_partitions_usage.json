@@ -1,0 +1,40 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux Disk Partitions Usage (df)",
+    "description": "Display information about disk partitions on a Linux system",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "df"
+        ]
+    },
+    "tags": [
+        "linux",
+        "disk",
+        "df",
+        "mountpoint",
+        "percentage_used",
+        "type",
+        "size",
+        "available"
+    ],
+    "sample_period_s": 1800, 
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[4,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "22.04.3 LTS"
+        }
+    ]
+}
