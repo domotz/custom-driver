@@ -15,18 +15,14 @@
     },
     "tags": [
         "linux",
-        "disk",
+        "disk-space",
         "df",
-        "mountpoint",
-        "percentage_used",
-        "type",
-        "size",
-        "available"
+        "size"
     ],
     "sample_period_s": 1800, 
     "has_actions": false,
     "expected_variables": {
-        "table": "[4,999]"
+        "table": "[4]"
     },
     "protocols": [
         "SSH"
