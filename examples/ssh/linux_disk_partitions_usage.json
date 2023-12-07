@@ -16,7 +16,6 @@
     "tags": [
         "linux",
         "disk-space",
-        "df",
         "size"
     ],
     "sample_period_s": 1800, 
