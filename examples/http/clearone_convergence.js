@@ -9,7 +9,6 @@
  *
  * Parameters: 
  *    - urlCl: Url access to Convergence
- *    - apiKey: Communicate with http api using API-X-KEY
  *    
  * Custom Driver Variables:
  *    - Model: The model device
@@ -25,9 +24,7 @@
 // Url access to Convergence
 var urlCl = D.getParameter('urlCl');
 
-// API Key access to Convergence
-var apiKey = D.getParameter('apiKey');
-var deviceInfo , detailInfo;
+var deviceInfo, detailInfo;
 
 /**
  * @param {string} url  The URL to perform the GET request
@@ -38,11 +35,10 @@ function httpGet(url) {
 	var website = D.createExternalDevice(urlCl);
     var config = {
         url: url,
-		protocol: "http:",
-		port: 8080,
-		headers: {
-			"X-Api-Key": apiKey,
-		},
+        port: 8080,
+        headers: {
+			"X-Api-Key": D.device.password() //api key == password
+		}
     };
     website.http.get(config, function (error, response, body) {
 		if (error) {
@@ -51,12 +47,11 @@ function httpGet(url) {
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
+        } 
+        else if (response.statusCode == 401 || response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            console.error(error)
+        } 
+        else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
         d.resolve(JSON.parse(body));
@@ -70,7 +65,12 @@ function httpGet(url) {
 function search() {
     return httpGet("/dashboard-back/api/devices/pro-audio/search?q=" + D.device.ip())
         .then(function(data){
-            deviceInfo = data.avDevices[0];
+            if (data && data.avDevices && data.avDevices.length > 0) {
+                deviceInfo = data.avDevices[0];
+            } else {
+               console.error("No avDevices found in the response")
+               D.failure(D.errorType.GENERIC_ERROR);
+            }
         });
 }
 
@@ -91,14 +91,20 @@ function extractVariables() {
         firmware = firmware + ' *';
     }
     var variables = [
-        D.createVariable("product-model", "Model", deviceInfo.productModel),
-        D.createVariable("serial-number", "Serial Number", deviceInfo.serialNumber),
-        D.createVariable("firmware-version", "Firmware Version", firmware),
-        D.createVariable("locate-mode", "Locate Mode", deviceInfo.locateMode),
-        D.createVariable("relative-status", "Status", deviceInfo.relativeStatus),
-        D.createVariable("location", "Location", deviceInfo.location),
-        D.createVariable("part-number", "Part Number", detailInfo.partNumber)
+        D.createVariable("product-model", "Model", deviceInfo.productModel, null, D.valueType.STRING ),
+        D.createVariable("serial-number", "Serial Number", deviceInfo.serialNumber, null, D.valueType.STRING ),
+        D.createVariable("firmware-version", "Firmware Version", firmware, null, D.valueType.STRING ),
+        D.createVariable("locate-mode", "Locate Mode", deviceInfo.locateMode, null, D.valueType.STRING ),
+        D.createVariable("relative-status", "Status", deviceInfo.relativeStatus, null, D.valueType.STRING ),
+        D.createVariable("location", "Location", deviceInfo.location, null, D.valueType.STRING )
     ];
+
+    if (detailInfo && detailInfo.partNumber) {
+        variables.push(D.createVariable("part-number", "Part Number", detailInfo.partNumber, null, D.valueType.STRING));
+    } else {
+        console.error("No detailInfo or partNumber available in the data");
+    }
+
     D.success(variables);
 }
 
@@ -118,7 +124,7 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get ClearOne informatioon
+ * @label Get ClearOne information
  * @documentation This procedure is used to extract information for ClearOne devices
  */
 function get_status() {

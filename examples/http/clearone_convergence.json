@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "clearone.svg",
     "version": "1.0.0",
     "name": "ClearOne Converge",
     "description": "This script extracts information for ClearOne devices",
@@ -40,11 +40,6 @@
             "value_type": "TEXT",
             "name": "urlCl",
             "label": "URL"
-        },
-        {
-            "value_type": "TEXT",
-            "name": "apiKey",
-            "label": "API Key"
         }
     ]
 }
