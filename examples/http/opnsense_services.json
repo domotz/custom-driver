@@ -8,8 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPNsense",
-            "Firewall"
+            "OPNsense"
         ]
     },
     "tags": [
@@ -18,7 +17,7 @@
         "services"
     ],
     "sample_period_s": 1800,
-    "has_actions": true,
+    "has_actions": false,
     "expected_variables": {
         "independent": "[1,999]"
     },
