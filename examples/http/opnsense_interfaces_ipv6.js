@@ -8,8 +8,8 @@
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Table with the following columns:
- *      - Cleared: The timestamp when the statistics were last cleared or reset
- *      - References: The number of references or connections associated with the interface
+ *      - Cleared Time: The timestamp when the statistics were last cleared or reset
+ *      - References Number: The number of references or connections associated with the interface
  *      - In traffic (ipv6 block): The amount of incoming IPv6 traffic that was blocked by the firewall
  *      - In traffic (ipv6 pass): The amount of incoming IPv6 traffic that was allowed or passed by the firewall
  *      - Out traffic (ipv6 block): The amount of outgoing IPv6 traffic that was blocked by the firewall
@@ -21,16 +21,19 @@
 // or specify a list of interfaces to filter and display only the selected interfaces.
 var interfaceName = D.getParameter("interfaceName");
 
+// The port number
+var port = D.getParameter("portNumber");
+
 // Custom Driver Table to store IPv6 Interface Statistics
 var table = D.createTable(
-    "Interfaces Advanced IPV6",
+    "Interfaces IPV6",
     [
-        { label: "Cleared", type: D.valueType.DATETIME },
-        { label: "References", type: D.valueType.NUMBER },
-        { label: "In traffic (ipv6 block)", unit: "B", type: D.valueType.NUMBER },
-        { label: "In traffic (ipv6 pass)", unit: "B", type: D.valueType.NUMBER },
-        { label: "Out traffic (ipv6 block)", unit: "B", type: D.valueType.NUMBER },
-        { label: "Out traffic (ipv6 pass)", unit: "B", type: D.valueType.NUMBER }
+        { label: "Cleared Time", valueType: D.valueType.DATETIME },
+        { label: "References Number", valueType: D.valueType.NUMBER },
+        { label: "In traffic (ipv6 block)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "In traffic (ipv6 pass)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Out traffic (ipv6 block)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Out traffic (ipv6 pass)", unit: "B", valueType: D.valueType.NUMBER }
     ]
 );
 
@@ -44,7 +47,8 @@ function getInterfaces() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
 
     }, function (error, response, body) {
         if (error) {
@@ -53,11 +57,9 @@ function getInterfaces() {
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401 || response.statusCode === 403) {
+        } else if (response.statusCode == 401 || response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
+        } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
         d.resolve(JSON.parse(body));
@@ -81,17 +83,17 @@ function extractData(data) {
                 var recordId = sanitize(interface);
                 var cleared = data.interfaces[interface].cleared;
                 var references = data.interfaces[interface].references;
-                var in6_block_bytes = data.interfaces[interface].in6_block_bytes;
-                var in6_pass_bytes = data.interfaces[interface].in6_pass_bytes;
-                var out6_block_bytes = data.interfaces[interface].out6_block_bytes;
-                var out6_pass_bytes = data.interfaces[interface].out6_pass_bytes;
+                var in6BlockBytes = data.interfaces[interface].in6_block_bytes;
+                var in6PassBytes = data.interfaces[interface].in6_pass_bytes;
+                var out6BlockBytes = data.interfaces[interface].out6_block_bytes;
+                var out6PassBytes = data.interfaces[interface].out6_pass_bytes;
                 table.insertRecord(recordId, [
                     cleared,
                     references,
-                    in6_block_bytes,
-                    in6_pass_bytes,
-                    out6_block_bytes,
-                    out6_pass_bytes
+                    in6BlockBytes,
+                    in6PassBytes,
+                    out6BlockBytes,
+                    out6PassBytes
                 ]);
             }
         }

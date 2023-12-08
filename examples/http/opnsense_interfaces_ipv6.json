@@ -8,20 +8,18 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPNsense",
-            "Firewall"
+            "OPNsense"
         ]
     },
     "tags": [
         "opnsense",
         "firewall",
-        "interfaces",
         "ipv6"
     ],
     "sample_period_s": 1800,
-    "has_actions": true,
+    "has_actions": false,
     "expected_variables": {
-        "table": "[6,999]"
+        "table": "[6]"
     },
     "protocols": [
         "HTTPS"
@@ -37,6 +35,11 @@
             "value_type": "LIST",
             "name": "interfaceName",
             "label": "Interface Name"
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "portNumber",
+            "label": "Port Number"
         }
     ]
 }
