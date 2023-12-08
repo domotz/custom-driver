@@ -8,8 +8,8 @@
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Table with the following columns:
- *      - Cleared: The timestamp when the statistics were last cleared or reset
- *      - References: The number of references or connections associated with the interface
+ *      - Cleared Time: The timestamp when the statistics were last cleared or reset
+ *      - References Number: The number of references or connections associated with the interface
  *      - In traffic (block): The amount of incoming IPv4 traffic that was blocked by the firewall
  *      - In traffic (pass): The amount of incoming IPv4 traffic that was allowed or passed by the firewall
  *      - Out traffic (block): The amount of outgoing IPv4 traffic that was blocked by the firewall
@@ -21,20 +21,23 @@
 // or specify a list of interfaces to filter and display only the selected interfaces.
 var interfaceName = D.getParameter("interfaceName");
 
+// The port number
+var port = D.getParameter("portNumber");
+
 // Custom Driver Table to store IPv4 Interface Statistics
 var table = D.createTable(
     "Interfaces IPV4",
     [
-        { label: "Cleared", type: D.valueType.DATETIME },
-        { label: "References", type: D.valueType.NUMBER },
-        { label: "In traffic (block)", unit: "B", type: D.valueType.NUMBER },
-        { label: "In traffic (pass)", unit: "B", type: D.valueType.NUMBER },
-        { label: "Out traffic (block)", unit: "B", type: D.valueType.NUMBER },
-        { label: "Out traffic (pass)", unit: "B", type: D.valueType.NUMBER }
+        { label: "Cleared Time", valueType: D.valueType.DATETIME },
+        { label: "References Number", valueType: D.valueType.NUMBER },
+        { label: "In traffic (block)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "In traffic (pass)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Out traffic (block)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Out traffic (pass)", unit: "B", valueType: D.valueType.NUMBER }
     ]
 );
 
-// Function to make an HTTP GET request to retrieve OPNSense Interfaces Stats for IPv4
+// Function to make an HTTP GET request to retrieve OPNsense Interfaces Stats for IPv4
 function getInterfaces() {
     var d = D.q.defer();
     D.device.http.get({
@@ -44,7 +47,8 @@ function getInterfaces() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
 
     }, function (error, response, body) {
         if (error) {
@@ -53,11 +57,9 @@ function getInterfaces() {
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401 || response.statusCode === 403) {
+        } else if (response.statusCode == 401 || response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
+        } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
         d.resolve(JSON.parse(body));
@@ -81,18 +83,18 @@ function extractData(data) {
                 var recordId = sanitize(interface);
                 var cleared = data.interfaces[interface].cleared;
                 var references = data.interfaces[interface].references;
-                var in4_block_bytes = data.interfaces[interface].in4_block_bytes;
-                var in4_pass_bytes = data.interfaces[interface].in4_pass_bytes;
-                var out4_block_bytes = data.interfaces[interface].out4_block_bytes;
-                var out4_pass_bytes = data.interfaces[interface].out4_pass_bytes;
+                var in4BlockBytes = data.interfaces[interface].in4_block_bytes;
+                var in4PassBytes = data.interfaces[interface].in4_pass_bytes;
+                var out4BlockBytes = data.interfaces[interface].out4_block_bytes;
+                var out4PassBytes = data.interfaces[interface].out4_pass_bytes;
     
                 table.insertRecord(recordId, [
                     cleared,
                     references,
-                    in4_block_bytes,
-                    in4_pass_bytes,
-                    out4_block_bytes,
-                    out4_pass_bytes
+                    in4BlockBytes,
+                    in4PassBytes,
+                    out4BlockBytes,
+                    out4PassBytes
                 ]);
             }
         }
