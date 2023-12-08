@@ -8,19 +8,19 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "OPNsense",
-            "Firewall"
+            "OPNsense"
         ]
     },
     "tags": [
         "opnsense",
         "firewall",
-        "filter-rules"
+        "filter",
+        "rules"
     ],
     "sample_period_s": 1800,
-    "has_actions": true,
+    "has_actions": false,
     "expected_variables": {
-        "table": "[4,999]"
+        "table": "[4]"
     },
     "protocols": [
         "HTTPS"
@@ -36,6 +36,11 @@
             "value_type": "LIST",
             "name": "ruleName",
             "label": "Rule Name"
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "portNumber",
+            "label": "Port Number"
         }
     ]
 }

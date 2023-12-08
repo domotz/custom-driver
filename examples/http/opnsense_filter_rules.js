@@ -19,6 +19,9 @@
 // or specify a list of rules to filter and display only the selected rules.
 var ruleName = D.getParameter("ruleName");
 
+// The port number
+var port = D.getParameter("portNumber");
+
 // Function to make an HTTP GET request to retrieve OPNsense Filter Rules
 function getRules() {
     var d = D.q.defer();
@@ -29,7 +32,8 @@ function getRules() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
 
     }, function (error, response, body) {
         if (error) {
@@ -38,11 +42,9 @@ function getRules() {
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401 || response.statusCode === 403) {
+        } else if (response.statusCode == 401 || response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
+        } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
         d.resolve(JSON.parse(body));
@@ -54,10 +56,10 @@ function getRules() {
 var table = D.createTable(
     "Filter Rules",
     [
-        { label: "Evaluations", type: D.valueType.NUMBER },
-        { label: "Bytes", unit: "B", type: D.valueType.NUMBER },
-        { label: "States", type: D.valueType.NUMBER },
-        { label: "States creation", type: D.valueType.NUMBER }
+        { label: "Evaluations", valueType: D.valueType.NUMBER },
+        { label: "Bytes", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "States", valueType: D.valueType.NUMBER },
+        { label: "States creation", valueType: D.valueType.NUMBER }
     ]
 );
 
