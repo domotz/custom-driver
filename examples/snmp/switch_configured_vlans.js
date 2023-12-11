@@ -64,9 +64,7 @@ function validate(){
 */
 function get_status() {
     validateAndGetData()
-        .then(function(out) {
-            parseData(out)
-        })
+        .then(parseData)
         .catch(function(err) {
             console.error("Walk error for OID", err);
             D.failure(D.errorType.PARSING_ERROR);
