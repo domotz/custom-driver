@@ -32,6 +32,17 @@ function validateAndGetData() {
     });
     return d.promise;
 }
+function parseData(out){
+    var vlanList = [];
+    for (var key in out) {
+        var parts = key.split(".");
+        var vlanID = parts[parts.length - 1];
+        vlanList.push(vlanID);
+    }
+    var variables = [D.createVariable("vlans", "List of VLAN IDs", vlanList.join(", "))];
+    D.success(variables);
+}
+
 
 /**
  * @remote_procedure
@@ -53,16 +64,7 @@ function validate(){
 */
 function get_status() {
     validateAndGetData()
-        .then(function(out) {
-            var vlanList = [];
-            for (var key in out) {
-                var parts = key.split(".");
-                var vlanID = parts[parts.length - 1];
-                vlanList.push(vlanID);
-            }
-            var variables = [D.createVariable("vlans", "List of VLAN IDs", vlanList.join(", "))];
-            D.success(variables);
-        })
+        .then(parseData)
         .catch(function(err) {
             console.error("Walk error for OID", err);
             D.failure(D.errorType.PARSING_ERROR);
