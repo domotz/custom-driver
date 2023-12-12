@@ -40,7 +40,8 @@
         {
             "value_type": "NUMBER",
             "name": "portNumber",
-            "label": "Port Number"
+            "label": "Port Number",
+            "value": 443
         }
     ]
 }
