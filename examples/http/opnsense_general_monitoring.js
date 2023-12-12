@@ -47,7 +47,8 @@ function  getFirmwareStatus() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
     };
     D.device.http.get(config, processResponse(d));
     return d.promise;
@@ -61,7 +62,8 @@ function getActivity() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
     };
     D.device.http.post(config, processResponse(d));
     return d.promise;

@@ -24,7 +24,8 @@ function getServices() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
 
     }, function (error, response, body) {
         if (error) {
