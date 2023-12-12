@@ -1,0 +1,46 @@
+{
+    "logo": "opnsense.svg",
+    "version": "1.0.0",
+    "name": "OPNSense Interfaces Stats IPV6",
+    "description": "Retrieves IPv6 interface statistics from an OPNsense firewall",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "OPNsense"
+        ]
+    },
+    "tags": [
+        "opnsense",
+        "firewall",
+        "ipv6"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[6]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FreeBSD OPNsense",
+            "version": "13.2-RELEASE-p5"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "interfaceName",
+            "label": "Interface Name"
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "portNumber",
+            "label": "Port Number",
+            "value": 443
+        }
+    ]
+}

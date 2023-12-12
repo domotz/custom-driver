@@ -1,0 +1,33 @@
+{
+    "logo": "opnsense.svg",
+    "version": "1.0.0",
+    "name": "OPNSense Services",
+    "description": "Retrieves a list of services running on an OPNsense firewall, along with their status.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "OPNsense"
+        ]
+    },
+    "tags": [
+        "opnsense",
+        "firewall",
+        "services"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,999]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FreeBSD OPNsense",
+            "version": "13.2-RELEASE-p5"
+        }
+    ]
+}

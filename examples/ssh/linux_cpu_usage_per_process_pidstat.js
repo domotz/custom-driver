@@ -1,6 +1,6 @@
 /**
  * Name: Linux CPU Usage Per process - pidstat
- * Description: This script Retrieves CPU usage for specified processes on a remote Linux device using 'pidstat'
+ * Description: This script retrieves CPU usage for chosen processes on Linux using 'pidstat'
  * 
  * Communication protocol is SSH.
  * 

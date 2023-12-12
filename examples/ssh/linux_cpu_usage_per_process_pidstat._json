@@ -1,32 +1,26 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.1",
-    "name": "Linux CPU Usage - Iostat",
-    "description": "Monitor the average CPU usage of a linux server using the iostat package",
+    "version": "1.0.0",
+    "name": "Linux CPU Usage Per process - pidstat",
+    "description": "This script retrieves CPU usage for chosen processes on Linux using 'pidstat'",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "Linux",
-            "iostat",
-            "nohup"
+            "pidstat"
         ]
     },
     "tags": [
         "linux",
-        "iostat",
-        "nohup",
-        "cat",
-        "truncate",
-        "cpu",
-        "stat"
+        "pidstat",
+        "cpu"
     ],
     "sample_period_s": 600,
-    "execution_time_s": 120,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[9]"
+        "independent": "[1,999]"
     },
     "protocols": [
         "SSH"
@@ -39,6 +33,13 @@
         {
             "name": "bash",
             "version": "5.1.16"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "processList",
+            "label": "Process Name"
         }
     ]
 }
