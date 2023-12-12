@@ -11,6 +11,9 @@
  *
  **/
 
+// The port number
+var port = D.getParameter("portNumber");
+
 // Function to make an HTTP GET request to retrieve OPNsense services
 function getServices() {
     var d = D.q.defer();

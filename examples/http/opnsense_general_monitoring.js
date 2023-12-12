@@ -16,6 +16,9 @@
  *
  **/
 
+// The port number
+var port = D.getParameter("portNumber");
+
 //Processes the HTTP response and handles errors
 function processResponse(d) {
     return function process(error, response, body) {
