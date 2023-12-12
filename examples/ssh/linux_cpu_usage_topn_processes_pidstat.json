@@ -10,19 +10,19 @@
         "others": [
             "Linux",
             "pidstat",
-            "head"
+            "head",
+            "grep"
         ]
     },
     "tags": [
         "linux",
         "pidstat",
-        "cpu",
-        "head"
+        "cpu"
     ],
     "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
-        "table": "[1,999]"
+        "table": "[2,999]"
     },
     "protocols": [
         "SSH"
@@ -40,18 +40,8 @@
     "parameters": [
         {
             "value_type": "NUMBER",
-            "name": "timespanMinutes",
-            "label": "Total Samples"
-        },
-        {
-            "value_type": "NUMBER",
             "name": "topProcesses",
             "label": "Number Of Top Processes"
-        },
-        {
-            "value_type": "LIST",
-            "name": "processList",
-            "label": "Process Name"
         }
     ]
 }

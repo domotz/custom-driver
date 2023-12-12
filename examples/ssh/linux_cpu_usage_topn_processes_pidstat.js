@@ -1,6 +1,6 @@
 /**
  * Name: Linux CPU Usage Per Top n process - pidstat
- * Description: This script monitors the average CPU utilization of the top N processes using pidstat.
+ * Description: This script monitors the average CPU utilization of the top N processes using pidstat
  * 
  * Communication protocol is SSH.
  * 
@@ -15,19 +15,13 @@
  *      - Process Name: The name of the process being monitored.
  *      - CPU Usage: The CPU usage percentage for the corresponding process.
  * 
- * Creates a Custom Driver Variables: 
- *      - Start Date: The start date of the data collection period.
- *      - End Date: The end date of the data collection period.
  */
 
 var commandTimeout = 5000;
 
-var timespan_minutes = D.getParameter("timespanMinutes"); // Duration of monitoring in minutes
-var process_list = D.getParameter("processList"); // List of processes to monitor
-var top_no_processes = D.getParameter("topProcesses"); // Number of top processes to display
+var topNoProcesses = D.getParameter("topProcesses"); // Number of top processes to display
 
 var variables = [];
-var startDate, endDate; // Variables to store start and end dates
 
 var table = D.createTable(
     "Average CPU Usage",
@@ -38,13 +32,15 @@ var table = D.createTable(
 );
 
 // Define a command to start the 'pidstat' utility in the background,
-// collect CPU statistics every 5 seconds for the specified duration, 
-// filter by the specified processes, and output the top processes to a temporary file
-var command = "nohup pidstat -u 5 " + timespan_minutes + " -C " + process_list.join("\\|") + " | head -n " + top_no_processes + " > /tmp/domotz_pidstat_cpus.output & echo done";
+// collect CPU statistics every 5 seconds for the specified duration and redirect its output to a temporary file.
+// 5: The interval between updates, in seconds.
+// 24: The number of updates or iterations the command will run.
+var command = "nohup pidstat 2 60 > /tmp/domotz_pidstat_cpus.output";
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: commandTimeout
+    timeout: commandTimeout,
+    port: 27123
 };
 
 // Checks for SSH errors and handles them.
@@ -114,29 +110,8 @@ function checkPidstatRunning() {
 // If the file is found, it returns its content. Otherwise, it falls back to collecting historical data
 // using 'pidstat' with a 1 second interval for 1 iteration on the specified processes.
 function readfile() {
-    return executeCommand("cat /tmp/domotz_pidstat_cpus.output")()
-        .catch(executeCommand("pidstat -u 1 1 | head -n " + top_no_processes));
-}
-
-// This function retrieves the start and end dates of a file by executing the 'stat' command.
-function getStartEndDates() {
-    return executeCommand("stat -c '%w %y' /tmp/domotz_pidstat_cpus.output")()
-        .then(function (output) {
-            var dates = output.trim().split(" ");
-            if(dates[0]== "-"){
-                startDate = null;
-                endDate = dates[1];
-            }
-            else {
-                startDate = dates[0];
-                endDate = dates[3];
-            }
-            
-        })
-        .catch(function (err) {
-            console.error("Error getting the start and end dates:", err.message);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+    return executeCommand('cat /tmp/domotz_pidstat_cpus.output | grep "Average:"')()
+        .catch(executeCommand("pidstat -u 1 1"));
 }
 
 // This function truncates the content of the file '/tmp/domotz_pidstat_cpus.output' to zero bytes.
@@ -147,38 +122,29 @@ function truncate(){
         });
 }
 
-// Calculates the average CPU utilization from 'pidstat' data
-function calculateAverage(output) {
-    console.log(output);
-    var lines = output.split('\n');
-    var pidSum = {};  
-    var pidCount = {};  
-    var pidCommand = {};
-
-    var header = lines[2].trim().split(/\s+/);
-    var pidIndex = header.indexOf("PID");
-    var cpuUsageIndex = header.indexOf("%CPU");
-    var commandIndex = header.indexOf("Command"); 
-
-    for (var i = 3; i < lines.length; i++) {
-        var parts = lines[i].trim().split(/\s+/);
-        var pid = parts[pidIndex];
-        var cpuUsage = parts[cpuUsageIndex];
-        var command = parts[commandIndex];
-
-        if (!isNaN(parseFloat(cpuUsage))) {
-            pidSum[pid] = pidSum[pid] || 0;
-            pidCount[pid] = pidCount[pid] || 0;
-            pidCommand[pid] = pidCommand[pid] || command;
-            
-            pidSum[pid] += parseFloat(cpuUsage);
-            pidCount[pid]++;
+// Parses the output from the 'pidstat' command, extracts CPU usage data, and populates the table with the information.
+function parseOutput(output) {
+    var lines = output.trim().split('\n');
+    var linesToProcess = lines.slice(0, topNoProcesses); 
+    var averageLineIndex = -1;
+    for (var i = 0; i < linesToProcess.length; i++) {
+        if (linesToProcess[i].indexOf('Average:') !== -1) {
+            averageLineIndex = i;
+            break;
         }
     }
+    var averageData = linesToProcess.slice(averageLineIndex);
+    var header = averageData[0].trim().split(/\s+/);
+    var pidIndex = header.indexOf("PID");
+    var cpuUsageIndex = header.indexOf("%CPU");
+    var commandIndex = header.indexOf("Command");
 
-    for (pid in pidSum) {
-        var averageCpu = pidSum[pid] / pidCount[pid];
-        table.insertRecord(pid, [pidCommand[pid], averageCpu.toFixed(2)]);
+    for (var j = 1; j < averageData.length; j++) {
+        var line = averageData[j].trim().split(/\s+/);
+        var pid = line[pidIndex];
+        var cpuUsage = line[cpuUsageIndex];
+        var command = line[commandIndex];
+        table.insertRecord(pid, [command, cpuUsage]);
     }
 }
 
@@ -200,25 +166,16 @@ function validate() {
  * This function performs the following steps:
  * 1. Checks if the pidstat process is running.
  * 2. If pidstat is running, it reads the contents of the file ("/tmp/domotz_pidstat_cpus.output").
- * 3. Calculates the average CPU usage for each specified process from the pidstat output.
+ * 3. Retrieve the average CPU usage data for each specified process from the 'pidstat' output.
  * 4. Empties the contents of the file to prepare for the next data collection.
  */
 function get_status() {
     readfile()
-        .then(calculateAverage)
+        .then(parseOutput)
         .then(truncate)
-        .then(getStartEndDates)
         .then(checkPidstatRunning)
-        .then(getStartEndDates)
-        .then(function () {
-            if (startDate !== null) {
-                var startDateVariable = D.createVariable("start-date", "Start Date", startDate, "", D.valueType.STRING);
-                variables.push(startDateVariable);
-            }
-            var endDateVariable = D.createVariable("end-date", "End Date", endDate, "", D.valueType.STRING);
-            variables.push(endDateVariable);
-
-            D.success(variables, table);
+        .then(function(){
+            D.success(table);
         })
         .catch(function () {
             console.error("pidstat is not running");
