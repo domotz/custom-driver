@@ -16,6 +16,9 @@
  *
  **/
 
+// The port number
+var port = D.getParameter("portNumber");
+
 //Processes the HTTP response and handles errors
 function processResponse(d) {
     return function process(error, response, body) {
@@ -44,7 +47,8 @@ function  getFirmwareStatus() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
     };
     D.device.http.get(config, processResponse(d));
     return d.promise;
@@ -58,7 +62,8 @@ function getActivity() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        port: port
     };
     D.device.http.post(config, processResponse(d));
     return d.promise;
