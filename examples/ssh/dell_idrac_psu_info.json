@@ -1,6 +1,6 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Dell iDRAC PSU Monitoring",
     "description": "Monitors the operational status of Power Supply Units (PSUs) on a Dell server with iDRAC",
     "category": "Hardware Integration",
