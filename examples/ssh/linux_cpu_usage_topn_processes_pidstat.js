@@ -39,8 +39,7 @@ var command = "nohup pidstat 2 60 > /tmp/domotz_pidstat_cpus.output";
 
 // Define SSH configuration
 var sshConfig = {
-    timeout: commandTimeout,
-    port: 27123
+    timeout: commandTimeout
 };
 
 // Checks for SSH errors and handles them.
@@ -125,28 +124,45 @@ function truncate(){
 // Parses the output from the 'pidstat' command, extracts CPU usage data, and populates the table with the information.
 function parseOutput(output) {
     var lines = output.trim().split('\n');
-    var linesToProcess = lines.slice(0, topNoProcesses); 
     var averageLineIndex = -1;
-    for (var i = 0; i < linesToProcess.length; i++) {
-        if (linesToProcess[i].indexOf('Average:') !== -1) {
-            averageLineIndex = i;
+    for (var k = 0; k < lines.length; k++) {
+        if (lines[k].indexOf('Average:') !== -1) {
+            averageLineIndex = k;
             break;
         }
     }
-    var averageData = linesToProcess.slice(averageLineIndex);
+
+    var averageData = lines.slice(averageLineIndex);
     var header = averageData[0].trim().split(/\s+/);
     var pidIndex = header.indexOf("PID");
     var cpuUsageIndex = header.indexOf("%CPU");
     var commandIndex = header.indexOf("Command");
 
-    for (var j = 1; j < averageData.length; j++) {
-        var line = averageData[j].trim().split(/\s+/);
+    var records = [];
+
+    for (var i = 2; i < averageData.length; i++) {
+        var line = averageData[i].trim().split(/\s+/);
+
         var pid = line[pidIndex];
-        var cpuUsage = line[cpuUsageIndex];
+        var cpuUsage = parseFloat(line[cpuUsageIndex].replace(',', '.'));
         var command = line[commandIndex];
-        table.insertRecord(pid, [command, cpuUsage]);
+        records.push({ pid: pid, command: command, cpuUsage: cpuUsage });
+       
+    }
+    
+    records.sort(function(record1, record2) {
+        return record2.cpuUsage - record1.cpuUsage;
+    });
+
+    var toProcess = records.slice(0, topNoProcesses);
+
+    for (var j = 0; j < toProcess.length; j++) {
+        var record = toProcess[j];
+        table.insertRecord(record.pid, [record.command, record.cpuUsage]);
     }
 }
+
+
 
 /**
  * @remote_procedure
