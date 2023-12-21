@@ -29,6 +29,7 @@
         "operating-speed"
     ],
     "sample_period_s": 1800,
+    "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
         "table": "[11,999]"
