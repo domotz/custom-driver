@@ -1,6 +1,6 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Dell iDRAC CPUs Monitoring",
     "description": "Monitors the operational status of cpus on a Dell server with iDRAC",
     "category": "Hardware Integration",
@@ -27,6 +27,7 @@
         "hyper-threading-enabled" 
     ],
     "sample_period_s": 1800,
+    "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
         "table": "[9,999]"
