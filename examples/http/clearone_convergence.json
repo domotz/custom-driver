@@ -37,7 +37,7 @@
     ],
     "parameters": [
         {
-            "value_type": "TEXT",
+            "value_type": "STRING",
             "name": "urlCl",
             "label": "URL"
         }
