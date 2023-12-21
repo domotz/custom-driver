@@ -31,11 +31,12 @@ var table = D.createTable(
     ]
 );
 
-// Define a command to start the 'pidstat' utility in the background,
-// collect CPU statistics every 5 seconds for the specified duration and redirect its output to a temporary file.
-// 5: The interval between updates, in seconds.
-// 24: The number of updates or iterations the command will run.
-var command = "nohup pidstat 2 60 > /tmp/domotz_pidstat_cpus.output";
+// Define a command to start the 'pidstat' utility in the background.
+// The command collects CPU statistics every 2 seconds for a duration of 60.
+// The output is redirected to a temporary file at /tmp/domotz_pidstat_cpus.output.
+// 2: The interval between updates, in seconds.
+// 60: The number of updates or iterations the command will run.
+var command = "nohup pidstat 2 60 > /tmp/domotz_pidstat_cpus.output &";
 
 // Define SSH configuration
 var sshConfig = {
@@ -123,6 +124,7 @@ function truncate(){
 
 // Parses the output from the 'pidstat' command, extracts CPU usage data, and populates the table with the information.
 function parseOutput(output) {
+    console.log(output);
     var lines = output.trim().split('\n');
     var averageLineIndex = -1;
     for (var k = 0; k < lines.length; k++) {
@@ -140,16 +142,14 @@ function parseOutput(output) {
 
     var records = [];
 
-    for (var i = 2; i < averageData.length; i++) {
+    for (var i = 1; i < averageData.length; i++) {
         var line = averageData[i].trim().split(/\s+/);
-
         var pid = line[pidIndex];
         var cpuUsage = parseFloat(line[cpuUsageIndex].replace(',', '.'));
         var command = line[commandIndex];
-        records.push({ pid: pid, command: command, cpuUsage: cpuUsage });
-       
+        records.push({ pid: pid, command: command, cpuUsage: cpuUsage }); 
     }
-    
+
     records.sort(function(record1, record2) {
         return record2.cpuUsage - record1.cpuUsage;
     });
@@ -161,8 +161,6 @@ function parseOutput(output) {
         table.insertRecord(record.pid, [record.command, record.cpuUsage]);
     }
 }
-
-
 
 /**
  * @remote_procedure
