@@ -1,6 +1,6 @@
 {
     "logo": "opnsense.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "OPNSense Interfaces Stats IPV4",
     "description": "Retrieves IPv4 interface statistics from an OPNsense firewall",
     "category": "Software Integration",
