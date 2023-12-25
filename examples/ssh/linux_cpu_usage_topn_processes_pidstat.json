@@ -22,7 +22,7 @@
     "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
-        "table": "[2,999]"
+        "independent": "[1,999]"
     },
     "protocols": [
         "SSH"

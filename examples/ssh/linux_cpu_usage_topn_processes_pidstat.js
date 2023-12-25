@@ -11,9 +11,7 @@
  * 
  * 'pidstat' should be installed on the remote device (using this command "sudo apt install sysstat")
  * 
- * Creates a Custom Driver Table with the following columns:
- *      - Process Name: The name of the process being monitored.
- *      - CPU Usage: The CPU usage percentage for the corresponding process.
+ * Creates a Custom Driver Variables for CPU Usage(%)
  * 
  */
 
@@ -23,20 +21,12 @@ var topNoProcesses = D.getParameter("topProcesses"); // Number of top processes 
 
 var variables = [];
 
-var table = D.createTable(
-    "Average CPU Usage",
-    [
-        { label: "Process Name", valueType: D.valueType.STRING },
-        { label: "CPU USage", unit : "%", valueType: D.valueType.NUMBER }    
-    ]
-);
-
 // Define a command to start the 'pidstat' utility in the background.
 // The command collects CPU statistics every 2 seconds for a duration of 60.
 // The output is redirected to a temporary file at /tmp/domotz_pidstat_cpus.output.
 // 2: The interval between updates, in seconds.
 // 60: The number of updates or iterations the command will run.
-var command = "nohup pidstat 2 60 > /tmp/domotz_pidstat_cpus.output &";
+var command = "nohup pidstat -u 2 60 > /tmp/domotz_pidstat_cpus.output";
 
 // Define SSH configuration
 var sshConfig = {
@@ -126,41 +116,37 @@ function truncate(){
 function parseOutput(output) {
     console.log(output);
     var lines = output.trim().split('\n');
-    var averageLineIndex = -1;
-    for (var k = 0; k < lines.length; k++) {
-        if (lines[k].indexOf('Average:') !== -1) {
-            averageLineIndex = k;
+    var processDataStartIndex = -1;
+    for (var i = 0; i < lines.length; i++) {
+        if (lines[i].indexOf("Average:") !== -1) {
+            processDataStartIndex = i;
             break;
         }
     }
 
-    var averageData = lines.slice(averageLineIndex);
-    var header = averageData[0].trim().split(/\s+/);
-    var pidIndex = header.indexOf("PID");
-    var cpuUsageIndex = header.indexOf("%CPU");
-    var commandIndex = header.indexOf("Command");
+    if (processDataStartIndex !== -1) {
+        var header = lines[processDataStartIndex].trim().split(/\s+/);
+        var pidIndex = header.indexOf("PID");
+        var cpuUsageIndex = header.indexOf("%CPU");
+        var commandIndex = header.indexOf("Command");
+        var processData = lines.slice(processDataStartIndex + 1);
+        processData.sort(function (a, b) {
+            var cpuA = parseFloat(a.trim().split(/\s+/)[cpuUsageIndex]);
+            var cpuB = parseFloat(b.trim().split(/\s+/)[cpuUsageIndex]);
+            return cpuB - cpuA;
+        });
 
-    var records = [];
-
-    for (var i = 1; i < averageData.length; i++) {
-        var line = averageData[i].trim().split(/\s+/);
-        var pid = line[pidIndex];
-        var cpuUsage = parseFloat(line[cpuUsageIndex].replace(',', '.'));
-        var command = line[commandIndex];
-        records.push({ pid: pid, command: command, cpuUsage: cpuUsage }); 
-    }
-
-    records.sort(function(record1, record2) {
-        return record2.cpuUsage - record1.cpuUsage;
-    });
-
-    var toProcess = records.slice(0, topNoProcesses);
-
-    for (var j = 0; j < toProcess.length; j++) {
-        var record = toProcess[j];
-        table.insertRecord(record.pid, [record.command, record.cpuUsage]);
+        for (var j = 0; j < Math.min(topNoProcesses, processData.length); j++) {
+            var line = processData[j].trim().split(/\s+/);
+            var pid = line[pidIndex];
+            var cpuUsage = line[cpuUsageIndex];
+            var processName = line[commandIndex];
+            variables.push(D.createVariable(pid, processName, cpuUsage, "%", D.valueType.NUMBER));
+        }
+        return variables;
     }
 }
+
 
 /**
  * @remote_procedure
@@ -189,7 +175,8 @@ function get_status() {
         .then(truncate)
         .then(checkPidstatRunning)
         .then(function(){
-            D.success(table);
+            console.log(variables);
+            D.success(variables);
         })
         .catch(function () {
             console.error("pidstat is not running");
