@@ -34,7 +34,8 @@
         {
             "value_type": "LIST",
             "name": "serviceName",
-            "label": "Service Name"
+            "label": "Service Name",
+            "value": "ALL"
         },
         {
             "value_type": "NUMBER",
