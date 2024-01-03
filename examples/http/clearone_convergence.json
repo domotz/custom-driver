@@ -1,0 +1,45 @@
+{
+    "logo": "clearone.svg",
+    "version": "1.0.0",
+    "name": "ClearOne Converge",
+    "description": "This script extracts information for ClearOne devices",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "ClearOne Converge"
+        ]
+    },
+    "tags": [
+        "clearone",
+        "model",
+        "serial-number",
+        "firmware-vrsion",
+        "locate-mode",
+        "status",
+        "location",
+        "part-number"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[7]"
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "ClearOne Converge",
+            "version": "Pro 2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "urlCl",
+            "label": "URL"
+        }
+    ]
+}
