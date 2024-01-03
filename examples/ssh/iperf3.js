@@ -33,7 +33,7 @@ var sshConfig = {
 // List of iperf3 servers that the host will test with (ip_or_dns:port)
 // if the port is not specified the default one will be used "5201"
 var targetServerUrl = D.getParameter('targetServer');
-var defaultIperfPort = 5201;
+var defaultIperfPort = D.getParameter('iperfPort');
 
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
@@ -47,19 +47,19 @@ var execConfig = [
     {
         id: "upload_speed",
         label: "Upload speed",
-        command: "iperf3 -t 5  -f m -c {url} -p {port}",
+        command: "iperf3 -t 5 -f m -c {url} -p {port}",
         extractor: tcpExtractor
     },
     {
         id: "download_speed_udp",
         label: "Download speed UDP",
-        command: "iperf3 -t 5  -f m -c {url} -p {port} -u -R",
+        command: "iperf3 -t 5 -f m -c {url} -p {port} -u -R",
         extractor: udpExtractor
     },
     {
         id: "upload_speed_udp",
         label: "Upload speed UDP",
-        command: "iperf3 -t 5  -f m -c {url} -p {port} -u",
+        command: "iperf3 -t 5 -f m -c {url} -p {port} -u",
         extractor: udpExtractor
     }
 ];
@@ -96,12 +96,13 @@ function executeCommand(commandTemplate, serverIndex, extractorFn) {
 
         if (serverIndex !== null) {
             if (serverIndex < targetServerUrl.length) {
-                var server = targetServerUrl[serverIndex];
+                var server = targetServerUrl;
                 var hostPort = server.split(":");
 
                 command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
                 sshConfig.command = command;
                 D.device.sendSSHCommand(sshConfig, function (out, err) {
+
                     if (err) {
                         return d.reject(err);
                     }
@@ -122,6 +123,7 @@ function executeCommand(commandTemplate, serverIndex, extractorFn) {
         });
     };
 }
+
 
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
 function execute() {
