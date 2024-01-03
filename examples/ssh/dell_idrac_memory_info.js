@@ -7,8 +7,6 @@
  * Tested under iDRAC version 7.0.3 21053776 U3 P70
  * 
  * Keyboard Interactive option: true/false (depends on iDRAC version).
- * 
- * Timeout: should be set to 120 seconds
  *
  * Creates a Custom Driver Table with the following columns:
  *      - Type
@@ -31,7 +29,7 @@ var command = "racadm hwinventory";
 var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 100000,
+    "timeout": 30000,
     "keyboard_interactive": true
 };
 

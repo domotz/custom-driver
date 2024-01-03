@@ -1,8 +1,8 @@
 {
     "logo": "opnsense.svg",
     "version": "1.0.0",
-    "name": "OPNSense General / Monitoring",
-    "description": "Retrieves general information about OPNsense including product version, firmware updates, CPU usage, memory usage, etc.",
+    "name": "OPNSense Gateway statistics",
+    "description": "Retrieves gateway statistics from an OPNsense firewall, including information such as gateway name, address, status, ping response delay, etc.",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -14,15 +14,16 @@
     "tags": [
         "opnsense",
         "firewall",
-        "firmware",
-        "cpu",
-        "memory",
-        "swap"
+        "gateway",
+        "address",
+        "status",
+        "rttsd",
+        "packet-loss"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[5]"
+        "table": "[4]"
     },
     "protocols": [
         "HTTPS"
