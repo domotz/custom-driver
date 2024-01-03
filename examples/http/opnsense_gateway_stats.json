@@ -1,8 +1,8 @@
 {
     "logo": "opnsense.svg",
-    "version": "1.0.1",
-    "name": "OPNSense Interfaces Stats IPV4",
-    "description": "Retrieves IPv4 interface statistics from an OPNsense firewall",
+    "version": "1.0.0",
+    "name": "OPNSense Gateway statistics",
+    "description": "Retrieves gateway statistics from an OPNsense firewall, including information such as gateway name, address, status, ping response delay, etc.",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -14,12 +14,16 @@
     "tags": [
         "opnsense",
         "firewall",
-        "ipv4"
+        "gateway",
+        "address",
+        "status",
+        "rttsd",
+        "packet-loss"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[7]"
+        "table": "[4]"
     },
     "protocols": [
         "HTTPS"
@@ -31,11 +35,6 @@
         }
     ],
     "parameters": [
-        {
-            "value_type": "LIST",
-            "name": "interfaceName",
-            "label": "Interface Name"
-        },
         {
             "value_type": "NUMBER",
             "name": "portNumber",

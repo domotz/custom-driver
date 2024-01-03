@@ -8,12 +8,12 @@
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Table with the following columns:
- *      - Cleared Time: The timestamp when the statistics were last cleared or reset
  *      - References Number: The number of references or connections associated with the interface
  *      - In traffic (block): The amount of incoming IPv4 traffic that was blocked by the firewall
  *      - In traffic (pass): The amount of incoming IPv4 traffic that was allowed or passed by the firewall
  *      - Out traffic (block): The amount of outgoing IPv4 traffic that was blocked by the firewall
  *      - Out traffic (pass): The amount of outgoing IPv4 traffic that was allowed or passed by the firewall
+ *      - Cleared Time: The timestamp when the statistics were last cleared or reset
  * 
  **/
 
@@ -28,12 +28,13 @@ var port = D.getParameter("portNumber");
 var table = D.createTable(
     "Interfaces IPV4",
     [
-        { label: "Cleared Time", valueType: D.valueType.DATETIME },
         { label: "References Number", valueType: D.valueType.NUMBER },
         { label: "In traffic (block)", unit: "B", valueType: D.valueType.NUMBER },
         { label: "In traffic (pass)", unit: "B", valueType: D.valueType.NUMBER },
         { label: "Out traffic (block)", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Out traffic (pass)", unit: "B", valueType: D.valueType.NUMBER }
+        { label: "Out traffic (pass)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Cleared Time", valueType: D.valueType.DATETIME }
+
     ]
 );
 
@@ -80,21 +81,21 @@ function extractData(data) {
             return (interface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
         })) {
             if (interface !== "all"){
-                var recordId = sanitize(interface);
-                var cleared = data.interfaces[interface].cleared;
+                var recordId = sanitize(interface);             
                 var references = data.interfaces[interface].references;
                 var in4BlockBytes = data.interfaces[interface].in4_block_bytes;
                 var in4PassBytes = data.interfaces[interface].in4_pass_bytes;
                 var out4BlockBytes = data.interfaces[interface].out4_block_bytes;
                 var out4PassBytes = data.interfaces[interface].out4_pass_bytes;
+                var cleared = data.interfaces[interface].cleared;
     
                 table.insertRecord(recordId, [
-                    cleared,
                     references,
                     in4BlockBytes,
                     in4PassBytes,
                     out4BlockBytes,
-                    out4PassBytes
+                    out4PassBytes,
+                    cleared
                 ]);
             }
         }
