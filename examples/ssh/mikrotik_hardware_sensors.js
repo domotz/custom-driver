@@ -5,7 +5,11 @@
  * 
  * Communication protocol is ssh 
  * 
- * Tested with MikroTik RouterOS version: 7.13
+ * Tested under MikroTik RouterOS with the following versions: 
+ *      - CCR2004-1G-12S+2XS
+ *      - CRS354-48P-4S+2Q+
+ *      - CRS326-24G-2S+
+ *      - CRS328-24P-4S+ 
  *
  * Creates a Custom Driver Variable with the retrieved hardware sensor data:
  *      - Switch Temperature: Temperature of the switch in degrees Celsius.
@@ -13,6 +17,7 @@
  *      - PSU 1 Status: Status of Power Supply Unit 1.
  *      - PSU 2 Status: Status of Power Supply Unit 2.
  *      - POE Output Consumption: Power over Ethernet output consumption in watts.
+ *      - CPU Temperature:  Temperature of the Central Processing Unit in degrees Celsius.
  */
 
 // SSH command to retrieve system health information
@@ -67,7 +72,10 @@ function parseData(output) {
             variables.push(D.createVariable(name, "Switch Temperature", value, unit, D.valueType.NUMBER));
         }
         if (name === "board-temperature1") {
-            variables.push(D.createVariable(name, "Board Temperature", value, unit, D.valueType.NUMBER));
+            variables.push(D.createVariable(name, "Board Temperature 1", value, unit, D.valueType.NUMBER));
+        }
+        if (name === "board-temperature2") {
+            variables.push(D.createVariable(name, "Board Temperature 2", value, unit, D.valueType.NUMBER));
         }
         if (name === "psu1-state") {
             variables.push(D.createVariable(name, "PSU 1 Status", value, unit, D.valueType.STRING));
@@ -77,6 +85,9 @@ function parseData(output) {
         }
         if (name === "poe-out-consumption") {
             variables.push(D.createVariable(name, "POE Output Consumption", value, unit, D.valueType.NUMBER));
+        }
+        if (name === "cpu-temperature") {
+            variables.push(D.createVariable(name, "CPU Temperature", value, unit, D.valueType.NUMBER))
         }
     } 
     D.success(variables);

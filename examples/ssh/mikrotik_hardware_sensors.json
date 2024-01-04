@@ -21,7 +21,7 @@
     "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[5]"
+        "independent": "[7]"
     },
     "protocols": [
         "SSH"
@@ -29,8 +29,21 @@
     "tested_on": [
         {
             "name": "MikroTik RouterOS",
-            "version": "7.13"
+            "version": "CCR2004-1G-12S+2XS"
+        },
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CRS354-48P-4S+2Q+"
+        },
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CRS326-24G-2S+"
+        },
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CRS328-24P-4S+"
         }
+        
     ]
 }
 
