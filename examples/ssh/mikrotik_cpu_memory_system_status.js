@@ -20,7 +20,7 @@
  *      - CPU Frequency: CPU frequency in megahertz.
  *      - CPU Count: Number of CPUs on the MikroTik device.
  *      - Board Name: Name of the MikroTik device board.
- *      - HD Usage Percentage: Percentage of hard disk usage
+ *      - HD Usage: Percentage of hard disk usage
  * 
  */
 
@@ -103,7 +103,7 @@ function parseData(output) {
     var boardName = data["board-name"] || "";
     var freeHddSpace = convertToBytes(data["free-hdd-space"]) || 0;
     var totalHddSpace = convertToBytes(data["total-hdd-space"]) || 0;
-    var hddUsagePercentage = totalHddSpace ? ((totalHddSpace - freeHddSpace) / totalHddSpace * 100).toFixed(2) : 0;
+    var hddUsage = totalHddSpace ? ((totalHddSpace - freeHddSpace) / totalHddSpace * 100).toFixed(2) : 0;
 
     var variables = [
         (D.createVariable("cpu-usage" , "CPU Usage", cpuUsage, "%", D.valueType.NUMBER)),
@@ -114,7 +114,7 @@ function parseData(output) {
         (D.createVariable("cpu-frequency", "CPU Frequency", cpuFrequency, "MHz", D.valueType.NUMBER)),
         (D.createVariable("cpu-count", "CPU Count", cpuCount, null, D.valueType.NUMBER)),
         (D.createVariable("board-name", "Board Name", boardName, null, D.valueType.STRING)),
-        (D.createVariable("hd-usage-percentage", "HD Usage Percentage", hddUsagePercentage, "%", D.valueType.NUMBER))
+        (D.createVariable("hd-usage", "HD Usage", hddUsage, "%", D.valueType.NUMBER))
     ];
 
     var filteredVariables = variables.filter(function(variable) { return variable.value !== 0 && variable.value !== "";});
