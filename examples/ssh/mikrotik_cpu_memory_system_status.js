@@ -20,7 +20,7 @@
  *      - CPU Frequency: CPU frequency in megahertz.
  *      - CPU Count: Number of CPUs on the MikroTik device.
  *      - Board Name: Name of the MikroTik device board.
- *      - Free HD Space: Amount of free hard disk space in bytes.
+ *      - HD Usage Percentage: Percentage of hard disk usage
  * 
  */
 
@@ -59,9 +59,20 @@ function executeCommand(command) {
 }
 
 function convertToBytes(value) {
-    if (value.indexOf("MiB")) {
+    if (value.indexOf("MiB") !== -1) {
         return parseFloat(value.replace("MiB", "").trim()) * Math.pow(1024, 2);
+    } else if (value.indexOf("KiB") !== -1) {
+        return parseFloat(value.replace("KiB", "").trim()) * 1024;
     }
+    return parseFloat(value);
+}
+
+function convertUptimeToSeconds(uptime) {
+    var parts = uptime.split(/[hms]/);
+    var hours = parseInt(parts[0]) || 0;
+    var minutes = parseInt(parts[1]) || 0;
+    var seconds = parseInt(parts[2]) || 0;
+    return hours * 3600 + minutes * 60 + seconds;
 }
 
 // Parses the system resource information and creates Custom Driver Variables
@@ -83,23 +94,27 @@ function parseData(output) {
     var freeMemory = convertToBytes(data["free-memory"]) || 0;
     var memoryUsage = totalMemory ? ((totalMemory - freeMemory) / totalMemory * 100).toFixed(2) : 0;
     var uptime = data["uptime"] || "";
+    var uptimeInSeconds = convertUptimeToSeconds(uptime);
+    var uptimeInDays = (uptimeInSeconds / (24 * 3600)).toFixed(1);
     var firmwareVersion = data["version"] || "";
     var cpuDescription = data["cpu"] || "";
     var cpuFrequency = data["cpu-frequency"] ? data["cpu-frequency"].replace("MHz", "") : "";
     var cpuCount = data["cpu-count"] || "";
     var boardName = data["board-name"] || "";
     var freeHddSpace = convertToBytes(data["free-hdd-space"]) || 0;
-    
+    var totalHddSpace = convertToBytes(data["total-hdd-space"]) || 0;
+    var hddUsagePercentage = totalHddSpace ? ((totalHddSpace - freeHddSpace) / totalHddSpace * 100).toFixed(2) : 0;
+
     var variables = [
         (D.createVariable("cpu-usage" , "CPU Usage", cpuUsage, "%", D.valueType.NUMBER)),
         (D.createVariable("memory-usage" , "Memory Usage", memoryUsage, "%", D.valueType.NUMBER)),
-        (D.createVariable("uptime", "Uptime", uptime, "days", D.valueType.DATETIME)),
+        (D.createVariable("uptime", "Uptime", uptimeInDays, "days", D.valueType.DATETIME)),
         (D.createVariable("firmware-version", "Firmware Version", firmwareVersion, null, D.valueType.STRING)),
         (D.createVariable("cpu", "CPU Description", cpuDescription, null, D.valueType.STRING)),
         (D.createVariable("cpu-frequency", "CPU Frequency", cpuFrequency, "MHz", D.valueType.NUMBER)),
         (D.createVariable("cpu-count", "CPU Count", cpuCount, null, D.valueType.NUMBER)),
         (D.createVariable("board-name", "Board Name", boardName, null, D.valueType.STRING)),
-        (D.createVariable("free-hdd-space", "Free HD Space", freeHddSpace, "B", D.valueType.NUMBER))
+        (D.createVariable("hd-usage-percentage", "HD Usage Percentage", hddUsagePercentage, "%", D.valueType.NUMBER))
     ];
 
     var filteredVariables = variables.filter(function(variable) { return variable.value !== 0 && variable.value !== "";});
