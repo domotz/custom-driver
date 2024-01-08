@@ -8,12 +8,12 @@
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Table with the following columns:
- *      - Cleared Time: The timestamp when the statistics were last cleared or reset
  *      - References Number: The number of references or connections associated with the interface
  *      - In traffic (ipv6 block): The amount of incoming IPv6 traffic that was blocked by the firewall
  *      - In traffic (ipv6 pass): The amount of incoming IPv6 traffic that was allowed or passed by the firewall
  *      - Out traffic (ipv6 block): The amount of outgoing IPv6 traffic that was blocked by the firewall
  *      - Out traffic (ipv6 pass): The amount of outgoing IPv6 traffic that was allowed or passed by the firewall
+ *      - Cleared Time: The timestamp when the statistics were last cleared or reset
  * 
  **/
 
@@ -28,12 +28,12 @@ var port = D.getParameter("portNumber");
 var table = D.createTable(
     "Interfaces IPV6",
     [
-        { label: "Cleared Time", valueType: D.valueType.DATETIME },
         { label: "References Number", valueType: D.valueType.NUMBER },
         { label: "In traffic (ipv6 block)", unit: "B", valueType: D.valueType.NUMBER },
         { label: "In traffic (ipv6 pass)", unit: "B", valueType: D.valueType.NUMBER },
         { label: "Out traffic (ipv6 block)", unit: "B", valueType: D.valueType.NUMBER },
-        { label: "Out traffic (ipv6 pass)", unit: "B", valueType: D.valueType.NUMBER }
+        { label: "Out traffic (ipv6 pass)", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Cleared Time", valueType: D.valueType.DATETIME }
     ]
 );
 
@@ -81,19 +81,19 @@ function extractData(data) {
                 return (interface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
             })) { 
                 var recordId = sanitize(interface);
-                var cleared = data.interfaces[interface].cleared;
                 var references = data.interfaces[interface].references;
                 var in6BlockBytes = data.interfaces[interface].in6_block_bytes;
                 var in6PassBytes = data.interfaces[interface].in6_pass_bytes;
                 var out6BlockBytes = data.interfaces[interface].out6_block_bytes;
                 var out6PassBytes = data.interfaces[interface].out6_pass_bytes;
+                var cleared = data.interfaces[interface].cleared;
                 table.insertRecord(recordId, [
-                    cleared,
                     references,
                     in6BlockBytes,
                     in6PassBytes,
                     out6BlockBytes,
-                    out6PassBytes
+                    out6PassBytes,
+                    cleared
                 ]);
             }
         }

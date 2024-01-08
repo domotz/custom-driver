@@ -1,6 +1,6 @@
 {
     "logo": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Switch Configured VLANs",
     "description": "This script retrieves the list of configured VLANs from a switch and stores it in a variable",
     "category": "Hardware Integration",
