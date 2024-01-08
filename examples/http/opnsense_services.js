@@ -11,6 +11,10 @@
  *
  **/
 
+// serviceName: Set it to 'ALL' to retrieve information for all services,
+// or specify a list of services to filter and display only the selected ones.
+var serviceName = D.getParameter("serviceName");
+
 // The port number
 var port = D.getParameter("portNumber");
 
@@ -57,10 +61,19 @@ function extractData(data) {
         var name = item.name;
         var status = (item.running === 1) ? "running" : "stopped";
         var uid = sanitize(item.id);
-        variables.push(D.createVariable(uid, name, status, null, D.valueType.STRING));     
+
+        if (serviceName[0].toLowerCase() === "all" || serviceName.some(function (name) {
+            return (item.name.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+        })) {
+            if (name !== "all") {
+                variables.push(D.createVariable(uid, name, status, null, D.valueType.STRING));
+            }
+        }
     });
+
     D.success(variables);
 }
+
 
 /**
  * @remote_procedure
