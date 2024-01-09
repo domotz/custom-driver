@@ -37,10 +37,14 @@ var sshConfig = {
 //Handle SSH errors
 function checkSshError(err) {
     if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
+    if(err.code == 5){
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+    } else if (err.code == 255) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(err);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 // Execute SSH command and return a promise
@@ -49,8 +53,7 @@ function executeCommand(command) {
     sshConfig.command = command;
     D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
-            checkSshError(error);
-            d.reject(error);
+            d.resolve(error);
         } else {           
             d.resolve(output);      
         }
@@ -108,7 +111,7 @@ function parseData(output) {
     var variables = [
         (D.createVariable("cpu-usage" , "CPU Usage", cpuUsage, "%", D.valueType.NUMBER)),
         (D.createVariable("memory-usage" , "Memory Usage", memoryUsage, "%", D.valueType.NUMBER)),
-        (D.createVariable("uptime", "Uptime", uptimeInDays, "days", D.valueType.DATETIME)),
+        (D.createVariable("uptime", "Uptime", uptimeInDays, "days", D.valueType.NUMBER)),
         (D.createVariable("firmware-version", "Firmware Version", firmwareVersion, null, D.valueType.STRING)),
         (D.createVariable("cpu", "CPU Description", cpuDescription, null, D.valueType.STRING)),
         (D.createVariable("cpu-frequency", "CPU Frequency", cpuFrequency, "MHz", D.valueType.NUMBER)),
@@ -137,8 +140,11 @@ function validate() {
 }
 
 function parseValidateOutput(output) {
-    if (output.trim() !== "") {
+    if (output.trim !== undefined && output.trim() !== "") {
         console.info("Validation successful");
+    } else {
+        console.error("Validation unsuccessful. Unexpected output: " + JSON.stringify(output));
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     }
 }
 
