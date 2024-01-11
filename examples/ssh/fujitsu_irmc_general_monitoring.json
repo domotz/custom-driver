@@ -1,0 +1,34 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Fujitsu iRMC General Monitoring",
+    "description": "Monitors the general information for Fujitsu iRMC (Integrated Remote Management Controller) systems",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "fujitsu",
+        "irmc-version",
+        "type",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[5]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Fujitsu iRMC",
+            "version": "RX2530 M4"
+        }
+    ]
+}
