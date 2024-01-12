@@ -51,7 +51,7 @@ function executeCommand() {
             d.reject(err);
         } else {
             if(!out || out.length == 0){
-                console.error("No output received")
+                console.error("No output received");
                 D.failure(D.errorType.PARSING_ERROR);
             } else {
                 var lastCommandOutput = out[out.length - 1];
@@ -78,7 +78,7 @@ function extractInfo(output) {
         serialNumber = result[8].split(":")[1].trim();
         systemType = result[7].split(":")[1].trim();
         systemOS = result[10].split(":")[1].trim();
-        systemStatus = result[11].split(":")[1].trim();
+        systemStatus = result[11].split(":")[1].trim().replace(/\([^)]*\)/, "");
     });
 
     var variables = [
@@ -101,7 +101,7 @@ function extractInfo(output) {
 function validate() {
     executeCommand()
         .then(function (output){
-            if (output && output.length > 0) {
+            if (output.length > 0) {
                 console.info("Validation successful");
             }
         })
