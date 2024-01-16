@@ -16,7 +16,7 @@
  */
 
 // Commands to be executed over SSH to retrieve information
-var commands = ["1","0"];
+var commands = [""];
 
 // Checks for SSH execution errors
 function checkSshError(error) {
@@ -33,7 +33,7 @@ function checkSshError(error) {
 
 /**
  * Executes the SSH commands and returns a promise.
- * @returns {Promise} A promise resolving to the last command output
+ * @returns {Promise} A promise that resolves with the output of the executed commands or rejects with an error.
  */
 function executeCommand() {
     var d = D.q.defer();
@@ -54,15 +54,14 @@ function executeCommand() {
                 console.error("No output received");
                 D.failure(D.errorType.PARSING_ERROR);
             } else {
-                var lastCommandOutput = out[out.length - 1];
-                d.resolve(JSON.stringify(lastCommandOutput));   
+                d.resolve(JSON.stringify(out));   
             }       
         }
     });
     return d.promise;
 }
 
-//  Extracts relevant information from the command output and creates variables.
+// Extracts relevant information from the command output and creates variables.
 function extractInfo(output) {
     if(!output || output.length == 0){
         D.failure(D.errorType.PARSING_ERROR);
