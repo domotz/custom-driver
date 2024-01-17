@@ -1,0 +1,42 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall Additional security services status",
+    "description": "Monitors the status of additional security services on a SonicWALL device",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "additional-services",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5145-2364"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "servicesToMonitor",
+            "label": "Services To Monitor (cfs, dns, cass, cees, capture)",
+            "value": ["ALL"]
+        }
+    ]
+}
