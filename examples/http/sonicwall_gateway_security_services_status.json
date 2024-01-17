@@ -35,8 +35,8 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "serviceName",
-            "label": "Service Name",
+            "name": "servicesToMonitor",
+            "label": "Services To Monitor (gav, spyw, ips, geoip, botnet, appctrl, dpissl, dpissh)",
             "value": ["ALL"]
         }
     ]

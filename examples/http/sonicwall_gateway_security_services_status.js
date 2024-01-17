@@ -19,10 +19,11 @@
  * 
  **/
 
-// The variable "serviceName" is used to specify the desired service(s) to monitor,
+// The variable "servicesToMonitor" is used to specify the desired service(s) to monitor,
 // it is set to "ALL" to retrieve status for all gateway security services,
 // or specify a list of service names to filter and display only the selected services
-var serviceName =  D.getParameter("serviceName");
+// Possible servicesToMonitor values: ["gav", "spyw", "ips", "geoip", "botnet", "appctrl", "dpissl", "dpissh"]
+var servicesToMonitor =  D.getParameter("servicesToMonitor");
 
 //Processes the HTTP response and handles errors
 function processResponse(d) {
@@ -78,7 +79,7 @@ function getSecurityServices() {
 
 // Extracts data from the retrieved security services data and creates Custom Driver variables.
 function extractData(data) {
-    var selectedServices = {
+    var availableServices = {
         "gav": "Gateway Anti-Virus",
         "spyw": "Anti-Spyware",
         "ips": "Intrusion Prevention and Detection",
@@ -91,19 +92,19 @@ function extractData(data) {
 
     var variables = [];
 
-    if (serviceName[0].toUpperCase() === "ALL") {
-        for (var service in selectedServices) {
+    if (servicesToMonitor[0].toUpperCase() === "ALL") {
+        for (var service in availableServices) {
             var uid = service;
-            var label = selectedServices[service];
+            var label = availableServices[service];
             var serviceStatus = data[uid].status !== undefined ? data[uid].status : data[uid].licensed || "";
             variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
         }
     } else {
-        serviceName.forEach(function (service) {
-            var services = service.toLowerCase();
-            if (selectedServices[services]) {
-                var uid = services;
-                var label = selectedServices[services];
+        servicesToMonitor.forEach(function (service) {
+            var serviceID = service.toLowerCase();
+            if (availableServices[serviceID]) {
+                var uid = serviceID;
+                var label = availableServices[serviceID];
                 var serviceStatus = data[uid].status !== undefined ? data[uid].status : data[uid].licensed || "";
                 variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
             }
