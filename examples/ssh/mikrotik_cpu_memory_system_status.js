@@ -38,7 +38,7 @@ var sshConfig = {
 function checkSshError(err) {
     if(err.message) console.error(err.message);
     if(err.code == 5){
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (err.code == 255) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
@@ -120,7 +120,7 @@ function parseData(output) {
         (D.createVariable("hd-usage", "HD Usage", hddUsage, "%", D.valueType.NUMBER))
     ];
 
-    var filteredVariables = variables.filter(function(variable) { return variable.value !== 0 && variable.value !== "";});
+    var filteredVariables = variables.filter(function(variable) { return variable.value;});
     D.success(filteredVariables);
 }
 
