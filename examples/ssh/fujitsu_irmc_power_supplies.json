@@ -1,0 +1,33 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Fujitsu iRMC Power Supplies",
+    "description": "Monitors the status of power supplies in a Fujitsu iRMC system",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "fujitsu",
+        "power-supply",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[1]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Fujitsu iRMC",
+            "version": "S4"
+        }
+    ]
+}
