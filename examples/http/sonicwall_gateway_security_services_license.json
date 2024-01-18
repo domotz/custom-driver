@@ -1,0 +1,43 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall Gateway security services license",
+    "description": "Monitors the license of various gateway security services on a SonicWALL device",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "gateway",
+        "services",
+        "license"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[8]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5145-2364"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "servicesToMonitor",
+            "label": "Services To Monitor (gav, spyw, ips, geoip, botnet, appctrl, dpissl, dpissh)",
+            "value": ["ALL"]
+        }
+    ]
+}
