@@ -97,6 +97,7 @@ function extractData(data) {
             var uid = service;
             var label = availableServices[service];
             var serviceStatus = data[uid].status !== undefined ? data[uid].status : data[uid].licensed || "";
+            serviceStatus = serviceStatus.toString().replace(/true/g, "Active").replace(/false/g, "Not active");
             variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
         }
     } else {
@@ -106,6 +107,7 @@ function extractData(data) {
                 var uid = serviceID;
                 var label = availableServices[serviceID];
                 var serviceStatus = data[uid].status !== undefined ? data[uid].status : data[uid].licensed || "";
+                serviceStatus = serviceStatus.toString().replace(/true/g, "Active").replace(/false/g, "Not active");
                 variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
             }
         });
