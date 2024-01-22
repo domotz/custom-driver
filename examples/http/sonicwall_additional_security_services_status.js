@@ -17,7 +17,7 @@
  **/
 
 // The variable "servicesToMonitor" is used to specify the desired service(s) to monitor,
-// it is set to "ALL" to retrieve status for all gateway security services,
+// it is set to "ALL" to retrieve status for all additional security services,
 // or specify a list of service names to filter and display only the selected services
 // Possible servicesToMonitor values: ["cfs", "dns", "cass", "cees", "capture"]
 var servicesToMonitor =  D.getParameter("servicesToMonitor");
@@ -75,19 +75,6 @@ function getSecurityServices() {
     return d.promise;
 }
 
-// Retrieves DNS Security services data from the SonicWALL device.
-function getDNSSecurityServices() {
-    var d = D.q.defer();
-    var config = {
-        url: "/api/sonicos/dns-security/dns-sinkhole/base",
-        protocol: "https",
-        jar: true,
-        rejectUnauthorized: false
-    };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
-}
-
 // Extracts data from the retrieved additional security services data and creates Custom Driver variables.
 function extractData(data) {
     var availableServices = {
@@ -99,20 +86,12 @@ function extractData(data) {
     };
 
     var variables = [];
-    var serviceStatus;
     if (servicesToMonitor[0].toUpperCase() === "ALL") {
         for (var service in availableServices) {
             var uid = service;
             var label = availableServices[service];
-            var serviceData = data[0][service];
-
-            if (service === "dns") {
-                serviceData = data[1]["dns_security"] && data[1]["dns_security"]["dns_sinkhole"];
-                serviceStatus = serviceData && serviceData.enable !== undefined ? serviceData.enable : "";
-            } else {
-                serviceStatus = serviceData && serviceData.status !== undefined ? serviceData.status : serviceData && serviceData.licensed || "";
-            }
-
+            var serviceStatus = data[uid] && data[uid].status !== undefined ? data[uid].status : data[uid] && data[uid].licensed || "";
+            serviceStatus = serviceStatus.toString().replace(/true/g, "Active").replace(/false/g, "Not active");
             variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
         }
     } else {
@@ -121,21 +100,15 @@ function extractData(data) {
             if (availableServices[serviceID]) {
                 var uid = serviceID;
                 var label = availableServices[serviceID];
-                var serviceData = data[0][serviceID];
-
-                if (serviceID === "dns") {
-                    serviceData = data[1]["dns_security"] && data[1]["dns_security"]["dns_sinkhole"];
-                    serviceStatus = serviceData && serviceData.enable !== undefined ? serviceData.enable : "";
-                } else {
-                    serviceStatus = serviceData && serviceData.status !== undefined ? serviceData.status : serviceData && serviceData.licensed || "";
-                }
-
+                var serviceStatus = data[uid] && data[uid].status !== undefined ? data[uid].status : data[uid] && data[uid].licensed || "";
+                serviceStatus = serviceStatus.toString().replace(/true/g, "Active").replace(/false/g, "Not active");
                 variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
             }
         });
     }
+    var filteredVariables = variables.filter(function(variable) { return variable.value; });
 
-    D.success(variables);
+    D.success(filteredVariables);
 }
 
 /**
@@ -167,12 +140,7 @@ function validate(){
  */
 function get_status() {
     login()
-        .then(function () {
-            return D.q.all([
-                getSecurityServices(),
-                getDNSSecurityServices()
-            ]);
-        })
+        .then(getSecurityServices)
         .then(extractData)
         .catch(function (err) {
             console.error(err);
