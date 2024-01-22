@@ -2,7 +2,7 @@
     "logo": "sonicwall.svg",
     "version": "1.0.0",
     "name": "Sonicwall Gateway security services license",
-    "description": "Monitors the license of various gateway security services on a SonicWALL device",
+    "description": "Monitors the license status of various gateway security services on a SonicWALL device",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -21,7 +21,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[8]"
+        "independent": "[8]"
     },
     "protocols": [
         "HTTPS"

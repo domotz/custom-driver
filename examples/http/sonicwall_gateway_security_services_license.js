@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Sonicwall Gateway security services license
- * Description: Monitors the license of various gateway security services on a SonicWALL device
+ * Description: Monitors the license status of various gateway security services on a SonicWALL device
  * 
  * Communication protocol is HTTPS
  * 
@@ -19,10 +19,10 @@
  * 
  **/
 
-// The variable "servicesToMonitor" is used to specify the desired service(s) to monitor,
-// it is set to "ALL" to retrieve license for all gateway security services,
+// The variable "servicesToMonitor" is used to specify the desired services to monitor,
+// set to "ALL" to retrieve licenses for all gateway security services,
 // or specify a list of service names to filter and display only the selected services
-// Possible servicesToMonitor values: ["gav", "spyw", "ips", "geoip", "botnet", "appctrl", "dpissl", "dpissh"]
+// Possible values: ["gav", "spyw", "ips", "geoip", "botnet", "appctrl", "dpissl", "dpissh"]
 var servicesToMonitor =  D.getParameter("servicesToMonitor");
 
 //Processes the HTTP response and handles errors
@@ -96,8 +96,9 @@ function extractData(data) {
         for (var service in availableServices) {
             var uid = service + "-licensed";
             var label = availableServices[service];
-            var serviceStatus = data[service] ? data[service].licensed : "";
-            variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
+            var licenseStatus = data[service] ? data[service].licensed : "";
+            licenseStatus = licenseStatus.toString().replace(/true/g, "Active").replace(/false/g, "Not active");
+            variables.push(D.createVariable(uid, label, licenseStatus, null, D.valueType.STRING));
         }
     } else {
         servicesToMonitor.forEach(function (service) {
@@ -105,8 +106,9 @@ function extractData(data) {
             if (availableServices[serviceID]) {
                 var uid = serviceID + "-licensed";
                 var label = availableServices[serviceID];
-                var serviceStatus = data[serviceID] ? data[serviceID].licensed : "";
-                variables.push(D.createVariable(uid, label, serviceStatus, null, D.valueType.STRING));
+                var licenseStatus = data[serviceID] ? data[serviceID].licensed : "";
+                licenseStatus = licenseStatus.toString().replace(/true/g, "Active").replace(/false/g, "Not active");
+                variables.push(D.createVariable(uid, label, licenseStatus, null, D.valueType.STRING));
             }
         });
     }
@@ -138,7 +140,7 @@ function validate(){
 /**
  * @remote_procedure
  * @label Get Gateway Security Services license
- * @documentation TThis procedure is used to monitor the license of various gateway security services.
+ * @documentation This procedure is used to monitor the license status of various gateway security services. 
  */
 function get_status() {
     login()
