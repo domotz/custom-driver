@@ -2,7 +2,7 @@
     "logo": "sonicwall.svg",
     "version": "1.0.0",
     "name": "Sonicwall Additional security services license",
-    "description": "Monitors the license of additional security services on a SonicWALL device",
+    "description": "Monitors the license status of additional security services on a SonicWALL device",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -20,7 +20,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[4]"
+        "independent": "[5]"
     },
     "protocols": [
         "HTTPS"
@@ -35,7 +35,7 @@
         {
             "value_type": "LIST",
             "name": "servicesToMonitor",
-            "label": "Services To Monitor (cfs, cass, cees, capture)",
+            "label": "Services To Monitor (cfs, dns, cass, cees, capture)",
             "value": ["ALL"]
         }
     ]
