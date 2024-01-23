@@ -77,12 +77,13 @@ function getSecurityServices() {
 // Extracts data from the retrieved additional security services data and creates Custom Driver variables.
 function extractData(data) {
     var availableServices = {
-        "cfs": "Content Filtering",
-        "dns": "DNS security Service",
-        "cass": "Anti-Spam Service",
-        "cees": "Endpoint security - Client Capture",
-        "capture": "Capture Advanced Threat Protection"
+        "cfs": "Content Filtering license",
+        "dns": "DNS security Service license",
+        "cass": "Anti-Spam Service license",
+        "cees": "Endpoint security - Client Capture license",
+        "capture": "Capture Advanced Threat Protection license"
     };
+    
     var variables = [];
     if (servicesToMonitor[0].toUpperCase() === "ALL") {
         for (var service in availableServices) {
