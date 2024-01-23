@@ -20,7 +20,7 @@
  **/
 
 // The variable "servicesToMonitor" is used to specify the desired services to monitor,
-// set to "ALL" to retrieve licenses for all gateway security services,
+// set to "ALL" to retrieve license status for all gateway security services,
 // or specify a list of service names to filter and display only the selected services
 // Possible values: ["gav", "spyw", "ips", "geoip", "botnet", "appctrl", "dpissl", "dpissh"]
 var servicesToMonitor =  D.getParameter("servicesToMonitor");
@@ -80,14 +80,14 @@ function getSecurityServices() {
 // Extracts data from the retrieved security services data and creates Custom Driver variables.
 function extractData(data) {
     var availableServices = {
-        "gav": "Gateway Anti-Virus",
-        "spyw": "Anti-Spyware",
-        "ips": "Intrusion Prevention and Detection",
-        "geoip": "Geo-IP Filter",
-        "botnet": "Botnet Filter",
-        "appctrl": "Application Control",
-        "dpissl": "Deep Packet Inspection SSL",
-        "dpissh": "Deep Packet Inspection SSH"
+        "gav": "Gateway Anti-Virus license",
+        "spyw": "Anti-Spyware license",
+        "ips": "Intrusion Prevention and Detection license",
+        "geoip": "Geo-IP Filter license",
+        "botnet": "Botnet Filter license",
+        "appctrl": "Application Control license",
+        "dpissl": "Deep Packet Inspection SSL license",
+        "dpissh": "Deep Packet Inspection SSH license"
     };
 
     var variables = [];
