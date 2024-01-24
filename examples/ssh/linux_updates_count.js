@@ -9,6 +9,8 @@
  * Requires:
  *    - requires apt
  *    - requires grep
+ *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the  NOPASSWD : ALL option 
+ *                     for example: $username  ALL =  NOPASSWD : ALL 
  * 
  * Creates custom driver variables for the count of available updates for specified packages
  * 
