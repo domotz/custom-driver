@@ -10,6 +10,7 @@
         "others": [
             "Linux",
             "SSH Enabled",
+            "user running the script should be in the /etc/sudoers file with the following settings: $username  ALL =  NOPASSWD : ALL",
             "sed",
             "tail",
             "systemctl",

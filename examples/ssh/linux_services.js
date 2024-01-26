@@ -10,7 +10,8 @@
  * Requires:
  *      - systemctl
  *      - sed, grep, awk, and tail
- *      - PLEASE NOTE: it requires to be run as a user from the sudoers group
+ *      - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL 
+
  * 
  * Creates a Custom Driver Table with the following columns:
  *  - Service Name
