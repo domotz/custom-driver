@@ -108,7 +108,7 @@ function extractData(data) {
                 var status = data[variableId]["status"];
                 var serviceStatus = status ? "On" : "Off";
                 var licensed = data[variableId]["licensed"];
-                var licenseStatus = licensed ? "Active" : "Not Active";
+                var licenseStatus = licensed ? "Licensed" : "Not licensed";
                 variables.push(D.createVariable(variableId , variableName, serviceStatus, null, D.valueType.STRING));
                 variables.push(D.createVariable(variableId + "-license", variableName + " License", licenseStatus, null, D.valueType.STRING));       
             } else {
