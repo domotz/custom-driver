@@ -53,21 +53,21 @@ function sanitize(output){
 
 // Extracts relevant data from the API response and populates the Custom Driver Table
 function extractData(data) {
-    var table = [];
-    for (var i = 0; i < data.Fans.length; i++) {
-        var output = data.Fans[i];
-        var unit = output.ReadingUnits;
-        table = D.createTable(
-            "Fan Status",
-            [                                       
-                { label: "Speed", unit: unit, valueType: D.valueType.NUMBER },
-                { label: "Status", valueType: D.valueType.STRING }
-            ]
-        );
+    if (!data.Fans || data.Fans.length === 0) {
+        console.error("No fan data available");
     }
 
+    var unit = data.Fans[0].ReadingUnits;
+    var table = D.createTable(
+        "Fan Status",
+        [
+            { label: "Speed", unit: unit, valueType: D.valueType.NUMBER },
+            { label: "Status", valueType: D.valueType.STRING }
+        ]
+    );
+
     data.Fans.forEach(function(output) {
-        if (!output.Name || !output.Reading || !output.ReadingUnits || !output.Status || !output.Status.State) {
+        if (!output.Name || !output.Reading || !output.Status || !output.Status.State) {
             console.error("Missing required properties in the data");
         }
         var name = output.Name;
