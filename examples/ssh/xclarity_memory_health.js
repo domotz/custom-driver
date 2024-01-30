@@ -19,7 +19,7 @@ var command = "syshealth memory";
 var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 100000,
+    "timeout": 30000,
     "keyboard_interactive": true
 };
 
