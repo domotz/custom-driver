@@ -7,9 +7,9 @@
  * 
  * Tested with Fujitsu iRMC version: S5
  *
- *  Creates a Custom Driver variables
+ *  Creates a Custom Driver variables:
  *      - System Type
- *      - Firmware Version
+ *      - BIOS Version
  *      - Serial Number
  *      - System Status
  * 
@@ -19,7 +19,7 @@
 function getFujitsuInformation() {
     var d = D.q.defer();
     D.device.http.get({
-        url: "/redfish/v1/Systems/0",
+        url: "/redfish/v1/",
         username: D.device.username(), 
         password: D.device.password(), 
         protocol: "https",
@@ -29,7 +29,7 @@ function getFujitsuInformation() {
             "Content-Type": "application/json",
         },
         jar: true,
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
 
     }, function (error, response, body) {
         if (error) {
@@ -46,23 +46,25 @@ function getFujitsuInformation() {
     return d.promise;
 }
 
-// Function to extract relevant data from the Fujitsu device information and create variables.
+// Function to extract relevant data from the Fujitsu device information and create variables
 function extractData(data) {
-    if (data.Model || data.BiosVersion || data.SerialNumber || data.Status || data.Status && data.Status.Health) {
+    if (data.Model || data.BiosVersion || data.SerialNumber || data.Status && data.Status.Health) {
         var systemType = data.Model;
-        var firmwareVersion = data.BiosVersion;
+        var biosVersion = data.BiosVersion;
         var serialNumber = data.SerialNumber;
         var systemStatus = data.Status.Health;
         var variables = [
             D.createVariable("system-type", "System Type", systemType, null, D.valueType.STRING),
-            D.createVariable("firmware-version", "Firmware Version", firmwareVersion, null, D.valueType.STRING),
+            D.createVariable("bios-version", "BIOS Version", biosVersion, null, D.valueType.STRING),
             D.createVariable("serial-number", "Serial Number", serialNumber, null, D.valueType.STRING),
             D.createVariable("system-status", "System Status", systemStatus, null, D.valueType.STRING)
         ];
+        D.success(variables);
+
     } else {
         console.error("Missing required properties in the data");
+        D.failure(D.errorType.PARSING_ERROR);
     }
-    D.success(variables);
 }
 
 /**
@@ -90,7 +92,7 @@ function validate(){
 /**
  * @remote_procedure
  * @label Get Fujitsu information
- * @documentation This procedure is used to extract information about the Fujitsu iRMC device, System Type, Firmware Version, Serial Number and System Status.
+ * @documentation This procedure is used to extract information about the Fujitsu iRMC device, System Type, BIOS Version, Serial Number and System Status.
  */
 function get_status() {
     getFujitsuInformation()

@@ -16,7 +16,7 @@
         "fujitsu",
         "irmc",
         "type",
-        "version",
+        "bios-version",
         "status"
     ],
     "sample_period_s": 900,
