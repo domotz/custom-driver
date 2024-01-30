@@ -19,7 +19,7 @@
 function getFujitsuInformation() {
     var d = D.q.defer();
     D.device.http.get({
-        url: "/redfish/v1/",
+        url: "/redfish/v1/Systems/0",
         username: D.device.username(), 
         password: D.device.password(), 
         protocol: "https",
