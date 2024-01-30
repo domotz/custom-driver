@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: Fujitsu iRMC Components Temperature
- * Description: Monitors Monitors component temperature of a Fujitsu iRMC (Integrated Remote Management Controller) device using the Redfish API
+ * Description: Monitors component temperature of a Fujitsu iRMC (Integrated Remote Management Controller) device using the Redfish API
  * 
  * Communication protocol is HTTPS
  * 
@@ -14,7 +14,7 @@
  **/
 
 // Function to make an HTTP GET request to retrieve component temperature from the Fujitsu iRMC device
-function getFanStatus() {
+function getComponentsTemperature() {
     var d = D.q.defer();
     D.device.http.get({
         url: "/redfish/v1/Chassis/0/Thermal",
@@ -82,7 +82,7 @@ function extractData(data) {
  * @documentation This procedure is used to validate the presence of a Fujitsu device by checking the availability of a specific Redfish API endpoint
  */
 function validate(){
-    getFanStatus()
+    getComponentsTemperature()
         .then(function (response) {
             if (response && response["@odata.id"].indexOf("/redfish/v1/Chassis/0/Thermal") !== -1) {
                 console.info("Data available");
@@ -104,7 +104,7 @@ function validate(){
  * @documentation This procedure retrieves component temperature from the Fujitsu iRMC device.
  */
 function get_status() {
-    getFanStatus()
+    getComponentsTemperature()
         .then(extractData)
         .catch(function (err) {
             console.error(err);
