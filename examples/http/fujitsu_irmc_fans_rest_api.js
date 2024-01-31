@@ -55,6 +55,7 @@ function sanitize(output){
 function extractData(data) {
     if (!data.Fans || data.Fans.length === 0) {
         console.error("No fan data available");
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 
     var unit = data.Fans[0].ReadingUnits;
@@ -69,6 +70,7 @@ function extractData(data) {
     data.Fans.forEach(function(output) {
         if (!output.Name || !output.Reading || !output.Status || !output.Status.State) {
             console.error("Missing required properties in the data");
+            D.failure(D.errorType.PARSING_ERROR);
         }
         var name = output.Name;
         var speed = output.Reading;
