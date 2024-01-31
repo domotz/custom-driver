@@ -1,6 +1,6 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "name": "Dell iDRAC RAID Monitoring",
     "description": "Monitors the operational status of RAID controllers on a Dell server with iDRAC",
     "category": "Hardware Integration",
@@ -27,7 +27,7 @@
         "encryption-mode",
         "security-status"
     ],
-    "sample_period_s": 1800,
+    "sample_period_s": 3600,
     "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
