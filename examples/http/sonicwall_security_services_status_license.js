@@ -7,19 +7,9 @@
  * 
  * Tested on SonicWALL NSv 270 SonicOS version 7.0.1
  *
- * Creates a Custom Driver variables:
- *  - Gateway Anti-Virus license
- *  - Anti-Spyware license
- *  - Intrusion Prevention and Detection license
- *  - Geo-IP Filter license
- *  - Botnet Filter license
- *  - Application Control license
- *  - Deep Packet Inspection SSL license
- *  - Deep Packet Inspection SSH license 
- *  - Content Filtering 
- *  - Anti-Spam Service 
- *  - Endpoint security - Client Capture 
- *  - Capture Advanced Threat Protection 
+ * Creates a Custom Driver Table with the following columns:
+ *  - Status: The operational status of the security services
+ *  - Licensed: The licensing status of the security services
  * 
  **/
 
@@ -28,6 +18,13 @@
 // or specify a list of service names to filter and display only the selected services
 // Possible values: ["gav", "spyw", "ips", "geoip", "botnet", "appctrl", "dpissl", "dpissh", "cfs", "cass", "cees", "capture"]
 var servicesToMonitor = D.getParameter("servicesToMonitor");
+
+var table = D.createTable(
+    "Security services status and license", [
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Licensed", valueType: D.valueType.STRING },
+    ]
+);
 
 //Processes the HTTP response and handles errors
 function processResponse(d) {
@@ -39,30 +36,8 @@ function processResponse(d) {
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
-    };
-}
-
-//Makes an HTTP GET request to retrieve security services data from the SonicWALL device.
-function getSecurityServices() {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: "/api/sonicos/dynamic-file/getDashboardData.json",
-        protocol: "https",
-        jar: true,
-        rejectUnauthorized: false
-        
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            d.reject(error);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
         if (response.statusCode != 200) {
             if (body) {
@@ -73,14 +48,50 @@ function getSecurityServices() {
                 }
             }
         }
-        
         d.resolve(JSON.parse(body));
-    });
+    };
+}
+
+/**
+ * Logs in to the SonicWALL device using basic authentication.
+ * @returns A promise that resolves on successful login.
+ */
+function login() {
+    var d = D.q.defer();
+    var config = {
+        url: "/api/sonicos/auth",
+        username: D.device.username(),
+        password: D.device.password(),
+        protocol: "https",
+        auth: "basic",
+        jar: true,
+        rejectUnauthorized: false
+    };
+    D.device.http.post(config, processResponse(d));
     return d.promise;
 }
+
+// Retrieves security services data from the SonicWALL device.
+function getSecurityServices() {
+    var d = D.q.defer();
+    var config = {
+        url: "/api/sonicos/dynamic-file/getDashboardData.json",
+        protocol: "https",
+        jar: true,
+        rejectUnauthorized: false,
+    };
+    D.device.http.get(config, processResponse(d));
+    return d.promise;
+}
+
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+}
+
 // Extracts data from the retrieved security services data and creates Custom Driver variables.
 function extractData(data) {
-    var variables = [];
     var availableServices = {
         "gav": "Gateway Anti-Virus",
         "spyw": "Anti-Spyware",
@@ -92,7 +103,7 @@ function extractData(data) {
         "dpissh": "Deep Packet Inspection SSH", 
         "cfs": "Content Filtering",
         "cass": "Anti-Spam Service",
-        "cees": "Endpoint security - Client Capture",
+        "cees": "Endpoint security Client Capture",
         "capture": "Capture Advanced Threat Protection"
     };
 
@@ -105,15 +116,19 @@ function extractData(data) {
                 var status = data[variableId]["status"];
                 var serviceStatus = status ? "On" : "Off";
                 var licensed = data[variableId]["licensed"];
-                var licenseStatus = licensed ? "Licensed" : "Not licensed";
-                variables.push(D.createVariable(variableId , variableName, serviceStatus, null, D.valueType.STRING));
-                variables.push(D.createVariable(variableId + "-license", variableName + " License", licenseStatus, null, D.valueType.STRING));       
+                var licenseStatus = licensed ? "Yes" : "No";
+                var recordId = sanitize(variableName);
+                table.insertRecord(recordId, [
+                    serviceStatus,
+                    licenseStatus
+                ]);
+                    
             } else {
                 console.error("Failed to retrieve data for " + variableId);
             }
         }
     }
-    D.success(variables);
+    D.success(table);
 }
 
 /**
@@ -121,7 +136,8 @@ function extractData(data) {
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
 function validate(){
-    getSecurityServices()
+    login()
+        .then(getSecurityServices)
         .then(function (response) {
             if (response) {
                 console.info("Data available");
@@ -143,7 +159,8 @@ function validate(){
  * @documentation This procedure monitors operational and licensing status of various security services.
  */
 function get_status() {
-    getSecurityServices()
+    login()
+        .then(getSecurityServices)
         .then(extractData)
         .catch(function (err) {
             console.error(err);
