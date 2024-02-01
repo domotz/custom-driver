@@ -73,7 +73,7 @@ function extractData(data) {
                 var designation = sensor.Designation;
                 var category = sensor.EntityId;
                 var status = sensor.SignalStatus === "EmptyOrNotInstalled" ? "Empty Or Not Installed" : sensor.SignalStatus;
-                var recordId = sanitize(designation);
+                var recordId = sanitize(sensorType + "-" + designation);
                 table.insertRecord(recordId, [ category, status ]);
             });
         }
