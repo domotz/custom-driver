@@ -6,7 +6,7 @@
     "description": "Monitors the operational and licensing status of diverse security services on a SonicWALL device",
     "category": "Software Integration",
     "requirements": {
-        "credentials": true,
+        "credentials": false,
         "sandbox_version": "1.12",
         "others": [
             "SonicWall",

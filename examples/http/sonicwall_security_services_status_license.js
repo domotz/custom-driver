@@ -39,9 +39,6 @@ function processResponse(d) {
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
@@ -49,38 +46,38 @@ function processResponse(d) {
     };
 }
 
-/**
- * Logs in to the SonicWALL device using basic authentication.
- * @returns A promise that resolves on successful login.
- */
-function login() {
-    var d = D.q.defer();
-    var config = {
-        url: "/api/sonicos/auth",
-        username: D.device.username(),
-        password: D.device.password(),
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false
-    };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
-}
-
-// Retrieves security services data from the SonicWALL device.
+//Makes an HTTP GET request to retrieve security services data from the SonicWALL device.
 function getSecurityServices() {
     var d = D.q.defer();
-    var config = {
+    D.device.http.get({
         url: "/api/sonicos/dynamic-file/getDashboardData.json",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false
-    };
-    D.device.http.get(config, processResponse(d));
+        
+    }, function (error, response, body) {
+        if (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+            d.reject(error);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode != 200) {
+            if (body) {
+                var responseBody = JSON.parse(body);
+                if (responseBody.status && responseBody.status.success === false) {
+                    console.error("Check API endpoint:", responseBody.status.info[0].message);
+                    D.failure(D.errorType.GENERIC_ERROR);
+                }
+            }
+        }
+        
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
-
 // Extracts data from the retrieved security services data and creates Custom Driver variables.
 function extractData(data) {
     var variables = [];
@@ -124,8 +121,7 @@ function extractData(data) {
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
 function validate(){
-    login()
-        .then(getSecurityServices)
+    getSecurityServices()
         .then(function (response) {
             if (response) {
                 console.info("Data available");
@@ -147,8 +143,7 @@ function validate(){
  * @documentation This procedure monitors operational and licensing status of various security services.
  */
 function get_status() {
-    login()
-        .then(getSecurityServices)
+    getSecurityServices()
         .then(extractData)
         .catch(function (err) {
             console.error(err);
