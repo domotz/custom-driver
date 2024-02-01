@@ -1,6 +1,6 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "name": "Linux Updates List (apt-based)",
     "description": "Display the list of Updates available in a Linux host",
     "category": "Software Integration",
@@ -10,6 +10,7 @@
         "others": [
             "Linux",
             "SSH Enabled",
+            "user running the script should be in the /etc/sudoers file with the following settings: $username  ALL =  NOPASSWD : ALL",
             "apt",
             "grep"
         ]
