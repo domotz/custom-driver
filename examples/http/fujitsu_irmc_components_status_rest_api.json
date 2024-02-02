@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "fujitsu.svg",
     "version": "1.0.0",
     "name": "Fujitsu iRMC Components Status",
     "description": "Monitors the status of each component of the Fujitsu iRMC device using the Redfish API",

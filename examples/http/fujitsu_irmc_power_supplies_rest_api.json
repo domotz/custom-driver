@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "fujitsu.svg",
     "version": "1.0.0",
     "name": "Fujitsu iRMC Power Supplies",
     "description": "Monitors power supply status of a Fujitsu iRMC (Integrated Remote Management Controller) device using the Redfish API",
