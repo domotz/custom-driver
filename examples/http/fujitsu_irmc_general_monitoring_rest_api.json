@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "fujitsu.svg",
     "version": "1.0.0",
     "name": "Fujitsu iRMC General Monitoring",
     "description": "Monitors the general information for Fujitsu iRMC (Integrated Remote Management Controller) systems",
