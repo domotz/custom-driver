@@ -1,0 +1,32 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "HPE MSA SAN Overall Unit Status",
+    "description": "This script retrieves the overall unit status of an HPE MSA SAN (Storage Area Network) device",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "HPE MSA SAN"
+        ]
+    },
+    "tags": [
+        "hpe-msa-san",
+        "overall-unit-status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "HPE MSA 2050 SAN",
+            "version": "VL270P005"
+        }
+    ]
+}
