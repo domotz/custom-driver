@@ -26,7 +26,7 @@
         "virtualization-technology-enabled",
         "hyper-threading-enabled" 
     ],
-    "sample_period_s": 3600,
+    "sample_period_s": 300,
     "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
