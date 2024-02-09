@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "hpe.svg",
     "version": "1.0.0",
     "name": "HPE MSA SAN HW Sensors Charge",
     "description": "This script retrieves the charge capacity sensor data from an HPE MSA SAN device",

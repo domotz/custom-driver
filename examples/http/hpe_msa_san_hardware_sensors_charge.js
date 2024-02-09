@@ -8,8 +8,8 @@
  * Tested with HPE MSA 2050 SAN version: VL270P005
  * 
  * Creates a Custom Driver Table with the following columns:
- *     - Value: Represents the value of the sensor
- *     - Status: Indicates the status of the sensor
+ *    - Value: The charge capacity sensor value
+ *    - Status: The status of the charge capacity sensor 
  * 
  */
 
@@ -20,7 +20,7 @@ var sessionKey;
 var table = D.createTable(
     "Charge Capacity",
     [
-        { label: "Value", unit: "%", valueType: D.valueType.STRING},
+        { label: "Value", unit: "%", valueType: D.valueType.NUMBER},
         { label: "Status", valueType: D.valueType.STRING}   
     ]
 );
@@ -40,9 +40,9 @@ function processResponse(d) {
         }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if (!sessionKey) {
+            if(sessionKey == "Authentication Unsuccessful"){
                 console.error("Session key not found in response headers");
-                D.failure(D.errorType.GENERIC_ERROR);
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
         d.resolve(body);
@@ -93,20 +93,18 @@ function sanitize(output){
 
 // Extracts relevant data from the API response
 function extractData(data) {
-
-    console.log(data);
     var sensors = data.match(/<OBJECT basetype="sensors" name="sensor" oid="\d+" format="rows">([\s\S]*?)<\/OBJECT>/g);
-    var overallSensors = sensors.filter(function(sensor) { 
+    var chargeCapacitySensors = sensors.filter(function(sensor) { 
         return sensor.match(/<PROPERTY name="sensor-type".*?>Charge Capacity/);
     });
-    if (overallSensors.length === 0) {
+    if (chargeCapacitySensors.length === 0) {
         console.log("Charge Capacity sensors not found");        
         D.failure(D.errorType.PARSING_ERROR);
     }
-    for(var i = 0; i < overallSensors.length; i++){
-        var sensorNameMatch = overallSensors[i].match(/<PROPERTY\s+name="sensor-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var valueMatch = overallSensors[i].match(/<PROPERTY\s+name="value"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var statusMatch = overallSensors[i].match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
+    for(var i = 0; i < chargeCapacitySensors.length; i++){
+        var sensorNameMatch = chargeCapacitySensors[i].match(/<PROPERTY\s+name="sensor-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
+        var valueMatch = chargeCapacitySensors[i].match(/<PROPERTY\s+name="value"\s+[^>]*>(.*?)<\/PROPERTY>/);
+        var statusMatch = chargeCapacitySensors[i].match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
         var sensorName = sensorNameMatch ? sensorNameMatch[1] : "";
         var value = valueMatch ? valueMatch[1] : "";
         var status = statusMatch ? statusMatch[1] : "";
@@ -128,10 +126,14 @@ function validate(){
     login()
         .then(getChargeCapacity)
         .then(function (response) {
-            if (response.indexOf("Command completed successfully.")) {
-                console.info("Validation successful");
+            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
+            if (!output) {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
+            } else {
+                console.log("Validation successful");
                 D.success();
-            } 
+            }
         })
         .catch(function (error) {
             console.error(error);
