@@ -111,7 +111,7 @@ function extractData(data) {
  */
 function validate(){
     login()
-        .then(getVoltageCurrent)
+        .then(getOverallUnitStatus)
         .then(function (response) {
             var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
             if (!output) {
