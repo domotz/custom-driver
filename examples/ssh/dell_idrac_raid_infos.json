@@ -27,7 +27,7 @@
         "encryption-mode",
         "security-status"
     ],
-    "sample_period_s": 3600,
+    "sample_period_s": 600,
     "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
