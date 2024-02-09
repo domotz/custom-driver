@@ -19,7 +19,6 @@ function processResponse(d) {
         if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
-            return;
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -30,9 +29,9 @@ function processResponse(d) {
         }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if (!sessionKey) {
+            if(sessionKey == "Authentication Unsuccessful"){
                 console.error("Session key not found in response headers");
-                D.failure(D.errorType.GENERIC_ERROR);
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
         d.resolve(body);
@@ -40,8 +39,8 @@ function processResponse(d) {
 }
 
 /**
- * Logs in to the SonicWALL device using basic authentication.
- * @returns A promise that resolves on successful login.
+ * Logs in to the HPE MSA SAN device using basic authentication
+ * @returns A promise that resolves on successful login
  */
 function login() {
     var d = D.q.defer();
@@ -112,12 +111,16 @@ function extractData(data) {
  */
 function validate(){
     login()
-        .then(getOverallUnitStatus)
+        .then(getVoltageCurrent)
         .then(function (response) {
-            if (response.indexOf("Command completed successfully.")) {
-                console.info("Validation successful");
+            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
+            if (!output) {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
+            } else {
+                console.log("Validation successful");
                 D.success();
-            } 
+            }
         })
         .catch(function (error) {
             console.error(error);

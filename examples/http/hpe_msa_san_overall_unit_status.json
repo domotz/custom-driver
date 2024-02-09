@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "hpe.svg",
     "version": "1.0.0",
     "name": "HPE MSA SAN Overall Unit Status",
     "description": "This script retrieves the overall unit status of an HPE MSA SAN (Storage Area Network) device",
@@ -13,7 +13,8 @@
     },
     "tags": [
         "hpe-msa-san",
-        "overall-unit-status"
+        "overall-unit",
+        "status"
     ],
     "sample_period_s": 900,
     "has_actions": false,
