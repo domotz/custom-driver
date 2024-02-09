@@ -20,7 +20,7 @@ var sessionKey;
 var table = D.createTable(
     "Voltage and Current Sensors",
     [
-        { label: "Value", unit: "V", valueType: D.valueType.STRING},
+        { label: "Value", unit: "V", valueType: D.valueType.NUMBER},
         { label: "Status", valueType: D.valueType.STRING}   
     ]
 );
