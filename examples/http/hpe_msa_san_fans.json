@@ -1,0 +1,35 @@
+{
+    "logo": "hpe.svg",
+    "version": "1.0.0",
+    "name": "HPE MSA SAN Fans",
+    "description": "This script retrieves fans data from an HPE MSA SAN device",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "HPE MSA SAN"
+        ]
+    },
+    "tags": [
+        "hpe-msa-san",
+        "fan",
+        "health",
+        "status",
+        "speed"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "HPE MSA 2050 SAN",
+            "version": "VL270P005"
+        }
+    ]
+}
