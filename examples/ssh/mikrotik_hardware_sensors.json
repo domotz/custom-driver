@@ -1,0 +1,50 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "MikroTik Hardware Sensors",
+    "description": "This script retrieves hardware sensor data from MikroTik devices ",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "mikrotik",
+        "system-health",
+        "temperature",
+        "psu",
+        "poe"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[7]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CCR2004-1G-12S+2XS"
+        },
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CRS354-48P-4S+2Q+"
+        },
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CRS326-24G-2S+"
+        },
+        {
+            "name": "MikroTik RouterOS",
+            "version": "CRS328-24P-4S+"
+        }
+        
+    ]
+}
+
+ 

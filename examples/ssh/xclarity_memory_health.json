@@ -1,6 +1,6 @@
 {
     "logo": "lenovo-xclarity.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "XClarity Memory Health",
     "description": "Monitor memory health on Lenovo XClarity servers",
     "category": "Hardware Integration",
@@ -21,6 +21,7 @@
         "capacity"
     ],
     "sample_period_s": 1800,
+    "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
         "table": "[3,999]"
