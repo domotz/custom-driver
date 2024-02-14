@@ -83,25 +83,17 @@ function sanitize(output){
 // Extracts relevant data from the API response
 function extractData(data) {
     var variables = [];
-    var sensors = data.match(/<OBJECT basetype="sensors" name="sensor" oid="\d+" format="rows">([\s\S]*?)<\/OBJECT>/g);
-    var overallSensors = sensors.filter(function(sensor) { 
-        return sensor.match(/<PROPERTY name="sensor-name".*?>Overall Unit Status/);
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT");
+    sensorObjects.each(function (index, element) {
+        var sensorName = $(element).find("PROPERTY[name=\"sensor-name\"]").text();
+        if (sensorName === "Overall Unit Status") {
+            var status = $(element).find("PROPERTY[name=\"status\"]").text();
+            var uid = sanitize(sensorName);
+            variables.push(D.createVariable(uid, sensorName, status, null, D.valueType.STRING));           
+        }
     });
-
-    if (overallSensors.length === 0) {
-        console.log("Overall Unit Status sensors not found");        
-        D.failure(D.errorType.PARSING_ERROR);
-    }
-
-    for(var i = 0; i < overallSensors.length; i++){
-        var sensorNameMatch = overallSensors[i].match(/<PROPERTY\s+name="sensor-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var statusMatch = overallSensors[i].match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var sensorName = sensorNameMatch ? sensorNameMatch[1] : "";
-        var status = statusMatch ? statusMatch[1] : "";
-        var uid = sanitize(sensorName);
-        variables.push(D.createVariable(uid, sensorName, status, null, D.valueType.STRING));
-    }
-    D.success(variables);   
+    D.success(variables);
 }
 
 /**
@@ -113,13 +105,15 @@ function validate(){
     login()
         .then(getOverallUnitStatus)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show sensor-status") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
