@@ -8,7 +8,7 @@
  * Tested with HPE MSA 2050 SAN version: VL270P005
  * 
  * Creates a Custom Driver variables:
- *     - System Name: The name of the storage system
+ *     - Product ID: The product model identifier of the system
  *     - Midplane Serial Number: The serial number of the controller enclosure midplane
  *     - Health: The health status of the system
  *     - Health Reason: If Health is not OK, the reason for the health state
@@ -79,36 +79,24 @@ function getSystemInformation() {
 
 // Extracts relevant data from the API response and create variables.
 function extractData(data) {
-    if (!data) {
-        console.log("No data available");
-        D.failure(D.errorType.GENERIC_ERROR);
-    } else {
-        var systemInfo = data.match(/<OBJECT basetype="system" name="system-information" oid="\d+" format="pairs">([\s\S]*?)<\/OBJECT>/g);
-        if (!systemInfo) {
-            console.log("No system information found in the data");
-            D.failure(D.errorType.PARSING_ERROR);
-        } else {
-            var variables = []; 
-            systemInfo.forEach(function(system) {  
-                var systemNameMatch = system.match(/<PROPERTY\s+name="system-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var midplaneSerialNumberMatch = system.match(/<PROPERTY\s+name="midplane-serial-number"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var healthMatch = system.match(/<PROPERTY\s+name="health"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var healthReasonMatch = system.match(/<PROPERTY\s+name="health-reason"\s+[^>]*>(.*?)<\/PROPERTY>/);
-
-                var systemName = systemNameMatch ? systemNameMatch[1] : "";
-                var midplaneSerialNumber = midplaneSerialNumberMatch ? midplaneSerialNumberMatch[1] : "";
-                var health = healthMatch ? healthMatch[1] : "";
-                var healthReason = healthReasonMatch ? healthReasonMatch[1] : "";
-
-                variables.push(D.createVariable("system-name", "System Name", systemName, null, D.valueType.STRING));
-                variables.push(D.createVariable("midplane-serial-number", "Midplane Serial Number", midplaneSerialNumber, null, D.valueType.STRING));
-                variables.push(D.createVariable("health", "Health", health, null, D.valueType.STRING));
-                variables.push(D.createVariable("health-reason", "Health Reason", healthReason, null, D.valueType.STRING));
-
-            });
-            D.success(variables);
-        }
+    var variables = [];
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT[basetype=\"system\"]");
+    if (sensorObjects.length == 0) {
+        console.error("No system information found in the data");
+        D.failure(D.errorType.PARSING_ERROR);
     }
+    sensorObjects.each(function (index, element) {
+        var productId = $(element).find("PROPERTY[name=\"product-id\"]").text();
+        var midplaneSerialNumber = $(element).find("PROPERTY[name=\"midplane-serial-number\"]").text();
+        var health = $(element).find("PROPERTY[name=\"health\"]").text();   
+        var healthReason = $(element).find("PROPERTY[name=\"health-reason\"]").text();  
+        variables.push(D.createVariable("product-id", "Product ID", productId, null, D.valueType.STRING));
+        variables.push(D.createVariable("midplane-serial-number", "Midplane Serial Number", midplaneSerialNumber, null, D.valueType.STRING));
+        variables.push(D.createVariable("health", "Health", health, null, D.valueType.STRING));
+        variables.push(D.createVariable("health-reason", "Health Reason", healthReason, null, D.valueType.STRING));
+    });
+    D.success(variables);
 }
 
 /**
@@ -120,13 +108,15 @@ function validate(){
     login()
         .then(getSystemInformation)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show system") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
