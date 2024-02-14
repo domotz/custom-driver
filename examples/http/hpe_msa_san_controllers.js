@@ -100,45 +100,32 @@ function sanitize(output){
 
 // Extracts relevant data from the API response
 function extractData(data) {
-    if (!data) {
-        console.log("No data available");
-        D.failure(D.errorType.GENERIC_ERROR);
-    } else {
-        var controllers = data.match(/<OBJECT basetype="controllers" name="controllers" oid="\d+" format="pairs">([\s\S]*?)<\/OBJECT>/g);
-        if (!controllers) {
-            console.log("No controllers found in the data");        
-            D.failure(D.errorType.PARSING_ERROR);
-        } else {
-            controllers.forEach(function(controller) {
-                var controllerIdMatch = controller.match(/<PROPERTY\s+name="controller-id"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var ipAddresMatch = controller.match(/<PROPERTY\s+name="ip-address"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var disksMatch = controller.match(/<PROPERTY\s+name="disks"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var statusMatch = controller.match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var healthMatch = controller.match(/<PROPERTY\s+name="health"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var redundancyModeMatch = controller.match(/<PROPERTY\s+name="redundancy-mode"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var redundancyStatusMatch = controller.match(/<PROPERTY\s+name="redundancy-status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-
-                var controllerId = controllerIdMatch ? controllerIdMatch[1] : "";
-                var ipAddres = ipAddresMatch ? ipAddresMatch[1] : "";
-                var disks = disksMatch ? disksMatch[1] : "";
-                var status = statusMatch ? statusMatch[1] : "";
-                var health = healthMatch ? healthMatch[1] : "";
-                var redundancyMode = redundancyModeMatch ? redundancyModeMatch[1] : "";
-                var redundancyStatus = redundancyStatusMatch ? redundancyStatusMatch[1] : "";
-                var recordId = sanitize(controllerId);
-
-                table.insertRecord(recordId, [
-                    ipAddres,
-                    disks,
-                    status,
-                    health,
-                    redundancyMode,
-                    redundancyStatus
-                ]);
-            });
-            D.success(table);   
-        }
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT[basetype=\"controllers\"]");
+    if (sensorObjects.length == 0) {
+        console.error("No fan found in the data");
+        D.failure(D.errorType.PARSING_ERROR);
     }
+    
+    sensorObjects.each(function (index, element) {
+        var controllerId = $(element).find("PROPERTY[name=\"controller-id\"]").first().text();
+        var ipAddress = $(element).find("PROPERTY[name=\"ip-address\"]").first().text();
+        var disks = $(element).find("PROPERTY[name=\"disks\"]").first().text();
+        var status = $(element).find("PROPERTY[name=\"status\"]").first().text();
+        var health = $(element).find("PROPERTY[name=\"health\"]").first().text();
+        var redundancyMode = $(element).find("PROPERTY[name=\"redundancy-mode\"]").first().text();
+        var redundancyStatus = $(element).find("PROPERTY[name=\"redundancy-status\"]").first().text();
+        var recordId = sanitize(controllerId);
+        table.insertRecord(recordId, [
+            ipAddress,
+            disks,
+            status,
+            health,
+            redundancyMode,
+            redundancyStatus
+        ]);
+    });
+    D.success(table);
 }
 
 /**
@@ -150,13 +137,15 @@ function validate(){
     login()
         .then(getController)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show controllers") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
