@@ -103,47 +103,33 @@ function sanitize(output){
 
 // Extracts relevant data from the API response
 function extractData(data) {
-    if (!data) {
-        console.log("No data available");
-        D.failure(D.errorType.GENERIC_ERROR);
-    } else {
-        var disks = data.match(/<OBJECT basetype="drives" name="drive" oid="\d+" format="rows">([\s\S]*?)<\/OBJECT>/g);
-        if (!disks) {
-            console.log("No disks found in the data");        
-            D.failure(D.errorType.PARSING_ERROR);
-        } else {
-            disks.forEach(function(disk) {
-                var locationMatch = disk.match(/<PROPERTY\s+name="location"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var serialNumberMatch = disk.match(/<PROPERTY\s+name="serial-number"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var usageMatch = disk.match(/<PROPERTY\s+name="usage"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var diskGroupMatch = disk.match(/<PROPERTY\s+name="disk-group"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var poolNameMatch = disk.match(/<PROPERTY\s+name="storage-pool-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var tierMatch = disk.match(/<PROPERTY\s+name="storage-tier"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var statusMatch = disk.match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var healthMatch = disk.match(/<PROPERTY\s+name="health"\s+[^>]*>(.*?)<\/PROPERTY>/);
-              
-                var location = locationMatch ? locationMatch[1] : "";
-                var serialNumber = serialNumberMatch ? serialNumberMatch[1] : "";
-                var usage = usageMatch ? usageMatch[1] : "";
-                var diskGroup = diskGroupMatch ? diskGroupMatch[1] : "";
-                var pool = poolNameMatch ? poolNameMatch[1] : "";
-                var tier = tierMatch ? tierMatch[1] : "";
-                var status = statusMatch ? statusMatch[1] : "";
-                var health = healthMatch ? healthMatch[1] : "";
-                var recordId = sanitize(location);
-                table.insertRecord(recordId, [
-                    serialNumber,
-                    usage,
-                    diskGroup,
-                    pool,
-                    tier,
-                    status,
-                    health
-                ]);
-            });
-            D.success(table);   
-        }
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT[basetype=\"drives\"]");
+    if (sensorObjects.length == 0) {
+        console.error("No disks found in the data");
+        D.failure(D.errorType.PARSING_ERROR);
     }
+    sensorObjects.each(function (index, element) {
+        var location = $(element).find("PROPERTY[name=\"location\"]").text();
+        var serialNumber = $(element).find("PROPERTY[name=\"serial-number\"]").text();
+        var usage = $(element).find("PROPERTY[name=\"usage\"]").text();
+        var diskGroup = $(element).find("PROPERTY[name=\"disk-group\"]").text();
+        var pool = $(element).find("PROPERTY[name=\"storage-pool-name\"]").text();
+        var tier = $(element).find("PROPERTY[name=\"storage-tier\"]").text();
+        var status = $(element).find("PROPERTY[name=\"status\"]").text();
+        var health = $(element).find("PROPERTY[name=\"health\"]").text();
+        var recordId = sanitize(location);
+        table.insertRecord(recordId, [
+            serialNumber,
+            usage,
+            diskGroup,
+            pool,
+            tier,
+            status,
+            health
+        ]);
+    });
+    D.success(table);
 }
 
 /**
@@ -155,13 +141,15 @@ function validate(){
     login()
         .then(getDisks)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show disks") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
