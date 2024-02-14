@@ -67,47 +67,45 @@ function extractData(data) {
         console.error("Data is not available");
         D.failure(D.errorType.GENERIC_ERROR);
     }
-
     var systemStatus = [];
     Object.keys(data.Health).forEach(function(healthKey) {
         var healthData = data.Health[healthKey];
         if (typeof healthData === "object") {
             Object.keys(healthData.Status).forEach(function(statusKey) {
                 systemStatus.push({
-                    recordId: healthKey,
+                    id: healthKey,
                     status: healthData.Status[statusKey]
                 });
             });
             if (healthData.PowerSuppliesMismatch !== undefined) {
                 systemStatus.push({
-                    recordId: "PowerSuppliesMismatch",
+                    id: "PowerSuppliesMismatch",
                     status: healthData.PowerSuppliesMismatch
                 });
             }
         } else {
             systemStatus.push({
-                recordId: healthKey,
+                id: healthKey,
                 status: healthData
             });
         }
     });
-
     Object.keys(data).forEach(function(key) {
         if (key !== "Health") {
             systemStatus.push({
-                recordId: key,
+                id: key,
                 status: data[key]
             });
         }
     });
 
     systemStatus.forEach(function(status) {
-        table.insertRecord(sanitize(status.recordId), [status.status]);
+        var recordId = status.id.replace(/([a-z])([A-Z])/g, '$1-$2');
+        table.insertRecord(sanitize(recordId), [status.status]);
     });
 
     D.success(table);
 }
-
 
 /**
  * @remote_procedure
