@@ -93,28 +93,22 @@ function sanitize(output){
 
 // Extracts relevant data from the API response
 function extractData(data) {
-    var sensors = data.match(/<OBJECT basetype="sensors" name="sensor" oid="\d+" format="rows">([\s\S]*?)<\/OBJECT>/g);
-    var voltageCurrentSensors = sensors.filter(function(sensor) { 
-        return sensor.match(/<PROPERTY name="sensor-type".*?>(Voltage|Current)/);
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT");
+    sensorObjects.each(function (index, element) {
+        var sensorType = $(element).find("PROPERTY[name=\"sensor-type\"]").text();
+        if (sensorType == "Voltage" || sensorType == "Current") {
+            var sensorName = $(element).find("PROPERTY[name=\"sensor-name\"]").text();
+            var value = $(element).find("PROPERTY[name=\"value\"]").text();  
+            var status = $(element).find("PROPERTY[name=\"status\"]").text();   
+            var recordId = sanitize(sensorName);
+            table.insertRecord(recordId, [
+                value,
+                status
+            ]);
+        }
     });
-    if (voltageCurrentSensors.length == 0) {
-        console.log("Voltage and current sensors not found");        
-        D.failure(D.errorType.PARSING_ERROR);
-    }
-    for(var i = 0; i < voltageCurrentSensors.length; i++){
-        var sensorNameMatch = voltageCurrentSensors[i].match(/<PROPERTY\s+name="sensor-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var valueMatch = voltageCurrentSensors[i].match(/<PROPERTY\s+name="value"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var statusMatch = voltageCurrentSensors[i].match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var sensorName = sensorNameMatch ? sensorNameMatch[1] : "";
-        var value = valueMatch ? valueMatch[1] : "";
-        var status = statusMatch ? statusMatch[1] : "";
-        var recordId = sanitize(sensorName);
-        table.insertRecord(recordId, [
-            value,
-            status
-        ]);
-    }
-    D.success(table);   
+    D.success(table);
 }
 
 /**
@@ -126,13 +120,15 @@ function validate(){
     login()
         .then(getVoltageCurrent)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show sensor-status") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
