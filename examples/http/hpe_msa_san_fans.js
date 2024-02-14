@@ -86,7 +86,7 @@ function getFans() {
     return d.promise;
 }
 
-// Sanitize sensor name to create a recordId
+// Sanitize name value to create a recordId
 function sanitize(output){
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
@@ -95,35 +95,25 @@ function sanitize(output){
 
 // Extracts relevant data from the API response
 function extractData(data) {
-    if (!data) {
-        console.log("No data available");
-        D.failure(D.errorType.GENERIC_ERROR);
-    } else {
-        var fans = data.match(/<OBJECT basetype="fan" name="fan-details" oid="\d+" format="rows">([\s\S]*?)<\/OBJECT>/g);
-        if (!fans) {
-            console.log("No fans found in the data");        
-            D.failure(D.errorType.PARSING_ERROR);
-        } else {
-            fans.forEach(function(fan) {
-                var nameMatch = fan.match(/<PROPERTY\s+name="name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var healthMatch = fan.match(/<PROPERTY\s+name="health"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var statusMatch = fan.match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-                var speedMatch = fan.match(/<PROPERTY\s+name="speed"\s+[^>]*>(.*?)<\/PROPERTY>/);
-              
-                var name = nameMatch ? nameMatch[1] : "";
-                var health = healthMatch ? healthMatch[1] : "";
-                var status = statusMatch ? statusMatch[1] : "";
-                var speed = speedMatch ? speedMatch[1] : "";
-                var recordId = sanitize(name);
-                table.insertRecord(recordId, [
-                    health,
-                    status,
-                    speed
-                ]);
-            });
-            D.success(table);   
-        }
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT[basetype=\"fan\"]");
+    if (sensorObjects.length == 0) {
+        console.error("No fan found in the data");
+        D.failure(D.errorType.PARSING_ERROR);
     }
+    sensorObjects.each(function (index, element) {
+        var name = $(element).find("PROPERTY[name=\"name\"]").text();
+        var health = $(element).find("PROPERTY[name=\"health\"]").text();
+        var status = $(element).find("PROPERTY[name=\"status\"]").text();   
+        var speed = $(element).find("PROPERTY[name=\"speed\"]").text();  
+        var recordId = sanitize(name);
+        table.insertRecord(recordId, [
+            health,
+            status,
+            speed
+        ]);
+    });
+    D.success(table);
 }
 
 /**
@@ -135,13 +125,15 @@ function validate(){
     login()
         .then(getFans)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show fans") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
