@@ -93,28 +93,22 @@ function sanitize(output){
 
 // Extracts relevant data from the API response
 function extractData(data) {
-    var sensors = data.match(/<OBJECT basetype="sensors" name="sensor" oid="\d+" format="rows">([\s\S]*?)<\/OBJECT>/g);
-    var chargeCapacitySensors = sensors.filter(function(sensor) { 
-        return sensor.match(/<PROPERTY name="sensor-type".*?>Charge Capacity/);
+    var $ = D.htmlParse(data);
+    var sensorObjects = $("OBJECT");
+    sensorObjects.each(function (index, element) {
+        var sensorType = $(element).find("PROPERTY[name=\"sensor-type\"]").text();
+        if (sensorType === "Charge Capacity") {
+            var sensorName = $(element).find("PROPERTY[name=\"sensor-name\"]").text();
+            var value = $(element).find("PROPERTY[name=\"value\"]").text();  
+            var status = $(element).find("PROPERTY[name=\"status\"]").text();   
+            var recordId = sanitize(sensorName);
+            table.insertRecord(recordId, [
+                value.replace("%", ""),
+                status
+            ]);
+        }
     });
-    if (chargeCapacitySensors.length === 0) {
-        console.log("Charge Capacity sensors not found");        
-        D.failure(D.errorType.PARSING_ERROR);
-    }
-    for(var i = 0; i < chargeCapacitySensors.length; i++){
-        var sensorNameMatch = chargeCapacitySensors[i].match(/<PROPERTY\s+name="sensor-name"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var valueMatch = chargeCapacitySensors[i].match(/<PROPERTY\s+name="value"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var statusMatch = chargeCapacitySensors[i].match(/<PROPERTY\s+name="status"\s+[^>]*>(.*?)<\/PROPERTY>/);
-        var sensorName = sensorNameMatch ? sensorNameMatch[1] : "";
-        var value = valueMatch ? valueMatch[1] : "";
-        var status = statusMatch ? statusMatch[1] : "";
-        var recordId = sanitize(sensorName);
-        table.insertRecord(recordId, [
-            value.replace("%", ""),
-            status
-        ]);
-    }
-    D.success(table);   
+    D.success(table);
 }
 
 /**
@@ -126,13 +120,15 @@ function validate(){
     login()
         .then(getChargeCapacity)
         .then(function (response) {
-            var output = response.match(/<PROPERTY name="response".*?>Command completed successfully\. \(.*?\)<\/PROPERTY>/);
-            if (!output) {
-                console.error("Validation failed");
-                D.failure(D.errorType.PARSING_ERROR);
-            } else {
+            var $ = D.htmlParse(response);
+            var responseElement = $("RESPONSE");
+            var sensorStatus = responseElement.attr("request");
+            if (sensorStatus == "show sensor-status") {
                 console.log("Validation successful");
                 D.success();
+            } else {
+                console.error("Validation failed");
+                D.failure(D.errorType.PARSING_ERROR);
             }
         })
         .catch(function (error) {
