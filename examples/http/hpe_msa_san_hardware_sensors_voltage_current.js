@@ -8,7 +8,8 @@
  * Tested with HPE MSA 2050 SAN version: VL270P005
  * 
  * Creates a Custom Driver Table with the following columns:
- *     - Value: The measured voltage or current value in volts
+ *     - Voltage: The measured voltage  value in volts
+ *     - Current: The mesured current value in  
  *     - Status: The status of the sensor
  * 
  */
@@ -20,8 +21,9 @@ var sessionKey;
 var table = D.createTable(
     "Voltage and Current Sensors",
     [
-        { label: "Value", unit: "V", valueType: D.valueType.NUMBER},
-        { label: "Status", valueType: D.valueType.STRING}   
+        { label: "Voltage", unit: "V", valueType: D.valueType.NUMBER },
+        { label: "Current", unit: "A", valueType: D.valueType.NUMBER },
+        { label: "Status", valueType: D.valueType.STRING }   
     ]
 );
 
@@ -97,15 +99,13 @@ function extractData(data) {
     var sensorObjects = $("OBJECT");
     sensorObjects.each(function (index, element) {
         var sensorType = $(element).find("PROPERTY[name=\"sensor-type\"]").text();
-        if (sensorType == "Voltage" || sensorType == "Current") {
-            var sensorName = $(element).find("PROPERTY[name=\"sensor-name\"]").text();
-            var value = $(element).find("PROPERTY[name=\"value\"]").text();  
-            var status = $(element).find("PROPERTY[name=\"status\"]").text();   
-            var recordId = sanitize(sensorName);
-            table.insertRecord(recordId, [
-                value,
-                status
-            ]);
+        var sensorName = sanitize($(element).find("PROPERTY[name=\"sensor-name\"]").text());
+        var value = $(element).find("PROPERTY[name=\"value\"]").text();
+        var status = $(element).find("PROPERTY[name=\"status\"]").text();   
+        if (sensorType == "Voltage") {
+            table.insertRecord(sensorName, [value, "", status]);
+        } else if (sensorType == "Current") {
+            table.insertRecord(sensorName, ["", value, status]);
         }
     });
     D.success(table);
