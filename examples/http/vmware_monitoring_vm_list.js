@@ -9,7 +9,7 @@
  *
  * Creates a Custom Driver Table with the following columns:
  *      - Name: Name of the Virtual machine
- *      - Memory: Memory size in mebibytes
+ *      - Memory: Memory size in Gigabytes
  *      - CPU count: The number of CPU cores
  *      - Power state: The valid power states for a virtual machine
  * 
@@ -23,7 +23,7 @@ var table = D.createTable(
     "Virtual Machines List",
     [
         { label: "Name", valueType: D.valueType.STRING },
-        { label: "Memory", unit: "MB", valueType: D.valueType.NUMBER },
+        { label: "Memory", unit: "GB", valueType: D.valueType.NUMBER },
         { label: "CPU count", valueType: D.valueType.NUMBER },
         { label: "Power state", valueType: D.valueType.STRING }
     ]
@@ -94,7 +94,7 @@ function extractData(body) {
             if (list.vm || list.name || list.memory_size_MiB || list.cpu_count || list.power_state){
                 var vmiId = list.vm;
                 var name = list.name;
-                var memory = list.memory_size_MiB;
+                var memory = list.memory_size_MiB / 1024;
                 var cpuCount = list.cpu_count;
                 var powerStat = list.power_state;
                 var recordId = sanitize(vmiId);
