@@ -1,0 +1,39 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "VMWare vCenter Monitoring General Info",
+    "description": "Monitors the general information for VMWare vCenter systems",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware",
+            "vCenter"
+        ]
+    },
+    "tags": [
+        "vmware",
+        "vcenter",
+        "product-name",
+        "product-type",
+        "version",
+        "build-number",
+        "release-date",
+        "install-time"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[6]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "VMWare vCenter",
+            "version": "7.0.3"
+        }
+    ]
+}
