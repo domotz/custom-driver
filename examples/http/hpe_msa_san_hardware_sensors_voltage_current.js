@@ -9,7 +9,7 @@
  * 
  * Creates a Custom Driver Table with the following columns:
  *     - Voltage: The measured voltage  value in volts
- *     - Current: The mesured current value in  
+ *     - Current: The mesured current value in amperes
  *     - Status: The status of the sensor
  * 
  */
@@ -97,17 +97,37 @@ function sanitize(output){
 function extractData(data) {
     var $ = D.htmlParse(data);
     var sensorObjects = $("OBJECT");
+    var sensorData = {};
     sensorObjects.each(function (index, element) {
-        var sensorType = $(element).find("PROPERTY[name=\"sensor-type\"]").text();
-        var sensorName = sanitize($(element).find("PROPERTY[name=\"sensor-name\"]").text());
-        var value = $(element).find("PROPERTY[name=\"value\"]").text();
-        var status = $(element).find("PROPERTY[name=\"status\"]").text();   
-        if (sensorType == "Voltage") {
-            table.insertRecord(sensorName, [value, "", status]);
-        } else if (sensorType == "Current") {
-            table.insertRecord(sensorName, ["", value, status]);
-        }
+        var sensorType = $(element).find("PROPERTY[name=\"sensor-type\"]").text();   
+        if (sensorType == "Voltage" || sensorType == "Current") {
+            var durableID = $(element).find("PROPERTY[name=\"durable-id\"]").text();
+            var id = durableID.split("_").slice(2).join("-");
+            var value = $(element).find("PROPERTY[name=\"value\"]").text();
+            var status = $(element).find("PROPERTY[name=\"status\"]").text();
+            
+            if (!sensorData[id]) {
+                sensorData[id] = {}; 
+            }
+            
+            if (sensorType == "Voltage") {
+                sensorData[id].voltage = value;
+            } else if (sensorType == "Current") {
+                sensorData[id].current = value;
+            }
+            sensorData[id].status = status;
+
+        }   
     });
+
+    for (id in sensorData) {
+        var output = sensorData[id];
+        var recordId = sanitize(id);
+        var voltage = output.voltage !== undefined ? output.voltage : "";
+        var current = output.current !== undefined ? output.current : "";
+        var status = output.status !== undefined ? output.status : "";    
+        table.insertRecord(recordId, [voltage, current, status]);
+    }
     D.success(table);
 }
 
