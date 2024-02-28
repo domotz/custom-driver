@@ -1,11 +1,11 @@
 /**
  * Domotz Custom Driver 
  * Name: VMWare Monitoring VM Info
- * Description:  Monitors Virtual Machines running on VMare server 
+ * Description:  Monitors Virtual Machines running on VMware server 
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on VMWare vSphere version 7.0.3
+ * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
  *      - Name: Name of the Virtual machine
@@ -19,36 +19,14 @@
  * 
  **/
 
-// Variable to store the session ID obtained from the VMWare API
-var vmwareApiSessionId;
-
 // The ID of the virtual machine
 var vmId = D.getParameter("vmId");
 
-// This function processes the response from HTTP requests
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        var responseBody = JSON.parse(response.body);
-        vmwareApiSessionId = responseBody.value; 
-        d.resolve(JSON.parse(body));
-    };
-}
-
-// This function performs login to obtain a session ID from the VMWare API
+// Logs in to the VMWare device using basic authentication.
 function login() {
     var d = D.q.defer();
     var config = {
-        url: "/rest/com/vmware/cis/session",
+        url: "/api/session",
         username: D.device.username(),
         password: D.device.password(),
         protocol: "https",
@@ -56,23 +34,45 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode != 201) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
 // This function retrieves information about a specific virtual machine
-function getVMInfo() {
+function getVMInfo(sessionId) {
     var d = D.q.defer();
     var config = {
-        url: "/rest/vcenter/vm/" + vmId,
+        url: "/api/vcenter/vm/" + vmId,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": vmwareApiSessionId 
+            "vmware-api-session-id": sessionId 
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -82,14 +82,14 @@ function extractData(data){
         console.error("No data available");        
         D.failure(D.errorType.GENERIC_ERROR);
     }
-    var name = data.value.name;
-    var instanceUuid = data.value.identity.instance_uuid;
-    var operatingSystem = data.value.guest_OS;
-    var memorySize = data.value.memory.size_MiB / 1024;
-    var processors = data.value.cpu.count;
-    var cores = data.value.cpu.cores_per_socket;
-    var version = data.value.hardware.version;
-    var powerState = data.value.power_state;
+    var name = data.name;
+    var instanceUuid = data.identity.instance_uuid;
+    var operatingSystem = data.guest_OS;
+    var memorySize = data.memory.size_MiB / 1024;
+    var processors = data.cpu.count;
+    var cores = data.cpu.cores_per_socket;
+    var version = data.hardware.version;
+    var powerState = data.power_state;
     var variables = [
         D.createVariable("name", "Name", name, null, D.valueType.STRING),
         D.createVariable("instance-uuid", "Instance UUID", instanceUuid, null, D.valueType.STRING),
@@ -112,7 +112,7 @@ function validate(){
     login()
         .then(getVMInfo)
         .then(function (response) {
-            if (response && response.value) {
+            if (response && Object.keys(response).length > 0) {
                 console.info("Data available");
                 D.success();
             } else {

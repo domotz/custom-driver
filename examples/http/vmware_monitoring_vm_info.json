@@ -1,8 +1,8 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare Monitoring VM Info",
-    "description": "Monitors Virtual Machines running on VMare server",
+    "description": "Monitors Virtual Machines running on VMware server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -36,8 +36,15 @@
     ],
     "tested_on": [
         {
-            "name": "VMWare vSphere",
+            "name": "VMWare vCenter",
             "version": "7.0.3"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "vmId",
+            "label": "VM ID"
         }
     ]
 }
