@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare Monitoring VM list",
     "description": "Diplays a list of all the VMs and their properties in a VMWare server",
@@ -33,7 +33,7 @@
     ],
     "tested_on": [
         {
-            "name": "VMWare vSphere",
+            "name": "VMWare vCenter",
             "version": "7.0.3"
         }
     ]
