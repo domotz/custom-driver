@@ -14,8 +14,6 @@
  *      - Health: The health status of the drive
  **/
 
-var sessionToken;
-
 var table = D.createTable(
     "Drives",[
         { label: "Serial Number", valueType: D.valueType.STRING },
@@ -24,28 +22,6 @@ var table = D.createTable(
         { label: "Health", valueType: D.valueType.STRING }
     ]
 );
-
-// Process the response from the server
-function processResponse(d) {
-    return function process(error, response, body) {  
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }      
-        if (response.headers["x-auth-token"]) {
-            sessionToken = response.headers["x-auth-token"];
-        } else if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Command failed") !==-1) {
-            console.error("Session token not found in response headers");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Invalid URL") !==-1) {
-            console.error("Invalid URL");
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
-    };
-}
 
 /**
  * Logs in to the Dell PowerVault SAN system
@@ -63,40 +39,76 @@ function login() {
             "Password": D.device.password() 
         })
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {  
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);                     
+        } else {
+            if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Invalid session key") !== -1) {
+                console.error("Invalid session key found in response headers");
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Command failed") !== -1) {
+                console.error("Command failed found in response headers");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            
+            var sessionToken = response.headers["x-auth-token"];
+            d.resolve(sessionToken);
+        }            
+    });
     return d.promise;
 }
 
 /**
  * Sends an HTTP GET request
  * @param {string} url The URL to perform the GET request
- * @returns promise for http response body
+ * @param {string} sessionToken The session token for authentication
+ * @returns A promise that resolves with the HTTP response body
  */
-function httpGet(url) {
+function httpGet(url, sessionToken) {
     var d = D.q.defer();
     var config = {
-        url:url,
+        url: url,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            'X-Auth-Token': sessionToken,
+            'X-Auth-Token': sessionToken
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);  
+        }
+        if (response.statusCode !== 200) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);  
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
 // Function to make an HTTP GET request to retrieve controllers from the Dell PowerVault SAN system
-function getControllers(){
-    return httpGet("/redfish/v1/Storage")
+function getControllers(sessionToken){
+    return httpGet("/redfish/v1/Storage", sessionToken)
         .then(function(controllers){
             if (controllers && controllers.Members) {
                 var promises = controllers.Members.map(function (member) {
-                    return getControllerInfo(member['@odata.id']);
+                    return getControllerInfo(member['@odata.id'], sessionToken);
                 });
                 return D.q.all(promises);
-            }
+            } else {
+                console.error("Invalid response or missing Members array");
+                D.failure(D.errorType.GENERIC_ERROR);                     
+
+            } 
+        })
+        .catch(function(err) {
+            console.error("Error retrieving controller info " + err);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         });
 }
 
@@ -105,20 +117,22 @@ function getControllers(){
  * @param {string} controllerUrl The URL of the controller
  * @returns A promise representing the retrieval of controller information
  */
-function getControllerInfo(controllerUrl) {
-    return httpGet(controllerUrl)
+function getControllerInfo(controllerUrl, sessionToken) {
+    return httpGet(controllerUrl, sessionToken)
         .then(function(controller) {
             if (controller && controller.Name && controller.Drives) {
                 var drivePromises = controller.Drives.map(function(drive) {
-                    return getDriveInfo(drive['@odata.id'], controller.Name);
+                    return getDriveInfo(drive['@odata.id'], controller.Name, sessionToken);
                 });
                 return D.q.all(drivePromises);
             } else {
                 console.error("Controller name or drives not found");
+                D.failure(D.errorType.GENERIC_ERROR);                     
+
             }
         })
         .catch(function(err) {
-            console.error("Error retrieving controller info " + err);
+            console.error("Error retrieving controllers " + err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -129,13 +143,14 @@ function getControllerInfo(controllerUrl) {
  * @param {string} controllerName The name of the controller the drive belongs to
  * @returns A promise representing the retrieval of drives information
  */
-function getDriveInfo(driveUrl, controllerName) {
-    return httpGet(driveUrl)
+function getDriveInfo(driveUrl, controllerName, sessionToken) {
+    return httpGet(driveUrl, sessionToken)
         .then(function(drive) {
             if (drive && drive.Name) {
                 return { controllerName: controllerName, drive: drive };
             } else {
                 console.error("Drive name not found");
+                D.failure(D.errorType.GENERIC_ERROR);                     
             }
         })
         .catch(function(err) {

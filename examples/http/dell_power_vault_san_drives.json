@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "dell.svg",
     "version": "1.0.0",
     "name": "Dell PowerVault SAN Drives",
     "description": "This script retrieves information about the drives of a Dell PowerVault SAN system using the Redfish API",
