@@ -5,7 +5,7 @@
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on VMWare vSphere version 7.0.3
+ * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
  *      - Type: Type of disk
@@ -13,9 +13,6 @@
  *      - VMDK File: Path to the VMDK file associated with the disk
  * 
  **/
-
-// Variable to store the session ID obtained from the VMWare API
-var vmwareApiSessionId;
 
 // The ID of the virtual machine
 var vmId = D.getParameter("vmId");
@@ -29,30 +26,11 @@ var table = D.createTable(
     ]
 );
 
-// This function processes the response from HTTP requests
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        var responseBody = JSON.parse(response.body);
-        vmwareApiSessionId = responseBody.value; 
-        d.resolve(JSON.parse(body));
-    };
-}
-
-// This function performs login to obtain a session ID from the VMWare API
+// Logs in to the VMWare device using basic authentication.
 function login() {
     var d = D.q.defer();
     var config = {
-        url: "/rest/com/vmware/cis/session",
+        url: "/api/session",
         username: D.device.username(),
         password: D.device.password(),
         protocol: "https",
@@ -60,23 +38,45 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode != 201) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
 // This function retrieves information about disks attached to a specific virtual machine
-function getDisks() {
+function getDisks(sessionId) {
     var d = D.q.defer();
     var config = {
-        url: "/rest/vcenter/vm/" + vmId,
+        url: "/api/vcenter/vm/" + vmId,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": vmwareApiSessionId 
+            "vmware-api-session-id": sessionId 
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -87,15 +87,16 @@ function sanitize(output){
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
-// This function extracts relevant data from the API response response
+// This function extracts relevant data from the API response
 function extractData(body) {
-    if (body && body.value && body.value.disks && body.value.disks.length > 0) {
-        body.value.disks.forEach(function(disk) {
-            if (disk.value && (disk.value.label || disk.value.type || disk.value.capacity || (disk.value.backing && disk.value.backing.vmdk_file))) {
-                var label = disk.value.label;
-                var type = disk.value.type;
-                var capacity = parseFloat((disk.value.capacity / Math.pow(1024, 3)).toFixed(2));
-                var vmdkFile = disk.value.backing.vmdk_file;
+    if (body && body.disks) {
+        for (var diskId in body.disks) {
+            var disk = body.disks[diskId];
+            if (disk.label || disk.type || disk.capacity || (disk.backing && disk.backing.vmdk_file)) {
+                var label = disk.label;
+                var type = disk.type;
+                var capacity = parseFloat((disk.capacity / Math.pow(1024, 3)).toFixed(2));
+                var vmdkFile = disk.backing && disk.backing.vmdk_file;
                 var recordId = sanitize(label);
                 table.insertRecord(recordId, [
                     type,
@@ -106,7 +107,7 @@ function extractData(body) {
                 console.error("Missing required properties in the data");
                 D.failure(D.errorType.PARSING_ERROR);
             }
-        });
+        }
         D.success(table);
     } else {
         console.error("No data available");
@@ -123,7 +124,7 @@ function validate(){
     login()
         .then(getDisks)
         .then(function (response) {
-            if (response && response.value) {
+            if (response && response.disks) {
                 console.info("Data available");
                 D.success();
             } else {

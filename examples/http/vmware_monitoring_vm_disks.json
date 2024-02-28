@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare Monitoring VM Disks",
     "description": "This script retrieves information about each disk connected to a Virtual Machine on VMware server",
@@ -33,7 +33,7 @@
     ],
     "tested_on": [
         {
-            "name": "VMWare vSphere",
+            "name": "VMWare vCenter",
             "version": "7.0.3"
         }
     ],
