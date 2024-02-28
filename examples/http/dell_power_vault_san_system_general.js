@@ -14,33 +14,6 @@
  * 
  **/
 
-var sessionToken;
-
-// Process the response from the server
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        if (response.headers["x-auth-token"]) {
-            sessionToken = response.headers["x-auth-token"];
-            if (response.headers["command-status"] && response.headers["command-status"].indexOf("Command failed")) {
-                console.log("Session token not found in response headers");
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }     
-        } else if (response.headers["command-status"] && response.headers["command-status"].indexOf("Invalid URL")) {
-            console.log("Invalid URL");
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-
-        } else if (response.statusCode !== 200) {
-            console.log(response);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }          
-        d.resolve(JSON.parse(body));
-    };
-}
-
 /**
  * Logs in to the Dell PowerVault SAN system
  * @returns A promise object representing the login process
@@ -57,12 +30,29 @@ function login() {
             "Password": D.device.password() 
         })
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {  
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);                     
+        } else {
+            if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Invalid session key") !== -1) {
+                console.log("Invalid session key found in response headers");
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Command failed") !== -1) {
+                console.log("Command failed found in response headers");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            
+            var sessionToken = response.headers["x-auth-token"];
+            d.resolve(sessionToken);
+        }            
+    });
     return d.promise;
 }
 
 // Function to make an HTTP GET request to retrieve information from the Dell PowerVault SAN system
-function getSystemInformation() {
+function getSystemInformation(sessionToken) {
     var d = D.q.defer();
     var config = {
         url: "/redfish/v1/Chassis/0",
@@ -70,10 +60,20 @@ function getSystemInformation() {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            'X-Auth-Token': sessionToken,
+            'X-Auth-Token': sessionToken
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);  
+        }
+        if (response.statusCode !== 200) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);  
+        }
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -85,7 +85,6 @@ function extractData(data) {
     } else {
         health = "N/A";
     }
-
     if (data.SerialNumber || data.PowerState) {
         var serialNumber = data.SerialNumber;
         var powerState = data.PowerState;
