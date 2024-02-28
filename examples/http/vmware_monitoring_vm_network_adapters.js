@@ -5,7 +5,7 @@
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on VMWare vSphere version 7.0.3
+ * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
  *      - Network: Network information
@@ -14,9 +14,6 @@
  *      - State: Network adapter state
  * 
  **/
-
-// Variable to store the session ID obtained from the VMWare API
-var vmwareApiSessionId;
 
 // The ID of the virtual machine
 var vmId = D.getParameter("vmId");
@@ -31,30 +28,11 @@ var table = D.createTable(
     ]
 );
 
-// This function processes the response from HTTP requests
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        var responseBody = JSON.parse(response.body);
-        vmwareApiSessionId = responseBody.value; 
-        d.resolve(JSON.parse(body));
-    };
-}
-
-// This function performs login to obtain a session ID from the VMWare API
+// Logs in to the VMWare device using basic authentication.
 function login() {
     var d = D.q.defer();
     var config = {
-        url: "/rest/com/vmware/cis/session",
+        url: "/api/session",
         username: D.device.username(),
         password: D.device.password(),
         protocol: "https",
@@ -62,23 +40,45 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode != 201) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
 // This function retrieves information about network adapetrs attached to a specific virtual machine
-function getNetworkAdapters() {
+function getNetworkAdapters(sessionId) {
     var d = D.q.defer();
     var config = {
-        url: "/rest/vcenter/vm/" + vmId,
+        url: "/api/vcenter/vm/" + vmId,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": vmwareApiSessionId 
+            "vmware-api-session-id": sessionId 
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -91,14 +91,15 @@ function sanitize(output){
 
 // This function extracts relevant data from the API response response
 function extractData(body) {
-    if (body && body.value && body.value.nics && body.value.nics.length > 0) {
-        body.value.nics.forEach(function(nic) {
-            if (nic.value && (nic.value.label || (nic.value.backing && nic.value.backing.network) || nic.value.backing.network_name || nic.value.mac_address || nic.value.state )) {
-                var label = nic.value.label;
-                var network = nic.value.backing.network;
-                var networkName = nic.value.backing.network_name;
-                var macAddress = nic.value.mac_address; 
-                var state = nic.value.state;
+    if (body && body.nics) {
+        for (var nicId in body.nics) {
+            var nic = body.nics[nicId];
+            if (nic.label || (nic.backing && nic.backing.network) || nic.backing.network_name || nic.mac_address || nic.state ) {
+                var label = nic.label;
+                var network = nic.backing.network;
+                var networkName = nic.backing.network_name;
+                var macAddress = nic.mac_address; 
+                var state = nic.state;
                 var recordId = sanitize(label);
                 table.insertRecord(recordId, [
                     network,
@@ -110,7 +111,7 @@ function extractData(body) {
                 console.error("Missing required properties in the data");
                 D.failure(D.errorType.PARSING_ERROR);
             }
-        });
+        }
         D.success(table);
     } else {
         console.error("No data available");
@@ -127,7 +128,7 @@ function validate(){
     login()
         .then(getNetworkAdapters)
         .then(function (response) {
-            if (response && response.value) {
+            if (response && response.nics) {
                 console.info("Data available");
                 D.success();
             } else {

@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare Monitoring VM Network adapters",
     "description": "This script retrieves information about each network adapter connected to a Virtual Machine on VMware server",
@@ -34,7 +34,7 @@
     ],
     "tested_on": [
         {
-            "name": "VMWare vSphere",
+            "name": "VMWare vcenter",
             "version": "7.0.3"
         }
     ],
