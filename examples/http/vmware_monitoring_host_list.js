@@ -5,7 +5,7 @@
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on VMWare vSphere version 7.0.3
+ * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
  *      - Name: Name of the host
@@ -13,9 +13,6 @@
  *      - Power State: The power states of a host
  * 
  **/
-
-// Variable to store the session ID obtained from the VMWare API
-var vmwareApiSessionId;
 
 // Create a Custom Driver table to store disk information
 var table = D.createTable(
@@ -26,30 +23,11 @@ var table = D.createTable(
     ]
 );
 
-// This function processes the response from HTTP requests
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        var responseBody = JSON.parse(response.body);
-        vmwareApiSessionId = responseBody.value; 
-        d.resolve(JSON.parse(body));
-    };
-}
-
-// This function performs login to obtain a session ID from the VMWare API
+// Logs in to the VMWare device using basic authentication.
 function login() {
     var d = D.q.defer();
     var config = {
-        url: "/rest/com/vmware/cis/session",
+        url: "/api/session",
         username: D.device.username(),
         password: D.device.password(),
         protocol: "https",
@@ -57,23 +35,45 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode != 201) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
 // This function retrieves the list of hosts from the VMWare API
-function getHostList() {
+function getHostList(sessionId) {
     var d = D.q.defer();
     var config = {
-        url: "/rest/vcenter/host",
+        url: "/api/vcenter/host",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": vmwareApiSessionId 
+            "vmware-api-session-id": sessionId 
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
@@ -86,8 +86,9 @@ function sanitize(output){
 
 // This function extracts relevant data from the API response response
 function extractData(body) {
-    if (body && body.value && body.value.length > 0){
-        body.value.forEach(function(hostList) {
+    console.log(body);
+    if (body && body.length > 0){
+        body.forEach(function(hostList) {
             if (hostList.host || hostList.name || hostList.connection_state || hostList.power_state){
                 var host = hostList.host;
                 var name = hostList.name;
@@ -120,7 +121,7 @@ function validate(){
     login()
         .then(getHostList)
         .then(function (response) {
-            if (response && response.value) {
+            if (response && response.length > 0) {
                 console.info("Data available");
                 D.success();
             } else {
@@ -137,7 +138,7 @@ function validate(){
 /**
  * @remote_procedure
  * @label Get Hosts List
- * @documentation  TThis procedure is used to retrieve the list of hosts from VMWare device
+ * @documentation This procedure is used to retrieve the list of hosts from VMWare device
  */
 function get_status() {
     login()

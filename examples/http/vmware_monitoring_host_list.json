@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare Monitoring Host List",
     "description": "This script retrieves list of hosts in a VMWare server",
@@ -32,7 +32,7 @@
     ],
     "tested_on": [
         {
-            "name": "VMWare vSphere",
+            "name": "VMWare vCenter",
             "version": "7.0.3"
         }
     ]
