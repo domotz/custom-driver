@@ -18,30 +18,11 @@ var table = D.createTable(
     ]
 );
 
-// This function processes the response from HTTP requests
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } 
-        else if (response.statusCode != 200) {
-            console.log(response.body);
-            d.resolve("N/A");
-        } 
-        d.resolve(JSON.parse(body));
-    };
-}
-
 // Function to login to the VMWare vCenter
 function login() {
     var d = D.q.defer();
     var config = {
-        url: "/rest/com/vmware/cis/session",
+        url: "/api/session",
         username: D.device.username(),
         password: D.device.password(),
         protocol: "https",
@@ -49,18 +30,29 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
+    D.device.http.post(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode != 201) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 
 /**
  * Function to perform HTTP GET request
  * @param {string} url The URL to send the GET request to
- * @param {object} loginResponse The response from the login request, containing the session ID
+ * @param {object} sessionId The response from the login request, containing the session ID
  * @returns A promise containing the body of the response
  */
-function httpGet(url, loginResponse) {
-    sessionId = loginResponse.value;
+function httpGet(url, sessionId) {
     var d = D.q.defer();
     var config = {
         url: url,
@@ -71,7 +63,18 @@ function httpGet(url, loginResponse) {
             "vmware-api-session-id": sessionId
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode != 200) {
+            console.log(response.body);
+            d.resolve("N/A");
+        } 
+        d.resolve(JSON.parse(body));
+    });
     return d.promise;
 }
 

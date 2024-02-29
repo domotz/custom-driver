@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare vCenter Monitoring System Health",
     "description": "This script is designed to retrieve system health information from a VMware vCenter server",
