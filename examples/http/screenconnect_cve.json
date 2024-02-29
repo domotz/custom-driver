@@ -5,32 +5,30 @@
     "description": "Detect ScreenConnect server vulnerabilities CVE-2024-1709 and CVE-2024-1708",
     "category": "Software Integration",
     "requirements": {
-        "credentials": true,
-        "sandbox_version": "1.12",
-        "others": [
-            "Powershell Version 5.1.19041.2364",
-            "Privilege required: Local Administrator",
-            "WinRM Enabled"
-        ]
+        "credentials": false,
+        "sandbox_version": "1.12"
     },
     "tags": [
-        "windows",
-        "services",
-        "software"
+        "ScreenConnect",
+        "security"
     ],
     "sample_period_s": 3600,
     "execution_time_s": 60,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[3]"
+        "table": "[4]"
     },
     "protocols": [
-        "WINRM"
+        "HTTP"
     ],
     "tested_on": [
         {
+            "name": "ScreenConnect",
+            "version": "23.9.10.8817"
+        },
+        {
             "name": "Microsoft Windows",
             "version": "11"
-        }
+        }        
     ]
 }
