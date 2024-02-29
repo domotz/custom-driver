@@ -5,24 +5,25 @@
  *   
  * Communication protocol is HTTP
  * 
- * Tested on Windows Versions:
+ * Tested on:
+ *      - ScreenConnect 23.9.10.8817
  *      - Windows 11
  * 
- * Creates a Custom Driver table with the following columns:
- *   - Detected: "Yes"" if ScreenConnect was detected, "No" otherwise
- *   - Version: ScreenConnect version 
- *   - Vulnerable: "Yes" if this version is affected by CVE-2024-1709 and CVE-2024-1708, "No" otherwise
+ * Creates the following Custom Driver variables:
+ *   - screen-connect-installed: "Yes"" if ScreenConnect was detected, "No" otherwise
+ *   - screen-connect-version: ScreenConnect version 
+ *   - screen-connect-vulnerable: "Yes" if this version is affected by CVE-2024-1709 and CVE-2024-1708, "No" otherwise
  * 
 **/
-// Create a Custom Driver table to store software vulnerabilities
-var table = D.createTable(
-    "Software vulnerabilities",
-    [                                       
-        { label: "Detected", valueType: D.valueType.STRING },
-        { label: "Version", valueType: D.valueType.STRING },
-        { label: "Is vulnerable", valueType: D.valueType.STRING }
-    ]
-);
+
+function publishVariables(installed, version, vulnerable) {
+    var variables = [
+        D.createVariable("screen-connect-installed", "ScreenConnect Server Installed", installed),
+        D.createVariable("screen-connect-version", "ScreenConnect Server Version", version),
+        D.createVariable("screen-connect-vulnerable", "ScreenConnect Server Vulnerable", vulnerable)
+    ];
+    D.success(variables);
+}
 
 // Function to make an HTTP GET request to retrieve ScreenConnect version
 function getScreenConnecVersion() {
@@ -34,8 +35,7 @@ function getScreenConnecVersion() {
     }, function (error, response, body) {
         if (error || response.statusCode != 200) {
             console.error(error + "\nStatus Code: " + response.statusCode);
-            table.insertRecord("screenconnect-server", [ "No", "N/A", "N/A" ]);
-            D.success(table);
+            publishVariables("No", "N/A", "N/A");
         } else 
             d.resolve(body);
     });
@@ -54,10 +54,9 @@ function compareVersions(version1, version2) {
     return 0;
 }
 
-// Extracts relevant data from the API response and populates the Custom Driver Table
+// Extracts relevant data from the API response and populates the Custom Driver variables
 function extractData(data) 
 {
-     var installed = "Yes";
     var version = "N/A";
     var vulnerable = "N/A";
 
@@ -72,14 +71,13 @@ function extractData(data)
             vulnerable = "No";
     }
 
-    table.insertRecord("screenconnect-server", [ "Yes", version, vulnerable]);
-    D.success(table);
+    publishVariables("Yes", version, vulnerable);
 }
 
 /**
  * @remote_procedure
  * @label Validate Get Software Vulnerabilties custom script
- * @documentation The script is validated by default because if ScreenConnect server is not present the script populates the result table as well.
+ * @documentation The script is validated by default because if ScreenConnect server is not present the script publish the relevant variables as well
  */
 function validate(){
     D.success();
