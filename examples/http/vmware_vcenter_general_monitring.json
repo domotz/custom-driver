@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "vmware-vsphere.svg",
     "version": "1.0.0",
     "name": "VMWare vCenter Monitoring General Info",
     "description": "Monitors the general information for VMWare vCenter systems",
@@ -33,7 +33,7 @@
     "tested_on": [
         {
             "name": "VMWare vCenter",
-            "version": "7.0.3"
+            "version": "8.0.2"
         }
     ]
 }
