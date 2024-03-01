@@ -23,7 +23,7 @@
         "memory",
         "cpu",
         "cores-per-socket",
-        "Version",
+        "version",
         "power-state"
     ],
     "sample_period_s": 600,
