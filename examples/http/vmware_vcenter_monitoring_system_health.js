@@ -14,7 +14,7 @@
 // Create a Custom Driver table to store system health information
 var table = D.createTable(
     "System Health", [
-        { label: "Value", valueType: D.valueType.STRING }
+        { label: "Status", valueType: D.valueType.STRING }
     ]
 );
 
@@ -94,7 +94,6 @@ function getSystemHealthInfo(sessionId) {
         getHealthSystemsUrls("/api/appliance/health/applmgmt")(sessionId), //Get health status of applmgmt services
         getHealthSystemsUrls("/api/appliance/health/storage")(sessionId), //Get storage health
         getHealthSystemsUrls("/api/appliance/health/swap")(sessionId), //Get swap health
-        getHealthSystemsUrls("/api/appliance/health/database")(sessionId), //Returns the health status of the database
         getHealthSystemsUrls("/api/appliance/health/database-storage")(sessionId), //Get database storage health
         getHealthSystemsUrls("/api/appliance/health/software-packages")(sessionId) //Get information on available software updates available in the remote vSphere Update Manager repository
     ]);
@@ -109,7 +108,6 @@ function extractData(data) {
         "applmgmt-service-health",
         "storage-health",
         "swap-health",
-        "database-health",
         "database-storage-health",
         "software-updates-availability"
     ];

@@ -22,7 +22,6 @@
         "applmgmt-service",
         "storage",
         "swap",
-        "database",
         "database-storage",
         "software-updates-availability"
     ],
