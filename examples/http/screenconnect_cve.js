@@ -30,12 +30,15 @@ function getScreenConnecVersion() {
     var d = D.q.defer();
     D.device.http.get({
         url: "/Script.ashx",
-        protocol: "http:",
-        port: 8040
+        port: 8040,
+        timeout:5000
     }, function (error, response, body) {
-        if (error || response.statusCode != 200) {
-            console.error(error + "\nStatus Code: " + response.statusCode);
+        if (error) {
+            console.error("Received error: " + error);
             publishVariables("No", "N/A", "N/A");
+        } else if (response && response.statusCode != 200){
+            console.error("Received unknown response code: " + response.statusCode);
+            publishVariables("N/A", "N/A", "N/A");
         } else 
             d.resolve(body);
     });
