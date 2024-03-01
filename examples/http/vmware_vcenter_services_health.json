@@ -1,0 +1,38 @@
+{
+    "logo": "vmware-vsphere.svg",
+    "version": "1.0.0",
+    "name": "VMWare vCenter Monitoring Services Health",
+    "description": "Monitors the health status of services on a VMware vCenter server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware vSphere",
+            "vCenter"
+        ]
+    },
+    "tags": [
+        "vmware",
+        "vsphere",
+        "vcenter",
+        "service",
+        "startup-type",
+        "state",
+        "health"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "VMWare vCenter",
+            "version": "7.0.3"
+        }
+    ]
+}
