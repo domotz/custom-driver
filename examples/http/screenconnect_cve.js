@@ -16,6 +16,12 @@
  * 
 **/
 
+var screenconnectServerConfig = {
+    url: "/Script.ashx",
+    port: 8040,
+    timeout:5000
+};
+
 function publishVariables(installed, version, vulnerable) {
     var variables = [
         D.createVariable("screen-connect-installed", "ScreenConnect Server Installed", installed),
@@ -28,16 +34,13 @@ function publishVariables(installed, version, vulnerable) {
 // Function to make an HTTP GET request to retrieve ScreenConnect version
 function getScreenConnecVersion() {
     var d = D.q.defer();
-    D.device.http.get({
-        url: "/Script.ashx",
-        port: 8040,
-        timeout:5000
-    }, function (error, response, body) {
+    D.device.http.get(screenconnectServerConfig, 
+        function (error, response, body) {
         if (error) {
             console.error("Received error: " + error);
             publishVariables("No", "N/A", "N/A");
         } else if (response && response.statusCode != 200){
-            console.error("Received unknown response code: " + response.statusCode);
+            console.error("Received unexpected response code: " + response.statusCode);
             publishVariables("N/A", "N/A", "N/A");
         } else 
             d.resolve(body);
@@ -79,17 +82,24 @@ function extractData(data)
 
 /**
  * @remote_procedure
- * @label Validate Get Software Vulnerabilties custom script
- * @documentation The script is validated by default because if ScreenConnect server is not present the script publish the relevant variables as well
+ * @label Validate Association
+ * @documentation Detect if ScreenConnect Server port is open
  */
 function validate(){
-    D.success();
+    D.device.http.get(screenconnectServerConfig, 
+        function (error, response, body) {
+        if (error) {
+            console.error("Received error: " + error);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else 
+            D.success();
+    });
 }
 
 /**
  * @remote_procedure
- * @label Get Software Vulnerabilties on ScreenConnect Server
- * @documentation This procedure retrieves Software Vulnerabilities on ScreenConnect Server
+ * @label Get Device Variables
+ * @documentation Detect if the ScreenConnect Server version runing on the device is affected by CVE-2024-1709 and CVE-2024-1708 vulnerabilities
  */
 function get_status() {
     getScreenConnecVersion()
