@@ -1,0 +1,36 @@
+{
+    "logo": "hpe.svg",
+    "version": "1.0.0",
+    "name": "HPE MSA SAN System General",
+    "description": "Monitors the general information for HPE MSA SAN device",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "HPE MSA SAN"
+        ]
+    },
+    "tags": [
+        "hpe-msa-san",
+        "system",
+        "name",
+        "midplane-serial-number",
+        "health",
+        "health-reason"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[4]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "HPE MSA 2050 SAN",
+            "version": "VL270P005"
+        }
+    ]
+}
