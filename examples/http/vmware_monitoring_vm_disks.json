@@ -1,0 +1,47 @@
+{
+    "logo": "vmware-vsphere.svg",
+    "version": "1.0.0",
+    "name": "VMWare Monitoring VM Disks",
+    "description": "This script retrieves information about each disk connected to a Virtual Machine on VMware server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware vSphere",
+            "vCenter",
+            "VM"
+        ]
+    },
+    "tags": [
+        "vmware",
+        "vsphere",
+        "vcenter",
+        "virtual-machine",
+        "disk",
+        "type",
+        "capacity",
+        "vmdk-file"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "VMWare vCenter",
+            "version": "7.0.3"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "vmId",
+            "label": "VM ID"
+        }
+    ]
+}
