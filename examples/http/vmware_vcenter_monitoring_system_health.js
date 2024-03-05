@@ -78,46 +78,34 @@ function httpGet(url, sessionId) {
     return d.promise;
 }
 
-// Function to get URLs for system health information
-function getHealthSystemsUrls(url) {
-    return function(sessionId) {
-        return httpGet(url, sessionId);
-    };
-}
+var config = [
+    { id: "system-health", url: "/api/appliance/health/system" }, //Get overall health of system
+    { id: "load", url: "/api/appliance/health/load" }, //Get load health
+    { id: "memory-health", url: "/api/appliance/health/mem" }, //Get memory health
+    { id: "applmgmt-service-health", url: "/api/appliance/health/applmgmt" }, //Get health status of applmgmt services
+    { id: "storage-health", url: "/api/appliance/health/storage" }, //Get storage health
+    { id: "swap-health", url: "/api/appliance/health/swap" }, //Get swap health
+    { id: "database-storage-health", url: "/api/appliance/health/database-storage" }, //Get database storage health
+    { id: "software-updates-availability", url: "/api/appliance/health/software-packages" } //Get information on available software updates available in the remote vSphere Update Manager repository
+];
 
 // Function to retrieve system health information
 function getSystemHealthInfo(sessionId) {
-    return D.q.all([
-        getHealthSystemsUrls("/api/appliance/health/system")(sessionId), //Get overall health of system
-        getHealthSystemsUrls("/api/appliance/health/load")(sessionId), //Get load health
-        getHealthSystemsUrls("/api/appliance/health/mem")(sessionId), //Get memory health
-        getHealthSystemsUrls("/api/appliance/health/applmgmt")(sessionId), //Get health status of applmgmt services
-        getHealthSystemsUrls("/api/appliance/health/storage")(sessionId), //Get storage health
-        getHealthSystemsUrls("/api/appliance/health/swap")(sessionId), //Get swap health
-        getHealthSystemsUrls("/api/appliance/health/database-storage")(sessionId), //Get database storage health
-        getHealthSystemsUrls("/api/appliance/health/software-packages")(sessionId) //Get information on available software updates available in the remote vSphere Update Manager repository
-    ]);
+    var promises = config.map(function (urls) {
+        return httpGet(urls.url, sessionId);
+    });
+
+    return D.q.all(promises);
 }
 
 // This function extracts data from the response and populates the custom table 
 function extractData(data) {
-    var recordIds = [
-        "system-health",
-        "load",
-        "memory-health",
-        "applmgmt-service-health",
-        "storage-health",
-        "swap-health",
-        "database-storage-health",
-        "software-updates-availability"
-    ];
-
     for (var i = 0; i < data.length; i++) {
         var value = data[i] || "N/A";
-        table.insertRecord(recordIds[i], [value]);
+        var recordId = config[i].id;
+        table.insertRecord(recordId, [value]);
     }
-
-    D.success(table); 
+    D.success(table);
 }
 
 /**
