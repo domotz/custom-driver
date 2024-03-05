@@ -14,9 +14,6 @@
  * 
  */
 
-// Variable to store the session key
-var sessionKey;
-
 // Create a Custom Driver table to store to store voltage and current sensor data
 var table = D.createTable(
     "Voltage and Current Sensors",
@@ -26,30 +23,6 @@ var table = D.createTable(
         { label: "Status", valueType: D.valueType.STRING }   
     ]
 );
-
-// Process the response from the server
-function processResponse(d) {
-    return function process(error, response, body) {
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode == 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        if (response.headers["command-status"]) {
-            sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if(sessionKey == "Authentication Unsuccessful"){
-                console.error("Session key not found in response headers");
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-        }
-        d.resolve(body);      
-    };
-}
 
 /**
  * Logs in to the HPE MSA SAN device using basic authentication
@@ -66,12 +39,32 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } 
+        if (response.statusCode == 401 || response.statusCode == 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } 
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }   
+        if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Authentication Unsuccessful") !=-1) {
+            console.error("Session key not found in response headers");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        var sessionKey = response.headers["command-status"].split(" ")[1];
+        d.resolve(sessionKey);
+    });
     return d.promise;
 }
 
 // Retrieves voltage and current sensor data from the HPE MSA SAN device
-function getVoltageCurrent() {
+function getVoltageCurrent(sessionKey) {
     var d = D.q.defer();
     var config = {
         url: "/api/show/sensor-status",
@@ -82,7 +75,22 @@ function getVoltageCurrent() {
             "sessionKey": sessionKey 
         }
     };
-    D.device.http.get(config, processResponse(d));
+    D.device.http.get(config, function(error, response, body){
+        if (error) {          
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } 
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } 
+        if (response.statusCode == 401 || response.statusCode == 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } 
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }   
+        d.resolve(body);
+    });
     return d.promise;
 }
 
@@ -96,6 +104,13 @@ function sanitize(output){
 // Extracts relevant data from the API response
 function extractData(data) {
     var $ = D.htmlParse(data);
+    var responseType = $("PROPERTY[name='response-type']").text();
+    if (responseType === "Error") {
+        var response = $("PROPERTY[name='response']").text();
+        console.error("Error response:", response);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+
     var sensorObjects = $("OBJECT");
     var sensorData = {};
     sensorObjects.each(function (index, element) {
@@ -116,7 +131,6 @@ function extractData(data) {
                 sensorData[id].current = value;
             }
             sensorData[id].status = status;
-
         }   
     });
 
