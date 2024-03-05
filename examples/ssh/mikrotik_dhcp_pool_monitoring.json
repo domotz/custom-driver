@@ -20,7 +20,7 @@
     "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3]"
+        "table": "[4]"
     },
     "protocols": [
         "SSH"
