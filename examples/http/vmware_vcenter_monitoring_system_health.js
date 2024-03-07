@@ -100,10 +100,17 @@ function getSystemHealthInfo(sessionId) {
 
 // This function extracts data from the response and populates the custom table 
 function extractData(data) {
+    var colorToHealthStatus = {
+        "green": "HEALTHY",
+        "red": "UNHEALTHY",
+        "orange": "WARNING"
+    }
+
     for (var i = 0; i < data.length; i++) {
-        var value = data[i] || "N/A";
+        var color = data[i] || "N/A";
+        var status = colorToHealthStatus[color] || "N/A"
         var recordId = config[i].id;
-        table.insertRecord(recordId, [value]);
+        table.insertRecord(recordId, [status]);
     }
     D.success(table);
 }
