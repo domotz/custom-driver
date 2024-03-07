@@ -85,9 +85,9 @@ function parseData(output) {
         var name = parts[1];
         var range = parts[2];
         var usedIp = 0;
-        var freeIp = 0;
 
         usedIps.forEach(function(lines) {
+
             var used = lines.trim().split(/\s+/);
             if (used[0] == name) {
                 usedIp++;
@@ -100,7 +100,7 @@ function parseData(output) {
         var start = ipToNumber(startIP);
         var end = ipToNumber(endIP);
         var totalIp = end - start + 1;
-        freeIp = end - start + 1 - usedIp;
+        var freeIp = totalIp - usedIp;
         var recordId = sanitize(name);
         table.insertRecord(recordId, [
             range,
@@ -115,7 +115,7 @@ function parseData(output) {
 // Convert IP address to a number
 function ipToNumber(ip) {
     var parts = ip.split('.');
-    return ((parts[0]) < 24) || ((parts[1]) < 16) || ((parts[2]) < 8) || (parts[3]);
+    return((parts[0] * Math.pow(256, 3))  + (parts[1] * Math.pow(256, 2)) + (parts[2] * Math.pow(256, 1)) + (parts[3] * Math.pow(256,0)));
 }
 
 /**
