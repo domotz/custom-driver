@@ -87,11 +87,18 @@ function sanitize(output){
 // This function extracts data from the response body and populates the custom table 
 function extractData(data) {
     if (data) {
+        var healthStatus = {
+            "HEALTHY": "OK",
+            "DEGRADED": "NOT OK",
+            "HEALTHY_WITH_WARNINGS": "WARNING"
+        };
+
         for (var key in data) {
             var serviceName = key;
             var startupType = data[key].startup_type || "";
             var state = data[key].state || "";
-            var status = data[key].health || "";
+            var statusValue = data[key].health || "";
+            var status = healthStatus[statusValue] || "";
             var recordId = sanitize(serviceName);
             table.insertRecord(recordId, [
                 startupType,
