@@ -79,13 +79,13 @@ function httpGet(url, sessionId) {
 }
 
 var config = [
-    { id: "system-health", url: "/api/appliance/health/system" }, //Get overall health of system
+    { id: "system", url: "/api/appliance/health/system" }, //Get overall health of system
     { id: "load", url: "/api/appliance/health/load" }, //Get load health
-    { id: "memory-health", url: "/api/appliance/health/mem" }, //Get memory health
-    { id: "applmgmt-service-health", url: "/api/appliance/health/applmgmt" }, //Get health status of applmgmt services
-    { id: "storage-health", url: "/api/appliance/health/storage" }, //Get storage health
-    { id: "swap-health", url: "/api/appliance/health/swap" }, //Get swap health
-    { id: "database-storage-health", url: "/api/appliance/health/database-storage" }, //Get database storage health
+    { id: "memory", url: "/api/appliance/health/mem" }, //Get memory health
+    { id: "applmgmt-service", url: "/api/appliance/health/applmgmt" }, //Get health status of applmgmt services
+    { id: "storage", url: "/api/appliance/health/storage" }, //Get storage health
+    { id: "swap", url: "/api/appliance/health/swap" }, //Get swap health
+    { id: "database-storage", url: "/api/appliance/health/database-storage" }, //Get database storage health
     { id: "software-updates-availability", url: "/api/appliance/health/software-packages" } //Get information on available software updates available in the remote vSphere Update Manager repository
 ];
 
@@ -101,8 +101,8 @@ function getSystemHealthInfo(sessionId) {
 // This function extracts data from the response and populates the custom table 
 function extractData(data) {
     var colorToHealthStatus = {
-        "green": "HEALTHY",
-        "red": "UNHEALTHY",
+        "green": "OK",
+        "red": "NOT OK",
         "orange": "WARNING"
     }
 
