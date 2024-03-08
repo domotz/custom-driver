@@ -19,7 +19,7 @@
  *      - CPU Usage: The percentage of CPU usage
  *      - Power State: The host power state
  *      - Connection State: The hostconnection state
- *      - Health: The overall health status of the host
+ *      - Status: The overall health status of the host
  *      - Uptime: The system uptime of the host in hours
  * 
  **/
@@ -114,12 +114,19 @@ function extractData(data) {
         var numCpuCores = data.hardware.numCpuCores || 0; // Number of physical CPU cores on the host
         var totalCpuCapacity = cpuMhz * numCpuCores ;
         var usedCPU = data.quickStats.overallCpuUsage || 0; // Aggregated CPU usage across all cores on the host in MHz
-        var cpuUsage = ((usedCPU / totalCpuCapacity) * 100).toFixed(2);
-        
+        var cpuUsage = ((usedCPU / totalCpuCapacity) * 100).toFixed(2); 
         var powerState = data.runtime.powerState || "N/A";
         var connectionState = data.runtime.connectionState || "N/A";
-        var health = data.overallStatus || "N/A";
 
+        var colorToStatus = {
+            "gray": "N/A",
+            "green": "OK",
+            "yellow": "WARNING",
+            "red": "NOT OK"
+        }
+
+        var health = data.overallStatus || "N/A";
+        var status = colorToStatus[health] || "N/A"
         var uptime = Math.floor(data.quickStats.uptime / 3600);
        
         var variables = [
@@ -134,8 +141,8 @@ function extractData(data) {
             D.createVariable("cpu-usage", "CPU Usage", cpuUsage, "%", D.valueType.NUMBER),
             D.createVariable("power-state", "Power State", powerState, null, D.valueType.STRING),
             D.createVariable("connection-state", "Connection State", connectionState, null, D.valueType.STRING),
-            D.createVariable("health", "Health", health, null, D.valueType.STRING),
-            D.createVariable("uptime", "Uptime", uptime, "hours", D.valueType.NUMBER),
+            D.createVariable("status", "Status", status, null, D.valueType.STRING),
+            D.createVariable("uptime", "Uptime", uptime, "hours", D.valueType.NUMBER)
         ];
         D.success(variables);
     } else {
