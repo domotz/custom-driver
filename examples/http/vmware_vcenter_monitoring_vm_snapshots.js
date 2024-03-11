@@ -120,7 +120,7 @@ function extractData(data) {
             
                 var currentDate = new Date(); 
                 var ageInMilliseconds = currentDate - date;
-                var ageInDays = (ageInMilliseconds / (1000 * 60 * 60 * 24)); 
+                var ageInDays = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24)); 
                 var recordId = sanitize(snapshot.snapshot.value);
                 table.insertRecord(recordId, [
                     name,

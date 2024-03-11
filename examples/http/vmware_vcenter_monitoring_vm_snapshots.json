@@ -36,5 +36,12 @@
             "name": "VMWare vCenter",
             "version": "8.0.2"
         }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "vmId",
+            "label": "VM ID"
+        }
     ]
 }
