@@ -95,10 +95,10 @@ function extractData(data) {
 
         for (var key in data) {
             var serviceName = key;
-            var startupType = data[key].startup_type || "";
-            var state = data[key].state || "";
-            var statusValue = data[key].health || "";
-            var status = healthStatus[statusValue] || "";
+            var startupType = data[key].startup_type || "N/A";
+            var state = data[key].state || "N/A";
+            var statusValue = data[key].health || "N/A";
+            var status = healthStatus[statusValue] || "N/A";
             var recordId = sanitize(serviceName);
             table.insertRecord(recordId, [
                 startupType,
