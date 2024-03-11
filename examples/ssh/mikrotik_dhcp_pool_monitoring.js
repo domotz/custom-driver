@@ -8,10 +8,12 @@
  * 
  * Creates a Custom Driver table with the following columns:
  *    - Name: Name of the DHCP pool
- *    - Range: IP address range of the DHCP pool
- *    - Total: Total number of IP addresses in the pool
+ *    - Start IP Address: Start IP address of the DHCP pool
+ *    - End IP Address: End IP address of the DHCP pool
  *    - Used: Number of IP addresses used in the pool
  *    - Free: Number of free IP addresses in the pool
+ *    - Total: Total number of IP addresses in the pool
+ * 
  */
 
 var dhcpPoolInfo = "/ip/pool/print without-paging"; // Command to retrieve DHCP pool information
@@ -21,10 +23,11 @@ var dhcpPoolUsedIps = "/ip/pool/used/print without-paging"; // Command to retrie
 var table = D.createTable(
     "DHCP addresses pools",
     [
-        { label: "Range", valueType: D.valueType.STRING },
-        { label: "Total", valueType: D.valueType.NUMBER },
+        { label: "Start IP Address", valueType: D.valueType.STRING },
+        { label: "End IP Address", valueType: D.valueType.STRING },
         { label: "Used", valueType: D.valueType.NUMBER },
-        { label: "Free", valueType: D.valueType.NUMBER }
+        { label: "Free", valueType: D.valueType.NUMBER },
+        { label: "Total", valueType: D.valueType.NUMBER }
     ]
 );
 
@@ -103,10 +106,11 @@ function parseData(output) {
         var freeIp = totalIp - usedIp;
         var recordId = sanitize(name);
         table.insertRecord(recordId, [
-            range,
-            totalIp,
+            startIP,
+            endIP,
             usedIp,
-            freeIp
+            freeIp,
+            totalIp
         ]);
     });
     D.success(table);
