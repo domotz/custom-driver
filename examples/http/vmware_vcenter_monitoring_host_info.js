@@ -46,7 +46,7 @@ function login() {
             D.failure(D.errorType.GENERIC_ERROR);                     
         } else {
             if (response.body && response.body.indexOf("Cannot complete login") !== -1) {
-                console.error("Cannot complete login due to an incorrect user name or password");
+                console.error("Cannot complete login due to an incorrect username or password");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             if (response.body && response.body.indexOf("Invalid URI") !== -1) {
