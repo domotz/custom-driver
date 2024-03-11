@@ -1,0 +1,34 @@
+{
+    "logo": "mikrotik.svg",
+    "version": "1.0.0",
+    "name": "MikroTik DHCP Pool Monitoring",
+    "description": "This script monitors DHCP address pools on a MikroTik device",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "mikrotik",
+        "dhcp",
+        "pool",
+        "ip"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[6]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "MikroTik RouterOS",
+            "version": "7.13.3"
+        }
+    ]
+}
