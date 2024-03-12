@@ -15,7 +15,7 @@
         "mikrotik",
         "dhcp",
         "pool",
-        "ip"
+        "ip-addresses"
     ],
     "sample_period_s": 300,
     "has_actions": false,
