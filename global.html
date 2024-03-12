@@ -94,6 +94,84 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="deviceLibrary"><span class="type-signature">(constant) </span>deviceLibrary<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    This file is part of Domotz Agent.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-copyright">Copyright:</dt>
+    <dd class="tag-copyright"><ul class="dummy"><li>Copyright (C) Domotz Inc</li></ul></dd>
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>Domotz Agent is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Domotz Agent is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Domotz Agent.  If not, see <http://www.gnu.org/licenses/>.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
 
@@ -389,6 +467,196 @@ Can be used to traverse and manipulate the loaded document.
             
 
             <td class="description last">The value of the column values (used for display purposes)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="ConfigurationBackup">ConfigurationBackup</h4>
+
+
+
+
+<div class="description">
+    Custom Driver configuration backup
+Validated version is returned by D.createBackup, should be passed to D.success()
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The name of the backup, default is "Custom Driver Configuration Backup"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>running</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The configuration currently running on the device, must be less than 1mb</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>startup</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The optional configuration which will be active when the device is restarted, must be less than 1mb</td>
         </tr>
 
     
@@ -4882,13 +5150,13 @@ Created via D.createVariable
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="D.html">D</a></li><li><a href="D._unsafe.html">_unsafe</a></li><li><a href="D._unsafe.buffer.html">buffer</a></li><li><a href="D.crypto.html">crypto</a></li><li><a href="D.crypto.Cipher.html">Cipher</a></li><li><a href="D.crypto.Decipher.html">Decipher</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="console.html">console</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="D.html">D</a></li><li><a href="D._unsafe.html">_unsafe</a></li><li><a href="D._unsafe.buffer.html">buffer</a></li><li><a href="D.crypto.html">crypto</a></li><li><a href="D.crypto.Cipher.html">Cipher</a></li><li><a href="D.crypto.Decipher.html">Decipher</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="DomotzConfigurationManagement.html">DomotzConfigurationManagement</a></li><li><a href="DomotzGeneric.html">DomotzGeneric</a></li><li><a href="console.html">console</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deviceLibrary">deviceLibrary</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Dec 18 2023 11:53:23 GMT+0200 (Eastern European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Mar 01 2024 15:31:11 GMT+0200 (Eastern European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

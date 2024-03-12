@@ -1,0 +1,37 @@
+{
+    "logo": "dell.svg",
+    "version": "1.0.0",
+    "name": "Dell PowerVault SAN System General",
+    "description": "Monitors the general information of a Dell PowerVault SAN system",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Dell PowerVault",
+            "Redfish enabled"
+        ]
+    },
+    "tags": [
+        "dell",
+        "powervault",
+        "san",
+        "serial-number",
+        "health",
+        "power-state"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[3]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Dell PowerVault",
+            "version": "ME5024"
+        }
+    ]
+}

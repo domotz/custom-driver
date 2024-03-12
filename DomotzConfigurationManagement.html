@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: driverTable</title>
+    <title>JSDoc: Namespace: DomotzConfigurationManagement</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: driverTable</h1>
+    <h1 class="page-title">Namespace: DomotzConfigurationManagement</h1>
 
     
 
@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>driverTable</h2>
+        <h2>DomotzConfigurationManagement</h2>
         
     
 </header>
@@ -37,9 +37,7 @@
     <div class="container-overview">
     
         
-            <div class="description">The Custom Driver Table object.
-Exposes Table related libraries.
-Contains Column definition related information for the Table object</div>
+            <div class="description">Domotz Configuration Management Context</div>
         
 
         
@@ -86,6 +84,17 @@ Contains Column definition related information for the Table object</div>
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="D.html">D</a></li>
+    </ul>
+
+
+    
 
     
 
@@ -108,7 +117,7 @@ Contains Column definition related information for the Table object</div>
     
 
     
-    <h4 class="name" id=".getResult"><span class="type-signature">(static) </span>getResult<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#DriverTableResult">DriverTableResult</a>}</span></h4>
+    <h4 class="name" id=".DomotzConfigurationManagementContext.createBackup"><span class="type-signature">(static) </span>DomotzConfigurationManagementContext.createBackup<span class="signature">(configurationBackup)</span><span class="type-signature"> &rarr; {<a href="global.html#ConfigurationBackup">ConfigurationBackup</a>}</span></h4>
     
 
     
@@ -116,7 +125,7 @@ Contains Column definition related information for the Table object</div>
 
 
 <div class="description">
-    Returns the prepared table definition and values in the current driver execution
+    Function createBackup
 </div>
 
 
@@ -125,6 +134,55 @@ Contains Column definition related information for the Table object</div>
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>configurationBackup</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ConfigurationBackup">ConfigurationBackup</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The backup object to be filled in and validated</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -191,7 +249,7 @@ Contains Column definition related information for the Table object</div>
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#DriverTableResult">DriverTableResult</a></span>
+<span class="param-type"><a href="global.html#ConfigurationBackup">ConfigurationBackup</a></span>
 
 
     </dd>
@@ -202,11 +260,6 @@ Contains Column definition related information for the Table object</div>
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>driverTable.getResult()</code></pre>
-
-
 
         
             
@@ -214,7 +267,7 @@ Contains Column definition related information for the Table object</div>
     
 
     
-    <h4 class="name" id=".insertRecord"><span class="type-signature">(static) </span>insertRecord<span class="signature">(id, values)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".DomotzConfigurationManagementContext.success"><span class="type-signature">(static) </span>DomotzConfigurationManagementContext.success<span class="signature">(configuration<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -222,8 +275,9 @@ Contains Column definition related information for the Table object</div>
 
 
 <div class="description">
-    Inserts a record inside the Custom Driver table object. 
-The final table and values will be send to the cloud with the D.success() callback implicitly
+    Success callback in D (D.success).
+It must be present in the validate and backup functions (or their callbacks)
+in order to indicate their successful execution
 </div>
 
 
@@ -247,6 +301,8 @@ The final table and values will be send to the cloud with the D.success() callba
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -259,46 +315,33 @@ The final table and values will be send to the cloud with the D.success() callba
 
         <tr>
             
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>configuration</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="global.html#ConfigurationBackup">ConfigurationBackup</a></span>
 
 
             
             </td>
 
             
-
-            
-
-            <td class="description last">The unique identifier for the table record. Added as value for column "Id". Max 50 characters</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>values</code></td>
-            
-
-            <td class="type">
-            
+                <td class="attributes">
                 
-<span class="param-type">Array.&lt;any></span>
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
+            
 
             
-            </td>
 
-            
-
-            
-
-            <td class="description last">A list of values to be added in the table for that record</td>
+            <td class="description last">The configuration to return (dry run) or store for backup</td>
         </tr>
 
     
@@ -363,170 +406,11 @@ The final table and values will be send to the cloud with the D.success() callba
 
 
 
-    <h5>Example</h5>
+    <h5>Examples</h5>
     
-    <pre class="prettyprint"><code>driverTable.insertRecord("myId", ["val 1", "val 2"])</code></pre>
+    <pre class="prettyprint"><code>D.success()</code></pre>
 
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".upsertRecord"><span class="type-signature">(static) </span>upsertRecord<span class="signature">(id, values)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Inserts or Updates a record inside the Custom Driver table object. 
-The final table and values will be send to the cloud with the D.success() callback implicitly
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The unique identifier for the table record. Added as value for column "Id". Max 50 characters</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>values</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;any></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">A list of values to be added in the table for that record</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>driverTable.insertRecord("myId", ["val 1", "val 2"])</code></pre>
+    <pre class="prettyprint"><code>D.success(configuration)</code></pre>
 
 
 

@@ -1,0 +1,35 @@
+{
+    "logo": "hpe.svg",
+    "version": "1.0.0",
+    "name": "HPE iLO Memory Status",
+    "description": "Monitors the memory status for HPE Integrated Lights-Out (iLO) systems using the Redfish API",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "HPE iLO",
+            "Redfish enabled"
+        ]
+    },
+    "tags": [
+        "hpe",
+        "ilo",
+        "memory",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[1]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "HPE iLO",
+            "version": "5"
+        }
+    ]
+}

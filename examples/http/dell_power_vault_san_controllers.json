@@ -1,0 +1,37 @@
+{
+    "logo": "dell.svg",
+    "version": "1.0.0",
+    "name": "Dell PowerVault SAN Controllers",
+    "description": "This script retrieves information about storage controllers of a Dell PowerVault SAN system using the Redfish API",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Dell PowerVault",
+            "Redfish enabled"
+        ]
+    },
+    "tags": [
+        "dell",
+        "powervault",
+        "san",
+        "controller",
+        "health-status",
+        "serial-number"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Dell PowerVault",
+            "version": "ME5024"
+        }
+    ]
+}
