@@ -1,33 +1,23 @@
 /**
  * Domotz Custom Driver 
  * Name: VMWare vCenter Monitoring VM Snapshots
- * Description: This script retrieves information about snapshots taken on a VMware vCenter virtual machines. It allows monitoring of snapshot creation time and age
+ * Description: This script retrieves information about the latest snapshot taken on a VMware vCenter virtual machines. It allows monitoring of snapshot creation time and age
  * 
  * Communication protocol is HTTPS
  * 
  * Tested on VMWare vCenter version 8.0.2
  *
- * Creates a Custom Driver Table with the following columns:
- *      - Name: The name of the snapshot
- *      - Description: A description of the snapshot
- *      - Creation time: The date and time when the snapshot was created
- *      - Age: The age of the snapshot in days
+ * Creates Custom Driver variables:
+ *      - ID: The identifier for the latest snapshot 
+ *      - Name: The name of the latest snapshot
+ *      - Description: A description of the latest snapshot
+ *      - Creation time: The date and time when the latest snapshot was created
+ *      - Age: The age of the latest snapshot in days
  * 
  **/
 
 // The ID of the virtual machine
 var vmId = D.getParameter("vmId");
-
-// Table to store snapshot information
-var table = D.createTable(
-    "Snapshots",
-    [
-        { label: "Name", valueType: D.valueType.STRING },
-        { label: "Description", valueType: D.valueType.STRING },
-        { label: "Creation time", valueType: D.valueType.DATETIME },
-        { label: "Age", unit: "Days", valueType: D.valueType.NUMBER }      
-    ]
-);
 
 // Function to handle the login procedure
 function login() {
@@ -101,39 +91,70 @@ function sanitize(output){
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
-// This function extracts snapshot data from the response body  
-function extractData(data) {
-    if (data && data.rootSnapshotList && data.rootSnapshotList.length > 0){
-        data.rootSnapshotList.forEach(function(snapshot) {
-            if (snapshot.name || snapshot.description || snapshot.createTime){
-                var name = snapshot.name;
-                var descriptione = snapshot.description;
-                var createTime = snapshot.createTime;
-                var date = new Date(createTime);
-                var formattedCretaeTime =
-                    (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate() + ":" +
-                    (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1) + ":" +
-                    date.getUTCFullYear() + " " +
-                    (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours() + ":" +
-                    (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes() + ":" +
-                    (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
-            
-                var currentDate = new Date(); 
-                var ageInMilliseconds = currentDate - date;
-                var ageInDays = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24)); 
-                var recordId = sanitize(snapshot.snapshot.value);
-                table.insertRecord(recordId, [
-                    name,
-                    descriptione,
-                    formattedCretaeTime,
-                    ageInDays
-                ]);
-            } else {
-                console.error("Missing required properties in the data");
-                D.failure(D.errorType.PARSING_ERROR);
+/**
+ * Recursively finds the latest snapshot
+ * @param {object} snapshot Snapshot object
+ * @returns The latest snapshot
+ */
+function findLatestSnapshot(snapshot) {
+    var latestSnapshot = snapshot;
+    var latestTime = new Date(snapshot.createTime);
+    if (snapshot.childSnapshotList && snapshot.childSnapshotList.length > 0) {
+        snapshot.childSnapshotList.forEach(function(childSnapshot) {
+            var latestChildSnapshot = findLatestSnapshot(childSnapshot);
+            if (latestChildSnapshot) {
+                var childTime = new Date(latestChildSnapshot.createTime);
+                if (childTime > latestTime) {
+                    latestSnapshot = latestChildSnapshot;
+                    latestTime = childTime;
+                }
             }
         });
-        D.success(table);
+    }
+    return latestSnapshot;
+}
+
+//Extracts relevant data from the snapshot object
+function extractData(data) {
+    if (data && data.rootSnapshotList && data.rootSnapshotList.length > 0) {
+        var latestSnapshot = null;
+        data.rootSnapshotList.forEach(function(snapshot) {
+            var latest = findLatestSnapshot(snapshot);
+            if (!latestSnapshot || !latest || new Date(latest.createTime) > new Date(latestSnapshot.createTime)) {
+                latestSnapshot = latest;
+            }
+        });
+        if (latestSnapshot) {
+            var id = latestSnapshot.snapshot.value || "N/A";
+            var name = latestSnapshot.name || "N/A";
+            var description = latestSnapshot.description || "N/A";
+            var createTime = latestSnapshot.createTime;
+            var date = new Date(createTime);
+            var timeCreated =
+                (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate() + ":" +
+                (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1) + ":" +
+                date.getUTCFullYear() + " " +
+                (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours() + ":" +
+                (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes() + ":" +
+                (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
+
+            var currentDate = new Date();
+            var ageInMilliseconds = currentDate - date;
+            var ageInDays = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24));
+
+            var variables = [
+                D.createVariable("id", "ID", id, null, D.valueType.STRING),
+                D.createVariable("name", "Name", name, null, D.valueType.STRING),
+                D.createVariable("description", "Description", description, null, D.valueType.STRING),
+                D.createVariable("creation-time", "Creation Time", timeCreated, null, D.valueType.DATETIME),
+                D.createVariable("age", "Age", ageInDays, "Days", D.valueType.NUMBER)
+            ];
+
+            D.success(variables);
+        } else {
+            console.error("Latest snapshot not found");
+            D.failure(D.errorType.PARSING_ERROR);
+        }
     } else {
         console.error("No data available");
         D.failure(D.errorType.GENERIC_ERROR);
@@ -165,8 +186,8 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get VMware vCenter Snapshot info
- * @documentation This procedure retrieves detailed information about snapshots taken on a specific VMware vCenter virtual machines
+ * @label Get VMware vCenter latest snapshot info
+ * @documentation This procedure retrieves detailed information about the latest snapshot taken on a specific VMware vCenter virtual machine
  */
 function get_status() {
     login()
