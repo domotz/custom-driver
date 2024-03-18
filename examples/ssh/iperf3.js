@@ -5,7 +5,6 @@
  * 
  * Communication protocol is SSH.
  * 
- * 
  * This driver create a dynamic monitoring variables 
  *      Download speed: test for download speed.
  *      Upload speed: test for upload speed.
@@ -15,13 +14,16 @@
  * Tested on:
  * - Ubuntu 22.04.1 LTS
  * - with iperf3 version: v3.7
- *
  * 
  * The driver is currently using a public iPerf3 server which might stop working in the future.
  * If that is the case, you might try with another server which you might find at this URL: https://iperf.fr/iperf-servers.php 
- * or instead, you might setup you own iPerf3 server. 
+ * or instead, you might setup your own iPerf3 server. 
  * 
  * You can edit the targetServer object to configure the iPerf3 server to be used. 
+ * 
+ * Parameters:
+ *   - targetServer: The URL of the iPerf3 server to be used
+ *   - iperfPort: The port of the iPerf3 server
  * 
  */
 
@@ -30,11 +32,8 @@ var sshConfig = {
     timeout: 20000
 };
 
-// List of iperf3 servers that the host will test with (ip_or_dns:port)
-// if the port is not specified the default one will be used "5201"
 var targetServerUrl = D.getParameter('targetServer');
 var defaultIperfPort = D.getParameter('iperfPort');
-
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
@@ -89,7 +88,7 @@ function checkSshError(err) {
 
 // Function for executing SSH command 
 // this function test the iperf command, if the current server fails to respond the next will be called
-function executeCommand(commandTemplate, serverIndex, extractorFn) {
+function executeCommand(commandTemplate, extractorFn) {
     return function (result) {
         var d = D.q.defer();
         var command = commandTemplate;
