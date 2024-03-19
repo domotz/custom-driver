@@ -1,0 +1,38 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0",
+    "name": "Linux Configuration Monitoring",
+    "description": "Monitor the current configuration of a Linux machine",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.16",
+        "others": [
+            "Linux",
+            "User must be part of the sudo group"
+        ]
+    },
+    "tags": [
+        "linux",
+        "config",
+        "modprobe",
+        "backup"
+    ],
+    "sample_period_s": 21600,
+    "execution_time_s": 120,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Raspbian",
+            "version": "8 Jess"
+        },
+        {
+            "name": "bash",
+            "version": "5.1.16"
+        }
+    ]
+}
