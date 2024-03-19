@@ -63,12 +63,14 @@ var execConfig = [
     }
 ];
 
+// Extracts TCP speed from iPerf3 output
 function tcpExtractor(data) {
     var result = data.split("\n")
         .filter(function (line) { return line.indexOf("sender") >= 0; });
     return result.length > 0 ? result[0].split(/\s+/)[6] : null;
 }
 
+// Extracts UDP speed from iPerf3 output
 function udpExtractor(data) {
     var result = data.split("\n");
     var dataLength = result.length;
@@ -87,8 +89,7 @@ function checkSshError(err) {
 }
 
 // Function for executing SSH command 
-// this function test the iperf command, if the current server fails to respond the next will be called
-function executeCommand(commandTemplate, extractorFn) {
+function executeCommand(commandTemplate, serverIndex, extractorFn) {
     return function (result) {
         var d = D.q.defer();
         var command = commandTemplate;
@@ -123,7 +124,6 @@ function executeCommand(commandTemplate, extractorFn) {
     };
 }
 
-
 //This function execute the SSH commands to retrieve network speed data using the iperf3 tool.
 function execute() {
     var commands = [
@@ -150,7 +150,7 @@ function execute() {
 
 //This function is a failure handler for SSH command execution. 
 function failure(error) {
-    console.error("Received Error: " + JSON.stringify(error));
+    console.error("Received Error: " + error);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
