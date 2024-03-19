@@ -1,8 +1,8 @@
 {
     "logo": "linux.svg",
     "version": "1.0",
-    "name": "Linux Configuration Monitoring",
-    "description": "Monitor the current configuration of a Linux machine",
+    "name": "Linux Kernel Modules Configuration",
+    "description": "Monitor the current configuration of a Linux kernel modules",
     "type": "CONFIGURATION_MANAGEMENT",
     "category": "Configuration Management",
     "requirements": {
@@ -19,8 +19,8 @@
         "modprobe",
         "backup"
     ],
-    "sample_period_s": 21600,
-    "execution_time_s": 120,
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
     "has_actions": false,
     "protocols": [
         "SSH"
@@ -28,11 +28,11 @@
     "tested_on": [
         {
             "name": "Raspbian",
-            "version": "8 Jess"
+            "version": "GNU/Linux 8.0 (jessie)"
         },
         {
-            "name": "bash",
-            "version": "5.1.16"
+            "name": "Ubuntu",
+            "version": "22.04.3 LTS"
         }
     ]
 }
