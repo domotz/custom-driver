@@ -36,11 +36,10 @@ function validate() {
         .then(function(output, error){
             if (error){
                 checkSshError(error);
-            } else if (output && output.includes("Usage: modprobe")) {
+            } else if (output && output.indexOf("Usage: modprobe") != undefined) {
                 D.success();
             } else {
-                // Testts
-                console.error("Unparsable output" + output)
+                console.error("Unparsable output " + output)
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE)
             }
         }).catch(checkSshError);
@@ -48,8 +47,8 @@ function validate() {
 
 /**
 * @remote_procedure
-* @label Backup Configuration
-* @documentation Backup Linux Device configuration
+* @label Backup Kernel Modules Configuration
+* @documentation Backup Linux kernel modules configuration
 */
 function backup() {
     executeCommand("/sbin/modprobe --showconfig")
@@ -57,13 +56,14 @@ function backup() {
             if (error){
                 checkSshError(error);
             } else if (output != null) {
-                backup = D.createBackup(
-                    {
-                        label: "Device Configuration",
-                        running: output
-                    }
+                D.success(
+                    D.createBackup(
+                        {
+                            label: "Device Configuration",
+                            running: output
+                        }
+                    )
                 );
-                D.success(backup);
             } else {
                 console.error("Unparsable output" + output)
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE)
