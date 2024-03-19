@@ -22,6 +22,7 @@
     "execution_time_s": 60,
     "has_actions": false,
     "expected_variables": {
+        "table": "[3]"
     },
     "protocols": [
         "WINRM"
@@ -37,7 +38,7 @@
             "value_type": "LIST",
             "name": "servicesFilter",
             "label": "Service Name",
-            "value": ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
+            "value": ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time","MSSQL$SQLEXPRESS"]
         }
     ]
 }
