@@ -28,7 +28,7 @@
     "tested_on": [
         {
             "name": "Raspbian",
-            "version": "GNU/Linux 8.0 (jessie)"
+            "version": "8.0 (jessie)"
         },
         {
             "name": "Ubuntu",
