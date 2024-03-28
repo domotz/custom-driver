@@ -23,7 +23,7 @@
  * 
  * Parameters:
  *   - targetServer: The URL of the iPerf3 server to be used
- *   - iperfPort: The port of the iPerf3 server
+ *   - defaultIperfPort: The default port of the iPerf3 server if not specified in the targetServer  
  * 
  */
 
@@ -32,8 +32,10 @@ var sshConfig = {
     timeout: 20000
 };
 
-var targetServerUrl = D.getParameter('targetServer');
-var defaultIperfPort = D.getParameter('iperfPort');
+// List of iperf3 servers that the host will test with (ip_or_dns:port)
+// if the port is not specified the default one will be used "5201"
+var targetServerUrl = D.getParameter("targetServer");
+var defaultIperfPort = D.getParameter("defaultIperfPort");
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
@@ -96,7 +98,7 @@ function executeCommand(commandTemplate, serverIndex, extractorFn) {
 
         if (serverIndex !== null) {
             if (serverIndex < targetServerUrl.length) {
-                var server = targetServerUrl;
+                var server = targetServerUrl[serverIndex];
                 var hostPort = server.split(":");
 
                 command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);

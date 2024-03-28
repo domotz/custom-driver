@@ -44,16 +44,16 @@
     ],
     "parameters": [
         {
-            "value_type": "STRING",
+            "value_type": "LIST",
             "name": "targetServer",
             "label": "Target iperf3 server",
-            "value": "speedtest.uztelecom.uz"
+            "value": ["ping.online.net:5209", "ping6.online.net:5209", "speedtest.serverius.net:5002", "localhost"]
         },
         {
             "value_type": "NUMBER",
-            "name": "iperfPort",
-            "label": "iperf3 Port",
-            "value": 5209
+            "name": "defaultIperfPort",
+            "label": "Default iperf3 Port",
+            "value": 5201
         }
     ]
 }
