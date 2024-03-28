@@ -66,7 +66,7 @@ function getVMSnapshots(sessionId) {
         if (error) {          
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
-        } else  {
+        } else {
             if (response.body && response.body.indexOf("InvalidType") !== -1) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
@@ -114,6 +114,21 @@ function findLatestSnapshot(snapshot) {
     return latestSnapshot;
 }
 
+// Convert time from AM/PM to 24 hours
+function convertTo24Hour(time12h) {
+    var time = time12h.split(/:| /);
+    var hours = parseInt(time[0]);
+    var minutes = time[1];
+    var seconds = time[2];
+    var ampm = time[3]; 
+    if (ampm === "AM" && hours === 12) {
+        hours = 0;
+    } else if (ampm === "PM" && hours < 12) {
+        hours += 12;
+    }
+    return hours + ":" + minutes + ":" + seconds;
+}
+
 //Extracts relevant data from the snapshot object
 function extractData(data) {
     if (data && data.rootSnapshotList && data.rootSnapshotList.length > 0) {
@@ -124,19 +139,28 @@ function extractData(data) {
                 latestSnapshot = latest;
             }
         });
+
         if (latestSnapshot) {
             var id = latestSnapshot.snapshot.value || "N/A";
             var name = latestSnapshot.name || "N/A";
+            var nameRegex = name.match(/^(.*?)\b(\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} (?:AM|PM))/);
+            var snapshotName = nameRegex[1].trim();
+            var snapshotDateTime = nameRegex[2];
+            var timeMatch = snapshotDateTime.split(", ");
+            var time12h = timeMatch[1];
+            var time24h = convertTo24Hour(time12h);
+            var snapshot = snapshotName + " " + timeMatch[0] + " " + time24h; 
+           
             var description = latestSnapshot.description || "N/A";
             var createTime = latestSnapshot.createTime;
             var date = new Date(createTime);
             var timeCreated =
-                (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate() + ":" +
-                (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1) + ":" +
+                (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1) + "/" +
+                (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate() + "/" +
                 date.getUTCFullYear() + " " +
                 (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours() + ":" +
                 (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes() + ":" +
-                (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
+                (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds() + " UTC";
 
             var currentDate = new Date();
             var ageInMilliseconds = currentDate - date;
@@ -144,12 +168,11 @@ function extractData(data) {
 
             var variables = [
                 D.createVariable("id", "ID", id, null, D.valueType.STRING),
-                D.createVariable("name", "Name", name, null, D.valueType.STRING),
+                D.createVariable("name", "Name", snapshot, null, D.valueType.STRING),
                 D.createVariable("description", "Description", description, null, D.valueType.STRING),
                 D.createVariable("creation-time", "Creation Time", timeCreated, null, D.valueType.DATETIME),
                 D.createVariable("age", "Age", ageInDays, "Days", D.valueType.NUMBER)
             ];
-
             D.success(variables);
         } else {
             console.error("Latest snapshot not found");
