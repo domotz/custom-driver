@@ -1,6 +1,6 @@
 {
     "logo": "iperf3.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "IPerf3 Speed Test",
     "description": "This script is designed to measure network speed data using the iperf3 towards pre-defined servers",
     "category": "Software Integration",
@@ -46,9 +46,14 @@
         {
             "value_type": "LIST",
             "name": "targetServer",
-            "label": "Target iperf3 server"
+            "label": "Target iperf3 server",
+            "value": ["ping.online.net:5209", "ping6.online.net:5209", "speedtest.serverius.net:5002", "localhost"]
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "defaultIperfPort",
+            "label": "Default iperf3 Port",
+            "value": 5201
         }
     ]
 }
-
- 
