@@ -5,7 +5,6 @@
  * 
  * Communication protocol is SSH.
  * 
- * 
  * This driver create a dynamic monitoring variables 
  *      Download speed: test for download speed.
  *      Upload speed: test for upload speed.
@@ -15,13 +14,16 @@
  * Tested on:
  * - Ubuntu 22.04.1 LTS
  * - with iperf3 version: v3.7
- *
  * 
  * The driver is currently using a public iPerf3 server which might stop working in the future.
  * If that is the case, you might try with another server which you might find at this URL: https://iperf.fr/iperf-servers.php 
- * or instead, you might setup you own iPerf3 server. 
+ * or instead, you might setup your own iPerf3 server. 
  * 
  * You can edit the targetServer object to configure the iPerf3 server to be used. 
+ * 
+ * Parameters:
+ *   - targetServer: The URL of the iPerf3 server to be used
+ *   - defaultIperfPort: The default port of the iPerf3 server if not specified in the targetServer  
  * 
  */
 
@@ -32,9 +34,8 @@ var sshConfig = {
 
 // List of iperf3 servers that the host will test with (ip_or_dns:port)
 // if the port is not specified the default one will be used "5201"
-var targetServerUrl = D.getParameter('targetServer');
-var defaultIperfPort = 5201;
-
+var targetServerUrl = D.getParameter("targetServer");
+var defaultIperfPort = D.getParameter("defaultIperfPort");
 
 // Define the commands to be executed via SSH to retrieve speed data and variable configuration
 var execConfig = [
@@ -47,29 +48,31 @@ var execConfig = [
     {
         id: "upload_speed",
         label: "Upload speed",
-        command: "iperf3 -t 5  -f m -c {url} -p {port}",
+        command: "iperf3 -t 5 -f m -c {url} -p {port}",
         extractor: tcpExtractor
     },
     {
         id: "download_speed_udp",
         label: "Download speed UDP",
-        command: "iperf3 -t 5  -f m -c {url} -p {port} -u -R",
+        command: "iperf3 -t 5 -f m -c {url} -p {port} -u -R",
         extractor: udpExtractor
     },
     {
         id: "upload_speed_udp",
         label: "Upload speed UDP",
-        command: "iperf3 -t 5  -f m -c {url} -p {port} -u",
+        command: "iperf3 -t 5 -f m -c {url} -p {port} -u",
         extractor: udpExtractor
     }
 ];
 
+// Extracts TCP speed from iPerf3 output
 function tcpExtractor(data) {
     var result = data.split("\n")
         .filter(function (line) { return line.indexOf("sender") >= 0; });
     return result.length > 0 ? result[0].split(/\s+/)[6] : null;
 }
 
+// Extracts UDP speed from iPerf3 output
 function udpExtractor(data) {
     var result = data.split("\n");
     var dataLength = result.length;
@@ -88,7 +91,6 @@ function checkSshError(err) {
 }
 
 // Function for executing SSH command 
-// this function test the iperf command, if the current server fails to respond the next will be called
 function executeCommand(commandTemplate, serverIndex, extractorFn) {
     return function (result) {
         var d = D.q.defer();
@@ -102,6 +104,7 @@ function executeCommand(commandTemplate, serverIndex, extractorFn) {
                 command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
                 sshConfig.command = command;
                 D.device.sendSSHCommand(sshConfig, function (out, err) {
+
                     if (err) {
                         return d.reject(err);
                     }
@@ -149,7 +152,7 @@ function execute() {
 
 //This function is a failure handler for SSH command execution. 
 function failure(error) {
-    console.error("Received Error: " + JSON.stringify(error));
+    console.error("Received Error: " + error);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
