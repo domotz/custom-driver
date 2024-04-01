@@ -1,0 +1,51 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "SQLServer Status Monitoring",
+    "description": "Monitor the status of a SQL Server database to check if it is able to serve requests",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SQLServer Express installed and running",
+            "Powershell Version 5.1.21996.1",
+            "Privilege required: Local Administrator",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "sql-server",
+        "windows",
+        "service",
+        "database",
+        "connection",
+        "status"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "11"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "serverName",
+            "label": "Server Name"
+        },
+        {
+            "value_type": "STRING",
+            "name": "databaseName",
+            "label": "Database Name"
+        }
+    ]
+}
