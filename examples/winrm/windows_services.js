@@ -19,7 +19,7 @@
 
 // List of services you want to monitor, note that you can put the DisplayName or the ServiceName  
 // For Windows 10 computer (workstation) you may want to set the filter the following way:
-// var svcFilter = ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time","MSSQL$SQLEXPRESS"]
+// var svcFilter = ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
 // For a server you may want to set the filter the following way:
 var svcFilter = D.getParameter('servicesFilter');
 
