@@ -1,0 +1,43 @@
+{
+    "logo": "dell.svg",
+    "version": "1.0.3",
+    "name": "Dell iDRAC Fan Monitoring",
+    "description": "Monitors the operational status of fans on a Dell server with iDRAC",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled",
+            "The keyboard_interactive option can be true or false depending on the iDRAC version"
+        ]
+    },
+    "tags": [
+        "idrac",
+        "dell",
+        "fan",
+        "type",
+        "description",
+        "primary-status",
+        "redundancy-status",
+        "active-cooling",
+        "variable-speed",
+        "pwm",
+        "current-reading"   
+    ],
+    "sample_period_s": 3600,
+    "execution_timeout_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[8,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "DELL iDRAC",
+            "version": "7.0.3 21053776"
+        }
+    ]
+}

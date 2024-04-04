@@ -1,0 +1,38 @@
+{
+    "logo": "kubernetes.svg",
+    "version": "1.0.0",
+    "name": "Kubernetes Kubelet metrics",
+    "description": "This script extracts Kubernetes kubelet metrics by HTTP agent from Prometheus metrics endpoint.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Kubernetes Installed"
+            ]
+    },
+    "tags": [
+        "kubernetes",
+        "orchestration",
+        "container",
+        "prometheus",
+        "node",
+        "pod"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "minikube",
+            "version": "1.28.0"
+        },
+        {
+            "name": "Ubuntu",
+            "version": "22.04.1"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "logo": "nginx.svg",
+    "version": "1.0.0",
+    "name": "Nginx Status",
+    "description": "Monitor Nginx metrics such as: Active, Accepted, and Handled Connections; total requests; etc. Before using this script, please read this article http://nginx.org/en/docs/http/ngx_http_stub_status_module.html.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Nginx Installed"
+        ]
+    },
+    "tags": [
+        "nginx",
+        "linux",
+        "connections",
+        "metrics"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "22.04"
+        },
+        {
+            "name": "nginx",
+            "version": "1.14.0"
+        }
+    ]
+}

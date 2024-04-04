@@ -1,0 +1,35 @@
+{
+    "logo": "redis.svg",
+    "version": "1.0.0",
+    "name": "Redis Server Stistics",
+    "description": "This script extracts Redis metrics using telnet over redis port (default 6379). Extracted statistics are Client connections metrics, Persistence metrics (RDB and ADF info), and General statistics",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Redis Installed"      ]
+    },
+    "tags": [
+        "redis",
+        "clients",
+        "rdb",
+        "aof"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "TELNET"
+    ],
+    "tested_on": [
+            {
+                "name": "Redis",
+                "version": "4.0.9"
+            },
+            {
+                "name": "Redis",
+                "version": "5.0.7"
+            }
+        ]
+}

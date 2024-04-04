@@ -1,0 +1,40 @@
+{
+    "logo": "docker.svg",
+    "version": "1.0.0",
+    "name": "Docker Images Info",
+    "description": "Get Docker Images information",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Docker Installed",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "docker",
+        "ubuntu",
+        "image",
+        "software",
+        "container"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[7,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "20.04.6"
+        },
+        {
+            "name": "Docker",
+            "version": "19.03.15"
+        }
+    ]
+}

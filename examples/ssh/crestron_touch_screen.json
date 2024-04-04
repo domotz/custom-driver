@@ -1,0 +1,33 @@
+{
+    "logo": "crestron.svg",
+    "version": "1.0.0",
+    "name": "Crestron Touch Screen",
+    "description": "Monitor all info sensors and temperature sensors and reboot the screen if needed",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "crestron",
+        "touchscreen",
+        "reboot"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": true,
+    "expected_variables": {
+        "table": "[40]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Crestron TS-1070",
+            "version": "1.001.0019"
+        }
+    ]
+}

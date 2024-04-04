@@ -14,23 +14,19 @@
  * Creates a Custom Driver table with a list of services, their status and their start type
  * 
  * Privilege required: Local Administrator
-* 
-**/
-
+ * 
+ **/
 
 // List of services you want to monitor, note that you can put the DisplayName or the ServiceName  
-// If you want to list ALL services:
-// var svcFilter = []
 // For Windows 10 computer (workstation) you may want to set the filter the following way:
-// var svcFilter = ["bits","Dnscache","Spooler","schedule","DHCP Client"]
+// var svcFilter = ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
 // For a server you may want to set the filter the following way:
-var svcFilter = ["LanmanServer", "dnscache", "Windows Time", "dhcp", "schedule", "RpcEptMapper", "MpsSvc"]
+var svcFilter = D.getParameter('servicesFilter');
 
 if (svcFilter !== '$null'){
-    svcFilter = '@("' + svcFilter.join('","') + '")';
+    var svcFilterString = svcFilter.join('","').replace(/\$/g, '`$');
+    getServices = 'ConvertTo-Json @(@("' + svcFilterString + '") | Get-Service | Select-Object ServiceName,DisplayName,Status,StartType)';
 }
-
-var getServices = svcFilter + '|Get-Service|Select-Object ServiceName,DisplayName,Status,StartType | ConvertTo-Json'
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
@@ -38,7 +34,6 @@ var winrmConfig = {
     "username": D.device.username(),
     "password": D.device.password()
 };
-
 
 var statusCodes = {
     "1": "Stopped",
@@ -66,7 +61,6 @@ var svcTable = D.createTable(
     ]
 );
 
-
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
     if (err.message) console.error(err.message);
@@ -86,7 +80,7 @@ function checkWinRmError(err) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials and privileges provided
 */
 function validate() { 
-    winrmConfig.command =  "Get-Service eventlog";
+    winrmConfig.command = "Get-Service eventlog";
     D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
             D.success();
@@ -106,8 +100,7 @@ function get_status() {
 }
 
 function populateTable(svcName, displayname, status, startType) {
-    var recordID;
-    recordID = displayname.slice(0, 50);
+    var recordID = displayname.slice(0, 50);
     status = statusCodes[status];
     startType = startTypes[startType];
     svcTable.insertRecord(recordID, [svcName, status, startType]);
@@ -116,30 +109,26 @@ function populateTable(svcName, displayname, status, startType) {
 function parseOutput(output) {
     if (output.error === null) {
         var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
-        if (jsonOutput) {
-            var k = 0;
-            while (k < jsonOutput.length) {
-                populateTable(
-                    jsonOutput[k].ServiceName,
-                    jsonOutput[k].DisplayName,
-                    jsonOutput[k].Status.toString(),
-                    jsonOutput[k].StartType.toString()
-                );
-                k++;
-            }
-        } else {
+        var listOfServices = JSON.parse(jsonOutput.outcome.stdout);
+        for (var k = 0; k < listOfServices.length; k++) {
             populateTable(
-                jsonOutput.ServiceName,
-                jsonOutput.DisplayName,
-                jsonOutput.Status.toString(),
-                jsonOutput.StartType.toString()
+                listOfServices[k].ServiceName,
+                listOfServices[k].DisplayName,
+                listOfServices[k].Status.toString(),
+                listOfServices[k].StartType.toString()
             );
+        }
+        var stderr = jsonOutput.outcome.stderr;
+        if (stderr !== null) {
+            var errorList = stderr.split('Get-Service :');
+            for (var j = 0; j < errorList.length; j++) {
+                if (errorList[j] !== '') {
+                    console.error(errorList[j]);
+                }
+            }
         }
         D.success(svcTable);
     } else {
-        console.error(output.error);
-        D.failure();
+        checkWinRmError(output.error);
     }
-
 }

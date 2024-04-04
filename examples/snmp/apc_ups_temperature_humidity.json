@@ -1,0 +1,34 @@
+{
+    "logo": "apc.svg",
+    "version": "1.0.0",
+    "name": "APC UPS Temperature and Humidity",
+    "description": "Monitor the UPS Temperature and Humidity",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+           "SNMP enabled"
+        ]
+    },
+    "tags": [
+        "apc",
+        "ups",
+        "temperature",
+        "humidity"
+    ],
+    "sample_period_s": 3600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[3]"
+    },
+    "protocols": [
+        "SNMP"
+    ],
+    "tested_on": [
+        {
+            "name": "APC Smart-UPS X 3000",
+            "version": "6.8.2"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "logo": "vmware-esxi.svg",
+    "version": "1.0.0",
+    "name": "VMware ESXi Last Login",
+    "description": "Get the Last Login line for a VMware ESXi host",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware ESXi",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "esxi",
+        "vmware",
+        "login",
+        "user",
+        "software"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "VMware ESXi",
+            "version": "7"
+        }
+    ]
+}

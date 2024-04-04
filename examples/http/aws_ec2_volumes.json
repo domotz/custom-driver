@@ -1,0 +1,26 @@
+{
+    "logo": "aws.svg",
+    "version": "1.0.1",
+    "name": "Aws EC2 Volumes",
+    "description": "Monitor AWS Elastic Compute Cloud Instance Volumes: this script retrieves information about the status and health of disk volumes",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "AWS EC2"        ]
+    },
+    "tags": [
+        "aws",
+        "elastic",
+        "cloud",
+        "ec2"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": []
+}

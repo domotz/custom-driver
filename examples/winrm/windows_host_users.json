@@ -1,0 +1,34 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Host Users",
+    "description": "Monitor the status of all the existing users on a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "user",
+        "software"
+    ],
+    "sample_period_s": 86400,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "logo": "freebsd.svg",
+    "version": "1.0.0",
+    "name": "FreeBSD Processes",
+    "description": "Monitor the FreeBSD processes by extracting info with the 'top' command",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "FreeBSD",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "freebsd",
+        "processes",
+        "top",
+        "software"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[12,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
+        }
+    ]
+}

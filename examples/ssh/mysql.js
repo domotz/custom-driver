@@ -1,9 +1,73 @@
-var _var = D.device.createVariable;
+/**
+ * Domotz Custom Driver 
+ * Name: Mysql Server Monitoring
+ * Description: Monitors Mysql service on Linux. 
+ * 
+ * Communication protocol is SSH.
+ * 
+ * Tested on Linux:
+ * Ubuntu 22.04
+ * Debian 10
+ * Centos 7
+ * 
+ * Please Note that:
+ *      - Your MySQL must run as systemd service for this command to work
+ *      - This works in Debian derivatives and Centos, other Linux distributions might different paths
+ *      - The username and password for MySQL admin are the same as the SSH host
+ * 
+ * The driver will create the following variables:
+ *      - Status
+ *      - Version
+ *      - Used Ram
+ *      - Uptime
+ *      - Threads
+ *      - Questions
+ *      - Opens
+ *      - Flush tables
+ *      - Open tables
+ *      - Average Queries
+ *      - Errors
+**/
+
+// Ssh options and command to be run
 var command = "(service mysql status | grep Active:) || echo 'No service found'; " + // Your MySQL must run as systemd service for this command to work
-    "(ls /var/run/mysqld/mysqld.pid && pmap `cat /var/run/mysqld/mysqld.pid` ) | tail -1 2>/dev/null || echo 'No pid found';" +
-    // This works in Debian and derivatives, other distributions moght use another path
-    "(mysqladmin version) || echo 'Cannot run mysqladmin'";
-    // In this simplicistic version, mysql root user accepts password-less connections from localhost
+    "(ls /var/run/mysqld/mysqld.pid && pmap `cat /var/run/mysqld/mysqld.pid` ) | tail -1 2>/dev/null || echo 'No pid found';" +  // This works in Debian and derivatives, other distributions might use another path
+    "(mysqladmin -u "+D.device.username()+" --password='"+D.device.password()+"' -h 127.0.0.1 version) || echo 'Cannot run mysqladmin'";
+
+var sshConfig = {
+    "command": command,
+    "username": D.device.username(),
+    "password": D.device.password(),
+    "timeout": 35000
+};
+
+// Check for SSH Errors in the communication with the windows device the driver is applied on
+function checkSshError(err) {
+    if (err.message) console.error(err.message);
+    if (err.code == 5) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (err.code == 255){
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(err);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+function executeCommand(command) {
+    var d = D.q.defer();
+    sshConfig.command = command;
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            checkSshError(error);
+            d.reject(error);
+        }
+        else{
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
 
 /**
  * @remote_procedure
@@ -11,24 +75,24 @@ var command = "(service mysql status | grep Active:) || echo 'No service found';
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
 function validate() {
-    D.device.sendSSHCommand(
-        {
-            command: command,
-            username: D.device.username(),
-            password: D.device.password(),
-            timeout: 20000
-        },
-        function (output, error) {
-            if (error) {
-                console.error(error);
-                D.failure();
+    executeCommand("service mysql status")
+        .then(function(output) {
+            if (output && output.indexOf("Active: active") !== -1) {
+                return executeCommand(command);
             } else {
-                console.info(output);
-                var data = parse(output);
-                reportData(data);
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-        }
-    );
+        })
+        .then(function(output) {
+            if (output && output.indexOf("Cannot run mysqladmin") === -1) {
+                D.success();
+            } else {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+        })
+        .catch(function(error) {
+            checkSshError(error);
+        });
 }
 
 /**
@@ -37,80 +101,45 @@ function validate() {
  * @documentation This procedure is used for retrieving device * variables data
  */
 function get_status() {
-    D.device.sendSSHCommand(
-        {
-            command: command,
-            username: D.device.username(),
-            password: D.device.password(),
-            timeout: 20000
-        },
-        function (output, error) {
-            if (error) {
-                console.error(error);
-                D.failure();
-            } else {
-                var data = parse(output);
-                reportData(data);
-                if (!isRunning(data)) {
-                    tryStart();
-                }
-            }
-        }
-    );
-}
-
-function tryStart() {
-    D.device.sendSSHCommand(
-        {
-            command: "service mysql start",
-            username: D.device.username(),
-            password: D.device.password(),
-            timeout: 10000
-        }, function () {
-            if (error) {
-                console.error(error);
-            }
-        });
+    executeCommand(command)
+        .then(parse)
+        .then(reportData)
+        .catch(checkSshError);
 }
 
 function reportData(data) {
     var variables = [];
-    console.log(data);
-    if (data.status) {
-        variables.push(_var("status", "Status", data.status));
-    }
     if (data.version) {
-        variables.push(_var("version", "Version", data.version));
+        variables.push(D.createVariable("version", "Version", data.version));
     }
     if (data.usedRam) {
-        variables.push(_var("usedRam", "Used Ram", data.usedRam, "KB"));
+        variables.push(D.createVariable("usedRam", "Used Ram", data.usedRam, "KB"));
     }
     if (data.uptime) {
-        variables.push(_var("uptime", "Uptime", toHours(data.uptime), "hours"));
+        variables.push(D.createVariable("uptime", "Uptime", toHours(data.uptime), "hours"));
     }
     if (data.threads) {
-        variables.push(_var("threads", "Threads", data.threads));
+        variables.push(D.createVariable("threads", "Threads", data.threads));
     }
     if (data.questions) {
-        variables.push(_var("questions", "Questions", data.questions));
+        variables.push(D.createVariable("questions", "Questions", data.questions));
     }
     if (data.slowQueries) {
-        variables.push(_var("slowQueries", "Slow Queries", data.slowQueries));
+        variables.push(D.createVariable("slowQueries", "Slow Queries", data.slowQueries));
     }
     if (data.opens) {
-        variables.push(_var("opens", "Opens", data.opens));
+        variables.push(D.createVariable("opens", "Opens", data.opens));
     }
     if (data.flushTables) {
-        variables.push(_var("flushTables", "Flush Tables", data.flushTables));
+        variables.push(D.createVariable("flushTables", "Flush Tables", data.flushTables));
     }
     if (data.openTables) {
-        variables.push(_var("openTables", "Open Tables", data.openTables));
+        variables.push(D.createVariable("openTables", "Open Tables", data.openTables));
     }
     if (data.queriesS) {
-        variables.push(_var("queriesS", "Average Queries/s", data.queriesS, "query/s"));
+        variables.push(D.createVariable("queriesS", "Average Queries", data.queriesS, "query/s"));
     }
-
-    variables.push(_var("errors", "Errors", data.errors || " "));
+    variables.push(D.createVariable("errors", "Errors", data.errors || " "));
     D.success(variables);
 }
 
@@ -120,14 +149,7 @@ function isRunning(data) {
 
 function parse(output) {
     var ret = {errors: ""};
-    console.info("OUTPUT: " + output);
     var lines = output.split("\n");
-
-    try {
-        ret["status"] = _parseStatus(lines.shift());
-    } catch (e) {
-        ret["errors"] += "No service information (" + e.message + ")\n";
-    }
     try {
         ret["usedRam"] = _parseUsedRam(lines.shift());
     } catch (e) {
@@ -142,16 +164,6 @@ function parse(output) {
 
     ret.errors = ret.errors.trim();
     return ret;
-}
-
-function _parseStatus(line) {
-    line = (line || " ").trim();
-    if (line.indexOf("Active: ") !== 0) {
-        throw new Error(line);
-    }
-    line = line.split(" ");
-    return line[1] + " " + line[2];
-
 }
 
 function _parseUsedRam(line) {
@@ -205,17 +217,6 @@ function toHours(data) {
     var days = match[2] || 0;
     var hours = match[4] || 0;
     var minutes = match[6] || 0;
-
     var totalHours = parseInt(days, 10) * 24 + parseInt(hours, 10) + parseInt(minutes, 10)/60;
     return (Math.floor(totalHours * 100) / 100) + "";
-}
-
-try {
-    module.exports.parse = parse;
-    module.exports.isRunning = isRunning;
-    module.exports.toHours = toHours;
-    module.exports.report = report;
-} catch (e)
-{
-    // ignore
 }

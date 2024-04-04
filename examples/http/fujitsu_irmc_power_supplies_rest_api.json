@@ -1,0 +1,34 @@
+{
+    "logo": "fujitsu.svg",
+    "version": "1.0.0",
+    "name": "Fujitsu iRMC Power Supplies",
+    "description": "Monitors power supply status of a Fujitsu iRMC (Integrated Remote Management Controller) device using the Redfish API",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Fujitsu",
+            "Redfish enabled"
+        ]
+    },
+    "tags": [
+        "fujitsu",
+        "irmc",
+        "power-supply"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[1]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Fujitsu iRMC",
+            "version": "S5"
+        }
+    ]
+}

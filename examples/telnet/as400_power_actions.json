@@ -1,0 +1,36 @@
+
+{
+    "logo": "ibm-iseries.svg",
+    "version": "1.0.0",
+    "name": "IBM ISeries AS400 Power Actions (IT)",
+    "description": "(ITALIAN VERSION) Monitor IBM ISeries server (AS400). This script checks the scheduled Power Information and provides the Power Actions to reboot or shutdown.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "as400",
+        "ibm",
+        "iseries",
+        "power",
+        "reboot",
+        "shutdown",
+        "power-up",
+        "power-off"
+    ],
+    "sample_period_s": 86400,
+    "has_actions": true,
+    "execution_time_s": 30,
+    "expected_variables": {},
+    "protocols": [
+        "TELNET"
+    ],
+    "tested_on": [
+        {
+            "name": "OS400",
+            "version": "5050 QSYS V6R1M1 L00"
+        }
+    ]
+}

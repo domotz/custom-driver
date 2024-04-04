@@ -1,0 +1,39 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.1",
+    "name": "Windows Audit Settings",
+    "description": "Monitor the audit settings on Windows",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privileged User Required",
+            "Read permissions on HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\EventLog\\Security",
+            "Membership of builtin group 'Event Log Readers'",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "audit",
+        "settings",
+        "policy",
+        "security"
+    ],
+    "sample_period_s": 86400,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        }
+    ]
+}

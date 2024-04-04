@@ -1,0 +1,46 @@
+{
+    "logo": "mysql.svg",
+    "version": "1.0.0",
+    "name": "MySQL Server",
+    "description": "Monitor the statistics on MySQL server running on Linux",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "MySQL installed and running",
+            "Linux",
+            "MySQLAdmin"
+        ]
+    },
+    "tags": [
+        "mysql",
+        "linux"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[11]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux Debian",
+            "version": "10"
+        },
+        {
+            "name": "Ubuntu",
+            "version": "22.04"
+        },
+        {
+            "name": "CentOS",
+            "version": "7"
+        },
+        {
+            "name": "bash",
+            "version": "5.0.3"
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "logo": "lenovo-xclarity.svg",
+    "version": "1.0.1",
+    "name": "XClarity Memory Health",
+    "description": "Monitor memory health on Lenovo XClarity servers",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "xclarity",
+        "lenovo",
+        "memory",
+        "health",
+        "status",
+        "type",
+        "capacity"
+    ],
+    "sample_period_s": 1800,
+    "execution_timeout_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Lenovo XClarity",
+            "version": "8.42"
+        }
+    ]
+}

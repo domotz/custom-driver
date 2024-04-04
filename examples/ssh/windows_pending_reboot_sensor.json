@@ -1,0 +1,38 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Pending Reboot",
+    "description": "Monitor the Pending Reboot state in Windows. It also provides a button to reboot the computer",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "reboot"
+    ],
+    "sample_period_s": 300,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[2]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
+        }
+    ]
+}

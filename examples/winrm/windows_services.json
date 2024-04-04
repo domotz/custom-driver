@@ -1,0 +1,44 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.4",
+    "name": "Windows Services Monitoring",
+    "description": "Monitor the status of chosen services on a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: Local Administrator",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "services",
+        "software"
+    ],
+    "sample_period_s": 3600,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Server 2019"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "servicesFilter",
+            "label": "Service Name",
+            "value": ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
+        }
+    ]
+}

@@ -2,5 +2,7 @@
 /dist
 /.env
 /.env.sample.*
+/.parameters.sample.*.json
+/.parameters.json
 /package-lock.json
 /data.db

@@ -1,0 +1,36 @@
+{
+    "logo": "lenovo-xclarity.svg",
+    "version": "1.0.1",
+    "name": "XClarity Power Supply Health",
+    "description": "Monitors the health status of power supplies on Lenovo XClarity server",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "xclarity",
+        "lenovo",
+        "power",
+        "health",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "execution_timeout_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[2,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Lenovo XClarity",
+            "version": "8.42"
+        }
+    ]
+}

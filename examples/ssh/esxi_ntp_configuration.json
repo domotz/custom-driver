@@ -1,0 +1,33 @@
+{
+    "logo": "vmware-esxi.svg",
+    "version": "1.0.0",
+    "name": "VMware ESXi NTP",
+    "description": "Get the NTP configuration on a VMware ESXi host",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware ESXi",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "esxi",
+        "vmware",
+        "ntp",
+        "software"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {},
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "VMware ESXi",
+            "version": "7"
+        }
+    ]
+}

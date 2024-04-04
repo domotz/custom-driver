@@ -1,0 +1,33 @@
+{
+    "logo": "ssl-checker.svg",
+    "version": "1.0.1",
+    "name": "Web Services Performance",
+    "description": "Monitor Web Services performance by measuring their response time",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "webservice",
+        "service",
+        "website"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2,999]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "urls",
+            "label": "Url"
+        }
+    ]
+}

@@ -1,0 +1,44 @@
+
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall Security Services Status and License",
+    "description": "Monitors the operational and licensing status of diverse security services on a SonicWALL device",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "services",
+        "status",
+        "license"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5145-2364"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "servicesToMonitor",
+            "label": "Services To Monitor (gav, spyw, ips, geoip, botnet, appctrl, dpissl, dpissh, cfs, cass, cees, capture)",
+            "value": ["ALL"]
+        }
+    ]
+}

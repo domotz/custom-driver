@@ -1,0 +1,35 @@
+{
+    "logo": "freebsd.svg",
+    "version": "1.0.0",
+    "name": "FreeBSD Network Routes",
+    "description": "Monitor the FreeBSD Network Routes by using the netstat command",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "FreeBSD",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "freebsd",
+        "routes",
+        "netstat",
+        "software"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[4,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
+        }
+    ]
+}

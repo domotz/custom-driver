@@ -1,0 +1,52 @@
+{
+    "logo": "linux.svg",
+    "version": "1.1.2",
+    "name": "Linux Services",
+    "description": "Monitor the status of the chosen services on a Linux host",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "SSH Enabled",
+            "user running the script should be in the /etc/sudoers file with the following settings: $username  ALL =  NOPASSWD : ALL",
+            "sed",
+            "tail",
+            "systemctl",
+            "head",
+            "grep"
+        ]
+    },
+    "tags": [
+        "linux",
+        "services",
+        "systemctl"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Linux",
+            "version": "Debian 10"
+        },
+        {
+            "name": "bash",
+            "version": "5.0.3"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "services",
+            "label": "Service",
+            "value": ["apache", "http", "mysql", "snmp", "ssh", "zabbix"]
+        }
+    ]
+}

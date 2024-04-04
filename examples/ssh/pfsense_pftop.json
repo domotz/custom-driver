@@ -1,0 +1,41 @@
+{
+    "logo": "pfsense.svg",
+    "version": "1.0.0",
+    "name": "pfSense",
+    "description": "Monitor the pfSense process and the processes running on the FreeBSD server",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "FreeBSD",
+            "pfSense",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "pfsense",
+        "freebsd",
+        "software",
+        "firewall",
+        "processes"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[12,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "pfSense",
+            "version": "2.6.0-RELEASE"
+        },
+        {
+            "name": "FreeBSD",
+            "version": "12.3-STABLE"
+        }
+    ]
+}

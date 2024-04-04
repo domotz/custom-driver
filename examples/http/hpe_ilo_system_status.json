@@ -1,0 +1,35 @@
+{
+    "logo": "hpe.svg",
+    "version": "1.0.0",
+    "name": "HPE ILO System status",
+    "description": "Monitors the status for HPE ILO (Integrated Lights-Out) systems using the Redfish API",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "HPE iLO",
+            "Redfish enabled"
+        ]
+    },
+    "tags": [
+        "hpe",
+        "ilo",
+        "system",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[1]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "HPE iLO",
+            "version": "5"
+        }
+    ]
+}

@@ -6,7 +6,7 @@
  * Tested under Docker version 19.03.15, build 99e3ed8919
  */
 
-var createVar = D.device.createVariable;
+var createVar = D.createVariable;
 var dockerInfoCmd = "docker info --format '{{json .}}'";
 var sshConfig = {
     username: D.device.username(),
@@ -82,7 +82,7 @@ function createDockerInfoVariables(json) {
 }
 
 function failure(err) {
-    console.log(err);
+    console.error("Received error: " + err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
@@ -93,11 +93,9 @@ function failure(err) {
 */
 function validate() {
     getDockerInfo()
-        .then(function () {
-            D.success();
-        }).catch(failure);
+        .then(D.success)
+        .catch(failure);
 }
-
 
 /**
 * @remote_procedure
@@ -105,7 +103,6 @@ function validate() {
 * @documentation This procedure is used to call docker service over ssh and extract the result and create variables to monitor
 */
 function get_status() {
-
     getDockerInfo()
         .then(createDockerInfoVariables)
         .then(D.success)
