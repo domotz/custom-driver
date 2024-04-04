@@ -18,7 +18,7 @@
  * 
 **/
 
-var hours = D.getParameter("hours") || 1; // Set the number of hours to look back for failed logon attempts
+var hours = D.getParameter("hours"); // Set the number of hours to look back for failed logon attempts
 
 // Command to retrieve failed login attempts
 var winrmCommand = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=4625;StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue;$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;TargetUserName = $_.properties[5].value;WorkstationName = $_.properties[13].value;IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;$GroupByUsers |select count,values |ConvertTo-Json';

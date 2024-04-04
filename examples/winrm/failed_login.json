@@ -1,0 +1,43 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Failed Logon attempts",
+    "description": "monitors the failed logon on a Windows computer.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "login"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": [1],
+        "table": [1]
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "hours",
+            "label": "Time frame for failed login",
+            "value": 48
+        }
+    ]
+}
