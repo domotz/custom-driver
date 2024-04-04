@@ -25,8 +25,8 @@
  **/
 
 // PowerShell commands to retrieve OS and BIOS information
-var OSInfo = "Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Manufacturer,Version,BuildNumber,OSArchitecture | ConvertTo-Json -Compress";
-var biosInfo = "Get-CimInstance Win32_BIOS -erroraction 'silentlycontinue' | Select-Object SerialNumber | ConvertTo-Json -Compress";
+var osInfoCmd = "Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Manufacturer,Version,BuildNumber,OSArchitecture, SerialNumber | ConvertTo-Json -Compress";
+var biosInfoCmd = "Get-CimInstance Win32_BIOS -erroraction 'silentlycontinue' | Select-Object SerialNumber | ConvertTo-Json -Compress";
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
@@ -64,8 +64,8 @@ function executeWinrmCommand(command) {
 // Main function to execute WinRM commands for OS and BIOS information
 function execute() {
     return D.q.all([
-        executeWinrmCommand(OSInfo),
-        executeWinrmCommand(biosInfo)
+        executeWinrmCommand(osInfoCmd),
+        executeWinrmCommand(biosInfoCmd)
     ]);
 }
 
@@ -80,7 +80,6 @@ function validate() {
         .then(checkWinRmError);
 }
 
-
 function parseValidateOutput(output) {
     for (var i = 0; i < output.length; i++) {
         if (output[i].error !== null) {
@@ -91,6 +90,7 @@ function parseValidateOutput(output) {
     console.log("Validation successful");
     return D.success();
 }
+
 /**
 * @remote_procedure
 * @label Get Windows OS Info
@@ -109,16 +109,14 @@ function parseOutput(output) {
     
     output.forEach(function(result) {
         if (result.error === null && !biosInfoObject) {
-            var OSInfo = JSON.parse(result.outcome.stdout);
-            var name = OSInfo.Caption;
-            var version = OSInfo.Version;
-            var buildNumber = OSInfo.BuildNumber;
-            var architecture = OSInfo.OSArchitecture;
-            var vendor = OSInfo.Manufacturer;
-            var osProductID = OSInfo.SerialNumber;
-            
+            var osInfo = JSON.parse(result.outcome.stdout);
+            var name = osInfo.Caption ? osInfo.Caption : "N/A";
+            var version = osInfo.Version ? osInfo.Version : "N/A";
+            var buildNumber = osInfo.BuildNumber;
+            var architecture = osInfo.OSArchitecture ? osInfo.OSArchitecture : "N/A";
+            var vendor = osInfo.Manufacturer ? osInfo.Manufacturer : "N/A";
+            var osProductID = osInfo.SerialNumber ? osInfo.SerialNumber : "N/A";     
             if (name !== null && version !== null && buildNumber !== null && architecture !== null && vendor !== null && osProductID !== null) {
-                
                 variables.push(
                     D.createVariable("name", "Name", name, null, D.valueType.STRING ),
                     D.createVariable("version", "Version", version, null, D.valueType.STRING ),
@@ -131,9 +129,8 @@ function parseOutput(output) {
             biosInfoObject = true;
         } else if (result.error === null && biosInfoObject) {
             var biosInfo = JSON.parse(result.outcome.stdout);
-            if (biosInfo.SerialNumber !== null) {
-                variables.push(D.createVariable("serial-number", "Serial Number", biosInfo.SerialNumber, null, D.valueType.STRING ));
-            }
+            var serialNumber = biosInfo.SerialNumber ? biosInfo.SerialNumber : "N/A"
+            variables.push(D.createVariable("serial-number", "Serial Number", serialNumber, null, D.valueType.STRING ));            
         } else {
             console.error(result.error);
         }
