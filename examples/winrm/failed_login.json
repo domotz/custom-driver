@@ -37,7 +37,7 @@
             "value_type": "NUMBER",
             "name": "hours",
             "label": "Time frame for failed login",
-            "value": 48
+            "value": 24
         }
     ]
 }

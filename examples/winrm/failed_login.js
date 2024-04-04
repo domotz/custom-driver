@@ -28,7 +28,6 @@ var winrmConfig = {
     "command": "",
     "username": D.device.username(),
     "password": D.device.password(),
-    port: 39351
 };
 
 var failedLogonTable = D.createTable(
