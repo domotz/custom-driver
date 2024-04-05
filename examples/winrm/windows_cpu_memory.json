@@ -1,0 +1,36 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows CPU and Memory",
+    "description": "Monitors CPU and memory usage of a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.21996.1",
+            "Privilege required: Administrator",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "cpu",
+        "memory",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[9]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "11"
+        }
+    ]
+}
