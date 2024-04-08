@@ -94,8 +94,8 @@ function parseOutput(output) {
         var cpuStatus = cpuMemoryInfo.CPUInfo.Status;
         var cpuAverage = cpuMemoryInfo.Average;
         var variables = [
-            D.device.createVariable("total-memory", "Total Memory", totalMemory, "GB", D.valueType.NUMBER),
-            D.device.createVariable("available-memory", "Available Memory", availableMemory.toFixed(2), "GB", D.valueType.NUMBER),
+            D.device.createVariable("total-memory", "Total Memory", totalMemory, "GiB", D.valueType.NUMBER),
+            D.device.createVariable("available-memory", "Available Memory", availableMemory.toFixed(2), "GiB", D.valueType.NUMBER),
             D.device.createVariable("memory-usage", "Memory Usage", memoryUsage.toFixed(2), "%", D.valueType.NUMBER),
             D.device.createVariable("cpu-name", "CPU Name", cpuName, null, D.valueType.STRING),
             D.device.createVariable("max-clock-speed", "Max Clock Speed", maxClockSpeed, "GHz", D.valueType.NUMBER),
