@@ -105,35 +105,38 @@ function get_status() {
 // Function to parse the output from WinRM commands and create variables
 function parseOutput(output) {
     var variables = [];
-    var biosInfoObject = false;
+    var systemInfo = output[0];
+    var biosInfo = output[1];
     
-    output.forEach(function(result) {
-        if (result.error === null && !biosInfoObject) {
-            var osInfo = JSON.parse(result.outcome.stdout);
-            var name = osInfo.Caption ? osInfo.Caption : "N/A";
-            var version = osInfo.Version ? osInfo.Version : "N/A";
-            var buildNumber = osInfo.BuildNumber;
-            var architecture = osInfo.OSArchitecture ? osInfo.OSArchitecture : "N/A";
-            var vendor = osInfo.Manufacturer ? osInfo.Manufacturer : "N/A";
-            var osProductID = osInfo.SerialNumber ? osInfo.SerialNumber : "N/A";     
-            if (name !== null && version !== null && buildNumber !== null && architecture !== null && vendor !== null && osProductID !== null) {
-                variables.push(
-                    D.createVariable("name", "Name", name, null, D.valueType.STRING ),
-                    D.createVariable("version", "Version", version, null, D.valueType.STRING ),
-                    D.createVariable("build-number", "Build Number", buildNumber, null, D.valueType.NUMBER ),
-                    D.createVariable("architecture", "Architecture", architecture, null, D.valueType.STRING ),
-                    D.createVariable("vendor", "Vendor", vendor, null, D.valueType.STRING ),
-                    D.createVariable("product-id", "OS Product ID", osProductID, null, D.valueType.STRING )
-                );
-            }
-            biosInfoObject = true;
-        } else if (result.error === null && biosInfoObject) {
-            var biosInfo = JSON.parse(result.outcome.stdout);
-            var serialNumber = biosInfo.SerialNumber ? biosInfo.SerialNumber : "N/A"
-            variables.push(D.createVariable("serial-number", "Serial Number", serialNumber, null, D.valueType.STRING ));            
-        } else {
-            console.error(result.error);
+    if (systemInfo.error === null) {
+        var osInfo = JSON.parse(systemInfo.outcome.stdout);
+        var name = osInfo.Caption ? osInfo.Caption : "N/A";
+        var version = osInfo.Version ? osInfo.Version : "N/A";
+        var buildNumber = osInfo.BuildNumber;
+        var architecture = osInfo.OSArchitecture ? osInfo.OSArchitecture : "N/A";
+        var vendor = osInfo.Manufacturer ? osInfo.Manufacturer : "N/A";
+        var osProductID = osInfo.SerialNumber ? osInfo.SerialNumber : "N/A";     
+        if (name !== null && version !== null && buildNumber !== null && architecture !== null && vendor !== null && osProductID !== null) {
+            variables.push(
+                D.createVariable("name", "Name", name, null, D.valueType.STRING ),
+                D.createVariable("version", "Version", version, null, D.valueType.STRING ),
+                D.createVariable("build-number", "Build Number", buildNumber, null, D.valueType.NUMBER ),
+                D.createVariable("architecture", "Architecture", architecture, null, D.valueType.STRING ),
+                D.createVariable("vendor", "Vendor", vendor, null, D.valueType.STRING ),
+                D.createVariable("product-id", "OS Product ID", osProductID, null, D.valueType.STRING )
+            );
         }
-    });
+    } else {
+        console.error(systemInfo.error);
+    }
+
+    if (biosInfo.error === null) {
+        var bios = JSON.parse(biosInfo.outcome.stdout);
+        var serialNumber = bios.SerialNumber ? bios.SerialNumber : "N/A";
+        variables.push(D.createVariable("serial-number", "Serial Number", serialNumber, null, D.valueType.STRING ));            
+    } else {
+        console.error(biosInfo.error);
+    }
+
     D.success(variables);
 }
