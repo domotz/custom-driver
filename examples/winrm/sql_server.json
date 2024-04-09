@@ -11,7 +11,8 @@
             "SQLServer Express installed and running",
             "Powershell Version 5.1.21996.1",
             "Privilege required: Local Administrator",
-            "WinRM Enabled"
+            "WinRM Enabled",
+            "TCP/IP protocol for SQL Server instance Enabled"
         ]
     },
     "tags": [
@@ -46,6 +47,13 @@
             "value_type": "STRING",
             "name": "databaseName",
             "label": "Database Name"
+        },
+        {
+            "value_type": "STRING",
+            "name": "serviceName",
+            "label": "Service Name",
+            "value": "MSSQLSERVER"
         }
+        
     ]
 }
