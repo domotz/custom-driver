@@ -1,30 +1,47 @@
-**
+/**
  * This Driver is an example on how to read STATUS and issue a command to the POWERRNODE / Lenbrook
  * Communication protocol is HTTP.
  */
-var port = D.getParameter("port")
+
 var _var = D.device.createVariable;
-function validate(){
-    function callback(error, response, body) {
-        var variables = [];
-        var $ = D.htmlParse(body, {xml: true});
-        variables.push(
-            D.createVariable("state", "State", $('state').text()));
-        D.success(variables);
-    };
+
+function callBluOSAPI(url, processBluOSResponseCallback) {
     var httpOptions = {
-        url: "/Status",
-        port: port
-    }
-    D.device.http.get(httpOptions, callback);    
+        url: url,
+        port: 11000
+    };
+
+    function httpCallback(error, response, body) {
+        if (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        else if (response.statusCode != 200) {
+            console.error("Unexpected response status code: " + response.statusCode);
+            D.failure(D.errorType.GENERIC_ERROR);
+        }        
+        else 
+            processBluOSResponseCallback(body);
+     };
+
+    D.device.http.get(httpOptions, httpCallback);
+}
+
+function validate(){
+     function validateStatusCallback(body) {
+             var $ = D.htmlParse(body, {xml: true});
+             D.success([_var("state", "State", $('state').text())]);
+    };
+    callBluOSAPI("/Status", validateStatusCallback);
 } 
+
 /**
  * @remote_procedure
- * @label Get Device Variables
- * @documentation This procedure is used for updating the status EdgeRouter Device Custom Driver Variables for the DHCP leases
- */
+* @label Get Device Variables
+* @documentation This procedure is used for updating the status EdgeRouter Device Custom Driver Variables for the DHCP leases
+*/
 function get_status() {
-    function callback(error, response, body) {
+    function processStatusCallback(body) {
         var variables = [];
         var $ = D.htmlParse(body, {xml: true});
         variables.push(
@@ -53,84 +70,87 @@ function get_status() {
             _var("title2", "Title 2", $('title2').text()),
             _var("title3", "Title 3", $('title3').text()),
             _var("volume", "Volume", $('volume').text()),
-            _var("secs", "Seconds", $('secs').text()));
+            _var("secs", "Seconds", $('secs').text())
+        );
         D.success(variables);
-    };
-    var httpOptions = {
-        url: "/Status",
-        port: port
     }
-    D.device.http.get(httpOptions, callback);
+    callBluOSAPI("/Status", processStatusCallback);
 }
-function actionCallback(error, response, body){
-    console.log(body)
-    var $ = D.htmlParse(body, {xml: true});
-    console.log("Changing State and reporting the result");
-    console.log($('state').text());
-    D.success();
-}
-function executeAction(url){
-    var httpOptions = {
-        url: url,
-        port: port
+ 
+function executeAction(url) {
+    function actionCallback(body) {
+        console.log("EXECUTED");
+        console.log(body)
+
+        var $ = D.htmlParse(body, {xml: true});
+        console.log("Changing State and reporting the result");
+        console.log($('state').text());
+        D.success();
     }
+ 
     console.log("Executing the API to change state");
-    D.device.http.get(httpOptions, actionCallback);    
-    console.log("EXECUTED");
+    callBluOSAPI(url, actionCallback);
 }
+ 
 /**
-* @remote_procedure
-* @label Change to the Preset ID 1
-* @documentation Preset ID 1 action
-*/
-function custom_1(){
-    executeAction("/Preset?id=1")
+ * @remote_procedure
+ * @label Change to the Preset ID 1
+ * @documentation Preset ID 1 action
+ */
+function custom_1() {
+    executeAction("/Preset?id=1");
 }
+
 /**
-* @remote_procedure
-* @label Change to the Preset ID 2
-* @documentation Preset ID 2 action
-*/
-function custom_2(){
-    executeAction("/Preset?id=2")
+ * @remote_procedure
+ * @label Change to the Preset ID 2
+ * @documentation Preset ID 2 action
+ */
+function custom_2() {
+    executeAction("/Preset?id=2");
 }
+
 /**
-* @remote_procedure
-* @label Change to the Preset ID 3
-* @documentation Change to Preset 3 action
-*/
-function custom_3(){
-    executeAction("/Preset?id=3")
-}
+ * @remote_procedure
+ * @label Change to the Preset ID 3
+ * @documentation Change to Preset 3 action
+ */
+function custom_3() {
+    executeAction("/Preset?id=3");
+ }
+ 
 /**
-* @remote_procedure
-* @label Volume UP
-* @documentation Volume UP action
-*/
-function custom_4(){
-    executeAction("/Volume?db=5")
-}
+ * @remote_procedure
+ * @label Volume UP
+ * @documentation Volume UP action
+ */
+function custom_4() {
+    executeAction("/Volume?db=5");
+ }
+
 /**
-* @remote_procedure
-* @label Volume DOWN
-* @documentation Volume DOWN action
-*/
-function custom_5(){
-    executeAction("/Volume?db=-5")
-}
+ * @remote_procedure
+ * @label Volume DOWN
+ * @documentation Volume DOWN action
+ */
+function custom_5() {
+    executeAction("/Volume?db=-5");
+ }
+
 /**
-* @remote_procedure
-* @label Play Pause
-* @documentation Play Pause action
-*/
-function custom_6(){
-    executeAction("/Pause?toggle=1")
-}
+ * @remote_procedure
+ * @label Play Pause
+ * @documentation Play Pause action
+ */
+function custom_6() {
+    executeAction("/Pause?toggle=1");
+ }
+
 /**
-* @remote_procedure
-* @label Reboot
-* @documentation Reboot action
-*/
-function custom_7(){
-    executeAction("/reboot?yes=yes")
+ * @remote_procedure
+ * @label Reboot
+ * @documentation Reboot action
+ */
+function custom_7() {
+    executeAction("/reboot?yes=yes");
 }
