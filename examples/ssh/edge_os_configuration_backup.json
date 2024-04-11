@@ -28,7 +28,7 @@
     "tested_on": [
         {
             "name": "EdgeOS",
-            "version": "Linux EdgeRouter 4.14.54-UBNT"
+            "version": "EdgeRouter 4.14.54"
         }
     ]
 }
