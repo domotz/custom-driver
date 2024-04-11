@@ -20,8 +20,8 @@
     "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": [1],
-        "table": [1]
+        "independent": "[1]",
+        "table": "[1]"
     },
     "protocols": [
         "WINRM"
