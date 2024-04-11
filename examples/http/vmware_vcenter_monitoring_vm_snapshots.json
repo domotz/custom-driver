@@ -17,7 +17,6 @@
         "vmware",
         "vcenter",
         "snapshot",
-        "vm",
         "name",
         "description",
         "creation-time",
