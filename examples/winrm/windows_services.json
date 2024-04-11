@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "name": "Windows Services Monitoring",
     "description": "Monitor the status of chosen services on a Windows machine",
     "category": "Software Integration",
@@ -38,7 +38,7 @@
             "value_type": "LIST",
             "name": "servicesFilter",
             "label": "Service Name",
-            "value": ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time","MSSQL$SQLEXPRESS"]
+            "value": ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
         }
     ]
 }

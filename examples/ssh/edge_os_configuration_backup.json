@@ -1,0 +1,35 @@
+{
+    "logo": "ubiquiti.svg",
+    "version": "1.0",
+    "name": "Edge OS Router Configuration Backup",
+    "description": "Monitors the configuration of an Edge OS router and backs it up.",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.16",
+        "others": [
+            "Use must be admin and be able to execute the 'show configuration' command over SSH"
+        ]
+    },
+    "tags": [
+        "ubiquiti",
+        "edge",
+        "os",
+        "router",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "EdgeOS",
+            "version": "Linux EdgeRouter 4.14.54-UBNT"
+        }
+    ]
+}
