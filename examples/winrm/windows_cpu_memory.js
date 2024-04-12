@@ -1,7 +1,8 @@
 /**
  * Domotz Custom Driver 
  * Name: Windows CPU and Memory
- * Description: Monitors CPU and memory usage of a Windows machine
+ * Description: Monitors CPU and memory usage of a Windows machine. 
+ * Please note that to retrieve CPU load metric it is necessary to add the WinRM user to the security group "Performance Monitor Users"
  * 
  * Communication protocol is WinRM
  * 
@@ -20,10 +21,7 @@
  *      - Logical Processors Number: Number of logical processors
  *      - Cores Number: Number of CPU cores
  *      - CPU Status: Status of the CPU
- *      - CPU Load Average (10 sec): Average CPU load over 10 seconds
- * 
- * Privilege required: Administrator
- * 
+ *      - CPU Load Average (10 sec): Average CPU load over 10 seconds (please note that to retrieve this metric it is necessary to add the WinRM user to the security group "Performance Monitor Users")
  */
 
 
@@ -31,7 +29,8 @@
 var totalMemory = '(Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).Sum'; 
 
 // Variable to store PowerShell command for retrieving available memory
-var availableMemory = '(Get-Counter "\\Memory\\Available MBytes").CounterSamples.CookedValue';
+//var availableMemory = '(Get-Counter "\\Memory\\Available MBytes").CounterSamples.CookedValue';
+var availableMemory = 'Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory';
 
 // Variable to store PowerShell command for retrieving CPU information
 var cpuInfo = 'Get-CimInstance Win32_processor | Select-Object name, MaxClockSpeed, NumberOfLogicalProcessors, NumberOfCores, Status';
@@ -83,16 +82,23 @@ function get_status() {
 function parseOutput(output) {
     if (output.error === null) {
         var cpuMemoryInfo = JSON.parse(output.outcome.stdout);
-        console.log(cpuMemoryInfo);
+
+        console.log(output.outcome.stdout);
+            
         var totalMemory = cpuMemoryInfo.TotalMemory / (Math.pow(1024, 3));
-        var availableMemory = cpuMemoryInfo.AvailableMemory / 1024;
+        var availableMemory = cpuMemoryInfo.AvailableMemory / 1024 / 1024;
         var memoryUsage = ((totalMemory - availableMemory) / totalMemory) * 100;
         var cpuName = cpuMemoryInfo.CPUInfo.name;
         var maxClockSpeed = cpuMemoryInfo.CPUInfo.MaxClockSpeed / 1000;
         var logicalProcessorsNumber = cpuMemoryInfo.CPUInfo.NumberOfLogicalProcessors;
         var coresNumber = cpuMemoryInfo.CPUInfo.NumberOfCores;
         var cpuStatus = cpuMemoryInfo.CPUInfo.Status;
-        var cpuAverage = cpuMemoryInfo.Average;
+        var cpuAverage;
+        if (cpuMemoryInfo.Average != null)
+            cpuAverage = cpuMemoryInfo.Average.toFixed(2);
+        else
+            cpuAverage = "N/A";
+
         var variables = [
             D.device.createVariable("total-memory", "Total Memory", totalMemory, "GiB", D.valueType.NUMBER),
             D.device.createVariable("available-memory", "Available Memory", availableMemory.toFixed(2), "GiB", D.valueType.NUMBER),
@@ -102,7 +108,7 @@ function parseOutput(output) {
             D.device.createVariable("logical-processors-number", "Logical Processors Number", logicalProcessorsNumber, null, D.valueType.NUMBER),
             D.device.createVariable("cores-number", "Cores Number", coresNumber, null, D.valueType.NUMBER),
             D.device.createVariable("cpu-status", "CPU Status", cpuStatus, null, D.valueType.STRING),
-            D.device.createVariable("cpu-average", "CPU Load Average (10 sec)", cpuAverage.toFixed(2), "%", D.valueType.NUMBER)
+            D.device.createVariable("cpu-average", "CPU Load Average (10 sec)", cpuAverage, "%", D.valueType.NUMBER)
         ];
         D.success(variables);
     } else {
