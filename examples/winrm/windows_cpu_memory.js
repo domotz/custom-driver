@@ -81,8 +81,7 @@ function get_status() {
 function parseOutput(output) {
     if (output.error === null) {
         var cpuMemoryInfo = JSON.parse(output.outcome.stdout);
-
-        console.log(output.outcome.stdout);
+        console.log(cpuMemoryInfo);
             
         var totalMemory = cpuMemoryInfo.TotalMemory / (Math.pow(1024, 3));
         var availableMemory = cpuMemoryInfo.AvailableMemory / 1024 / 1024;
