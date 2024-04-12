@@ -29,7 +29,6 @@
 var totalMemory = '(Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).Sum'; 
 
 // Variable to store PowerShell command for retrieving available memory
-//var availableMemory = '(Get-Counter "\\Memory\\Available MBytes").CounterSamples.CookedValue';
 var availableMemory = 'Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory';
 
 // Variable to store PowerShell command for retrieving CPU information
