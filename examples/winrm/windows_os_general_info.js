@@ -25,11 +25,12 @@
  **/
 
 // PowerShell commands to retrieve OS and BIOS information
-var osInfoCmd = "Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Manufacturer,Version,BuildNumber,OSArchitecture, SerialNumber | ConvertTo-Json -Compress";
-var biosInfoCmd = "Get-CimInstance Win32_BIOS -erroraction 'silentlycontinue' | Select-Object SerialNumber | ConvertTo-Json -Compress";
+var osInfo = "Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Manufacturer,Version,BuildNumber,OSArchitecture, SerialNumber";
+var biosInfo = "Get-CimInstance Win32_BIOS -erroraction 'silentlycontinue' | Select-Object SerialNumber";
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
+    "command": '@{ OperatingSystem = ' + osInfo + '; BIOS = ' + biosInfo + '} | ConvertTo-Json -Compress',
     "username": D.device.username(),
     "password": D.device.password()
 };
@@ -47,48 +48,19 @@ function checkWinRmError(err) {
     }
 }
 
-// Function to execute WinRM command
-function executeWinrmCommand(command) {
-    var d = D.q.defer();
-    winrmConfig.command = command;
-    D.device.sendWinRMCommand(winrmConfig, function (output) {
-        if (output.error === null) {
-            d.resolve(output);
-        } else {
-            checkWinRmError(output.error);
-        }            
-    });
-    return d.promise;
-}
-
-// Main function to execute WinRM commands for OS and BIOS information
-function execute() {
-    return D.q.all([
-        executeWinrmCommand(osInfoCmd),
-        executeWinrmCommand(biosInfoCmd)
-    ]);
-}
-
 /**
 * @remote_procedure
-* @label Validate WinRM is working on device
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials and privileges provided
+* @label Validate WinRM connectivity with the device
+* @documentation This procedure is used to validate the driver and credentials provided during association.
 */
-function validate() { 
-    execute()
-        .then(parseValidateOutput)
-        .then(checkWinRmError);
-}
-
-function parseValidateOutput(output) {
-    for (var i = 0; i < output.length; i++) {
-        if (output[i].error !== null) {
-            console.error("Validation failed");
-            return D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+function validate() {
+    D.device.sendWinRMCommand(winrmConfig, function (output) {
+        if (output.error === null) {
+            D.success();
+        } else {
+            checkWinRmError(output.error);
         }
-    }
-    console.log("Validation successful");
-    return D.success();
+    });
 }
 
 /**
@@ -97,46 +69,36 @@ function parseValidateOutput(output) {
 * @documentation This procedure is used to extract information regarding the Windows operating system, including details such as its name, version, build number, architecture, etc.
 */
 function get_status() {
-    execute()
-        .then(parseOutput)
-        .catch(checkWinRmError);
+    D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
 // Function to parse the output from WinRM commands and create variables
 function parseOutput(output) {
     var variables = [];
-    var systemInfo = output[0];
-    var biosInfo = output[1];
-    
-    if (systemInfo.error === null) {
-        var osInfo = JSON.parse(systemInfo.outcome.stdout);
-        var name = osInfo.Caption ? osInfo.Caption : "N/A";
-        var version = osInfo.Version ? osInfo.Version : "N/A";
-        var buildNumber = osInfo.BuildNumber;
-        var architecture = osInfo.OSArchitecture ? osInfo.OSArchitecture : "N/A";
-        var vendor = osInfo.Manufacturer ? osInfo.Manufacturer : "N/A";
-        var osProductID = osInfo.SerialNumber ? osInfo.SerialNumber : "N/A";     
-        if (name !== null && version !== null && buildNumber !== null && architecture !== null && vendor !== null && osProductID !== null) {
-            variables.push(
-                D.createVariable("name", "Name", name, null, D.valueType.STRING ),
-                D.createVariable("version", "Version", version, null, D.valueType.STRING ),
-                D.createVariable("build-number", "Build Number", buildNumber, null, D.valueType.NUMBER ),
-                D.createVariable("architecture", "Architecture", architecture, null, D.valueType.STRING ),
-                D.createVariable("vendor", "Vendor", vendor, null, D.valueType.STRING ),
-                D.createVariable("product-id", "OS Product ID", osProductID, null, D.valueType.STRING )
-            );
-        }
-    } else {
-        console.error(systemInfo.error);
-    }
+    if (output.error === null) {
+        var generalInfo = JSON.parse(output.outcome.stdout);
+        var name = generalInfo.OperatingSystem.Caption ? generalInfo.OperatingSystem.Caption : "N/A";
+        var version = generalInfo.OperatingSystem.Version ? generalInfo.OperatingSystem.Version : "N/A";
+        var buildNumber = generalInfo.OperatingSystem.BuildNumber;
+        var architecture = generalInfo.OperatingSystem.OSArchitecture ? generalInfo.OperatingSystem.OSArchitecture : "N/A";
+        var vendor = generalInfo.OperatingSystem.Manufacturer ? generalInfo.OperatingSystem.Manufacturer : "N/A";
+        var osProductID = generalInfo.OperatingSystem.SerialNumber ? generalInfo.OperatingSystem.SerialNumber : "N/A";     
+        var serialNumber = generalInfo.BIOS.SerialNumber ? generalInfo.BIOS.SerialNumber : "N/A";
+        
+        variables.push(
+            D.createVariable("name", "Name", name, null, D.valueType.STRING ),
+            D.createVariable("version", "Version", version, null, D.valueType.STRING ),
+            D.createVariable("build-number", "Build Number", buildNumber, null, D.valueType.NUMBER ),
+            D.createVariable("architecture", "Architecture", architecture, null, D.valueType.STRING ),
+            D.createVariable("vendor", "Vendor", vendor, null, D.valueType.STRING ),
+            D.createVariable("product-id", "OS Product ID", osProductID, null, D.valueType.STRING ),
+            D.createVariable("serial-number", "Serial Number", serialNumber, null, D.valueType.STRING )
+        );
 
-    if (biosInfo.error === null) {
-        var bios = JSON.parse(biosInfo.outcome.stdout);
-        var serialNumber = bios.SerialNumber ? bios.SerialNumber : "N/A";
-        variables.push(D.createVariable("serial-number", "Serial Number", serialNumber, null, D.valueType.STRING ));            
-    } else {
-        console.error(biosInfo.error);
-    }
+        D.success(variables);
 
-    D.success(variables);
+    } else {
+        console.error(output.error);
+        checkWinRmError(output.error);
+    }
 }
