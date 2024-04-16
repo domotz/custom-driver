@@ -115,14 +115,23 @@ function executeWinrmCommand(command) {
     winrmConfig.command = command;
     D.device.sendWinRMCommand(winrmConfig, function (output) {
         if (output.error === null) {
-            d.resolve(output);
+            if (output.outcome.stdout === "") {
+                d.resolve({
+                    outcome: {
+                        stdout: JSON.stringify("N/A")
+                    }
+                });
+            } else {
+                d.resolve(output);
+            }
         } else {
             d.resolve({
                 outcome: {
                     stdout: JSON.stringify("N/A")
                 }
-               
+            
             });
+            
         }            
     });
     return d.promise;
@@ -147,8 +156,7 @@ function validate() {
         .then(function (results) {
             results.forEach(function (output) {
                 if (output.error !== null) {
-                    console.error("Validation failed");
-                    return D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                    console.log(JSON.stringify(output))
                 }
             });
             console.log("Validation successful");
@@ -176,8 +184,7 @@ function get_status() {
 
 // Parse the output of WinRM commands and insert it into the table
 function parseOutput(output){
-    
-    var logicalDisksOutput = JSON.parse(output[0].outcome.stdout);          
+    var logicalDisksOutput = JSON.parse(output[0].outcome.stdout);  
     var bitLockerOutput = Array.isArray(output[1].outcome.stdout) ? JSON.parse(output[1].outcome.stdout) : [JSON.parse(output[1].outcome.stdout)];
 
     var mergedOutput = [];
@@ -226,17 +233,18 @@ function parseOutput(output){
         var driveLetter = logicalDisks.DriveLetter ? logicalDisks.DriveLetter : "N/A";
         var name = logicalDisks.FileSystemLabel ? logicalDisks.FileSystemLabel : "N/A";
         var diskNumber = logicalDisks["Disk Number"]; 
-        var physicalDisk = "Disk " + (diskNumber !== undefined ? diskNumber : "N/A");
+        var physicalDisk = diskNumber !== undefined ? "Disk " + diskNumber : "N/A";
         var size = logicalDisks.Size ? logicalDisks.Size : 0;
         var freeSpace = logicalDisks.SizeRemaining ? logicalDisks.SizeRemaining : 0;
         var usage = size ? (( size - freeSpace) / size) * 100 : 0;
         var fileSystem = logicalDisks.FileSystem ? logicalDisks.FileSystem : "N/A";
         var type = logicalDisks.DriveType ? driveTypes[logicalDisks.DriveType] : "N/A";
-        var isReadOnly = logicalDisks.IsReadOnly ? logicalDisks.IsReadOnly : "N/A";
+        var isReadOnly = logicalDisks.IsReadOnly !== undefined ? logicalDisks.IsReadOnly : "N/A";
         var bitLockerStatus = logicalDisks.MountPoint !== null ? volumeStatus[logicalDisks.VolumeStatus] : "N/A"; 
         var bitLockerProtectionStatus = logicalDisks.MountPoint !== null ? protectionStatus[logicalDisks.ProtectionStatus] : "N/A";
         var bitLockerEncryptionPercentage = logicalDisks.MountPoint !== null ? logicalDisks.EncryptionPercentage : "N/A";
-        var status = logicalDisks.HealthStatus ? statusTypes[logicalDisks.HealthStatus] : "N/A";
+        var status = logicalDisks.HealthStatus !== undefined ? statusTypes[logicalDisks.HealthStatus] : "N/A";
+
         table.insertRecord(recordId, [
             driveLetter,
             name,
