@@ -26,7 +26,12 @@
  *    - BitLocker Encryption Percentage: The percentage of encryption progress if BitLocker encryption is in progress
  *    - Status: The overall health status of the disk
  * 
- * Privilege required: Administrator
+ *  Privilege required:
+ *   - To retrieve logical disks information: 
+ *     Access to the namespace "Root\Microsoft\Windows\Storage". 
+ *     This can be achieved by executing the Domotz script ".\enable_winrm_os_monitoring.ps1 -GroupName YourADGroup -WmiAccessOnly -Namespaces "Root\Microsoft\Windows\Storage".
+ *   
+ *   - To retrieve BitLocker information: Administrator permissions are required.
  * 
  */
 
@@ -58,14 +63,14 @@ var volumeStatus = {
     "3": "Decryption In Progress",
     "4": "Encryption Paused",
     "5": "Decryption Paused"
-}
+};
 
 // Mapping of BitLocker protection status
 var protectionStatus = {
     "0": "OFF",
     "1": "ON",
     "2": "UNKNOWN"
-}
+};
 
 // Mapping of logical disks status
 var statusTypes = {
@@ -73,7 +78,7 @@ var statusTypes = {
     "1": "Scan Needed",
     "2": "Spot Fix Needed",
     "3": "Full Repair Needed"
-}
+};
 
 // Custom Driver Table to store Logical disk information
 var table = D.createTable(
@@ -112,10 +117,24 @@ function executeWinrmCommand(command) {
         if (output.error === null) {
             d.resolve(output);
         } else {
-            checkWinRmError(output.error);
+            d.resolve({
+                outcome: {
+                    stdout: JSON.stringify("N/A")
+                }
+               
+            });
         }            
     });
     return d.promise;
+}
+
+
+
+function execute() {
+    return D.q.all([
+        executeWinrmCommand(logicalDisksCmd),
+        executeWinrmCommand(bitLockerCmd)
+    ]);
 }
 
 /**
@@ -124,10 +143,7 @@ function executeWinrmCommand(command) {
 * @documentation This procedure is used to validate the driver and credentials provided during association.
 */
 function validate() {
-    D.q.all([
-        executeWinrmCommand(logicalDisksCmd),
-        executeWinrmCommand(bitLockerCmd)
-    ])
+    execute()
         .then(function (results) {
             results.forEach(function (output) {
                 if (output.error !== null) {
@@ -150,25 +166,20 @@ function validate() {
 * @documentation This procedure retrieves information about logical disks installed on a Windows machine.
 */
 function get_status() {
-    executeWinrmCommand(logicalDisksCmd)
-        .then(function(logicalDisksInfo){
-            var logicalDisksOutput = JSON.parse(logicalDisksInfo.outcome.stdout);
-            console.log((JSON.stringify(logicalDisksOutput)))
-            return executeWinrmCommand(bitLockerCmd)
-                .then(function(bitLockerInfo){
-                    var bitLockerOutput = Array.isArray(bitLockerInfo.outcome.stdout) ? JSON.parse(bitLockerInfo.outcome.stdout) : [JSON.parse(bitLockerInfo.outcome.stdout)];
-                    parseOutput(logicalDisksOutput, bitLockerOutput);
-                })
-                .catch(function (err) {
-                    console.error(err);
-                    D.failure(D.errorType.GENERIC_ERROR);
-                });
-        })
-        .catch(checkWinRmError);
+    execute()
+        .then(parseOutput)
+        .catch(function(err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 // Parse the output of WinRM commands and insert it into the table
-function parseOutput(logicalDisksOutput, bitLockerOutput){
+function parseOutput(output){
+    
+    var logicalDisksOutput = JSON.parse(output[0].outcome.stdout);          
+    var bitLockerOutput = Array.isArray(output[1].outcome.stdout) ? JSON.parse(output[1].outcome.stdout) : [JSON.parse(output[1].outcome.stdout)];
+
     var mergedOutput = [];
 
     for (var i = 0; i < logicalDisksOutput.length; i++) {
@@ -187,17 +198,18 @@ function parseOutput(logicalDisksOutput, bitLockerOutput){
 
         var bitLockerInfoFound = false;
         for (var j = 0; j < bitLockerOutput.length; j++) {
-            var bitLockerInfo = bitLockerOutput[j];
-            var mountPoint = bitLockerInfo.MountPoint ? bitLockerInfo.MountPoint.replace(":", "") : null;
-            if (mountPoint === logicalDisk.DriveLetter) {
-                mergedDiskInfo.MountPoint = mountPoint;
-                mergedDiskInfo.VolumeStatus = bitLockerInfo.VolumeStatus;
-                mergedDiskInfo.EncryptionPercentage = bitLockerInfo.EncryptionPercentage;
-                mergedDiskInfo.ProtectionStatus = bitLockerInfo.ProtectionStatus;
-                bitLockerInfoFound = true;
-                break;
+            if (bitLockerOutput[0] !== "N/A") {
+                var bitLockerDrive = bitLockerOutput[j][0].MountPoint.replace(":", "");
+                if (bitLockerDrive === logicalDisk.DriveLetter) {
+                    mergedDiskInfo.MountPoint = bitLockerDrive;
+                    mergedDiskInfo.VolumeStatus = bitLockerOutput[j][0].VolumeStatus;
+                    mergedDiskInfo.EncryptionPercentage = bitLockerOutput[j][0].EncryptionPercentage;
+                    mergedDiskInfo.ProtectionStatus = bitLockerOutput[j][0].ProtectionStatus;
+                    bitLockerInfoFound = true;
+                    break;
+                }
             }
-        }
+        } 
 
         if (!bitLockerInfoFound) {
             mergedDiskInfo.MountPoint = null;
@@ -206,33 +218,30 @@ function parseOutput(logicalDisksOutput, bitLockerOutput){
             mergedDiskInfo.ProtectionStatus = null; 
         }
         mergedOutput.push(mergedDiskInfo);
-        console.log(JSON.stringify(mergedOutput))
     }
 
     for (var k = 0; k < mergedOutput.length; k++) {
         var logicalDisks = mergedOutput[k];
-        var recordId = (k + 1).toString();
+        var recordId = "disk-" + (k + 1);
         var driveLetter = logicalDisks.DriveLetter ? logicalDisks.DriveLetter : "N/A";
         var name = logicalDisks.FileSystemLabel ? logicalDisks.FileSystemLabel : "N/A";
-        var physicalDisk = "Disk " + logicalDisks["Disk Number"] ? logicalDisks["Disk Number"] : "N/A";
-        var size = logicalDisks.Size;
-        console.log(size)
-        var freeSpace = logicalDisks.SizeRemaining;
-        console.log(freeSpace)
-        var usage = (( size - freeSpace) / size) * 100
-        var fileSystem = logicalDisks.FileSystem ? logicalDisks.FileSystem : "N/A"
-        var type = logicalDisks.DriveType ? driveTypes[logicalDisks.DriveType] : "N/A"
-        var isReadOnly = logicalDisks.IsReadOnly;
+        var diskNumber = logicalDisks["Disk Number"]; 
+        var physicalDisk = "Disk " + (diskNumber !== undefined ? diskNumber : "N/A");
+        var size = logicalDisks.Size ? logicalDisks.Size : 0;
+        var freeSpace = logicalDisks.SizeRemaining ? logicalDisks.SizeRemaining : 0;
+        var usage = size ? (( size - freeSpace) / size) * 100 : 0;
+        var fileSystem = logicalDisks.FileSystem ? logicalDisks.FileSystem : "N/A";
+        var type = logicalDisks.DriveType ? driveTypes[logicalDisks.DriveType] : "N/A";
+        var isReadOnly = logicalDisks.IsReadOnly ? logicalDisks.IsReadOnly : "N/A";
         var bitLockerStatus = logicalDisks.MountPoint !== null ? volumeStatus[logicalDisks.VolumeStatus] : "N/A"; 
         var bitLockerProtectionStatus = logicalDisks.MountPoint !== null ? protectionStatus[logicalDisks.ProtectionStatus] : "N/A";
         var bitLockerEncryptionPercentage = logicalDisks.MountPoint !== null ? logicalDisks.EncryptionPercentage : "N/A";
-        var status = statusTypes[logicalDisks.HealthStatus];
-
+        var status = logicalDisks.HealthStatus ? statusTypes[logicalDisks.HealthStatus] : "N/A";
         table.insertRecord(recordId, [
             driveLetter,
             name,
             physicalDisk,
-            usage, 
+            usage.toFixed(2), 
             (freeSpace / (Math.pow(1024, 3))).toFixed(2),
             (size / (Math.pow(1024, 3))).toFixed(2),
             fileSystem,
@@ -246,4 +255,3 @@ function parseOutput(logicalDisksOutput, bitLockerOutput){
     }
     D.success(table);
 }
-
