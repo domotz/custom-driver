@@ -12,7 +12,7 @@
  *  - 5.1.21996.1
  * 
  * Creates a Custom Driver Table with the following columns:
- *    - Drive Letter: The letter assigned to the logical disk
+ *    - Drive: The letter assigned to the logical disk
  *    - Name: The name of the file system on the disk
  *    - Physical Disk: The identifier for the physical disk associated with the logical disk
  *    - Usage: The percentage of disk space currently in use
@@ -20,7 +20,7 @@
  *    - Size: The total size of the disk in gigabytes
  *    - File System: The type of file system used on the disk
  *    - Type: The type of disk drive
- *    - Is Readonly: Indicates whether the disk is read-only or not
+ *    - ReadOnly: Indicates whether the disk is read-only or not
  *    - BitLocker Status: The current status of BitLocker encryption on the disk 
  *    - BitLocker Protection Status: The protection status of BitLocker on the disk
  *    - BitLocker Encryption Percentage: The percentage of encryption progress if BitLocker encryption is in progress
@@ -84,7 +84,7 @@ var statusTypes = {
 var table = D.createTable(
     "Logical Disks", 
     [
-        { label: "Drive Letter", valueType: D.valueType.STRING },
+        { label: "Drive", valueType: D.valueType.STRING },
         { label: "Name", valueType: D.valueType.STRING },
         { label: "Physical Disk", valueType: D.valueType.STRING },
         { label: "Usage", unit: "%", valueType: D.valueType.NUMBER },
@@ -92,10 +92,10 @@ var table = D.createTable(
         { label: "Size", unit: "GiB", valueType: D.valueType.NUMBER },
         { label: "File System", valueType: D.valueType.STRING },
         { label: "Type", valueType: D.valueType.STRING },
-        { label: "Is Readonly", valueType: D.valueType.STRING },
+        { label: "ReadOnly", valueType: D.valueType.STRING },
         { label: "BitLocker Status", valueType: D.valueType.STRING },
         { label: "BitLocker Protection Status", valueType: D.valueType.STRING },
-        { label: "BitLocker Encryption Pct", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "BitLocker Encryption Percentage", unit: "%", valueType: D.valueType.NUMBER },
         { label: "Status", valueType: D.valueType.STRING }
     ]
 );

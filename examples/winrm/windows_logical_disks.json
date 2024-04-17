@@ -17,7 +17,7 @@
     "tags": [
         "windows",
         "logical-disk",
-        "bitlocer",
+        "bitlocker",
         "status"
     ],
     "sample_period_s": 300,
