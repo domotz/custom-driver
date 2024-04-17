@@ -25,7 +25,7 @@
         "vendor",
         "product-id"
     ],
-    "sample_period_s": 300,
+    "sample_period_s": 86400,
     "has_actions": false,
     "expected_variables": {
         "independent": "[7]"
