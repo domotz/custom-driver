@@ -1,0 +1,42 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows OS General Monitoring",
+    "description": "Monitors the general information for Windows Operating System",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.21996.1",
+            "Privilege required: AD User",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "os",
+        "bios",
+        "name",
+        "version",
+        "build-number",
+        "architecture",
+        "serial-number",
+        "vendor",
+        "product-id"
+    ],
+    "sample_period_s": 86400,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[7]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "11"
+        }
+    ]
+}
