@@ -95,7 +95,7 @@ var table = D.createTable(
         { label: "ReadOnly", valueType: D.valueType.STRING },
         { label: "BitLocker Status", valueType: D.valueType.STRING },
         { label: "BitLocker Protection Status", valueType: D.valueType.STRING },
-        { label: "BitLocker Encryption Percentage", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "BitLocker Encryption", unit: "%", valueType: D.valueType.NUMBER },
         { label: "Status", valueType: D.valueType.STRING }
     ]
 );
