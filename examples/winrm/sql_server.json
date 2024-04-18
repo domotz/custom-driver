@@ -10,7 +10,7 @@
         "others": [
             "SQLServer Express installed and running",
             "Powershell Version 5.1.21996.1",
-            "Privilege required: Local Administrator",
+            "Privilege required: Administrator",
             "WinRM Enabled",
             "TCP/IP protocol for SQL Server instance Enabled"
         ]
@@ -40,20 +40,8 @@
     "parameters": [
         {
             "value_type": "STRING",
-            "name": "serverName",
-            "label": "Server Name"
-        },
-        {
-            "value_type": "STRING",
             "name": "databaseName",
             "label": "Database Name"
-        },
-        {
-            "value_type": "STRING",
-            "name": "serviceName",
-            "label": "Service Name",
-            "value": "MSSQLSERVER"
         }
-        
     ]
 }

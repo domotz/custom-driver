@@ -17,29 +17,31 @@
  * 
 **/
 
-//The name of the SQL server instance
-var serverName = D.getParameter('serverName');
+// The username and password for the SQL Server database are the same as the WinRM 
+var username = D.device.username();
+var password = D.device.password();
+
 //The name of the database
 var databaseName = D.getParameter('databaseName');
 
-// The name of the SQL Server service to be monitored.
+// The default name of the SQL Server service to be monitored.
 // - Manual: Retrieve SQL Server Service Name using Services (services.msc)
 //   To find the service name, open Services (services.msc) on the machine, locate the SQL Server service,
 //   right-click on it, select "Properties", and note down the value displayed in the "Service Name" field.
 // - Using PowerShell Command (as Administrator): 
 //   You can execute this PowerShell command  to retrieve the service name for SQL Server:
 //   Get-Service | Where-Object {$_.DisplayName -like "SQL Server (*"} | Select-Object Name
-var sqlServiceName = D.getParameter('serviceName');
+var sqlServiceName = "MSSQLSERVER";
 
 // Commands to be executed
 var serviceStatus = "Get-Service '" + sqlServiceName + "' | Select-Object Status";
-var testConnection = '$Connection = New-Object System.Data.SqlClient.SqlConnection("Server=' + serverName + ';Database=' + databaseName + ';Integrated Security=True;"); $Connection.Open(); $Connection.State;';
-var sqlQuery = 'Invoke-Sqlcmd -Query "SELECT GETDATE() AS TimeOfQuery" -ServerInstance "' + serverName + '"';
+var testConnection = '$Connection = New-Object System.Data.SqlClient.SqlConnection("Server=localhost;Database=' + databaseName + ';User ID=' + username + ';Password=' + password + ';Integrated Security=true;"); $Connection.Open(); $Connection.State;';
+var sqlQuery = 'Invoke-Sqlcmd -Query "SELECT GETDATE() AS TimeOfQuery" -ServerInstance "localhost"';
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
-    "username": D.device.username(),
-    "password": D.device.password()
+    "username": username,
+    "password": password
 };
 
 // Function to handle WinRM errors
@@ -98,8 +100,6 @@ function testDatabaseConnection() {
     return (executeWinrmCommand(testConnection))
         .then(function (output) {
             if (output.error === null) {
-                console.log(output);
-
                 var connectionState = output.outcome.stdout.trim();
                 if(connectionState == "Open"){
                     console.log("Database connection successful");
