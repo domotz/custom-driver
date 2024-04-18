@@ -1,0 +1,37 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Logical Disks",
+    "description": "Monitors the status of logical disks within a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.21996.1",
+            "Privilege required: Administrator To retrieve BitLocker information and AD User to retrieve logical disks information",
+            "To get permissions: Access to the namespace 'Root\\Microsoft\\Windows\\Storage'. This can be achieved by executing the Domotz script", 
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "logical-disk",
+        "bitlocker",
+        "status"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[13]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "11"
+        }
+    ]
+}

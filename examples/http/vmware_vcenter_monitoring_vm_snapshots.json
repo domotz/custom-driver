@@ -1,0 +1,46 @@
+{
+    "logo": "vmware-vsphere.svg",
+    "version": "1.0.0",
+    "name": "VMWare vCenter Monitoring VM Snapshots",
+    "description": "This script retrieves information about the latest snapshot taken on a VMware vCenter virtual machines. It allows monitoring of snapshot creation time and age",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware",
+            "vCenter",
+            "VM"
+        ]
+    },
+    "tags": [
+        "vmware",
+        "vcenter",
+        "snapshot",
+        "name",
+        "description",
+        "creation-time",
+        "age"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "VMWare vCenter",
+            "version": "8.0.2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "vmId",
+            "label": "VM ID"
+        }
+    ]
+}

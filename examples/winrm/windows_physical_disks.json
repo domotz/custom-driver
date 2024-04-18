@@ -1,0 +1,40 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Physical Disks",
+    "description": "Monitors the status of physical disks within a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.21996.1",
+            "Privilege required: AD User",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "physical-disk",
+        "model",
+        "status",
+        "size",
+        "media-type",
+        "serial-number",
+        "partition"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[6]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "11"
+        }
+    ]
+}
