@@ -156,7 +156,7 @@ function healthCheck(streamUris) {
 
 // Table for capturing status
 var table = D.createTable(
-    "Video Capturing Status",
+    "Video Streaming Status",
     [
         { label: "Streaming status" }
     ]
