@@ -21,7 +21,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[1]"
+        "table": "[1]"
     },
     "protocols": [
         "TELNET"
