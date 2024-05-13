@@ -24,12 +24,20 @@
         "table": "[1]"
     },
     "protocols": [
-        "TELNET"
+        "TELNET",
+        "HTTP"
     ],
     "tested_on": [
         {
             "name": "LI-LIN",
             "version": "LD2222"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "profileName",
+            "label": "Prfile Name"
         }
     ]
 }
