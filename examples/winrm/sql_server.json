@@ -8,9 +8,10 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "SQLServer Express installed and running",
+            "SQLServer installed and running",
             "Powershell Version 5.1.21996.1",
             "Privilege required: Administrator",
+            "WinRM user to have access to SQLServer database",
             "WinRM Enabled",
             "TCP/IP protocol for SQL Server instance Enabled"
         ]
@@ -35,6 +36,10 @@
         {
             "name": "Windows",
             "version": "11"
+        },
+        {
+            "name": "Microsoft SQLServer",
+            "version": "2022"
         }
     ],
     "parameters": [
