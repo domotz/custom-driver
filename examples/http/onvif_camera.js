@@ -49,8 +49,6 @@ function getProfiles() {
         username: username,
         password: password,
         auth: "basic",
-        jar: true,
-        rejectUnauthorized: false,
         body: '<?xml version="1.0" encoding="UTF-8"?>\n<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl">\n<soap:Body>\n<trt:GetProfiles/>\n</soap:Body>\n</soap:Envelope>' 
     };
     D.device.http.post(config, function(error, response, body){
@@ -107,8 +105,6 @@ function getStreamURIs(profileTokens){
             username: username,
             password: password,
             auth: "basic",
-            jar: true,
-            rejectUnauthorized: false,
             body: streamUris
         };
                                      

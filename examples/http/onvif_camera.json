@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "onvif.svg",
     "version": "1.0.0",
     "name": "ONVIF camera monitoring",
     "description": "Monitors the video capturing status of an ONVIF camera to check if capturing is still working or has stopped",
