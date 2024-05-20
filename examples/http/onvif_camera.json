@@ -5,7 +5,7 @@
     "description": "Monitors the video capturing status of an ONVIF camera to check if capturing is still working or has stopped",
     "category": "Hardware Integration",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "ONVIF"      
@@ -24,8 +24,7 @@
         "table": "[1]"
     },
     "protocols": [
-        "TELNET",
-        "HTTP"
+        "ONVIF"
     ],
     "tested_on": [
         {
@@ -38,6 +37,12 @@
             "value_type": "LIST",
             "name": "profileName",
             "label": "Prfile Name"
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "port",
+            "label": "HTTP port",
+            "value": "80"
         }
     ]
 }

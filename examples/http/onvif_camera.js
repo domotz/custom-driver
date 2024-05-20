@@ -3,7 +3,7 @@
  * Name: ONVIF camera monitoring
  * Description: Monitors the video capturing status of an ONVIF camera to check if capturing is still working or has stopped.
  * 
- * Communication protocols is Telnet and HTTP
+ * Communication protocol is ONVIF
  * 
  * Tested on LILIN camera model LD2222
  *
@@ -15,28 +15,45 @@
 var username = D.device.username();
 var password = D.device.password();
 
-// Encoding credentials for authorization
-var authString = username + ":" + password;
-var base64AuthString = D._unsafe.buffer.from(authString).toString('base64');
-
-// HTTP request parameters
-var url = "/onvif/device_service";
-
-var filterProfileName = D.getParameter("profileName");
-
-// Telnet parameters
-var telnetParams = {
-    negotiationMandatory: false,
-    port: 554
-};
-
-// Table for capturing status
+// Table for Streaming status
 var table = D.createTable(
     "Video Streaming Status",
     [
         { label: "Streaming status" }
     ]
 );
+
+// HTTP request parameters
+var url = "/onvif/device_service"; 
+
+// This parameter specifies which camera profile's video capturing status to monitor
+// Example usage:
+// filterProfileName = ["Profile1", "Profile2"] to monitor specific profiles
+// or
+// filterProfileName = ["All"] to monitor all profiles.
+var filterProfileName = D.getParameter("profileName");
+
+// HTTP port parameter
+// The port number can be found in the camera's manual or through the camera's admin web app settings. Default is 80.
+var httPort = D.getParameter("port");
+
+// Generate nonce for digest authentication
+var nonce = Math.random().toString(36).substring(2,7);
+
+var currentDate = new Date();
+
+// The current timestamp in UTC format required for the Created element in the digest authentication
+var created =
+    currentDate.getUTCFullYear() + "-" +
+    ((currentDate.getUTCMonth() + 1) < 10 ? "0" : "") + (currentDate.getUTCMonth() + 1) + "-" +
+    (currentDate.getUTCDate() < 10 ? "0" : "") + currentDate.getUTCDate() + "T" +
+    (currentDate.getUTCHours() < 10 ? "0" : "") + currentDate.getUTCHours() + ":" +
+    (currentDate.getUTCMinutes() < 10 ? "0" : "") + currentDate.getUTCMinutes() + ":" +
+    (currentDate.getUTCSeconds() < 10 ? "0" : "") + currentDate.getUTCSeconds() + "Z";
+// Combine nonce, created timestamp, and password to create the string for hashing
+var combinedString =  D._unsafe.buffer.from(nonce + created + password);
+// Hash the combined string using SHA1 and encode it in base64 for the Password Digest
+var passwordDigest = D.crypto.hash(combinedString, 'sha1', 'utf8', 'base64');
 
 /**
  * Retrieves the profiles from the ONVIF camera.
@@ -48,8 +65,23 @@ function getProfiles() {
         url: url,
         username: username,
         password: password,
-        auth: "basic",
-        body: '<?xml version="1.0" encoding="UTF-8"?>\n<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl">\n<soap:Body>\n<trt:GetProfiles/>\n</soap:Body>\n</soap:Envelope>' 
+        port: httPort,
+        body: '<?xml version="1.0" encoding="UTF-8"?>' +
+              '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext1.0.xsd">' +
+              '<soap:Header>' +
+              '<wsse:Security>' +
+              '<wsse:UsernameToken>' +
+              '<wsse:Username>' + username + '</wsse:Username>' +
+              '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">' + passwordDigest + '</wsse:Password>' +
+              '<wsse:Nonce>' + nonce + '</wsse:Nonce>' +
+              '<wsse:Created>' + created + '</wsse:Created>' +
+              '</wsse:UsernameToken>' +
+              '</wsse:Security>' +
+              '</soap:Header>' +
+              '<soap:Body>' +
+              '<trt:GetProfiles/>' +
+              '</soap:Body>' +
+              '</soap:Envelope>'
     };
     D.device.http.post(config, function(error, response, body){
         if (error) {          
@@ -62,7 +94,6 @@ function getProfiles() {
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         } else {
-
             var $ = D.htmlParse(body);
             var profiles = $("trt\\:Profiles"); 
             var profileTokens = [];
@@ -82,8 +113,19 @@ function getProfiles() {
  * @returns A promise that resolves with an array of stream URIs
  */
 function getStreamURIs(profileTokens){
-    var xmlPayload = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl"><soap:Body>';
-
+    var xmlPayload = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl">' +
+                     '<soap:Header>' +
+                     '<wsse:Security soap:mustUnderstand="1">' +
+                     '<wsse:UsernameToken>' +
+                     '<wsse:Username>' + username + '</wsse:Username>' +
+                     '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">' + passwordDigest + '</wsse:Password>' +
+                     '<wsse:Nonce>' + nonce + '</wsse:Nonce>' +
+                     '<wsse:Created>' + created + '</wsse:Created>' +
+                     '</wsse:UsernameToken>' +
+                     '</wsse:Security>' +
+                     '</soap:Header>' +
+                     '<soap:Body>';
+    
     var promises = [];
    
     profileTokens.forEach(function(profileToken) {
@@ -104,10 +146,9 @@ function getStreamURIs(profileTokens){
             url: url,
             username: username,
             password: password,
-            auth: "basic",
+            port: httPort,
             body: streamUris
-        };
-                                     
+        };                            
         D.device.http.post(config, function(error, response, body){
 
             if (error) {          
@@ -121,7 +162,6 @@ function getStreamURIs(profileTokens){
                 D.failure(D.errorType.GENERIC_ERROR);
             } else {
                 var $ = D.htmlParse(body);
-
                 $("tt\\:Uri").each(function(index, element) {
                     var uri = $(element).text();
                     d.resolve(uri);
@@ -132,6 +172,15 @@ function getStreamURIs(profileTokens){
     });
     return D.q.all(promises);
 }
+
+// Encoding credentials for authorization
+var authString = username + ":" + password;
+var base64AuthString = D._unsafe.buffer.from(authString).toString('base64');
+
+var telnetParams = {
+    negotiationMandatory: false,
+    port: 554
+};
 
 /**
  * Checks the health of the camera connection.
@@ -152,20 +201,15 @@ function healthCheck(streamUris) {
                 d.resolve(out); 
             }
         });
-
         healthPromises.push(d.promise);
     });
-
-    return D.q.all(healthPromises);
-       
+    return D.q.all(healthPromises);    
 }
 
 // Retrieves the capturing status and populates the Custom Driver Table
 function getCapturingStatus(data){
     data.forEach(function(response, index) {
-        
         var status;
-
         if (response.indexOf("200 OK")!=-1) {
             status = "OK";
         } else {
@@ -173,12 +217,10 @@ function getCapturingStatus(data){
         } 
         var profileName =  response.split("Content-Type: ");
         var profile = profileName[0].split("/");
-
-        if (!filterProfileName || profile[4] === filterProfileName || filterProfileName === "ALL") {
+        if (!filterProfileName || profile[4] === filterProfileName || filterProfileName[0].toLowerCase() === "ALL") {
             var recordId = (index + 1) + "-" + profile[4];
             table.insertRecord(recordId, [status]);
         }
-
     });
    
     D.success(table);
