@@ -131,7 +131,12 @@ function parseOutput(output) {
         if (!jsonOutput.outcome.stdout) {
             console.log("There are no firewall rules related to this filter.");
         } else {
-            listOfFirewallRules = JSON.parse(jsonOutput.outcome.stdout);
+            var result = JSON.parse(jsonOutput.outcome.stdout);
+        }
+        if (Array.isArray(result)) {
+            listOfFirewallRules = result;
+        } else if (typeof result === 'object') {
+            listOfFirewallRules.push(result);
         }
         for (var k = 0; k < listOfFirewallRules.length; k++) {
             populateTable(
