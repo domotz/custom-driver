@@ -1,6 +1,6 @@
 {
     "logo": "clearone.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "ClearOne Convergence",
     "description": "This script extracts information for ClearOne devices",
     "category": "Hardware Integration",
