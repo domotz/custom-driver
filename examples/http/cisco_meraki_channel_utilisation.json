@@ -1,0 +1,46 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Cisco Meraki Channel Utilisation",
+    "description": "This script extracts channel utilization information from Cisco Meraki networks using the Meraki Dashboard API",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Cisco Meraki"
+        ]
+    },
+    "tags": [
+        "cisco-meraki",
+        "network",
+        "channel-utilization"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Cisco Meraki",
+            "version": "wireless-25-13"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "organizationID",
+            "label": "Organization ID"
+        },
+        {
+            "value_type": "STRING",
+            "name": "networkID",
+            "label": "Network ID",
+            "value": "ALL"
+        }
+    ]
+}
