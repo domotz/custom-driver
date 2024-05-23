@@ -147,29 +147,26 @@ function extractData(data) {
             for (var key in deviceData) {
                 var serial = deviceData.serial;
                 if (Array.isArray(deviceData[key])) {
-                    deviceData[key].forEach(function(wifi, index) {
-                        var channelUtilization = wifi.utilization ? wifi.utilization : "N/A";
-                        var wifiUtilization = wifi.wifi ? wifi.wifi : "N/A";
-                        var nonWifiUtilization = wifi.non_wifi ? wifi.non_wifi : "N/A";
-                        var startTimestamp = wifi.start_ts ? wifi.start_ts : "N/A";
-                        var endTimestamp = wifi.end_ts ? wifi.end_ts : "N/A";
-                        var recordId = (index + 1) + "-" + serial + "-"  + key ;
-                        table.insertRecord(sanitize(recordId), [ 
-                            channelUtilization,
-                            wifiUtilization,
-                            nonWifiUtilization,
-                            formatTimestamp(startTimestamp),
-                            formatTimestamp(endTimestamp)
-                        ]);
-
-                    });
+                    var lastChannelUtilization = deviceData[key].length - 1;
+                    var lastEntry = deviceData[key][lastChannelUtilization];
+                    var channelUtilization = lastEntry.utilization ? lastEntry.utilization : 0;
+                    var wifiUtilization = lastEntry.wifi ? lastEntry.wifi : 0;
+                    var nonWifiUtilization = lastEntry.non_wifi ? lastEntry.non_wifi : 0;
+                    var startTimestamp = lastEntry.start_ts ? lastEntry.start_ts : "N/A";
+                    var endTimestamp = lastEntry.end_ts ? lastEntry.end_ts : "N/A";
+                    var recordId = sanitize(serial + "-" + key);
+                    table.insertRecord(recordId, [ 
+                        channelUtilization,
+                        wifiUtilization,
+                        nonWifiUtilization,
+                        formatTimestamp(startTimestamp),
+                        formatTimestamp(endTimestamp)
+                    ]);
                 }
-            }
-            
+            }            
         }); 
     });
     D.success(table);
-
 }
 
 /**
