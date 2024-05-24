@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "cisco-meraki.svg",
     "version": "1.0.0",
     "name": "Cisco Meraki Channel Utilisation",
     "description": "This script extracts channel utilization information from Cisco Meraki networks using the Meraki Dashboard API",
@@ -14,12 +14,14 @@
     "tags": [
         "cisco-meraki",
         "network",
-        "channel-utilization"
+        "device",
+        "channel",
+        "utilization"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[5]"
+        "table": "[8]"
     },
     "protocols": [
         "HTTPS"

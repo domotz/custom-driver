@@ -8,6 +8,9 @@
  * Tested on Cisco Meraki version wireless-25-13 
  *
  * Creates a Custom Driver table with the following columns:
+ *      - Network: Network name 
+ *      - Device: Device model
+ *      - Channel: Channel id 
  *      - Channel Utilization: Percentage of total channel utiliation for the given radio
  *      - Wifi Utilization: Percentage of wifi channel utiliation for the given radio
  *      - Non Wifi Utilization: Percentage of non-wifi channel utiliation for the given radio
@@ -29,6 +32,9 @@ var networkId = D.getParameter("networkID"); // The ID of the network
 var table = D.createTable(
     "Channel Utilization",
     [
+        { label: "Network", valueType: D.valueType.STRING },
+        { label: "Device", valueType: D.valueType.STRING },
+        { label: "Channel", valueType: D.valueType.STRING },
         { label: "Channel Utilization", unit: "%", valueType: D.valueType.NUMBER },
         { label: "Wifi Utilization",  unit: "%", valueType: D.valueType.NUMBER },
         { label: "Non Wifi Utilization",  unit: "%", valueType: D.valueType.NUMBER },
@@ -38,64 +44,74 @@ var table = D.createTable(
 );
 
 /**
- * Function to retrieve network IDs.
- * @returns {Promise} A promise that resolves to an array of network IDs
+ * Function to retrieve network information from the Meraki Dashboard API.
+ * @returns {Promise} A promise that resolves with an array of network information.
  */
-function getNetworkId() {
+function getNetworkInfo() {
     var d = D.q.defer();
-    if (networkId === "ALL") {
-        var config = {
-            url: "/api/v1/organizations/" + organizationId + "/networks",
-            protocol: "https",
-            headers: {
-                "Authorization": "Bearer " + D.device.password(),
-                "Content-Type": "application/json"
-            }
-        };
-        device.http.get(config, function(error, response, body){   
-            if (error) {
-                console.error(error);
-                D.failure(D.errorType.GENERIC_ERROR);  
-            } else if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            } else if (response.statusCode === 401) {
-                console.error("Invalid API key");
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            } else if (response.statusCode != 200) {
-                console.error(body);
-                D.failure(D.errorType.GENERIC_ERROR);
+    var config = {
+        url: "/api/v1/organizations/" + organizationId + "/networks",
+        protocol: "https",
+        headers: {
+            "Authorization": "Bearer " + D.device.password(),
+            "Content-Type": "application/json"
+        }
+    };
+    device.http.get(config, function(error, response, body) {   
+        if (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);  
+        } else if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode === 401) {
+            console.error("Invalid API key");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode != 200) {
+            console.error(body);
+            D.failure(D.errorType.GENERIC_ERROR);
+        } else {
+            var data = JSON.parse(body);
+            var networksInfo = [];
+            if (networkId.toUpperCase() === "ALL") {
+                data.forEach(function(network) {
+                    networksInfo.push({ id: network.id, name: network.name });
+                });
             } else {
-                var data = JSON.parse(body);
-                var networkIDs = [];
+                var networkFound = false;
                 for (var i = 0; i < data.length; i++) {
-                    networkIDs.push(data[i].id);
+                    if (data[i].id === networkId) {
+                        networksInfo.push({ id: data[i].id, name: data[i].name });
+                        networkFound = true;
+                        break;
+                    }
                 }
-                d.resolve(networkIDs);
+                if (!networkFound) {
+                    console.error("Network with specified ID not found.");
+                }
             }
-        });
-    } else {
-        d.resolve([networkId]);
-    }
+            d.resolve(networksInfo);
+        }
+    });
     return d.promise;
 }
 
 /**
- * Function to retrieve channel utilzation info for given network IDs
- * @param {Array} networkIDS An array of network IDs
- * @returns {Promise} A promise that resolves to an array of channel utilzation data 
+ * Function to retrieve channel utilization data for each network.
+ * @param {Array} networksInfo Array of network information.
+ * @returns {Promise} A promise that resolves with an array of channel utilization information
  */
-function getChannelUtilization(networkIDs) {
-    var promises = networkIDs.map(function(id) {
+function getChannelUtilization(networksInfo) {
+    var promises = networksInfo.map(function(network) {
         var d = D.q.defer();
         var config = {
-            url: "/api/v1/networks/" + id + "/networkHealth/channelUtilization",
+            url: "/api/v1/networks/" + network.id + "/networkHealth/channelUtilization",
             protocol: "https",
             headers: {
                 "Authorization": "Bearer " + D.device.password(),
                 "Content-Type": "application/json"
             }
         };
-        device.http.get(config, function(error, response, body){   
+        device.http.get(config, function(error, response, body) {   
             if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);  
@@ -105,12 +121,12 @@ function getChannelUtilization(networkIDs) {
                 console.error("Invalid API key");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (response.statusCode === 400) {
-                console.error("Channel utilization data not available for network: " + id + ". Only wireless networks are supported.");        
+                console.error("Channel utilization data not available for network: " +  network.id + ". Only wireless networks are supported.");        
                 d.resolve(null);
             } else if (response.statusCode != 200) {
                 D.failure(D.errorType.GENERIC_ERROR);
             } else {
-                d.resolve(body);
+                d.resolve({ id: network.id, name: network.name, body: body }); 
             }
         });
         return d.promise;
@@ -141,21 +157,25 @@ function formatTimestamp(timestamp) {
 
 // Function to extract data from the response body and populates custom table
 function extractData(data) {
-    data.forEach(function (devices) {      
-        var device = JSON.parse(devices);  
-        device.forEach(function (deviceData){
-            for (var key in deviceData) {
-                var serial = deviceData.serial;
-                if (Array.isArray(deviceData[key])) {
-                    var lastChannelUtilization = deviceData[key].length - 1;
-                    var lastEntry = deviceData[key][lastChannelUtilization];
+    data.forEach(function(networkData) {      
+        var name = networkData.name; 
+        var devices = JSON.parse(networkData.body);  
+        devices.forEach(function(deviceData){
+            for (var channelId in deviceData) {
+                var model = deviceData.model;
+                if (Array.isArray(deviceData[channelId])) {
+                    var lastChannelUtilization = deviceData[channelId].length - 1;
+                    var lastEntry = deviceData[channelId][lastChannelUtilization];
                     var channelUtilization = lastEntry.utilization ? lastEntry.utilization : 0;
                     var wifiUtilization = lastEntry.wifi ? lastEntry.wifi : 0;
                     var nonWifiUtilization = lastEntry.non_wifi ? lastEntry.non_wifi : 0;
                     var startTimestamp = lastEntry.start_ts ? lastEntry.start_ts : "N/A";
                     var endTimestamp = lastEntry.end_ts ? lastEntry.end_ts : "N/A";
-                    var recordId = sanitize(serial + "-" + key);
+                    var recordId = sanitize(name + "-" + model + "-" + channelId);
                     table.insertRecord(recordId, [ 
+                        name,
+                        model,
+                        channelId,
                         channelUtilization,
                         wifiUtilization,
                         nonWifiUtilization,
@@ -175,7 +195,7 @@ function extractData(data) {
  * @documentation This procedure is used to validate the ability to retrieve channel utilization info from Cisco Meraki networks
  */
 function validate(){
-    getNetworkId()
+    getNetworkInfo()
         .then(getChannelUtilization)
         .then(function (response) {
             if (response && response.length > 0) {
@@ -198,7 +218,7 @@ function validate(){
  * @documentation This procedure is used to retrieve channel utilization information from Cisco Meraki networks.
  */
 function get_status() {
-    getNetworkId()
+    getNetworkInfo()
         .then(getChannelUtilization)
         .then(extractData)
         .catch(function (err) {
