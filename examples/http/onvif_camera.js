@@ -28,19 +28,20 @@ var url = "/onvif/device_service";
 
 // This parameter specifies which camera profile's video capturing status to monitor
 // Example usage:
-// filterProfileName = ["Profile1", "Profile2"] to monitor specific profiles
+// profileName = ["Profile1", "Profile2"] to monitor specific profiles
 // or
-// filterProfileName = ["All"] to monitor all profiles.
-var filterProfileName = D.getParameter("profileName");
+// profileName = ["All"] to monitor all profiles.
+var profileName = D.getParameter("profileName");
+
+
+// ONVIF port parameter
+// The port number can be found in the camera's manual or through the camera's admin web app settings. Default is 80.
+var onvifPort = D.getParameter("onvifPort");
 
 var telnetParams = {
     negotiationMandatory: false,
     port: 554
 };
-
-// HTTP port parameter
-// The port number can be found in the camera's manual or through the camera's admin web app settings. Default is 80.
-var httPort = D.getParameter("port");
 
 // Generate nonce for digest authentication
 var nonce = Math.random().toString(36).substring(2,7);
@@ -59,7 +60,6 @@ var created =
 var combinedString =  nonce + created + password;
 // Hash the combined string using SHA1 and encode it in base64 for the Password Digest
 var passwordDigest = D.crypto.hash(combinedString, 'sha1', null, 'base64');
-
 
 /**
  * Generates the security envelope for SOAP requests.
@@ -88,10 +88,9 @@ function sendSoapRequest(body, parseResponse) {
         url: url,
         username: username,
         password: password,
-        port: httPort,
+        port: onvifPort,
         body: body
     };
-    
     D.device.http.post(config, function(error, response, body) {
         if (error) {
             console.error(error);
@@ -107,7 +106,6 @@ function sendSoapRequest(body, parseResponse) {
             d.resolve(result);
         }
     });
-
     return d.promise;
 }
 
@@ -147,7 +145,7 @@ function getStreamURIs(profileTokens) {
                        '<soap:Body>';
     var endPayload = '</soap:Body></soap:Envelope>';
     var promises = profileTokens.map(function(profileToken) {
-    var payload = startPayload + '<trt:GetStreamUri>' +
+        var payload = startPayload + '<trt:GetStreamUri>' +
                                     '<trt:StreamSetup>' +
                                     '<trt:Stream xmlns:trt="http://www.onvif.org/ver10/media/wsdl">RTP-Unicast</trt:Stream>' +
                                     '<trt:Transport xmlns:trt="http://www.onvif.org/ver10/media/wsdl">' +
@@ -163,14 +161,12 @@ function getStreamURIs(profileTokens) {
             $("tt\\:Uri").each(function(index, element) {
                 uris.push($(element).text());
             });
-            return uris;
+            return { profileName: profileToken, uris: uris }; 
         });
     });
 
-    return D.q.all(promises)
-        .then(function(results) {
-            return results;
-        });
+    return D.q.all(promises);
+
 }
 
 /**
@@ -201,14 +197,12 @@ function getNonceAndRealm(uri) {
                     d.reject("realm or nonce not found in WWW-Authenticate header");
                 }
             } else {
-                d.reject("WWW-Authenticate header not found");
+                d.resolve({ realm: "", nonce: "" });
             }
         }
     });
-
     return d.promise;
 }
-
 
 /**
  * Generates the Digest Authorization header for RTSP requests.
@@ -228,51 +222,63 @@ function generateDigestAuth(realm, nonce, uri, method) {
 
 /**
  * Checks the health of the camera connection.
- * @param {Array} streamUris Array of stream URIs.
+ * @param {Array} streamUrisProfiles Array of objects containing profile names and corresponding stream URIs.
  * @returns A promise that resolves with an array of health statuses.
  */
-function healthCheck(streamUris) {
+function healthCheck(streamUrisProfiles) {
     var healthPromises = [];
 
-    streamUris.forEach(function(uri) {
-        var d = D.q.defer();
-        getNonceAndRealm(uri)
-            .then(function(digestParams) {
-                var authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, uri, "DESCRIBE");
-                var command = "DESCRIBE " + uri + " RTSP/1.0\r\nCSeq: 2\r\nAuthorization: " + authHeader + "\r\n";
-                telnetParams.command = command;
-            
-                D.device.sendTelnetCommand(telnetParams, function(out, err) {
-                    if (err) {
-                        d.resolve("NOT OK");
-                    } else {
-                        d.resolve(out);
-                    }
+    streamUrisProfiles.forEach(function(stream) {
+        var profileName = stream.profileName;
+        var uris = stream.uris;
+        uris.forEach(function(uri) {
+            var d = D.q.defer();
+            getNonceAndRealm(uri)
+                .then(function(digestParams) {
+                    var authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, uri, "DESCRIBE");
+                    var command = "DESCRIBE " + uri + " RTSP/1.0\r\nCSeq: 2\r\nAuthorization: " + authHeader + "\r\n";
+                    telnetParams.command = command;
+                    telnetParams.timeout = 10000;
+                    D.device.sendTelnetCommand(telnetParams, function(out, err) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            d.resolve({ healthStatus: out, profileName: profileName });
+                        }
+                    });
+                }).catch(function(error) {
+                    console.log(error);
+                    d.resolve({ healthStatus: "NOT OK", profileName: profileName });
                 });
-            }).catch(function(error) {
-                console.log(error);
-                d.resolve("NOT OK");
-            });
 
-        healthPromises.push(d.promise);
+            healthPromises.push(d.promise);
+        });
     });
     return D.q.all(healthPromises);
+}
+
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
 // Retrieves the capturing status and populates the Custom Driver Table
 function getCapturingStatus(data){
     data.forEach(function(response, index) {
         var status;
-        if (response.indexOf("200 OK")!=-1) {
+        if (response.healthStatus.indexOf("200 OK") != -1) {
             status = "OK";
         } else {
             status = "NOT OK"; 
         } 
-        var profileName =  response.split("Content-Type: ");
-        var profile = profileName[0].split("/");
-        if (!filterProfileName || profile[4] === filterProfileName || filterProfileName === "ALL") {
-            var recordId = (index + 1) + "-" + profile[4];
-            table.insertRecord(recordId, [status]);
+         
+        var name = response.profileName; 
+        var recordId = (index + 1) + "-" + name;
+
+        if (profileName[0].toLowerCase() === "all" || profileName.indexOf(name) !== -1 ) {
+
+            table.insertRecord(sanitize(recordId), [status]);
         }
     });
     D.success(table);

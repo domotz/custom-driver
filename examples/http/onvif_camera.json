@@ -36,12 +36,13 @@
         {
             "value_type": "LIST",
             "name": "profileName",
-            "label": "Prfile Name"
+            "label": "Prfile Name",
+            "value": "ALL"
         },
         {
             "value_type": "NUMBER",
-            "name": "port",
-            "label": "HTTP port",
+            "name": "onvifPort",
+            "label": "ONVIF port",
             "value": "80"
         }
     ]
