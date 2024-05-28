@@ -1,0 +1,45 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Hyper-V VM Snapshot",
+    "description": "This script retrieves information about the latest snapshots taken on Hyper-V virtual machines. It allows monitoring of snapshot creation time and age",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.4412",
+            "Privilege required: AD User",
+            "WinRM Enabled",
+            "Hyper-V",
+            "VM"
+        ]
+    },
+    "tags": [
+        "windows",
+        "hyper-v",
+        "vm",
+        "snapshot",
+        "name",
+        "creation-time",
+        "age"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[4]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "10"
+        },
+        {
+            "name": "Hyper-V",
+            "version": "10.0.19041.1"
+        }
+    ]
+}
