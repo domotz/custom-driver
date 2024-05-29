@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "microsoft-hyper-v.svg",
     "version": "1.0.0",
     "name": "Hyper-V VM Snapshot",
     "description": "This script retrieves information about the latest snapshots taken on Hyper-V virtual machines. It allows monitoring of snapshot creation time and age",
@@ -9,7 +9,7 @@
         "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.4412",
-            "Privilege required: AD User",
+            "Privilege required: Administrator",
             "WinRM Enabled",
             "Hyper-V",
             "VM"
