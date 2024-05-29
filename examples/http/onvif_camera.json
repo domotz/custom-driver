@@ -36,7 +36,7 @@
         {
             "value_type": "LIST",
             "name": "profileName",
-            "label": "Prfile Name",
+            "label": "Profile Name",
             "value": "ALL"
         },
         {

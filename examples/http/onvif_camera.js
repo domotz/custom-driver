@@ -33,7 +33,6 @@ var url = "/onvif/device_service";
 // profileName = ["All"] to monitor all profiles.
 var profileName = D.getParameter("profileName");
 
-
 // ONVIF port parameter
 // The port number can be found in the camera's manual or through the camera's admin web app settings. Default is 80.
 var onvifPort = D.getParameter("onvifPort");
@@ -124,6 +123,7 @@ function getProfiles() {
 
     return sendSoapRequest(payload, function(body) {
         var $ = D.htmlParse(body);
+        console.log(body);
         var profiles = $("trt\\:Profiles");
         var profileTokens = [];
         profiles.each(function(index, element) {
@@ -238,7 +238,7 @@ function healthCheck(streamUrisProfiles) {
                     var authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, uri, "DESCRIBE");
                     var command = "DESCRIBE " + uri + " RTSP/1.0\r\nCSeq: 2\r\nAuthorization: " + authHeader + "\r\n";
                     telnetParams.command = command;
-                    telnetParams.timeout = 10000;
+                    telnetParams.timeout = 1000;
                     D.device.sendTelnetCommand(telnetParams, function(out, err) {
                         if (err) {
                             console.log(err);
