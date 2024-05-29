@@ -34,7 +34,7 @@ var winrmConfig = {
 
 // Table to store VM snapshots
 var table = D.createTable(
-    "Logical Disks", 
+    "Hyper-V VM Snapshots", 
     [
         { label: "VM name", valueType: D.valueType.STRING },
         { label: "Snapshot name", valueType: D.valueType.STRING },
@@ -42,7 +42,6 @@ var table = D.createTable(
         { label: "Age", unit: "Days", valueType: D.valueType.NUMBER }
     ]
 );
-
 
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
