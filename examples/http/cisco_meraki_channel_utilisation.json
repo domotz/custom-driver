@@ -43,6 +43,11 @@
             "name": "networkID",
             "label": "Network ID",
             "value": "ALL"
+        },
+        {
+            "value_type": "SECRE_TEXT",
+            "name": "apiKey",
+            "label": "API Key"
         }
     ]
 }

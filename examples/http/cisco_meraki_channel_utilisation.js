@@ -28,6 +28,9 @@ var organizationId = D.getParameter("organizationID");
 // Otherwise, it resolves with the specified networkId
 var networkId = D.getParameter("networkID"); // The ID of the network
 
+// The API key 
+var apiKey = D.getParameter("apiKey"); 
+
 // Table to store channel utilization data 
 var table = D.createTable(
     "Channel Utilization",
@@ -53,7 +56,7 @@ function getNetworkInfo() {
         url: "/api/v1/organizations/" + organizationId + "/networks",
         protocol: "https",
         headers: {
-            "Authorization": "Bearer " + D.device.password(),
+            "Authorization": "Bearer " + apiKey,
             "Content-Type": "application/json"
         }
     };
