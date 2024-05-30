@@ -1,7 +1,7 @@
 {
-    "logo": "windows.svg",
+    "logo": "microsoft-hyper-v.svg",
     "version": "1.0.0",
-    "name": "indows Hyper-V VM Virtual Network Adapters",
+    "name": "Windows Hyper-V VM Virtual Network Adapters",
     "description": "This script retrieves information about the Hyper-V VM Virtual Network Adapters",
     "category": "Software Integration",
     "requirements": {
