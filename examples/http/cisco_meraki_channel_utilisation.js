@@ -1,6 +1,6 @@
 /**
  * Domotz Custom Driver 
- * Name: Cisco Meraki Channel Utilisation
+ * Name: Cisco Meraki Channel Utilization
  * Description: This script extracts channel utilization information from Cisco Meraki networks using the Meraki Dashboard API.
  * 
  * Communication protocol is HTTPS
@@ -11,9 +11,9 @@
  *      - Network: Network name 
  *      - Device: Device model
  *      - Channel: Channel id 
- *      - Channel Utilization: Percentage of total channel utiliation for the given radio
- *      - Wifi Utilization: Percentage of wifi channel utiliation for the given radio
- *      - Non Wifi Utilization: Percentage of non-wifi channel utiliation for the given radio
+ *      - Channel Utilization: Percentage of total channel utilization for the given radio
+ *      - Wifi Utilization: Percentage of wifi channel utilization for the given radio
+ *      - Non Wifi Utilization: Percentage of non-wifi channel utilization for the given radio
  *      - Start Timestamp: The start time of the channel utilization interval
  *      - End Timestamp: The end time of the channel utilization interval
  * 
