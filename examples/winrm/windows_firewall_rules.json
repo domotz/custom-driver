@@ -15,7 +15,7 @@
     },
     "tags": [
         "windows",
-        "Firewall",
+        "firewall",
         "software"
     ],
     "sample_period_s": 1800,
@@ -36,7 +36,7 @@
         {
             "value_type": "LIST",
             "name": "firewallFilter",
-            "label": "Firawall Rule Name",
+            "label": "Firewall Rule Name",
             "value": ["skype", "AnyDesk"]
         }
     ]
