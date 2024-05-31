@@ -1,5 +1,5 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Windows Hyper-V VM Virtual Network Adapters
  * Description: This script retrieves information about the Hyper-V VM Virtual Network Adapters
  *   
@@ -7,6 +7,7 @@
  * 
  * Tested on Windows Versions:
  *      - Windows 10
+ * 
  * Powershell Version:
  *      - 5.1.19041.2364
  * 
@@ -21,12 +22,13 @@
  * 
  * Privilege required: 
  *    - Administrator
+ * 
  */
-
 
 // The VM ID for which you want to display the Virtual Network Adapters.
 var vmIdFilter = D.getParameter('vmId');
 
+// WinRM command to retrieve VM Virtual Network Adapters
 var getVmVirtualNetworkAdapters = '(Get-VM -id "' + vmIdFilter + '" | Select-Object -ExpandProperty NetworkAdapters).ForEach( { @{ "Id" = $_.Id; "Name" = $_.Name; "ClusterMonitored" = $_.ClusterMonitored; "PoolName" = $_.PoolName; "Connected" = $_.Connected; "SwitchName" = $_.SwitchName; "BandwidthPercentage" = $_.BandwidthPercentage; "IsDeleted" = $_.IsDeleted } }) | ConvertTo-Json';
 
 // Define the WinRM options when running the commands
@@ -41,17 +43,17 @@ var booleanCodes = {
     "false": "No",
 };
 
-// Creation of custom driver table 
+// Creation of custom virtual Network Adapters table 
 var virtualNetworkAdaptersTable = D.createTable(
     "Virtual network adapters",
     [
         { label: "Name" },
-        { label: "SwitchName" },
-        { label: "PoolName" },
-        { label: "ClusterMonitored" },
+        { label: "Switch Name" },
+        { label: "Pool Name" },
+        { label: "Cluster Monitored" },
         { label: "Connected" },
-        { label: "BandwidthPercentage" },
-        { label: "IsDeleted" }
+        { label: "Bandwidth Percentage" },
+        { label: "Is Deleted" }
     ]
 );
 
@@ -89,18 +91,44 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
+/**
+ * @description Sanitizes the given output string by removing reserved words and special characters,
+ * limiting its length to 50 characters, replacing spaces with hyphens, and converting it to lowercase.
+ * @param {string} output - The string to be sanitized.
+ * @returns {string} - The sanitized string.
+ */
 function sanitize(output){
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
+/**
+ * @description Extracts the network adapter ID from the given input string.
+ * If the input contains a backslash ('\\'), it returns the substring after the last backslash.
+ * Otherwise, it returns the entire input.
+ * @param {string} input - The input string to extract the network adapter ID from.
+ * @returns {string} - The extracted network adapter ID or the original input string.
+ */
+function extractNetworkAdaptersId(input){
+    if (input.indexOf("\\") !== -1) {
+        return input.split("\\").pop();
+    } else {
+        return input;
+    }
+}
+
+/**
+ * @description Populates the virtual network adapters table with a new record.
+ * The function sanitizes the ID, converts boolean indicators to codes, ensures the PoolName is not empty,
+ * and inserts the record into the table
+ */
 function populateTable(id, Name, SwitchName, PoolName, ClusterMonitored, Connected, BandwidthPercentage, IsDeleted) {
-    // var recordId = sanitize(id);
-    var recordId = (id);
+    var recordId = sanitize(extractNetworkAdaptersId(id));
     ClusterMonitored = booleanCodes[ClusterMonitored];
     Connected = booleanCodes[Connected];
     IsDeleted = booleanCodes[IsDeleted];
+    PoolName =  PoolName ? PoolName : "N/A";
     virtualNetworkAdaptersTable.insertRecord(recordId, [Name, SwitchName, PoolName, ClusterMonitored, Connected, BandwidthPercentage, IsDeleted]);
 }
 
