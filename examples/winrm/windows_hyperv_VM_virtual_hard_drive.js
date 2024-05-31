@@ -30,7 +30,7 @@
 var vmIdFilter = D.getParameter('vmId');
 
 // WinRM command to retrieve VM Virtual Hard Drives
-var getVmVirtualHardDrives= '(Get-VM -Id "' + vmIdFilter + '" | Select-Object -ExpandProperty HardDrives).ForEach({ $req = (Get-VHD -Path $_.Path); @{ "Id" = $_.Id; "Name" = $_.Name; "Path" = $_.Path; "DiskNumber" = $_.DiskNumber; "PoolName" = $_.PoolName; "IsDeleted" = $_.IsDeleted; "Attached" = $req.Attached; "Size" = [math]::round($req.Size / 1GB, 2); "ControllerNumber" = $_.ControllerNumber}}) | ConvertTo-Json';
+var getVmVirtualHardDrives= '(Get-VM -Id "' + vmIdFilter + '" | Select-Object -ExpandProperty HardDrives).ForEach({ $req = (Get-VHD -Path $_.Path); @{ "Id" = $_.Id; "Name" = $_.Name; "Path" = $_.Path; "DiskNumber" = $_.DiskNumber; "PoolName" = $_.PoolName; "IsDeleted" = $_.IsDeleted; "Attached" = $req.Attached; "Size" = [math]::round($req.Size / 1GB, 2); "ControllerNumber" = $_.ControllerNumber; "ControllerLocation" = $_.ControllerLocation}}) | ConvertTo-Json';
 
 // Define the WinRM options when running the commands
 var winrmConfig = {
@@ -55,6 +55,7 @@ var virtualHardDrivesTable = D.createTable(
         { label: "Attached" },
         { label: "Capacity", unit: "GB", valueType: D.valueType.NUMBER },
         { label: "Controller Number" },
+        { label: "Location Number" },
         { label: "Disk Number" },
         { label: "Is Deleted" }
     ]
@@ -122,11 +123,12 @@ function extractHardDriveId(input){
     }
 }
 
-function populateTable(id, Name, PoolName, Path, Attached, Size, ControllerNumber, DiskNumber, IsDeleted) {
+function populateTable(id, Name, PoolName, Path, Attached, Size, ControllerNumber, ControllerLocation, DiskNumber, IsDeleted) {
     var recordId = sanitize(extractHardDriveId(id));  
     IsDeleted = booleanCodes[IsDeleted];
+    Attached = booleanCodes[Attached];
     DiskNumber = DiskNumber ? DiskNumber : 'N/A'  ;
-    virtualHardDrivesTable.insertRecord(recordId, [Name, PoolName, Path, Attached, Size, ControllerNumber, DiskNumber, IsDeleted]);
+    virtualHardDrivesTable.insertRecord(recordId, [Name, PoolName, Path, Attached, Size, ControllerNumber,ControllerLocation,  DiskNumber, IsDeleted]);
 }
 
 /**
@@ -156,6 +158,7 @@ function parseOutput(output) {
                 listOfVirtualHardDrives[k].Attached,
                 listOfVirtualHardDrives[k].Size,
                 listOfVirtualHardDrives[k].ControllerNumber,
+                listOfVirtualHardDrives[k].ControllerLocation,
                 listOfVirtualHardDrives[k].DiskNumber,
                 listOfVirtualHardDrives[k].IsDeleted
             );
