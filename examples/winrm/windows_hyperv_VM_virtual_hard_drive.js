@@ -50,14 +50,14 @@ var virtualHardDrivesTable = D.createTable(
     "Virtual Hard Drives",
     [
         { label: "Name" },
-        { label: "Pool Name" },
+        { label: "Pool" },
         { label: "Path" },
         { label: "Attached" },
         { label: "Capacity", unit: "GB", valueType: D.valueType.NUMBER },
         { label: "Controller Number" },
         { label: "Location Number" },
         { label: "Disk Number" },
-        { label: "Is Deleted" }
+        { label: "Deleted" }
     ]
 );
 
