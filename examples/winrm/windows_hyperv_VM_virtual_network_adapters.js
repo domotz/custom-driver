@@ -49,11 +49,11 @@ var virtualNetworkAdaptersTable = D.createTable(
     [
         { label: "Name" },
         { label: "Switch Name" },
-        { label: "Pool Name" },
+        { label: "Pool" },
         { label: "Cluster Monitored" },
         { label: "Connected" },
         { label: "Bandwidth Percentage" },
-        { label: "Is Deleted" }
+        { label: "Deleted" }
     ]
 );
 
