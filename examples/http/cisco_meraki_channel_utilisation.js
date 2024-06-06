@@ -5,7 +5,9 @@
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on Cisco Meraki version wireless-25-13 
+ * Tested on Cisco Meraki Dashboard API v1
+ * 
+ * Note: Data is retrieved in 10 minute intervals.
  *
  * Creates a Custom Driver table with the following columns:
  *      - Network: Network name 
@@ -14,8 +16,6 @@
  *      - Channel Utilization: Percentage of total channel utilization for the given radio
  *      - Wifi Utilization: Percentage of wifi channel utilization for the given radio
  *      - Non Wifi Utilization: Percentage of non-wifi channel utilization for the given radio
- *      - Start Timestamp: The start time of the channel utilization interval
- *      - End Timestamp: The end time of the channel utilization interval
  * 
  **/
 
@@ -40,9 +40,7 @@ var table = D.createTable(
         { label: "Channel", valueType: D.valueType.STRING },
         { label: "Channel Utilization", unit: "%", valueType: D.valueType.NUMBER },
         { label: "Wifi Utilization",  unit: "%", valueType: D.valueType.NUMBER },
-        { label: "Non Wifi Utilization",  unit: "%", valueType: D.valueType.NUMBER },
-        { label: "Start Timestamp", valueType: D.valueType.DATETIME },
-        { label: "End Timestamp", valueType: D.valueType.DATETIME }
+        { label: "Non Wifi Utilization",  unit: "%", valueType: D.valueType.NUMBER }
     ]
 );
 
@@ -99,18 +97,19 @@ function getNetworkInfo() {
 }
 
 /**
- * Function to retrieve channel utilization data for each network.
+ * Function to retrieve channel utilization data for each network within a 10 minute interval.
  * @param {Array} networksInfo Array of network information.
  * @returns {Promise} A promise that resolves with an array of channel utilization information
  */
 function getChannelUtilization(networksInfo) {
     var promises = networksInfo.map(function(network) {
         var d = D.q.defer();
+        var timespan = 10 * 60; 
         var config = {
-            url: "/api/v1/networks/" + network.id + "/networkHealth/channelUtilization",
+            url: "/api/v1/networks/" + network.id + "/networkHealth/channelUtilization?timespan=" + timespan,
             protocol: "https",
             headers: {
-                "Authorization": "Bearer " + D.device.password(),
+                "Authorization": "Bearer " + apiKey,
                 "Content-Type": "application/json"
             }
         };
@@ -146,34 +145,20 @@ function sanitize(output){
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
-function formatTimestamp(timestamp) {
-    var date = new Date(timestamp);
-    var formattedDate =
-                (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1) + "/" +
-                (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate() + "/" +
-                date.getUTCFullYear() + " " +
-                (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours() + ":" +
-                (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes() + ":" +
-                (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
-    return formattedDate;
-}
-
 // Function to extract data from the response body and populates custom table
-function extractData(data) {
+function extractChanelData(data) {
     data.forEach(function(networkData) {      
         var name = networkData.name; 
         var devices = JSON.parse(networkData.body);  
         devices.forEach(function(deviceData){
-            for (var channelId in deviceData) {
+            for (var key in deviceData) {
                 var model = deviceData.model;
-                if (Array.isArray(deviceData[channelId])) {
-                    var lastChannelUtilization = deviceData[channelId].length - 1;
-                    var lastEntry = deviceData[channelId][lastChannelUtilization];
-                    var channelUtilization = lastEntry.utilization ? lastEntry.utilization : 0;
-                    var wifiUtilization = lastEntry.wifi ? lastEntry.wifi : 0;
-                    var nonWifiUtilization = lastEntry.non_wifi ? lastEntry.non_wifi : 0;
-                    var startTimestamp = lastEntry.start_ts ? lastEntry.start_ts : "N/A";
-                    var endTimestamp = lastEntry.end_ts ? lastEntry.end_ts : "N/A";
+                if (Array.isArray(deviceData[key])) {
+                    var channelId = key;
+                    var entry = deviceData[channelId][0];
+                    var channelUtilization = entry.utilization ? entry.utilization : 0;
+                    var wifiUtilization = entry.wifi ? entry.wifi : 0;
+                    var nonWifiUtilization = entry.non_wifi ? entry.non_wifi : 0;
                     var recordId = sanitize(name + "-" + model + "-" + channelId);
                     table.insertRecord(recordId, [ 
                         name,
@@ -181,9 +166,7 @@ function extractData(data) {
                         channelId,
                         channelUtilization,
                         wifiUtilization,
-                        nonWifiUtilization,
-                        formatTimestamp(startTimestamp),
-                        formatTimestamp(endTimestamp)
+                        nonWifiUtilization
                     ]);
                 }
             }            
@@ -223,7 +206,7 @@ function validate(){
 function get_status() {
     getNetworkInfo()
         .then(getChannelUtilization)
-        .then(extractData)
+        .then(extractChanelData)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
