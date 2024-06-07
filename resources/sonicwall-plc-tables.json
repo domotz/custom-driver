@@ -1,0 +1,3643 @@
+{
+  "SonicWall NSA Series": {
+    "Hardware": {
+      "0": {
+        "model": "2600",
+        "lod": "2019-03-07",
+        "armb": "2019-03-08",
+        "arme": "2021-03-07",
+        "oneyldo": "2023-03-07",
+        "lrmb": "2021-03-08",
+        "lrme": "2024-03-07",
+        "eos": "2024-03-08",
+        "sortid": "SWNSA-H-27"
+      },
+      "62": {
+        "model": "3600",
+        "lod": "2021-03-02",
+        "armb": "2021-03-03",
+        "arme": "2023-03-02",
+        "oneyldo": "2025-03-02",
+        "lrmb": "2023-03-03",
+        "lrme": "2026-03-02",
+        "eos": "2026-03-03",
+        "sortid": "SWNSA-H-29"
+      },
+      "63": {
+        "model": "4600",
+        "lod": "2021-03-02",
+        "armb": "2021-03-03",
+        "arme": "2023-03-02",
+        "oneyldo": "2025-03-02",
+        "lrmb": "2023-03-03",
+        "lrme": "2026-03-02",
+        "eos": "2026-03-03",
+        "sortid": "SWNSA-H-31"
+      },
+      "64": {
+        "model": "5600",
+        "lod": "2021-03-02",
+        "armb": "2021-03-03",
+        "arme": "2023-03-02",
+        "oneyldo": "2025-03-02",
+        "lrmb": "2023-03-03",
+        "lrme": "2026-03-02",
+        "eos": "2026-03-03",
+        "sortid": "SWNSA-H-33"
+      },
+      "65": {
+        "model": "6600",
+        "lod": "2021-05-02",
+        "armb": "2021-05-03",
+        "arme": "2023-05-02",
+        "oneyldo": "2025-03-02",
+        "lrmb": "2023-05-03",
+        "lrme": "2026-05-02",
+        "eos": "2026-03-03",
+        "sortid": "SWNSA-H-35"
+      },
+      "105": {
+        "model": "250M",
+        "lod": "2016-08-31",
+        "armb": "2016-09-01",
+        "arme": "2018-08-31",
+        "oneyldo": "2020-08-31",
+        "lrmb": "2018-08-31",
+        "lrme": "2021-08-31",
+        "eos": "2021-09-01",
+        "sortid": "SWNSA-H-12"
+      },
+      "106": {
+        "model": "220W",
+        "lod": "2015-08-15",
+        "armb": "2015-08-16",
+        "arme": "2017-08-15",
+        "oneyldo": "2019-08-15",
+        "lrmb": "2017-08-16",
+        "lrme": "2020-08-15",
+        "eos": "2020-09-16",
+        "sortid": "SWNSA-H-15"
+      },
+      "107": {
+        "model": "250MW",
+        "lod": "2015-08-30",
+        "armb": "2015-08-31",
+        "arme": "2017-08-30",
+        "oneyldo": "2019-08-30",
+        "lrmb": "2017-08-31",
+        "lrme": "2020-08-30",
+        "eos": "2020-08-31",
+        "sortid": "SWNSA-H-17"
+      },
+      "108": {
+        "model": "250M <br/>(Japan Model)",
+        "lod": "2016-08-31",
+        "armb": "2016-09-01",
+        "arme": "2018-08-31",
+        "oneyldo": "2020-08-31",
+        "lrmb": "2018-09-01",
+        "lrme": "2021-08-31",
+        "eos": "2021-09-01",
+        "sortid": "SWNSA-H-21"
+      },
+      "109": {
+        "model": "2400",
+        "lod": "2014-04-01",
+        "armb": "2014-05-01",
+        "arme": "2016-04-30",
+        "oneyldo": "2018-04-30",
+        "lrmb": "2016-05-01",
+        "lrme": "2019-04-30",
+        "eos": "2019-05-01",
+        "sortid": "SWNSA-H-11"
+      },
+      "110": {
+        "model": "2400MX",
+        "lod": "2012-04-01",
+        "armb": "2012-05-01",
+        "arme": "2014-04-30",
+        "oneyldo": "2018-04-30",
+        "lrmb": "2014-05-01",
+        "lrme": "2019-04-30",
+        "eos": "2019-05-01",
+        "sortid": "SWNSA-H-1"
+      },
+      "111": {
+        "model": "3500",
+        "lod": "2013-05-20",
+        "armb": "2013-06-01",
+        "arme": "2015-05-31",
+        "oneyldo": "2017-05-19",
+        "lrmb": "2015-06-01",
+        "lrme": "2018-05-18",
+        "eos": "2018-05-19",
+        "sortid": "SWNSA-H-9"
+      },
+      "112": {
+        "model": "4500",
+        "lod": "2013-05-16",
+        "armb": "2013-05-14",
+        "arme": "2015-05-31",
+        "oneyldo": "2017-05-15",
+        "lrmb": "2015-06-01",
+        "lrme": "2018-05-14",
+        "eos": "2018-05-15",
+        "sortid": "SWNSA-H-7"
+      },
+      "113": {
+        "model": "5000",
+        "lod": "2013-05-13",
+        "armb": "2013-04-13",
+        "arme": "2015-05-31",
+        "oneyldo": "2017-05-12",
+        "lrmb": "2015-06-01",
+        "lrme": "2018-05-11",
+        "eos": "2018-05-12",
+        "sortid": "SWNSA-H-5"
+      },
+      "114": {
+        "model": "220",
+        "lod": "2015-08-15",
+        "armb": "2015-08-16",
+        "arme": "2017-08-15",
+        "oneyldo": "2019-08-15",
+        "lrmb": "2017-08-15",
+        "lrme": "2020-08-15",
+        "eos": "2020-08-16",
+        "sortid": "SWNSA-H-13"
+      },
+      "129": {
+        "model": "E8500  <br/>(Japan Model)",
+        "lod": "2016-12-31",
+        "armb": "2016-01-01",
+        "arme": "2017-12-31",
+        "oneyldo": "2020-01-01",
+        "lrmb": "2018-01-01",
+        "lrme": "2020-12-31",
+        "eos": "2021-01-01",
+        "sortid": "SWNSA-H-25"
+      },
+      "130": {
+        "model": "240",
+        "lod": "2012-04-30",
+        "armb": "2012-05-01",
+        "arme": "2014-04-30",
+        "oneyldo": "2016-04-29",
+        "lrmb": "2014-05-01",
+        "lrme": "2017-04-28",
+        "eos": "2017-04-29",
+        "sortid": "SWNSA-H-3"
+      },
+      "131": {
+        "model": "220W  <br/>(Japan Model)",
+        "lod": "2016-08-31",
+        "armb": "2016-09-01",
+        "arme": "2018-08-31",
+        "oneyldo": "2020-08-31",
+        "lrmb": "2018-09-01",
+        "lrme": "2021-08-31",
+        "eos": "2021-09-01",
+        "sortid": "SWNSA-H-19"
+      },
+      "212": {
+        "model": "2650",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-37"
+      },
+      "213": {
+        "model": "3650",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-39"
+      },
+      "214": {
+        "model": "4650",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-41"
+      },
+      "215": {
+        "model": "5650",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-43"
+      },
+      "216": {
+        "model": "6650",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-45"
+      },
+      "217": {
+        "model": "9250",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-47"
+      },
+      "218": {
+        "model": "9450",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-49"
+      },
+      "219": {
+        "model": "9650",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSA-H-51"
+      }
+    },
+    "Firmware": {
+      "2": {
+        "release": "SonicOS 6.5.1.2",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650",
+        "type": "MR",
+        "rd": "7/19/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-33"
+      },
+      "5": {
+        "release": "SonicOS 6.5.1.3",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650",
+        "type": "GR",
+        "rd": "10/24/2018",
+        "status": "Active General Release<br> End Of Maintenance",
+        "upgrade": "N/A",
+        "eos": "2022-03-31",
+        "sortid": "SWOS-34"
+      },
+      "8": {
+        "release": "SonicOS 6.5.2.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "FR",
+        "rd": "06/29/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-05-15",
+        "sortid": "SWOS-35"
+      },
+      "11": {
+        "release": "SonicOS 6.5.3.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "FR",
+        "rd": "01/10/2019",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-37"
+      },
+      "14": {
+        "release": "SonicOS 6.5.2.2",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "11/15/2018",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-36"
+      },
+      "17": {
+        "release": "SonicOS 6.5.0.2",
+        "model": " NSA2600, NSA3600, NSA4600, NSA5600, NSA6600, NSa2650",
+        "type": "MR",
+        "rd": "1/03/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-31"
+      },
+      "20": {
+        "release": "SonicOS 6.5.4.3",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "FR",
+        "rd": "05/07/2019",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-39"
+      },
+      "23": {
+        "release": "SonicOS 6.5.3.3",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "05/21/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-38"
+      },
+      "27": {
+        "release": "SonicOS 6.5.4.5",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "11/07/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-41"
+      },
+      "30": {
+        "release": "SonicOS 6.5.4.6",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "05/29/2020",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-42"
+      },
+      "33": {
+        "release": "SonicOS 6.5.4.4",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-40"
+      },
+      "36": {
+        "release": "SonicOS 6.5.4.7",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "GR",
+        "rd": "10/01/2020",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-43"
+      },
+      "39": {
+        "release": "SonicOS 5.9.2.7",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "MR",
+        "rd": "10/07/2020",
+        "status": "Active Maintenance Release<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-14"
+      },
+      "42": {
+        "release": "SonicOS 5.9.1.11",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "MR",
+        "rd": "02/20/2019",
+        "status": "End Of Support",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2019-10-05",
+        "sortid": "SWOS-3"
+      },
+      "45": {
+        "release": "SonicOS 5.9.1.12",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "MR",
+        "rd": "04/05/2019",
+        "status": "End Of Support",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2020-01-19",
+        "sortid": "SWOS-4"
+      },
+      "48": {
+        "release": "SonicOS 5.9.1.13",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "Active<br>End of Development",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-04-07",
+        "sortid": "SWOS-5"
+      },
+      "51": {
+        "release": "SonicOS 5.9.2.13",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "MR",
+        "rd": "10/07/2020",
+        "status": "Active Maintenance Release<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-16"
+      },
+      "141": {
+        "release": "SonicOS 6.5.0.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650",
+        "type": "MR",
+        "rd": "11/21/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-30"
+      },
+      "144": {
+        "release": "SonicOS 6.5.0.0",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650",
+        "type": "FR",
+        "rd": "11/8/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-29"
+      },
+      "147": {
+        "release": "SonicOS 6.2.9.2",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-28"
+      },
+      "150": {
+        "release": "SonicOS 6.2.9.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "MR",
+        "rd": "10/2/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-27"
+      },
+      "153": {
+        "release": "SonicOS 6.2.9.0",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "FR",
+        "rd": "7/31/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-26"
+      },
+      "156": {
+        "release": "SonicOS 6.2.7.3",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-25"
+      },
+      "159": {
+        "release": "SonicOS 6.2.7.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "GR",
+        "rd": "3/31/2017",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.1.3",
+        "eos": "2020-03-31",
+        "sortid": "SWOS-24"
+      },
+      "162": {
+        "release": "SonicOS 6.2.6.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "ER",
+        "rd": "11/2/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-23"
+      },
+      "165": {
+        "release": "SonicOS 6.2.6.0",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "ER",
+        "rd": "8/8/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-22"
+      },
+      "168": {
+        "release": "SonicOS 6.2.5.3",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "GR",
+        "rd": "11/22/2016",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-21"
+      },
+      "171": {
+        "release": "SonicOS 6.2.5.2",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "ER",
+        "rd": "10/21/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-20"
+      },
+      "174": {
+        "release": "SonicOS 6.2.5.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "ER",
+        "rd": "3/28/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-19"
+      },
+      "177": {
+        "release": "SonicOS 6.2.5.0 & older 6.x versions",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600",
+        "type": "FR",
+        "rd": "3/11/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-18"
+      },
+      "180": {
+        "release": "SonicOS 6.5.1.1",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650",
+        "type": "FR",
+        "rd": "4/17/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-32"
+      },
+      "183": {
+        "release": "SonicOS 5.9.1.10",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": null,
+        "eos": "2019-08-20",
+        "sortid": "SWOS-2"
+      },
+      "186": {
+        "release": "SonicOS 5.9.1.7",
+        "model": " NSA220, NSA220W, NSA240, NSA2400, NSA2400MX, NSA250M, NSA250MW, NSA3500, NSA4500, NSA5000",
+        "type": "GR",
+        "rd": "8/31/2016",
+        "status": "Active (upgrade recommended)<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-1"
+      },
+      "232": {
+        "release": "SonicOS 6.5.4.9",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "GR",
+        "rd": "1/31/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-45"
+      },
+      "261": {
+        "release": "SonicOS 5.9.2.14",
+        "model": "",
+        "type": "MR",
+        "rd": "4/25/2022",
+        "status": "Active Maintenance",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-17"
+      },
+      "264": {
+        "release": "SonicOS 5.9.2.8",
+        "model": "",
+        "type": "MR",
+        "rd": "4/25/2022",
+        "status": "Active Maintenance",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-15"
+      },
+      "311": {
+        "release": "SonicOS 6.5.4.13",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "GR",
+        "rd": "9/6/2023",
+        "status": "Active General Release",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-52"
+      },
+      "314": {
+        "release": "SonicOS 6.5.4.11",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "8/2/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2024-01-31",
+        "sortid": "SWOS-48"
+      },
+      "317": {
+        "release": "SonicOS 6.5.4.10",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "GR",
+        "rd": "4/19/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-46"
+      },
+      "321": {
+        "release": "SonicOS 6.5.4.12",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "GR",
+        "rd": "4/19/2023",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": null,
+        "sortid": "SWOS-50"
+      },
+      "324": {
+        "release": "SonicOS 6.5.4.8",
+        "model": " NSA2600, NSA3600,  NSA4600, NSA5600, NSA6600, NSa2650, NSa3650, NSa4650, NSa5650, NSa6650, NSa9250, NSa9450, NSa9650",
+        "type": "MR",
+        "rd": "06/12/2021",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-44"
+      }
+    }
+  },
+  "SonicWall TZ Series": {
+    "Firmware": {
+      "1": {
+        "release": "SonicOS 6.5.1.2",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "7/19/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-33"
+      },
+      "4": {
+        "release": "SonicOS 6.5.1.3",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "GR",
+        "rd": "10/24/2018",
+        "status": "Active General Release<br> End Of Maintenance",
+        "upgrade": "N/A",
+        "eos": "2022-03-31",
+        "sortid": "SWOS-34"
+      },
+      "7": {
+        "release": "SonicOS 6.5.2.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "FR",
+        "rd": "06/29/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-05-15",
+        "sortid": "SWOS-35"
+      },
+      "10": {
+        "release": "SonicOS 6.5.3.1",
+        "model": "SOHOW, TZ300, TZ300P, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "FR",
+        "rd": "01/10/2019",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-37"
+      },
+      "13": {
+        "release": "SonicOS 6.5.2.2",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "11/15/2018",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-36"
+      },
+      "16": {
+        "release": "SonicOS 6.5.0.2",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "1/03/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-31"
+      },
+      "19": {
+        "release": "SonicOS 6.5.4.3",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "FR",
+        "rd": "05/07/2019",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-39"
+      },
+      "22": {
+        "release": "SonicOS 6.5.3.3",
+        "model": "SOHOW, TZ300, TZ300P, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "MR",
+        "rd": "05/21/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-38"
+      },
+      "26": {
+        "release": "SonicOS 6.5.4.5",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "MR",
+        "rd": "11/07/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-41"
+      },
+      "29": {
+        "release": "SonicOS 6.5.4.6",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "MR",
+        "rd": "05/29/2020",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-42"
+      },
+      "32": {
+        "release": "SonicOS 6.5.4.4",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-40"
+      },
+      "35": {
+        "release": "SonicOS 6.5.4.7",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "GR",
+        "rd": "10/01/2020",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-43"
+      },
+      "38": {
+        "release": "SonicOS 5.9.2.7",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "MR",
+        "rd": "10/07/2020",
+        "status": "Active Maintenance Release<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-14"
+      },
+      "41": {
+        "release": "SonicOS 5.9.1.11",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "MR",
+        "rd": "02/20/2019",
+        "status": "End Of Support",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2019-10-05",
+        "sortid": "SWOS-3"
+      },
+      "44": {
+        "release": "SonicOS 5.9.1.12",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "MR",
+        "rd": "04/05/2019",
+        "status": "End Of Support",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2020-01-19",
+        "sortid": "SWOS-4"
+      },
+      "47": {
+        "release": "SonicOS 5.9.1.13",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "Active<br>End of Development",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-04-07",
+        "sortid": "SWOS-5"
+      },
+      "50": {
+        "release": "SonicOS 5.9.2.13",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "MR",
+        "rd": "10/07/2020",
+        "status": "Active Maintenance Release<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-16"
+      },
+      "140": {
+        "release": "SonicOS 6.5.0.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "11/21/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-30"
+      },
+      "143": {
+        "release": "SonicOS 6.5.0.0",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "FR",
+        "rd": "11/8/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-29"
+      },
+      "146": {
+        "release": "SonicOS 6.2.9.2",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-28"
+      },
+      "149": {
+        "release": "SonicOS 6.2.9.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "10/2/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-27"
+      },
+      "152": {
+        "release": "SonicOS 6.2.9.0",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "FR",
+        "rd": "7/31/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-26"
+      },
+      "155": {
+        "release": "SonicOS 6.2.7.3",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-25"
+      },
+      "158": {
+        "release": "SonicOS 6.2.7.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "GR",
+        "rd": "3/31/2017",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.1.3",
+        "eos": "2020-03-31",
+        "sortid": "SWOS-24"
+      },
+      "161": {
+        "release": "SonicOS 6.2.6.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "ER",
+        "rd": "11/2/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-23"
+      },
+      "164": {
+        "release": "SonicOS 6.2.6.0",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "ER",
+        "rd": "8/8/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-22"
+      },
+      "167": {
+        "release": "SonicOS 6.2.5.3",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "GR",
+        "rd": "11/22/2016",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-21"
+      },
+      "170": {
+        "release": "SonicOS 6.2.5.2",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "ER",
+        "rd": "10/21/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-20"
+      },
+      "173": {
+        "release": "SonicOS 6.2.5.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "ER",
+        "rd": "3/28/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-19"
+      },
+      "176": {
+        "release": "SonicOS 6.2.5.0 & older 6.x versions",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "FR",
+        "rd": "3/11/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-18"
+      },
+      "179": {
+        "release": "SonicOS 6.5.1.1",
+        "model": "SOHOW, TZ300, TZ300W, TZ400, TZ400W, TZ500, TZ500W, TZ600",
+        "type": "FR",
+        "rd": "4/17/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-32"
+      },
+      "182": {
+        "release": "SonicOS 5.9.1.10",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": null,
+        "eos": "2019-08-20",
+        "sortid": "SWOS-2"
+      },
+      "185": {
+        "release": "SonicOS 5.9.1.7",
+        "model": "SOHO, TZ100, TZ100W, TZ105, TZ105W, TZ200, TZ200W, TZ205, TZ205W, TZ210, TZ210W, TZ215, TZ215W",
+        "type": "GR",
+        "rd": "8/31/2016",
+        "status": "Active (upgrade recommended)<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-1"
+      },
+      "231": {
+        "release": "SonicOS 6.5.4.9",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "GR",
+        "rd": "1/31/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-45"
+      },
+      "260": {
+        "release": "SonicOS 5.9.2.14",
+        "model": "SOHO",
+        "type": "MR",
+        "rd": "4/25/2022",
+        "status": "Active Maintenance",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-17"
+      },
+      "263": {
+        "release": "SonicOS 5.9.2.8",
+        "model": "SOHO",
+        "type": "MR",
+        "rd": "4/25/2022",
+        "status": "Active Maintenance",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-15"
+      },
+      "310": {
+        "release": "SonicOS 6.5.4.13",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "GR",
+        "rd": "9/6/2023",
+        "status": "Active General Release",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-52"
+      },
+      "313": {
+        "release": "SonicOS 6.5.4.11",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "MR",
+        "rd": "8/2/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2024-01-31",
+        "sortid": "SWOS-48"
+      },
+      "316": {
+        "release": "SonicOS 6.5.4.10",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "GR",
+        "rd": "4/19/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-46"
+      },
+      "320": {
+        "release": "SonicOS 6.5.4.12",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "GR",
+        "rd": "4/19/2023",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": null,
+        "sortid": "SWOS-50"
+      },
+      "323": {
+        "release": "SonicOS 6.5.4.8",
+        "model": "SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P",
+        "type": "MR",
+        "rd": "06/12/2021",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-44"
+      }
+    },
+    "Hardware": {
+      "67": {
+        "model": "<a href=\"https://d3ik27cqx8s5ub.cloudfront.net/media/uploads/2021/07/SonicWall_LDO_Notification_for_SOHO250_and_TZ400W_July-9-2021_1b.pdf\" target=\"_blank\">400W</a>",
+        "lod": "2021-07-31",
+        "armb": "2021-08-01",
+        "arme": "2023-07-31",
+        "oneyldo": "2025-07-31",
+        "lrmb": "2023-08-01",
+        "lrme": "2026-07-31",
+        "eos": "2026-08-01",
+        "sortid": "SWTZ-H-45"
+      },
+      "68": {
+        "model": "<a href=\"https://d3ik27cqx8s5ub.cloudfront.net/media/uploads/2021/07/SonicWall_LDO_Notification_for_SOHO250_and_TZ400W_July-9-2021_1b.pdf\" target=\"_blank\">SOHO 250W</a>",
+        "lod": "2021-07-31",
+        "armb": "2021-08-01",
+        "arme": "2023-07-31",
+        "oneyldo": "2025-07-31",
+        "lrmb": "2023-08-01",
+        "lrme": "2026-07-31",
+        "eos": "2026-08-01",
+        "sortid": "SWTZ-H-59"
+      },
+      "69": {
+        "model": "<a href=\"https://d3ik27cqx8s5ub.cloudfront.net/media/uploads/2021/07/SonicWall_LDO_Notification_for_SOHO250_and_TZ400W_July-9-2021_1b.pdf\" target=\"_blank\">SOHO 250</a>",
+        "lod": "2021-07-31",
+        "armb": "2021-08-01",
+        "arme": "2023-07-31",
+        "oneyldo": "2025-07-31",
+        "lrmb": "2023-08-01",
+        "lrme": "2026-07-31",
+        "eos": "2026-08-01",
+        "sortid": "SWTZ-H-57"
+      },
+      "70": {
+        "model": "SOHO",
+        "lod": "2020-01-22",
+        "armb": "2020-01-23",
+        "arme": "2022-01-22",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2022-01-23",
+        "lrme": "2025-01-22",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-55"
+      },
+      "71": {
+        "model": "300W (AC Model)",
+        "lod": "2020-01-22",
+        "armb": "2020-01-23",
+        "arme": "2022-01-22",
+        "oneyldo": "2024-01-22",
+        "lrmb": "2022-01-23",
+        "lrme": "2025-01-22",
+        "eos": "2025-01-23",
+        "sortid": "SWTZ-H-37"
+      },
+      "72": {
+        "model": "300",
+        "lod": "2020-01-22",
+        "armb": "2020-01-23",
+        "arme": "2022-01-22",
+        "oneyldo": "2024-01-22",
+        "lrmb": "2022-01-23",
+        "lrme": "2025-01-22",
+        "eos": "2025-01-23",
+        "sortid": "SWTZ-H-31"
+      },
+      "76": {
+        "model": "215W",
+        "lod": "2016-06-01",
+        "armb": "2016-06-22",
+        "arme": "2018-06-01",
+        "oneyldo": "2020-06-01",
+        "lrmb": "2018-06-02",
+        "lrme": "2021-06-01",
+        "eos": "2021-06-02",
+        "sortid": "SWTZ-H-27"
+      },
+      "77": {
+        "model": "215W <br/>(Japan Model)",
+        "lod": "2016-08-31",
+        "armb": "2016-09-01",
+        "arme": "2018-08-31",
+        "oneyldo": "2020-08-31",
+        "lrmb": "2018-09-01",
+        "lrme": "2021-08-31",
+        "eos": "2021-09-01",
+        "sortid": "SWTZ-H-29"
+      },
+      "78": {
+        "model": "205W",
+        "lod": "2015-08-05",
+        "armb": "2015-08-06",
+        "arme": "2017-08-05",
+        "oneyldo": "2019-08-05",
+        "lrmb": "2017-08-06",
+        "lrme": "2020-08-05",
+        "eos": "2020-08-06",
+        "sortid": "SWTZ-H-17"
+      },
+      "79": {
+        "model": "205W <br/>(Japan Model)",
+        "lod": "2016-08-31",
+        "armb": "2016-09-01",
+        "arme": "2018-08-31",
+        "oneyldo": "2020-08-31",
+        "lrmb": "2018-09-01",
+        "lrme": "2021-08-31",
+        "eos": "2021-09-01",
+        "sortid": "SWTZ-H-19"
+      },
+      "80": {
+        "model": "105",
+        "lod": "2015-07-28",
+        "armb": "2015-09-27",
+        "arme": "2017-07-28",
+        "oneyldo": "2019-07-28",
+        "lrmb": "2017-07-29",
+        "lrme": "2020-07-28",
+        "eos": "2020-07-29",
+        "sortid": "SWTZ-H-5"
+      },
+      "81": {
+        "model": "205",
+        "lod": "2015-06-30",
+        "armb": "2015-07-01",
+        "arme": "2017-06-30",
+        "oneyldo": "2019-06-30",
+        "lrmb": "2017-07-01",
+        "lrme": "2020-06-30",
+        "eos": "2020-07-01",
+        "sortid": "SWTZ-H-15"
+      },
+      "82": {
+        "model": "200",
+        "lod": "2013-01-14",
+        "armb": "2013-01-15",
+        "arme": "2015-01-14",
+        "oneyldo": "2017-01-13",
+        "lrmb": "2015-01-15",
+        "lrme": "2018-01-12",
+        "eos": "2018-01-13",
+        "sortid": "SWTZ-H-11"
+      },
+      "83": {
+        "model": "200W",
+        "lod": "2013-01-14",
+        "armb": "2013-01-15",
+        "arme": "2015-01-14",
+        "oneyldo": "2017-01-13",
+        "lrmb": "2015-01-15",
+        "lrme": "2018-01-12",
+        "eos": "2018-01-13",
+        "sortid": "SWTZ-H-13"
+      },
+      "84": {
+        "model": "100W",
+        "lod": "2012-11-16",
+        "armb": "2012-11-17",
+        "arme": "2014-11-16",
+        "oneyldo": "2016-11-15",
+        "lrmb": "2014-11-17",
+        "lrme": "2017-11-14",
+        "eos": "2017-11-15",
+        "sortid": "SWTZ-H-3"
+      },
+      "85": {
+        "model": "100",
+        "lod": "2012-11-16",
+        "armb": "2012-11-16",
+        "arme": "2014-11-16",
+        "oneyldo": "2016-11-15",
+        "lrmb": "2014-11-17",
+        "lrme": "2017-11-14",
+        "eos": "2017-11-15",
+        "sortid": "SWTZ-H-1"
+      },
+      "86": {
+        "model": "210",
+        "lod": "2012-05-31",
+        "armb": "2012-06-01",
+        "arme": "2014-05-31",
+        "oneyldo": "2016-05-30",
+        "lrmb": "2014-06-01",
+        "lrme": "2017-05-29",
+        "eos": "2017-05-30",
+        "sortid": "SWTZ-H-21"
+      },
+      "87": {
+        "model": "210W",
+        "lod": "2012-05-31",
+        "armb": "2012-06-01",
+        "arme": "2014-05-31",
+        "oneyldo": "2016-05-30",
+        "lrmb": "2014-06-01",
+        "lrme": "2017-05-29",
+        "eos": "2017-05-30",
+        "sortid": "SWTZ-H-23"
+      },
+      "132": {
+        "model": "105W",
+        "lod": "2015-09-10",
+        "armb": "2015-09-11",
+        "arme": "2017-09-10",
+        "oneyldo": "2019-09-10",
+        "lrmb": "2017-09-11",
+        "lrme": "2020-09-10",
+        "eos": "2020-09-11",
+        "sortid": "SWTZ-H-7"
+      },
+      "133": {
+        "model": "105W <br/>(Japan Model)",
+        "lod": "2016-08-31",
+        "armb": "2016-09-01",
+        "arme": "2018-08-31",
+        "oneyldo": "2020-08-31",
+        "lrmb": "2018-09-01",
+        "lrme": "2021-08-31",
+        "eos": "2021-09-01",
+        "sortid": "SWTZ-H-9"
+      },
+      "134": {
+        "model": "215",
+        "lod": "2015-07-31",
+        "armb": "2015-08-01",
+        "arme": "2017-07-31",
+        "oneyldo": "2019-08-31",
+        "lrmb": "2017-08-01",
+        "lrme": "2020-07-31",
+        "eos": "2020-08-01",
+        "sortid": "SWTZ-H-25"
+      },
+      "202": {
+        "model": "SOHOW",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-61"
+      },
+      "203": {
+        "model": "300P",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-33"
+      },
+      "204": {
+        "model": "300W",
+        "lod": "2020-01-22",
+        "armb": "2020-01-23",
+        "arme": "2022-01-22",
+        "oneyldo": "2024-01-22",
+        "lrmb": "2022-01-23",
+        "lrme": "2025-01-22",
+        "eos": "2025-01-23",
+        "sortid": "SWTZ-H-35"
+      },
+      "205": {
+        "model": "350",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-39"
+      },
+      "206": {
+        "model": "350W",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-41"
+      },
+      "207": {
+        "model": "400",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-43"
+      },
+      "208": {
+        "model": "500",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-47"
+      },
+      "209": {
+        "model": "500W",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-49"
+      },
+      "210": {
+        "model": "600",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-51"
+      },
+      "211": {
+        "model": "600P",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWTZ-H-53"
+      }
+    }
+  },
+  "SonicWall SuperMassive 9000 Series": {
+    "Firmware": {
+      "3": {
+        "release": "SonicOS 6.5.1.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "7/19/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-33"
+      },
+      "6": {
+        "release": "SonicOS 6.5.1.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "10/24/2018",
+        "status": "Active General Release<br> End Of Maintenance",
+        "upgrade": "N/A",
+        "eos": "2022-03-31",
+        "sortid": "SWOS-34"
+      },
+      "9": {
+        "release": "SonicOS 6.5.2.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "06/29/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-05-15",
+        "sortid": "SWOS-35"
+      },
+      "12": {
+        "release": "SonicOS 6.5.3.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "01/10/2019",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-37"
+      },
+      "15": {
+        "release": "SonicOS 6.5.2.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "11/15/2018",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-36"
+      },
+      "18": {
+        "release": "SonicOS 6.5.0.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "1/03/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-31"
+      },
+      "21": {
+        "release": "SonicOS 6.5.4.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "05/07/2019",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-39"
+      },
+      "24": {
+        "release": "SonicOS 6.5.3.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "05/21/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-38"
+      },
+      "28": {
+        "release": "SonicOS 6.5.4.5",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "11/07/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-41"
+      },
+      "31": {
+        "release": "SonicOS 6.5.4.6",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "05/29/2020",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-42"
+      },
+      "34": {
+        "release": "SonicOS 6.5.4.4",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-40"
+      },
+      "37": {
+        "release": "SonicOS 6.5.4.7",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "10/01/2020",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-43"
+      },
+      "142": {
+        "release": "SonicOS 6.5.0.1",
+        "model": "  SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "11/21/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-30"
+      },
+      "145": {
+        "release": "SonicOS 6.5.0.0",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "11/8/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-29"
+      },
+      "148": {
+        "release": "SonicOS 6.2.9.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-28"
+      },
+      "151": {
+        "release": "SonicOS 6.2.9.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "10/2/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-27"
+      },
+      "154": {
+        "release": "SonicOS 6.2.9.0",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "7/31/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-26"
+      },
+      "157": {
+        "release": "SonicOS 6.2.7.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-25"
+      },
+      "160": {
+        "release": "SonicOS 6.2.7.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "3/31/2017",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.1.3",
+        "eos": "2020-03-31",
+        "sortid": "SWOS-24"
+      },
+      "163": {
+        "release": "SonicOS 6.2.6.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "11/2/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-23"
+      },
+      "166": {
+        "release": "SonicOS 6.2.6.0",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "8/8/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-22"
+      },
+      "169": {
+        "release": "SonicOS 6.2.5.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "11/22/2016",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-21"
+      },
+      "172": {
+        "release": "SonicOS 6.2.5.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "10/21/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-20"
+      },
+      "175": {
+        "release": "SonicOS 6.2.5.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "3/28/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-19"
+      },
+      "178": {
+        "release": "SonicOS 6.2.5.0 & older 6.x versions",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "3/11/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-18"
+      },
+      "181": {
+        "release": "SonicOS 6.5.1.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "4/17/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-32"
+      },
+      "233": {
+        "release": "SonicOS 6.5.4.9",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "1/31/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-45"
+      },
+      "312": {
+        "release": "SonicOS 6.5.4.13",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "9/6/2023",
+        "status": "Active General Release",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-52"
+      },
+      "315": {
+        "release": "SonicOS 6.5.4.11",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "8/2/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2024-01-31",
+        "sortid": "SWOS-48"
+      },
+      "318": {
+        "release": "SonicOS 6.5.4.10",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "4/19/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-46"
+      },
+      "322": {
+        "release": "SonicOS 6.5.4.12",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "4/19/2023",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": null,
+        "sortid": "SWOS-50"
+      },
+      "325": {
+        "release": "SonicOS 6.5.4.8",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "06/12/2021",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-44"
+      }
+    },
+    "Hardware": {
+      "196": {
+        "model": "SM 9200",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": "2023-02-19",
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": "2026-02-19",
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-5"
+      },
+      "197": {
+        "model": "SM 9400",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": "2023-02-19",
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": "2026-02-19",
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-6"
+      },
+      "198": {
+        "model": "SM 9600",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": "2023-02-19",
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": "2026-02-19",
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-7"
+      },
+      "201": {
+        "model": "SM 9800",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": "2023-02-19",
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": "2026-02-19",
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-8"
+      }
+    }
+  },
+  "SonicWall Secure Mobile Access 1000 Series": {
+    "Hardware": {
+      "25": {
+        "model": "EX-9000",
+        "lod": "2018-09-30",
+        "armb": "2018-10-01",
+        "arme": "2020-09-30",
+        "oneyldo": "2020-09-30",
+        "lrmb": "2020-10-01",
+        "lrme": "2023-09-30",
+        "eos": "2023-10-01",
+        "sortid": "SWSMA-H-43"
+      },
+      "59": {
+        "model": "SMA 6200",
+        "lod": "2019-07-31",
+        "armb": "2019-08-01",
+        "arme": "2021-07-31",
+        "oneyldo": "2023-07-31",
+        "lrmb": "2021-08-01",
+        "lrme": "2024-07-31",
+        "eos": "2024-08-01",
+        "sortid": "SWSMA-H-45"
+      },
+      "89": {
+        "model": "E-Class SRA EX7000",
+        "lod": "2016-10-31",
+        "armb": "2016-11-01",
+        "arme": "2018-10-31",
+        "oneyldo": "2018-10-31",
+        "lrmb": "2018-11-01",
+        "lrme": "2019-10-31",
+        "eos": "2019-11-01",
+        "sortid": "SWSMA-H-41"
+      },
+      "94": {
+        "model": "EX-750",
+        "lod": "2010-05-31",
+        "armb": "2010-06-01",
+        "arme": "2012-05-31",
+        "oneyldo": "2012-05-31",
+        "lrmb": "2012-06-01",
+        "lrme": "2013-05-31",
+        "eos": "2013-06-01",
+        "sortid": "SWSMA-H-37"
+      },
+      "96": {
+        "model": "EX-2500",
+        "lod": "2009-09-30",
+        "armb": "2009-10-01",
+        "arme": "2011-09-30",
+        "oneyldo": "2011-09-30",
+        "lrmb": "2012-10-01",
+        "lrme": "2012-09-30",
+        "eos": "2012-10-01",
+        "sortid": "SWSMA-H-35"
+      },
+      "97": {
+        "model": "EX-1600",
+        "lod": "2009-04-01",
+        "armb": "2009-04-02",
+        "arme": "2011-03-31",
+        "oneyldo": "2011-03-31",
+        "lrmb": "2011-04-01",
+        "lrme": "2012-03-31",
+        "eos": "2012-04-01",
+        "sortid": "SWSMA-H-33"
+      },
+      "98": {
+        "model": "EX-1500",
+        "lod": "2007-10-16",
+        "armb": "2007-10-17",
+        "arme": "2009-12-31",
+        "oneyldo": "2009-12-31",
+        "lrmb": "2010-01-01",
+        "lrme": "2010-12-31",
+        "eos": "2011-01-01",
+        "sortid": "SWSMA-H-31"
+      },
+      "136": {
+        "model": "E-Class SRA EX6000",
+        "lod": "2016-10-31",
+        "armb": "2016-11-01",
+        "arme": "2018-10-31",
+        "oneyldo": "2018-10-31",
+        "lrmb": "2018-11-01",
+        "lrme": "2019-10-31",
+        "eos": "2019-11-01",
+        "sortid": "SWSMA-H-39"
+      },
+      "305": {
+        "model": "SMA 7200",
+        "lod": "2022-06-01",
+        "armb": "2022-07-31",
+        "arme": "2023-07-31",
+        "oneyldo": "2024-08-01",
+        "lrmb": "2023-07-31",
+        "lrme": "2025-07-31",
+        "eos": "2025-08-01",
+        "sortid": "SWSMA-H-47"
+      }
+    },
+    "Software": {
+      "60": {
+        "version": "SMA v12.4.0",
+        "fsaof": "2020-03-05",
+        "lsaof": "2021-07-05",
+        "sd": "2021-08-31",
+        "sortid": "SWSMA-SU-49",
+        "type": "GR"
+      },
+      "75": {
+        "version": "SMA v12.3",
+        "fsaof": "2019-04-29",
+        "lsaof": "2020-07-31",
+        "sd": "2021-01-31",
+        "sortid": "SWSMA-SU-47",
+        "type": "FR"
+      },
+      "123": {
+        "version": "SMA v12.0.1",
+        "fsaof": "2017-04-27",
+        "lsaof": "2018-04-30",
+        "sd": "2018-10-31",
+        "sortid": "SWSMA-SU-41",
+        "type": "FR"
+      },
+      "124": {
+        "version": "SMA v11.4",
+        "fsaof": "2016-04-13",
+        "lsaof": "2018-11-01",
+        "sd": "2019-11-01",
+        "sortid": "SWSMA-SU-39",
+        "type": "GR"
+      },
+      "125": {
+        "version": "SMA v10.7.2",
+        "fsaof": "2015-02-01",
+        "lsaof": null,
+        "sd": "2017-03-31",
+        "sortid": "SWSMA-SU-31",
+        "type": "GR"
+      },
+      "126": {
+        "version": "SMA v11.3",
+        "fsaof": "2015-10-01",
+        "lsaof": null,
+        "sd": "2016-06-30",
+        "sortid": "SWSMA-SU-37",
+        "type": "FR"
+      },
+      "127": {
+        "version": "SMA v11.2",
+        "fsaof": "2015-04-15",
+        "lsaof": null,
+        "sd": "2015-11-30",
+        "sortid": "SWSMA-SU-35",
+        "type": "FR"
+      },
+      "128": {
+        "version": "SMA v11.1",
+        "fsaof": "2014-09-01",
+        "lsaof": null,
+        "sd": "2015-06-30",
+        "sortid": "SWSMA-SU-33",
+        "type": "FR"
+      },
+      "137": {
+        "version": "SMA v12.1",
+        "fsaof": "2017-09-25",
+        "lsaof": "2021-10-31",
+        "sd": "2023-03-31",
+        "sortid": "SWSMA-SU-43",
+        "type": "GR"
+      },
+      "188": {
+        "version": "SMA v12.2",
+        "fsaof": "2018-09-15",
+        "lsaof": "2019-09-15",
+        "sd": "2020-03-15",
+        "sortid": "SWSMA-SU-45",
+        "type": "FR"
+      },
+      "288": {
+        "version": "SMA v12.4.1",
+        "fsaof": "2021-06-18",
+        "lsaof": "2022-09-30",
+        "sd": "2023-06-30",
+        "sortid": "SWSMA-SU-51",
+        "type": "FR"
+      }
+    }
+  },
+  "SonicWall E-Class NSA Series": {
+    "Firmware": {
+      "40": {
+        "release": "SonicOS 5.9.2.7",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "MR",
+        "rd": "10/07/2020",
+        "status": "Active Maintenance Release<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-14"
+      },
+      "43": {
+        "release": "SonicOS 5.9.1.11",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "MR",
+        "rd": "02/20/2019",
+        "status": "End Of Support",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2019-10-05",
+        "sortid": "SWOS-3"
+      },
+      "46": {
+        "release": "SonicOS 5.9.1.12",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "MR",
+        "rd": "04/05/2019",
+        "status": "End Of Support",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2020-01-19",
+        "sortid": "SWOS-4"
+      },
+      "49": {
+        "release": "SonicOS 5.9.1.13",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "Active<br>End of Development",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-04-07",
+        "sortid": "SWOS-5"
+      },
+      "52": {
+        "release": "SonicOS 5.9.2.13",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "MR",
+        "rd": "10/07/2020",
+        "status": "Active Maintenance Release<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-16"
+      },
+      "184": {
+        "release": "SonicOS 5.9.1.10",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": null,
+        "eos": "2019-08-20",
+        "sortid": "SWOS-2"
+      },
+      "187": {
+        "release": "SonicOS 5.9.1.7",
+        "model": " NSAE5500, NSAE6500, NSAE7500, NSAE8500, NSAE8510",
+        "type": "GR",
+        "rd": "8/31/2016",
+        "status": "Active (upgrade recommended)<br>End of Maintenance",
+        "upgrade": "TZ 270 series, TZ 370 series",
+        "eos": "2021-01-09",
+        "sortid": "SWOS-1"
+      },
+      "262": {
+        "release": "SonicOS 5.9.2.14",
+        "model": "",
+        "type": "MR",
+        "rd": "4/25/2022",
+        "status": "Active Maintenance",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-17"
+      },
+      "265": {
+        "release": "SonicOS 5.9.2.8",
+        "model": "",
+        "type": "MR",
+        "rd": "4/25/2022",
+        "status": "Active Maintenance",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-15"
+      }
+    }
+  },
+  "SonicWall Email Security": {
+    "Software": {
+      "53": {
+        "version": "8.0.5 - 8.3.2",
+        "fsaof": "2016-09-30",
+        "lsaof": null,
+        "sd": "2018-09-30",
+        "sortid": "SWES-S-6",
+        "type": "MR"
+      },
+      "54": {
+        "version": "9.0.0 - 9.2.2",
+        "fsaof": "2019-01-14",
+        "lsaof": null,
+        "sd": "2021-01-14",
+        "sortid": "SWES-S-7",
+        "type": "MR"
+      },
+      "55": {
+        "version": "10.0.1",
+        "fsaof": "2019-04-24",
+        "lsaof": null,
+        "sd": "2021-04-24",
+        "sortid": "SWES-S-8",
+        "type": "MR"
+      },
+      "56": {
+        "version": "10.0.2",
+        "fsaof": "2019-06-24",
+        "lsaof": null,
+        "sd": "2021-06-24",
+        "sortid": "SWES-S-9",
+        "type": "MR"
+      },
+      "66": {
+        "version": "Anti-Spam Desktop (All versions)",
+        "fsaof": "2019-05-31",
+        "lsaof": "2020-05-31",
+        "sd": "2021-05-31",
+        "sortid": "SWES-S-0",
+        "type": "GR"
+      },
+      "118": {
+        "version": "8.0.3 - 8.0.4",
+        "fsaof": "2014-09-22",
+        "lsaof": null,
+        "sd": "2016-09-30",
+        "sortid": "SWES-S-5",
+        "type": "MR"
+      },
+      "119": {
+        "version": "8.0 - 8.0.1",
+        "fsaof": "2014-04-24",
+        "lsaof": null,
+        "sd": "2016-07-11",
+        "sortid": "SWES-S-4",
+        "type": "MR"
+      },
+      "120": {
+        "version": "7.4.6 - 7.4.9",
+        "fsaof": "2014-03-10",
+        "lsaof": null,
+        "sd": "2016-03-10",
+        "sortid": "SWES-S-3",
+        "type": "MR"
+      },
+      "121": {
+        "version": "7.4.0 - 7.4.5",
+        "fsaof": "2012-06-21",
+        "lsaof": null,
+        "sd": "2015-11-07",
+        "sortid": "SWES-S-2",
+        "type": "MR"
+      },
+      "122": {
+        "version": "7.0 - 7.3.0",
+        "fsaof": "2008-12-18",
+        "lsaof": null,
+        "sd": "2014-09-01",
+        "sortid": "SWES-S-1",
+        "type": "MR"
+      },
+      "189": {
+        "version": "10.0.3-10.0.4",
+        "fsaof": "2019-11-22",
+        "lsaof": null,
+        "sd": "2021-05-22",
+        "sortid": "SWES-S-11",
+        "type": "MR"
+      },
+      "190": {
+        "version": "10.0.5",
+        "fsaof": "2020-01-08",
+        "lsaof": null,
+        "sd": "2021-07-08",
+        "sortid": "SWES-S-12",
+        "type": "MR"
+      },
+      "191": {
+        "version": "10.0.6-10.0.7",
+        "fsaof": "2020-02-21",
+        "lsaof": "2020-09-18",
+        "sd": "2021-08-21",
+        "sortid": "SWES-S-13",
+        "type": null
+      },
+      "192": {
+        "version": "10.0.8",
+        "fsaof": "2020-09-18",
+        "lsaof": "2021-04-19",
+        "sd": "2022-03-18",
+        "sortid": "SWES-S-14",
+        "type": "MR"
+      },
+      "243": {
+        "version": "10.0.9",
+        "fsaof": "2021-04-19",
+        "lsaof": "2021-10-19",
+        "sd": "2022-04-19",
+        "sortid": "SWES-S-15",
+        "type": "MR"
+      },
+      "244": {
+        "version": "10.0.10",
+        "fsaof": "2021-06-03",
+        "lsaof": "2021-12-03",
+        "sd": "2022-06-03",
+        "sortid": "SWES-S-16",
+        "type": "MR"
+      },
+      "245": {
+        "version": "10.0.11",
+        "fsaof": "2021-11-01",
+        "lsaof": "2022-05-01",
+        "sd": "2022-01-11",
+        "sortid": "SWES-S-17",
+        "type": "MR"
+      },
+      "246": {
+        "version": "10.0.12",
+        "fsaof": "2021-12-14",
+        "lsaof": "2022-06-14",
+        "sd": "2022-12-14",
+        "sortid": "SWES-S-18",
+        "type": "MR"
+      },
+      "247": {
+        "version": "10.0.13",
+        "fsaof": "2021-12-22",
+        "lsaof": "2022-06-22",
+        "sd": "2022-12-22",
+        "sortid": "SWES-S-19",
+        "type": "MR"
+      },
+      "248": {
+        "version": "10.0.15",
+        "fsaof": "2022-01-05",
+        "lsaof": "2022-07-05",
+        "sd": "2023-01-05",
+        "sortid": "SWES-S-20",
+        "type": "MR"
+      },
+      "249": {
+        "version": "10.0.16",
+        "fsaof": "2022-02-10",
+        "lsaof": "2022-08-10",
+        "sd": "2023-02-10",
+        "sortid": "SWES-S-21",
+        "type": "MR"
+      },
+      "250": {
+        "version": "10.0.17",
+        "fsaof": "2022-04-18",
+        "lsaof": "2022-10-05",
+        "sd": "2023-04-18",
+        "sortid": "SWES-S-22",
+        "type": "MR"
+      },
+      "294": {
+        "version": "10.0.19",
+        "fsaof": "2022-08-01",
+        "lsaof": "2023-02-01",
+        "sd": "2023-08-01",
+        "sortid": "SWES-S-24",
+        "type": "MR"
+      },
+      "295": {
+        "version": "10.0.21",
+        "fsaof": "2023-02-01",
+        "lsaof": null,
+        "sd": null,
+        "sortid": "SWES-S-26",
+        "type": "GR"
+      }
+    },
+    "Hardware": {
+      "99": {
+        "model": "300",
+        "lod": "2013-04-30",
+        "armb": "2013-05-01",
+        "arme": "2015-04-30",
+        "oneyldo": "2015-04-30",
+        "lrmb": "2015-05-01",
+        "lrme": "2017-04-30",
+        "eos": "2017-05-01",
+        "sortid": "SWES-H-4"
+      },
+      "100": {
+        "model": "500",
+        "lod": "2013-04-30",
+        "armb": "2013-05-01",
+        "arme": "2015-04-30",
+        "oneyldo": "2015-04-30",
+        "lrmb": "2015-05-01",
+        "lrme": "2016-04-30",
+        "eos": "2016-05-01",
+        "sortid": "SWES-H-5"
+      },
+      "101": {
+        "model": "6000",
+        "lod": "2013-04-30",
+        "armb": "2013-05-01",
+        "arme": "2015-04-30",
+        "oneyldo": "2015-04-30",
+        "lrmb": "2015-05-01",
+        "lrme": "2016-04-30",
+        "eos": "2016-05-01",
+        "sortid": "SWES-H-6"
+      },
+      "102": {
+        "model": "200",
+        "lod": null,
+        "armb": null,
+        "arme": null,
+        "oneyldo": "2007-09-30",
+        "lrmb": "2012-10-15",
+        "lrme": "2014-12-31",
+        "eos": "2015-01-01",
+        "sortid": "SWES-H-1"
+      },
+      "103": {
+        "model": "400",
+        "lod": null,
+        "armb": null,
+        "arme": null,
+        "oneyldo": "2007-09-30",
+        "lrmb": "2012-10-15",
+        "lrme": "2014-12-31",
+        "eos": "2015-01-01",
+        "sortid": "SWES-H-2"
+      },
+      "104": {
+        "model": "8000",
+        "lod": "2011-04-09",
+        "armb": "2011-04-10",
+        "arme": "2013-04-09",
+        "oneyldo": "2013-04-09",
+        "lrmb": "2013-04-10",
+        "lrme": "2014-04-09",
+        "eos": "2014-04-10",
+        "sortid": "SWES-H-3"
+      },
+      "115": {
+        "model": "3300",
+        "lod": "2017-03-01",
+        "armb": "2017-04-01",
+        "arme": "2018-04-01",
+        "oneyldo": "2019-04-01",
+        "lrmb": "2018-04-01",
+        "lrme": "2020-03-31",
+        "eos": "2020-04-01",
+        "sortid": "SWES-H-7"
+      },
+      "116": {
+        "model": "4300",
+        "lod": "2017-03-01",
+        "armb": "2017-04-01",
+        "arme": "2018-04-01",
+        "oneyldo": "2019-04-01",
+        "lrmb": "2018-04-01",
+        "lrme": "2020-03-31",
+        "eos": "2020-04-01",
+        "sortid": "SWES-H-8"
+      },
+      "117": {
+        "model": "8300",
+        "lod": "2017-03-01",
+        "armb": "2017-04-01",
+        "arme": "2018-04-01",
+        "oneyldo": "2019-04-01",
+        "lrmb": "2018-04-01",
+        "lrme": "2020-03-31",
+        "eos": "2020-04-01",
+        "sortid": "SWES-H-9"
+      }
+    }
+  },
+  "SonicWall Secure Mobile Access 100 Series": {
+    "Hardware": {
+      "57": {
+        "model": "SMA 200",
+        "lod": "2019-06-17",
+        "armb": "2019-06-18",
+        "arme": "2021-06-17",
+        "oneyldo": "2024-06-17",
+        "lrmb": "2021-06-18",
+        "lrme": "2024-06-17",
+        "eos": "2025-06-18",
+        "sortid": "SWSMA-H-15"
+      },
+      "58": {
+        "model": "SMA 400",
+        "lod": "2019-06-17",
+        "armb": "2019-06-18",
+        "arme": "2021-06-17",
+        "oneyldo": "2024-06-17",
+        "lrmb": "2021-06-18",
+        "lrme": "2024-06-17",
+        "eos": "2025-06-18",
+        "sortid": "SWSMA-H-17"
+      },
+      "88": {
+        "model": "SRA 4600",
+        "lod": "2016-10-31",
+        "armb": "2016-11-01",
+        "arme": "2018-10-31",
+        "oneyldo": "2018-10-31",
+        "lrmb": "2018-11-01",
+        "lrme": "2019-10-31",
+        "eos": "2019-11-01",
+        "sortid": "SWSMA-H-11"
+      },
+      "90": {
+        "model": "SRA 1200",
+        "lod": "2013-03-31",
+        "armb": "2013-04-01",
+        "arme": "2015-03-31",
+        "oneyldo": "2015-03-31",
+        "lrmb": "2015-04-01",
+        "lrme": "2016-03-31",
+        "eos": "2016-04-01",
+        "sortid": "SWSMA-H-9"
+      },
+      "91": {
+        "model": "SRA 4200",
+        "lod": "2012-12-10",
+        "armb": "2012-12-11",
+        "arme": "2014-12-10",
+        "oneyldo": "2015-03-31",
+        "lrmb": "2014-12-11",
+        "lrme": "2016-03-31",
+        "eos": "2016-04-01",
+        "sortid": "SWSMA-H-8"
+      },
+      "92": {
+        "model": "SSL-VPN 200",
+        "lod": "2011-02-28",
+        "armb": "2011-03-01",
+        "arme": "2011-11-07",
+        "oneyldo": "2011-11-07",
+        "lrmb": "2011-11-08",
+        "lrme": "2014-02-28",
+        "eos": "2014-03-01",
+        "sortid": "SWSMA-H-3"
+      },
+      "93": {
+        "model": "SSL-VPN 4000",
+        "lod": "2010-05-31",
+        "armb": "2010-06-01",
+        "arme": "2012-05-31",
+        "oneyldo": "2012-05-31",
+        "lrmb": "2012-06-01",
+        "lrme": "2013-05-31",
+        "eos": "2013-06-01",
+        "sortid": "SWSMA-H-2"
+      },
+      "95": {
+        "model": "SSL-VPN 2000",
+        "lod": "2010-02-28",
+        "armb": "2010-03-01",
+        "arme": "2012-02-28",
+        "oneyldo": "2012-02-28",
+        "lrmb": "2012-03-01",
+        "lrme": "2013-02-28",
+        "eos": "2013-03-01",
+        "sortid": "SWSMA-H-1"
+      },
+      "135": {
+        "model": "SRA 1600",
+        "lod": "2016-10-31",
+        "armb": "2016-11-01",
+        "arme": "2018-10-31",
+        "oneyldo": "2018-10-31",
+        "lrmb": "2018-11-01",
+        "lrme": "2019-10-31",
+        "eos": "2019-11-01",
+        "sortid": "SWSMA-H-10"
+      }
+    },
+    "Software": {
+      "61": {
+        "version": "SMA v8.0.0.x",
+        "fsaof": "2015-03-30",
+        "lsaof": "2016-06-30",
+        "sd": "2019-09-30",
+        "sortid": "SWSMA-SU-1",
+        "type": "MR"
+      },
+      "73": {
+        "version": "SMA v10.2.0.x",
+        "fsaof": "2020-04-30",
+        "lsaof": "2021-10-01",
+        "sd": "2022-10-31",
+        "sortid": "SWSMA-SU-15",
+        "type": "MR"
+      },
+      "74": {
+        "version": "SMA v9.0.0.x",
+        "fsaof": "2018-09-01",
+        "lsaof": "2020-10-01",
+        "sd": "2021-10-31",
+        "sortid": "SWSMA-SU-11",
+        "type": "MR"
+      },
+      "239": {
+        "version": "SMA v8.1.0.x",
+        "fsaof": "2015-12-10",
+        "lsaof": "2019-06-30",
+        "sd": "2019-09-30",
+        "sortid": "SWSMA-SU-3",
+        "type": "MR"
+      },
+      "240": {
+        "version": "SMA v8.5.0.x",
+        "fsaof": "2016-10-31",
+        "lsaof": "2019-06-30",
+        "sd": "2019-09-30",
+        "sortid": "SWSMA-SU-5",
+        "type": "MR"
+      },
+      "241": {
+        "version": "SMA v8.6.0.x",
+        "fsaof": "2017-09-01",
+        "lsaof": "2019-06-30",
+        "sd": "2019-09-30",
+        "sortid": "SWSMA-SU-9",
+        "type": "MR"
+      },
+      "242": {
+        "version": "SMA v10.2.1.0",
+        "fsaof": "2021-08-25",
+        "lsaof": "2021-11-25",
+        "sd": "2021-11-25",
+        "sortid": "SWSMA-SU-17",
+        "type": "FR"
+      },
+      "289": {
+        "version": "SMA v10.2.0.0",
+        "fsaof": "2020-02-18",
+        "lsaof": "2021-10-01",
+        "sd": "2022-10-31",
+        "sortid": "SWSMA-SU-13",
+        "type": "FR"
+      },
+      "296": {
+        "version": "SMA v10.2.1.1",
+        "fsaof": "2021-08-23",
+        "lsaof": "2021-11-25",
+        "sd": "2021-11-25",
+        "sortid": "SWSMA-SU-19",
+        "type": "MR"
+      },
+      "297": {
+        "version": "SMA v10.2.1.2",
+        "fsaof": "2021-10-29",
+        "lsaof": "2021-11-25",
+        "sd": "2021-11-25",
+        "sortid": "SWSMA-SU-21",
+        "type": "MR"
+      },
+      "298": {
+        "version": "SMA v10.2.1.3",
+        "fsaof": "2021-11-25",
+        "lsaof": "2023-03-01",
+        "sd": "2023-03-01",
+        "sortid": "SWSMA-SU-23",
+        "type": "MR"
+      },
+      "299": {
+        "version": "SMA v10.2.1.4",
+        "fsaof": "2022-02-02",
+        "lsaof": "2023-03-01",
+        "sd": "2023-03-01",
+        "sortid": "SWSMA-SU-25",
+        "type": "MR"
+      },
+      "300": {
+        "version": "SMA v10.2.1.5",
+        "fsaof": "2022-04-25",
+        "lsaof": "2023-03-01",
+        "sd": "2023-03-01",
+        "sortid": "SWSMA-SU-27",
+        "type": "MR"
+      },
+      "301": {
+        "version": "SMA v10.2.1.6",
+        "fsaof": "2022-08-24",
+        "lsaof": "2023-03-01",
+        "sd": "2023-03-01",
+        "sortid": "SWSMA-SU-29",
+        "type": "MR"
+      },
+      "302": {
+        "version": "SMA v10.2.1.7",
+        "fsaof": "2023-03-01",
+        "lsaof": null,
+        "sd": null,
+        "sortid": "SWSMA-SU-30",
+        "type": "MR"
+      }
+    }
+  },
+  "SonicWall WAN Acceleration Appliance (WXA) Series": {
+    "Hardware": {
+      "138": {
+        "model": "WXA 2000",
+        "lod": "2017-10-31",
+        "armb": "2017-11-01",
+        "arme": "2019-10-31",
+        "oneyldo": "2021-10-31",
+        "lrmb": "2019-11-01",
+        "lrme": "2022-10-31",
+        "eos": "2022-11-01",
+        "sortid": "SWWAN-H-1"
+      },
+      "139": {
+        "model": "WXA 4000",
+        "lod": "2017-10-31",
+        "armb": "2017-11-01",
+        "arme": "2019-10-31",
+        "oneyldo": "2021-10-31",
+        "lrmb": "2019-11-01",
+        "lrme": "2022-10-31",
+        "eos": "2022-11-01",
+        "sortid": "SWWAN-H-2"
+      }
+    }
+  },
+  "SonicWall Capture Client": {
+    "Software": {
+      "193": {
+        "version": "3.6.30 (macOS)",
+        "fsaof": "2021-09-10",
+        "lsaof": "2021-12-10",
+        "sd": "2022-03-10",
+        "sortid": "SWCC-S-1",
+        "type": "MR"
+      },
+      "194": {
+        "version": "3.6.32 (Windows)",
+        "fsaof": "2021-10-22",
+        "lsaof": "2021-01-22",
+        "sd": "2021-04-22",
+        "sortid": "SWCC-S-5",
+        "type": "MR"
+      },
+      "195": {
+        "version": "3.6.34 (Windows)",
+        "fsaof": "2021-12-15",
+        "lsaof": "2022-03-15",
+        "sd": "2022-03-15",
+        "sortid": "SWCC-S-7",
+        "type": "MR"
+      },
+      "235": {
+        "version": "3.7.4 (macOS)",
+        "fsaof": "2022-06-21",
+        "lsaof": "2022-07-12",
+        "sd": "2022-12-21",
+        "sortid": "SWCC-S-15",
+        "type": "MR"
+      },
+      "236": {
+        "version": "3.7.4 (Windows)",
+        "fsaof": "2022-05-15",
+        "lsaof": "2022-08-15",
+        "sd": "2022-11-15",
+        "sortid": "SWCC-S-13",
+        "type": "MR"
+      },
+      "237": {
+        "version": "3.7.5 (macOS)",
+        "fsaof": "2022-07-28",
+        "lsaof": "2023-01-28",
+        "sd": "2023-04-28",
+        "sortid": "SWCC-S-17",
+        "type": "MR"
+      },
+      "238": {
+        "version": "3.7.5 (Windows)",
+        "fsaof": "2022-09-08",
+        "lsaof": "2023-03-08",
+        "sd": "2023-06-08",
+        "sortid": "SWCC-S-19",
+        "type": "MR"
+      },
+      "252": {
+        "version": "3.7.2 (Windows)",
+        "fsaof": "2022-03-02",
+        "lsaof": "2022-06-02",
+        "sd": "2022-09-02",
+        "sortid": "SWCC-S-9",
+        "type": "FR"
+      },
+      "254": {
+        "version": "3.7.3 (Windows)",
+        "fsaof": "2022-04-14",
+        "lsaof": "2022-07-13",
+        "sd": "2022-10-12",
+        "sortid": "SWCC-S-11",
+        "type": "MR"
+      },
+      "266": {
+        "version": "3.7.9 (Windows)",
+        "fsaof": "2023-07-28",
+        "lsaof": "2023-10-28",
+        "sd": "2024-01-28",
+        "sortid": "SWCC-S-35",
+        "type": "MR"
+      },
+      "290": {
+        "version": "3.7.6 (macOS)",
+        "fsaof": "2023-02-14",
+        "lsaof": "2023-05-14",
+        "sd": "2023-08-14",
+        "sortid": "SWCC-S-25",
+        "type": "MR"
+      },
+      "291": {
+        "version": "3.6.30 (Windows)",
+        "fsaof": "2021-10-22",
+        "lsaof": "2021-12-10",
+        "sd": "2022-03-10",
+        "sortid": "SWCC-S-3",
+        "type": "MR"
+      },
+      "292": {
+        "version": "3.7.6 (Windows)",
+        "fsaof": "2023-01-19",
+        "lsaof": "2023-04-19",
+        "sd": "2023-07-19",
+        "sortid": "SWCC-S-21",
+        "type": "MR"
+      },
+      "293": {
+        "version": "3.7.7 (Windows)",
+        "fsaof": "2023-02-13",
+        "lsaof": "2023-05-13",
+        "sd": "2023-08-13",
+        "sortid": "SWCC-S-27",
+        "type": "MR"
+      },
+      "303": {
+        "version": "3.7.8 (macOS)",
+        "fsaof": "2023-04-21",
+        "lsaof": "2023-08-21",
+        "sd": "2023-11-21",
+        "sortid": "SWCC-S-29",
+        "type": "MR"
+      },
+      "304": {
+        "version": "3.7.8 (Windows)",
+        "fsaof": "2023-04-27",
+        "lsaof": "2023-08-27",
+        "sd": "2023-11-27",
+        "sortid": "SWCC-S-31",
+        "type": "MR"
+      },
+      "306": {
+        "version": "3.7.10 (Windows)",
+        "fsaof": "2023-11-14",
+        "lsaof": "2024-02-14",
+        "sd": "2024-05-14",
+        "sortid": "SWCC-S-37",
+        "type": "MR"
+      },
+      "307": {
+        "version": "3.7.10 (macOS)",
+        "fsaof": "2023-12-14",
+        "lsaof": "2024-03-14",
+        "sd": "2024-06-14",
+        "sortid": "SWCC-S-39",
+        "type": "MR"
+      },
+      "308": {
+        "version": "3.7.11 (Windows)",
+        "fsaof": "2024-01-15",
+        "lsaof": "2024-04-15",
+        "sd": "2024-07-15",
+        "sortid": "SWCC-S-41",
+        "type": "MR"
+      }
+    }
+  },
+  "SonicWall NSsp Series": {
+    "Hardware": {
+      "199": {
+        "model": "NSsp 12400",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": "2023-02-19",
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": "2026-02-19",
+        "eos": "2026-02-20",
+        "sortid": "SWNSSP-H-5"
+      },
+      "200": {
+        "model": "NSsp 12800",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": "2023-02-19",
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": "2026-02-19",
+        "eos": "2026-02-20",
+        "sortid": "SWNSSP-H-6"
+      }
+    },
+    "Firmware": {
+      "309": {
+        "release": "SonicOS 6.5.1.15",
+        "model": "NSsp12400, NSsp12800",
+        "type": "MR",
+        "rd": "4/26/2022",
+        "status": "Active Release",
+        "upgrade": null,
+        "eos": "2026-02-20",
+        "sortid": "SWOS-82"
+      },
+      "319": {
+        "release": "SonicOS 6.5.1.13",
+        "model": "NSsp12400, NSsp12800",
+        "type": "MR",
+        "rd": "7/16/2021",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.1.15",
+        "eos": "2026-02-20",
+        "sortid": "SWOS-80"
+      }
+    }
+  },
+  "SonicWall NSv Series": {
+    "Hardware": {
+      "220": {
+        "model": "10",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-10"
+      },
+      "221": {
+        "model": "25",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-12"
+      },
+      "222": {
+        "model": "50",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-13"
+      },
+      "223": {
+        "model": "100",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-14"
+      },
+      "224": {
+        "model": "200",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-15"
+      },
+      "225": {
+        "model": "300",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-16"
+      },
+      "226": {
+        "model": "200",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-17"
+      },
+      "227": {
+        "model": "300",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-18"
+      },
+      "228": {
+        "model": "400",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-19"
+      },
+      "229": {
+        "model": "800",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-21"
+      },
+      "230": {
+        "model": "1600",
+        "lod": "2022-04-15",
+        "armb": "2022-04-16",
+        "arme": "2024-04-15",
+        "oneyldo": "2025-04-15",
+        "lrmb": "2024-04-16",
+        "lrme": "2026-04-15",
+        "eos": "2026-04-16",
+        "sortid": "SWNSV-A-23"
+      }
+    }
+  },
+  "SonicWall Mobile Connect": {
+    "Software": {
+      "234": {
+        "version": "MC Windows",
+        "fsaof": "2017-03-31",
+        "lsaof": "2019-11-16",
+        "sd": "2022-08-15",
+        "sortid": "SWMC-11",
+        "type": "MR"
+      }
+    }
+  },
+  "SonicWall On-prem Analytics": {
+    "Software": {
+      "251": {
+        "version": "2.5 (All Platforms)",
+        "fsaof": "2019-12-23",
+        "lsaof": null,
+        "sd": null,
+        "sortid": "SWOPA-S-2",
+        "type": "FR"
+      }
+    }
+  },
+  "SonicWall SonicWave Series": {
+    "Hardware": {
+      "253": {
+        "model": "432i",
+        "lod": "2022-04-22",
+        "armb": "2022-04-22",
+        "arme": "2024-04-22",
+        "oneyldo": "2026-04-22",
+        "lrmb": "2024-04-22",
+        "lrme": "2027-04-22",
+        "eos": "2027-04-23",
+        "sortid": "SWLSW-H-8"
+      },
+      "255": {
+        "model": "432e",
+        "lod": "2022-04-22",
+        "armb": "2022-04-22",
+        "arme": "2024-04-22",
+        "oneyldo": "2026-04-22",
+        "lrmb": "2024-04-22",
+        "lrme": "2027-04-22",
+        "eos": "2027-04-23",
+        "sortid": "SWLSW-H-7"
+      },
+      "256": {
+        "model": "231o",
+        "lod": "2022-07-01",
+        "armb": "2022-07-02",
+        "arme": "2024-07-02",
+        "oneyldo": "2026-07-02",
+        "lrmb": "2024-07-03",
+        "lrme": "2027-07-02",
+        "eos": "2027-07-02",
+        "sortid": "SWLSW-H-6"
+      },
+      "257": {
+        "model": "231c",
+        "lod": "2022-07-01",
+        "armb": "2022-07-02",
+        "arme": "2024-07-02",
+        "oneyldo": "2026-07-02",
+        "lrmb": "2024-07-03",
+        "lrme": "2027-07-02",
+        "eos": "2027-07-02",
+        "sortid": "SWLSW-H-5"
+      },
+      "258": {
+        "model": "224w",
+        "lod": "2022-07-01",
+        "armb": "2022-07-02",
+        "arme": "2024-07-02",
+        "oneyldo": "2026-07-02",
+        "lrmb": "2024-07-03",
+        "lrme": "2027-07-02",
+        "eos": "2027-07-02",
+        "sortid": "SWLSW-H-4"
+      }
+    }
+  },
+  "SonicWall GMS": {
+    "Software": {
+      "259": {
+        "version": "GMS 9.3",
+        "fsaof": "2020-11-24",
+        "lsaof": null,
+        "sd": null,
+        "sortid": "SWGMS-S-1",
+        "type": "GR"
+      }
+    }
+  },
+  "Wireless Access Points": {
+    "Hardware": {
+      "267": {
+        "model": "432i",
+        "lod": "2022-04-22",
+        "armb": "2022-04-22",
+        "arme": null,
+        "oneyldo": "2026-04-22",
+        "lrmb": "2024-04-22",
+        "lrme": null,
+        "eos": "2027-04-23",
+        "sortid": "SW-WAP-100"
+      },
+      "268": {
+        "model": "432e",
+        "lod": "2022-04-22",
+        "armb": "2022-04-22",
+        "arme": null,
+        "oneyldo": "2026-04-22",
+        "lrmb": "2024-04-22",
+        "lrme": null,
+        "eos": "2027-04-23",
+        "sortid": "SW-WAP-98"
+      },
+      "269": {
+        "model": "231o",
+        "lod": "2022-07-01",
+        "armb": "2022-07-02",
+        "arme": null,
+        "oneyldo": "2026-07-02",
+        "lrmb": "2024-07-03",
+        "lrme": null,
+        "eos": "2027-07-02",
+        "sortid": "SW-WAP-96"
+      },
+      "270": {
+        "model": "231c",
+        "lod": "2022-07-01",
+        "armb": "2022-07-02",
+        "arme": null,
+        "oneyldo": "2026-07-02",
+        "lrmb": "2024-07-03",
+        "lrme": null,
+        "eos": "2027-07-02",
+        "sortid": "SW-WAP-94"
+      },
+      "271": {
+        "model": "224w",
+        "lod": "2022-07-01",
+        "armb": "2022-07-02",
+        "arme": null,
+        "oneyldo": "2026-07-02",
+        "lrmb": "2024-07-03",
+        "lrme": null,
+        "eos": "2027-07-02",
+        "sortid": "SW-WAP-92"
+      },
+      "272": {
+        "model": "ACe/ACi",
+        "lod": "2019-03-31",
+        "armb": "2019-08-01",
+        "arme": null,
+        "oneyldo": "2021-07-31",
+        "lrmb": "2020-08-01",
+        "lrme": null,
+        "eos": "2022-07-31",
+        "sortid": "SW-WAP-90"
+      },
+      "273": {
+        "model": "N2",
+        "lod": "2019-03-31",
+        "armb": "2019-08-01",
+        "arme": null,
+        "oneyldo": "2021-07-31",
+        "lrmb": "2020-08-01",
+        "lrme": null,
+        "eos": "2022-07-31",
+        "sortid": "SW-WAP-88"
+      },
+      "274": {
+        "model": "G",
+        "lod": "2009-09-09",
+        "armb": "2009-09-10",
+        "arme": null,
+        "oneyldo": null,
+        "lrmb": "2011-04-01",
+        "lrme": null,
+        "eos": "2012-03-01",
+        "sortid": "SW-WAP-78"
+      },
+      "275": {
+        "model": "Ne",
+        "lod": "2015-09-30",
+        "armb": "2015-10-01",
+        "arme": null,
+        "oneyldo": null,
+        "lrmb": "2017-10-01",
+        "lrme": null,
+        "eos": "2020-10-01",
+        "sortid": "SW-WAP-86"
+      },
+      "276": {
+        "model": "N Dual Radio",
+        "lod": "2014-12-20",
+        "armb": "2015-01-01",
+        "arme": null,
+        "oneyldo": null,
+        "lrmb": "2017-01-01",
+        "lrme": null,
+        "eos": "2020-01-01",
+        "sortid": "SW-WAP-82"
+      },
+      "277": {
+        "model": "Ni",
+        "lod": "2015-02-01",
+        "armb": "2015-03-01",
+        "arme": null,
+        "oneyldo": null,
+        "lrmb": "2017-03-01",
+        "lrme": null,
+        "eos": "2020-03-01",
+        "sortid": "SW-WAP-84"
+      },
+      "278": {
+        "model": "N Dual-Band",
+        "lod": "2010-07-30",
+        "armb": "2010-09-01",
+        "arme": null,
+        "oneyldo": null,
+        "lrmb": "2012-09-01",
+        "lrme": null,
+        "eos": "2013-09-01",
+        "sortid": "SW-WAP-80"
+      },
+      "279": {
+        "model": "A/B/G",
+        "lod": "2009-03-31",
+        "armb": "2009-04-01",
+        "arme": null,
+        "oneyldo": null,
+        "lrmb": "2011-04-01",
+        "lrme": null,
+        "eos": "2012-03-01",
+        "sortid": "SW-WAP-76"
+      }
+    }
+  },
+  "SonicWall SuperMassive Series": {
+    "Hardware": {
+      "280": {
+        "model": "SM 9800",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": null,
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": null,
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-27"
+      },
+      "281": {
+        "model": "SM 9600",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": null,
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": null,
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-25"
+      },
+      "282": {
+        "model": "SM 9400",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": null,
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": null,
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-23"
+      },
+      "283": {
+        "model": "SM 9200",
+        "lod": "2022-02-19",
+        "armb": "2022-02-20",
+        "arme": null,
+        "oneyldo": "2025-02-20",
+        "lrmb": "2023-02-20",
+        "lrme": null,
+        "eos": "2026-02-20",
+        "sortid": "SWSM-H-21"
+      }
+    },
+    "Firmware": {
+      "3": {
+        "release": "SonicOS 6.5.1.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "7/19/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-33"
+      },
+      "6": {
+        "release": "SonicOS 6.5.1.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "10/24/2018",
+        "status": "Active General Release<br> End Of Maintenance",
+        "upgrade": "N/A",
+        "eos": "2022-03-31",
+        "sortid": "SWOS-34"
+      },
+      "9": {
+        "release": "SonicOS 6.5.2.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "06/29/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-05-15",
+        "sortid": "SWOS-35"
+      },
+      "12": {
+        "release": "SonicOS 6.5.3.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "01/10/2019",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-37"
+      },
+      "15": {
+        "release": "SonicOS 6.5.2.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "11/15/2018",
+        "status": "End Of Support",
+        "upgrade": "6.5.4.7",
+        "eos": "2019-08-21",
+        "sortid": "SWOS-36"
+      },
+      "18": {
+        "release": "SonicOS 6.5.0.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "1/03/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-31"
+      },
+      "21": {
+        "release": "SonicOS 6.5.4.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "05/07/2019",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-39"
+      },
+      "24": {
+        "release": "SonicOS 6.5.3.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "05/21/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-38"
+      },
+      "28": {
+        "release": "SonicOS 6.5.4.5",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "11/07/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-41"
+      },
+      "31": {
+        "release": "SonicOS 6.5.4.6",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "05/29/2020",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-42"
+      },
+      "34": {
+        "release": "SonicOS 6.5.4.4",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "07/19/2019",
+        "status": "End Of Maintenance",
+        "upgrade": "6.5.4.7",
+        "eos": "2021-01-01",
+        "sortid": "SWOS-40"
+      },
+      "37": {
+        "release": "SonicOS 6.5.4.7",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "10/01/2020",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-43"
+      },
+      "142": {
+        "release": "SonicOS 6.5.0.1",
+        "model": "  SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "11/21/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-30"
+      },
+      "145": {
+        "release": "SonicOS 6.5.0.0",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "11/8/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-05-31",
+        "sortid": "SWOS-29"
+      },
+      "148": {
+        "release": "SonicOS 6.2.9.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-28"
+      },
+      "151": {
+        "release": "SonicOS 6.2.9.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "10/2/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-27"
+      },
+      "154": {
+        "release": "SonicOS 6.2.9.0",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "7/31/2017",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-26"
+      },
+      "157": {
+        "release": "SonicOS 6.2.7.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "10/25/2017",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-25"
+      },
+      "160": {
+        "release": "SonicOS 6.2.7.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "3/31/2017",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.1.3",
+        "eos": "2020-03-31",
+        "sortid": "SWOS-24"
+      },
+      "163": {
+        "release": "SonicOS 6.2.6.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "11/2/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-23"
+      },
+      "166": {
+        "release": "SonicOS 6.2.6.0",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "8/8/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-22"
+      },
+      "169": {
+        "release": "SonicOS 6.2.5.3",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "11/22/2016",
+        "status": "End Of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-21"
+      },
+      "172": {
+        "release": "SonicOS 6.2.5.2",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "10/21/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-20"
+      },
+      "175": {
+        "release": "SonicOS 6.2.5.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "ER",
+        "rd": "3/28/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-19"
+      },
+      "178": {
+        "release": "SonicOS 6.2.5.0 & older 6.x versions",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "3/11/2016",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2018-07-30",
+        "sortid": "SWOS-18"
+      },
+      "181": {
+        "release": "SonicOS 6.5.1.1",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "FR",
+        "rd": "4/17/2018",
+        "status": "End of Support",
+        "upgrade": "6.5.1.3",
+        "eos": "2019-01-31",
+        "sortid": "SWOS-32"
+      },
+      "233": {
+        "release": "SonicOS 6.5.4.9",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "1/31/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-45"
+      },
+      "312": {
+        "release": "SonicOS 6.5.4.13",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "9/6/2023",
+        "status": "Active General Release",
+        "upgrade": null,
+        "eos": null,
+        "sortid": "SWOS-52"
+      },
+      "315": {
+        "release": "SonicOS 6.5.4.11",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "8/2/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2024-01-31",
+        "sortid": "SWOS-48"
+      },
+      "318": {
+        "release": "SonicOS 6.5.4.10",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "4/19/2022",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-46"
+      },
+      "322": {
+        "release": "SonicOS 6.5.4.12",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "GR",
+        "rd": "4/19/2023",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": null,
+        "sortid": "SWOS-50"
+      },
+      "325": {
+        "release": "SonicOS 6.5.4.8",
+        "model": " SM9200, SM9400, SM9600",
+        "type": "MR",
+        "rd": "06/12/2021",
+        "status": "End of Maintenance",
+        "upgrade": "6.5.4.13",
+        "eos": "2023-09-06",
+        "sortid": "SWOS-44"
+      }
+    }
+  },
+  "Network Security Manager (NSM) On-Prem": {
+    "Software": {
+      "284": {
+        "version": "2.3.4-6",
+        "fsaof": "2023-10-05",
+        "lsaof": "2024-04-05",
+        "sd": "2024-10-05",
+        "sortid": "SWNSM-S-44",
+        "type": "MR"
+      },
+      "285": {
+        "version": "2.3.4-1",
+        "fsaof": "2022-11-14",
+        "lsaof": "2023-06-14",
+        "sd": "2024-06-14",
+        "sortid": "SWNSM-S-33",
+        "type": "FR"
+      },
+      "286": {
+        "version": "2.3.3-4",
+        "fsaof": "2022-03-29",
+        "lsaof": "2022-09-29",
+        "sd": "2023-09-29",
+        "sortid": "SWNSM-S-22",
+        "type": "FR"
+      },
+      "287": {
+        "version": "2.3.2",
+        "fsaof": "2021-12-01",
+        "lsaof": "2022-06-01",
+        "sd": "2023-06-01",
+        "sortid": "SWNSM-S-11",
+        "type": "FR"
+      }
+    }
+  }
+}
