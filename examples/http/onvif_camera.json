@@ -21,7 +21,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[1]"
+        "table": "[2]"
     },
     "protocols": [
         "ONVIF"

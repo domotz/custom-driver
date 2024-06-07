@@ -7,7 +7,9 @@
  * 
  * Tested on LILIN camera model LD2222
  *
- * Creates a Custom Driver table  with video capturing status for each camera profiles
+ * Creates a Custom Driver table  with the following columns: 
+ *       - ProfileName: Name of the camera profile
+ *       - Streaming status: Video capturing status for each camera profiles
  * 
  **/
 
@@ -19,7 +21,8 @@ var password = D.device.password();
 var table = D.createTable(
     "Video Streaming Status",
     [
-        { label: "Streaming status" }
+        { label: "Profile name", valueType: D.valueType.STRING }, 
+        { label: "Streaming status", valueType: D.valueType.STRING }
     ]
 );
 
@@ -31,7 +34,7 @@ var url = "/onvif/device_service";
 // profileName = ["Profile1", "Profile2"] to monitor specific profiles
 // or
 // profileName = ["All"] to monitor all profiles.
-var profileName = D.getParameter("profileName");
+var filterProfileName = D.getParameter("profileName");
 
 // ONVIF port parameter
 // The port number can be found in the camera's manual or through the camera's admin web app settings. Default is 80.
@@ -47,13 +50,12 @@ var nonce = Math.random().toString(36).substring(2,7);
 var currentDate = new Date();
 
 // The current timestamp in UTC format required for the Created element in the digest authentication
-var created =
-    currentDate.getUTCFullYear() + "-" +
-    ((currentDate.getUTCMonth() + 1) < 10 ? "0" : "") + (currentDate.getUTCMonth() + 1) + "-" +
-    (currentDate.getUTCDate() < 10 ? "0" : "") + currentDate.getUTCDate() + "T" +
-    (currentDate.getUTCHours() < 10 ? "0" : "") + currentDate.getUTCHours() + ":" +
-    (currentDate.getUTCMinutes() < 10 ? "0" : "") + currentDate.getUTCMinutes() + ":" +
-    (currentDate.getUTCSeconds() < 10 ? "0" : "") + currentDate.getUTCSeconds() + "Z";
+var created = currentDate.getUTCFullYear() + "-" +
+              ((currentDate.getUTCMonth() + 1) < 10 ? "0" : "") + (currentDate.getUTCMonth() + 1) + "-" +
+              (currentDate.getUTCDate() < 10 ? "0" : "") + currentDate.getUTCDate() + "T" +
+              (currentDate.getUTCHours() < 10 ? "0" : "") + currentDate.getUTCHours() + ":" +
+              (currentDate.getUTCMinutes() < 10 ? "0" : "") + currentDate.getUTCMinutes() + ":" +
+              (currentDate.getUTCSeconds() < 10 ? "0" : "") + currentDate.getUTCSeconds() + "Z";
 
 // Combine nonce, created timestamp, and password to create the string for hashing
 var combinedString =  nonce + created + password;
@@ -93,13 +95,13 @@ function sendSoapRequest(body, parseResponse) {
     D.device.http.post(config, function(error, response, body) {
         if (error) {
             console.error(error);
-            d.reject(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR);
         } else if (!response) {
-            d.reject(D.errorType.RESOURCE_UNAVAILABLE);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         } else if (response.statusCode == 400) {
-            d.reject(D.errorType.AUTHENTICATION_ERROR);
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else if (response.statusCode != 200) {
-            d.reject(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR);
         } else {
             var result = parseResponse(body);
             d.resolve(result);
@@ -109,42 +111,43 @@ function sendSoapRequest(body, parseResponse) {
 }
 
 /**
- * Retrieves profile tokens.
- * @returns A promise that resolves with an array of profile tokens.
+ * Retrieves profiles information.
+ * @returns A promise that resolves with an array of profiles information.
  */
-function getProfiles() {
+function getProfilesInfo() {
     var payload = '<?xml version="1.0" encoding="UTF-8"?>' +
-                   '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext1.0.xsd">' +
-                   '<soap:Header>' + getSecurityEnvelope() + '</soap:Header>' +
-                   '<soap:Body>' +
-                   '<trt:GetProfiles/>' +
-                   '</soap:Body>' +
-                   '</soap:Envelope>';
-
+                  '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext1.0.xsd">' +
+                  '<soap:Header>' + getSecurityEnvelope() + '</soap:Header>' +
+                  '<soap:Body>' +
+                  '<trt:GetProfiles/>' +
+                  '</soap:Body>' +
+                  '</soap:Envelope>';
     return sendSoapRequest(payload, function(body) {
         var $ = D.htmlParse(body);
-        console.log(body);
         var profiles = $("trt\\:Profiles");
-        var profileTokens = [];
+        var profilesInfo = [];
         profiles.each(function(index, element) {
-            var token = $(element).attr("token");
-            profileTokens.push(token);
+            var profiletoken = $(element).attr("token");
+            var profileName = $(element).find("tt\\:Name").first().text();
+            if (filterProfileName.length === 1 && filterProfileName[0].toLowerCase() == "all" || filterProfileName.indexOf(profileName) !== -1) {
+                profilesInfo.push({ profiletoken: profiletoken, profileName: profileName });
+            }
         });
-        return profileTokens;
+        return profilesInfo;
     });
 }
 
 /**
- * Retrieves the stream URIs for each profile token.
- * @param {Array} profileTokens - Array of profile tokens.
- * @returns A promise that resolves with an array of stream URIs.
+ * Retrieves the stream URIs for each profile.
+ * @param {Array} profilesInfo - Array of objects containing profile tokens and names.
+ * @returns A promise that resolves with an array of objects containing profile names and corresponding stream URIs.
  */
-function getStreamURIs(profileTokens) {
+function getStreamURIs(profilesInfo) {
     var startPayload = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:trt="http://www.onvif.org/ver10/media/wsdl">' +
                        '<soap:Header>' + getSecurityEnvelope() + '</soap:Header>' +
                        '<soap:Body>';
     var endPayload = '</soap:Body></soap:Envelope>';
-    var promises = profileTokens.map(function(profileToken) {
+    var promises = profilesInfo.map(function(profile) {
         var payload = startPayload + '<trt:GetStreamUri>' +
                                     '<trt:StreamSetup>' +
                                     '<trt:Stream xmlns:trt="http://www.onvif.org/ver10/media/wsdl">RTP-Unicast</trt:Stream>' +
@@ -152,21 +155,18 @@ function getStreamURIs(profileTokens) {
                                     '<trt:Protocol>RTSP</trt:Protocol>' +
                                     '</trt:Transport>' +
                                     '</trt:StreamSetup>' +
-                                    '<trt:ProfileToken>' + profileToken + '</trt:ProfileToken>' +
+                                    '<trt:ProfileToken>' + profile.profiletoken + '</trt:ProfileToken>' +
                                     '</trt:GetStreamUri>' + endPayload;
-
         return sendSoapRequest(payload, function(body) {
             var $ = D.htmlParse(body);
             var uris = [];
             $("tt\\:Uri").each(function(index, element) {
                 uris.push($(element).text());
             });
-            return { profileName: profileToken, uris: uris }; 
+            return { profileName: profile.profileName, uris: uris }; 
         });
     });
-
     return D.q.all(promises);
-
 }
 
 /**
@@ -178,7 +178,6 @@ function getNonceAndRealm(uri) {
     var d = D.q.defer();
     var command = "DESCRIBE " + uri + " RTSP/1.0\r\nCSeq: 1\r\n";
     telnetParams.command = command;
-
     D.device.sendTelnetCommand(telnetParams, function(out, err) {
         if (err) {
             d.reject("Initial request failed: " + err);
@@ -188,7 +187,6 @@ function getNonceAndRealm(uri) {
                 var authenticateHeader = authenticateHeaderArray[1];
                 var realmMatch = authenticateHeader.match(/realm="([^"]*)"/);
                 var nonceMatch = authenticateHeader.match(/nonce="([^"]*)"/);
-
                 if (realmMatch && nonceMatch) {
                     var realm = realmMatch[1];
                     var nonce = nonceMatch[1];
@@ -227,28 +225,25 @@ function generateDigestAuth(realm, nonce, uri, method) {
  */
 function healthCheck(streamUrisProfiles) {
     var healthPromises = [];
-
     streamUrisProfiles.forEach(function(stream) {
-        var profileName = stream.profileName;
-        var uris = stream.uris;
-        uris.forEach(function(uri) {
+        stream.uris.forEach(function(uri) {
             var d = D.q.defer();
             getNonceAndRealm(uri)
                 .then(function(digestParams) {
-                    var authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, uri, "DESCRIBE");
-                    var command = "DESCRIBE " + uri + " RTSP/1.0\r\nCSeq: 2\r\nAuthorization: " + authHeader + "\r\n";
+                    var authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, stream.uris, "DESCRIBE");
+                    var command = "DESCRIBE " + stream.uris + " RTSP/1.0\r\nCSeq: 2\r\nAuthorization: " + authHeader + "\r\n";
                     telnetParams.command = command;
                     telnetParams.timeout = 1000;
                     D.device.sendTelnetCommand(telnetParams, function(out, err) {
                         if (err) {
                             console.log(err);
                         } else {
-                            d.resolve({ healthStatus: out, profileName: profileName });
+                            d.resolve({ healthStatus: out, profileName: stream.profileName });
                         }
                     });
                 }).catch(function(error) {
                     console.log(error);
-                    d.resolve({ healthStatus: "NOT OK", profileName: profileName });
+                    d.resolve({ healthStatus: "NOT OK", profileName: stream.profileName });
                 });
 
             healthPromises.push(d.promise);
@@ -275,11 +270,8 @@ function getCapturingStatus(data){
          
         var name = response.profileName; 
         var recordId = (index + 1) + "-" + name;
-
-        if (profileName[0].toLowerCase() === "all" || profileName.indexOf(name) !== -1 ) {
-
-            table.insertRecord(sanitize(recordId), [status]);
-        }
+        table.insertRecord(sanitize(recordId), [ name, status]);
+        
     });
     D.success(table);
 }
@@ -295,7 +287,7 @@ function failure(err) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
 function validate() {
-    getProfiles()
+    getProfilesInfo()
         .then(getStreamURIs)
         .then(healthCheck)
         .then(function (output) {
@@ -316,7 +308,7 @@ function validate() {
 * @documentation This procedure retrieves the current status of video capturing from the camera's streams
 */
 function get_status() {
-    getProfiles()
+    getProfilesInfo()
         .then(getStreamURIs)
         .then(healthCheck)
         .then(getCapturingStatus)
