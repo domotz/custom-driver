@@ -7,7 +7,7 @@
  * 
  * Tested on Cisco Meraki Dashboard API v1
  * 
- * Note: Data is retrieved in 10 minute intervals.
+ * Note: Data is retrieved in 15 minute intervals.
  *
  * Creates a Custom Driver table with the following columns:
  *      - Network: Network name 
@@ -97,14 +97,14 @@ function getNetworkInfo() {
 }
 
 /**
- * Function to retrieve channel utilization data for each network within a 10 minute interval.
+ * Function to retrieve channel utilization data for each network within a 15 minute interval.
  * @param {Array} networksInfo Array of network information.
  * @returns {Promise} A promise that resolves with an array of channel utilization information
  */
 function getChannelUtilization(networksInfo) {
     var promises = networksInfo.map(function(network) {
         var d = D.q.defer();
-        var timespan = 10 * 60; 
+        var timespan = 15 * 60; 
         var config = {
             url: "/api/v1/networks/" + network.id + "/networkHealth/channelUtilization?timespan=" + timespan,
             protocol: "https",

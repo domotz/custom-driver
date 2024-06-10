@@ -18,7 +18,7 @@
         "channel",
         "utilization"
     ],
-    "sample_period_s": "600",
+    "sample_period_s": "900",
     "has_actions": false,
     "expected_variables": {
         "table": "[8]"
