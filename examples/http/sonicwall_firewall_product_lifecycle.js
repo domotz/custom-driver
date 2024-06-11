@@ -83,7 +83,8 @@ function getFirewallModel() {
     return d.promise;
 }
 
-var device = D.createExternalDevice("raw.githubusercontent.com"); 
+// Create an external device for accessing data from a specific URL
+var plcDataSource = D.createExternalDevice("raw.githubusercontent.com"); 
 
 /**
  * Retrieves the product lifecycle data
@@ -95,7 +96,7 @@ function getProductLifecycleData() {
         url: "/domotz/custom-driver/master/resources/sonicwall-plc-tables.json",
         protocol: "https"
     };
-    device.http.get(config, function(error, response, body) {   
+    plcDataSource.http.get(config, function(error, response, body) {   
         if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);  
@@ -160,11 +161,11 @@ function extractVariables(info) {
         D.createVariable("one-year-lod", "1 Year Support Last Order Day", oneYearLastOrder, null, D.valueType.STRING),
         D.createVariable("lrm", "Limited Retirement Mode (LRM)", limitedRetirementMode, null, D.valueType.STRING),
         D.createVariable("eos", "End of Support (EOS)", endOfSupport, null, D.valueType.STRING),
-        D.createVariable("lod-remaining-days", "LOD - Remaining Days", lodRemainingDays || "N/A", "Day", D.valueType.STRING),
-        D.createVariable("arm-remaining-days", "ARM - Remaining Days", armRemainingDays || "N/A", "Day", D.valueType.STRING),
-        D.createVariable("one-year-lod-remaining-days", "One-Year Support LOD - Remaining Days", oneyldoRemainingDays || "N/A", "Day", D.valueType.STRING),
-        D.createVariable("lrm-remaining-days", "LRM - Remaining Days", lrmRemainingDays || "N/A", "Day", D.valueType.STRING),
-        D.createVariable("eos-remaining-days", "EOS - Remaining Days", eosRemainingDays || "N/A", "Day", D.valueType.STRING)
+        D.createVariable("lod-remaining-days", "LOD - Remaining Days", lodRemainingDays || "N/A", "days", D.valueType.NUMBER),
+        D.createVariable("arm-remaining-days", "ARM - Remaining Days", armRemainingDays || "N/A", "days", D.valueType.NUMBER),
+        D.createVariable("one-year-lod-remaining-days", "One-Year Support LOD - Remaining Days", oneyldoRemainingDays || "N/A", "days", D.valueType.NUMBER),
+        D.createVariable("lrm-remaining-days", "LRM - Remaining Days", lrmRemainingDays || "N/A", "days", D.valueType.NUMBER),
+        D.createVariable("eos-remaining-days", "EOS - Remaining Days", eosRemainingDays || "N/A", "days", D.valueType.NUMBER)
     ];
     D.success(variables);
 }
