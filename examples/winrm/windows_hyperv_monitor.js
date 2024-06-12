@@ -97,8 +97,8 @@ const virtualMachineTable = D.createTable(
 // Check for Errors on the WinRM command response
 function checkWinRmError (err) {
   if (err.message) console.error(err.message)
-  if (err.code == 401) D.failure(D.errorType.AUTHENTICATION_ERROR)
-  if (err.code == 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+  if (err.code === 401) D.failure(D.errorType.AUTHENTICATION_ERROR)
+  if (err.code === 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE)
   console.error(err)
   D.failure(D.errorType.GENERIC_ERROR)
 }
@@ -203,12 +203,13 @@ function convertTotalSeconds (totalSeconds) {
  */
 function parseOutput (output) {
   if (output.error === null) {
+    let result = []
     const jsonOutput = JSON.parse(JSON.stringify(output))
     let listOfVMs = []
     if (!jsonOutput.outcome.stdout) {
       console.info('There are no virtual machines related to this filter.')
     } else {
-      var result = JSON.parse(jsonOutput.outcome.stdout.replace(/__/g, ''))
+      result = JSON.parse(jsonOutput.outcome.stdout.replace(/__/g, ''))
     }
     if (Array.isArray(result)) {
       listOfVMs = result
@@ -257,9 +258,8 @@ function extractOSInfo (xmlList) {
       const $ = D.htmlParse(xml, { xmlMode: true })
       $('PROPERTY').each(function (i, el) {
         const name = $(el).attr('NAME')
-        const value = $(el).find('VALUE').text()
+        const nameValue = $(el).find('VALUE').text()
         if (name === 'Name') {
-          const nameValue = $(el).find('VALUE').text()
           if (nameValue === 'OSName') {
             osName = $(el).siblings('PROPERTY[NAME="Data"]').find('VALUE').text()
           } else if (nameValue === 'OSVersion') {
