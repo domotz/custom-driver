@@ -124,7 +124,6 @@ function extractFirewallModelInfo(body) {
     var modelParts = data.model.split(' ');
     var modelName = modelParts.slice(0, -1).join(' ');
     var modelNumber = modelParts[modelParts.length - 1];
-
     return { modelName: modelName, modelNumber: modelNumber };
 }
 
@@ -136,8 +135,9 @@ function extractFirewallModelInfo(body) {
 function calculateRemainingDays(phaseDate) {
     var currentDate = new Date();
     var remainingDays = Math.ceil((phaseDate - currentDate) / (1000 * 60 * 60 * 24));
-    return remainingDays;
+    return remainingDays >= 0 ? remainingDays : 0;
 }
+
 
 /**
  * Extracts the variables from the product lifecycle data
@@ -158,14 +158,15 @@ function extractVariables(info) {
     var variables = [
         D.createVariable("lod", "Last Order Day (LOD)", lastOrderDay, null, D.valueType.STRING),
         D.createVariable("arm", "Active Retirement (ARM)", activeRetirement, null, D.valueType.STRING),
-        D.createVariable("one-year-lod", "1 Year Support Last Order Day", oneYearLastOrder, null, D.valueType.STRING),
+        D.createVariable("one-year-lod", "One-Year Support Last Order Day", oneYearLastOrder, null, D.valueType.STRING),
         D.createVariable("lrm", "Limited Retirement Mode (LRM)", limitedRetirementMode, null, D.valueType.STRING),
         D.createVariable("eos", "End of Support (EOS)", endOfSupport, null, D.valueType.STRING),
-        D.createVariable("lod-remaining-days", "LOD - Remaining Days", lodRemainingDays || "N/A", "days", D.valueType.NUMBER),
-        D.createVariable("arm-remaining-days", "ARM - Remaining Days", armRemainingDays || "N/A", "days", D.valueType.NUMBER),
-        D.createVariable("one-year-lod-remaining-days", "One-Year Support LOD - Remaining Days", oneyldoRemainingDays || "N/A", "days", D.valueType.NUMBER),
-        D.createVariable("lrm-remaining-days", "LRM - Remaining Days", lrmRemainingDays || "N/A", "days", D.valueType.NUMBER),
-        D.createVariable("eos-remaining-days", "EOS - Remaining Days", eosRemainingDays || "N/A", "days", D.valueType.NUMBER)
+
+        D.createVariable("lod-remaining-days", "Last Order Day (LOD) - Remaining Days", lodRemainingDays, "days", D.valueType.NUMBER),
+        D.createVariable("arm-remaining-days", "Active Retirement (ARM) -Remaining Days", armRemainingDays, "days", D.valueType.NUMBER),
+        D.createVariable("one-year-lod-remaining-days", "One-Year Support Last Order Day - Remaining Days", oneyldoRemainingDays, "days", D.valueType.NUMBER),
+        D.createVariable("lrm-remaining-days", "Limited Retirement Mode (LRM) - Remaining Days", lrmRemainingDays, "days", D.valueType.NUMBER),
+        D.createVariable("eos-remaining-days", "End of Support (EOS) - Remaining Days", eosRemainingDays, "days", D.valueType.NUMBER)
     ];
     D.success(variables);
 }
