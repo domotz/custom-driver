@@ -18,7 +18,7 @@
         "channel",
         "utilization"
     ],
-    "sample_period_s": 1800,
+    "sample_period_s": "900",
     "has_actions": false,
     "expected_variables": {
         "table": "[8]"
@@ -28,8 +28,8 @@
     ],
     "tested_on": [
         {
-            "name": "Cisco Meraki",
-            "version": "wireless-25-13"
+            "name": "Cisco Meraki Dashboard API",
+            "version": "v1"
         }
     ],
     "parameters": [
