@@ -22,6 +22,8 @@
 // or specify a list of interface names to filter and display only the selected interfaces 
 var interface_name = D.getParameter('interfaceName');
 
+var sonicWallAPIPort = 8444;
+
 var table = D.createTable(
     "Interfaces", [
         { label: "Ip Address" },
@@ -62,7 +64,7 @@ function login() {
         url: "/api/sonicos/auth",
         username: D.device.username(),
         password: D.device.password(),
-        port: 8444,
+        port: sonicWallAPIPort,
         protocol: "https",
         auth: "basic",
         jar: true,
@@ -78,7 +80,7 @@ function getInterfaces() {
     var config = {
         url: "/api/sonicos/interfaces/ipv4",
         protocol: "https",
-        port: 8444,
+        port: sonicWallAPIPort,
         jar: true,
         rejectUnauthorized: false
     };
@@ -95,19 +97,27 @@ function sanitize(output){
 //Extracts data from the HTTP response and populates the custom table.
 function extractData(body) {
     var data = JSON.parse(body);
+    console.info(JSON.stringify(data.interfaces));
     data.interfaces.forEach(function (item) {
+ 
         var name = item.ipv4.name;
         if (interface_name[0].toLowerCase() === "all" || interface_name.some(function(res) {
             return res.toLowerCase() === name.toLowerCase();
         })) {      
             var comment = item.ipv4.comment;
             var recordId = sanitize(comment ? name + "-" + comment : name);
+
+            var ipAddress = "-";
+            var gateway = "-";
+            var zone = "-";
             var ipAssignmentMode = item.ipv4.ip_assignment.mode;
-            var ip = ipAssignmentMode.static && ipAssignmentMode.static.ip || "";
-            var netmask = ipAssignmentMode.static && ipAssignmentMode.static.netmask || "";
-            var ipAddress = ip + " - " + netmask;
-            var gateway = ipAssignmentMode.static && ipAssignmentMode.static.gateway || "-";
-            var zone = item.ipv4.ip_assignment.zone || "-";
+            if (ipAssignmentMode) {
+                var ip = ipAssignmentMode.static && ipAssignmentMode.static.ip || "";
+                var netmask = ipAssignmentMode.static && ipAssignmentMode.static.netmask || "";
+                ipAddress = ip + " - " + netmask;
+                gateway = ipAssignmentMode.static && ipAssignmentMode.static.gateway || "-";
+                zone = item.ipv4.ip_assignment.zone || "-";
+            }
             var management = extractValue(item.ipv4.management) || "-";
             var userLogin = extractValue(item.ipv4.user_login) || "-";
             table.insertRecord(recordId, [
