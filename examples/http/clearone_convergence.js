@@ -1,11 +1,11 @@
 /**
  * Domotz Custom Driver 
- * Name: ClearOne Converge
+ * Name: ClearOne Convergence
  * Description: This script extracts information for ClearOne devices
  * 
  * Communication protocol is HTTP
  * 
- * Tested with ClearOne Converge Pro 2 
+ * Tested with ClearOne Convergence 3.1.0.0
  *
  * Parameters: 
  *    - urlCl: Url access to Convergence
@@ -18,6 +18,8 @@
  *    - Status: Status device (STATUS - TIME IN THIS STATUS)
  *    - Location: Location device
  *    - Part Number: Part number device
+ * 
+ * The device password used to configure Convergence API key
  *
  **/
 
@@ -25,6 +27,23 @@
 var urlCl = D.getParameter('urlCl');
 
 var deviceInfo, detailInfo;
+var protocol;
+var port;
+
+
+if (!urlCl.indexOf("//")) {
+    D.failure("ClearOne CONVERGENCE URL must include protocol");
+} else {
+    var protocolIndex = urlCl.indexOf("//");
+    protocol = urlCl.substring(0, protocolIndex);
+    var remainingUrl = urlCl.substring(protocolIndex + 2);
+
+    var portIndex = remainingUrl.indexOf(":");
+    if (portIndex !== -1) {
+        port = remainingUrl.substring(portIndex + 1);
+        urlCl = remainingUrl.substring(0, portIndex);
+    } 
+}
 
 /**
  * @param {string} url  The URL to perform the GET request
@@ -35,7 +54,7 @@ function httpGet(url) {
 	var website = D.createExternalDevice(urlCl);
     var config = {
         url: url,
-        port: 8080,
+        port: port,  
         headers: {
 			"X-Api-Key": D.device.password() //api key == password
 		}
