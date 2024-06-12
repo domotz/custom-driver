@@ -20,7 +20,7 @@
         "software",
         "hard-disks",
         "hyper-v",
-        "vm"
+        "virtual-machine"
     ],
     "sample_period_s": 600,
     "has_actions": false,
