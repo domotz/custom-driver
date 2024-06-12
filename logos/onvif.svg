@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: url(#radial-gradient);
+      }
+
+      .cls-3 {
+        fill: #000;
+      }
+    </style>
+    <radialGradient id="radial-gradient" cx="60.24" cy="6808.04" fx="60.24" fy="6808.04" r="137.8" gradientTransform="translate(0 -6383.92)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#82b7e3"/>
+      <stop offset="1" stop-color="#1d2087"/>
+    </radialGradient>
+  </defs>
+  <g id="Layer_2-2" data-name="Layer 2">
+    <g id="Layer_2-2" data-name="Layer 2-2">
+      <g id="Layer_1-2" data-name="Layer 1-2">
+        <g>
+          <path class="cls-2" d="M137.82,362.18C61.6,362.18,0,424.02,0,500s61.36,137.82,137.82,137.82,137.82-61.84,137.82-137.82-62.08-137.82-137.82-137.82ZM151.73,593.24c-57.77,0-104.03-46.5-104.03-104.03s46.5-104.03,104.03-104.03,104.03,46.5,104.03,104.03-46.98,104.03-104.03,104.03Z"/>
+          <path class="cls-3" d="M445.83,455.66h-124.4v164.43h46.98v-145.25h67.83c17.74,0,27.8,14.86,27.8,27.33v118.41h46.98v-118.41c-.48-4.31-.48-46.5-65.2-46.5Z"/>
+          <rect class="cls-3" x="761.98" y="455.66" width="46.98" height="164.43"/>
+          <polygon class="cls-3" points="715.96 455.66 652.44 577.18 589.41 455.66 535.47 455.66 621.52 621.05 654.6 621.05 739.93 455.66 715.96 455.66"/>
+          <path class="cls-3" d="M940.8,474.83h59.2v-18.7h-68.79c-64.48,0-64.48,41.71-64.48,46.02v118.41h46.98v-79.1h80.06v-18.7h-80.06v-20.37c-.72-12.7,9.35-27.56,27.09-27.56Z"/>
+        </g>
+        <rect class="cls-1" width="1000" height="1000"/>
+      </g>
+    </g>
+  </g>
+</svg>
