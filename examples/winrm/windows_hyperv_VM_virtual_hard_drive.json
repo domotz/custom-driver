@@ -1,0 +1,43 @@
+{
+    "logo": "microsoft-hyper-v.svg",
+    "version": "1.0.0",
+    "name": "Windows Hyper-V VM Virtual Hard Drives",
+    "description": "This script retrieves information about the Hyper-V VM Virtual Hard Drives",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: Administrator",
+            "WinRM Enabled",
+            "Hyper-V",
+            "VM"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "hard-disks",
+        "hyper-v",
+        "virtual-machine"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[9]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "10"
+        },
+        {
+            "name": "Hyper-V",
+            "version": "10.0.19041.1"
+        }
+    ]
+}
