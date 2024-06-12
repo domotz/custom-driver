@@ -11,15 +11,14 @@
             "Powershell Version 5.1.19041.2364",
             "Privilege required: Administrator",
             "WinRM Enabled",
-            "Hyper-V",
-            "VM"
+            "Hyper-V"
         ]
     },
     "tags": [
         "windows",
         "software",
         "hyper-v",
-        "vm"
+        "virtual-machine"
     ],
     "sample_period_s": 600,
     "has_actions": false,
