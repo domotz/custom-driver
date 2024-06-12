@@ -1,14 +1,14 @@
 {
     "logo": "clearone.svg",
-    "version": "1.0.0",
-    "name": "ClearOne Converge",
+    "version": "1.0.1",
+    "name": "ClearOne Convergence",
     "description": "This script extracts information for ClearOne devices",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "ClearOne Converge"
+            "ClearOne Convergence"
         ]
     },
     "tags": [
@@ -31,8 +31,8 @@
     ],
     "tested_on": [
         {
-            "name": "ClearOne Converge",
-            "version": "Pro 2"
+            "name": "ClearOne Convergence",
+            "version": "3.1.0.0"
         }
     ],
     "parameters": [
