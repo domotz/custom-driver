@@ -19,7 +19,7 @@
         "windows",
         "software",
         "hyper-v",
-        "vm",
+        "virtual-machine",
         "network-adapters"
     ],
     "sample_period_s": 600,
