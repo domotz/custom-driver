@@ -37,13 +37,13 @@
             "value_type": "LIST",
             "name": "profileName",
             "label": "Profile Name",
-            "value": "ALL"
+            "value": ["ALL"]
         },
         {
             "value_type": "NUMBER",
             "name": "onvifPort",
             "label": "ONVIF port",
-            "value": "80"
+            "value": 80
         }
     ]
 }
