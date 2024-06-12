@@ -1,0 +1,43 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Firewall Rules",
+    "description": "Show Firewall Rules on a Windows machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: Local Administrator",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "firewall",
+        "software"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[5]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Windows",
+            "version": "Windows 10"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "firewallFilter",
+            "label": "Firewall Rule Name",
+            "value": ["skype", "AnyDesk"]
+        }
+    ]
+}
