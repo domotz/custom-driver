@@ -117,7 +117,7 @@ function populateTable(id, displayname, group, direction, action, enabled) {
     direction = directionCodes[direction];
     action = actionCodes[action];
     enabled = enabledCodes[enabled];
-    firewallTable.insertRecord(recordId, [displayname, group, direction, action, enabled]);
+    firewallTable.insertRecord(recordId, [displayname || "N/A", group || "N/A", direction, action, enabled]);
 }
 
 /**
