@@ -109,8 +109,8 @@ function extractData(body) {
             var ipAddress = "-";
             var gateway = "-";
             var zone = "-";
-            var ipAssignmentMode = item.ipv4.ip_assignment.mode;
-            if (ipAssignmentMode) {
+            if (item.ipv4.ip_assignment && item.ipv4.ip_assignment.mode) {
+                var ipAssignmentMode = item.ipv4.ip_assignment.mode;
                 var ip = ipAssignmentMode.static && ipAssignmentMode.static.ip || "";
                 var netmask = ipAssignmentMode.static && ipAssignmentMode.static.netmask || "";
                 ipAddress = ip + " - " + netmask;
