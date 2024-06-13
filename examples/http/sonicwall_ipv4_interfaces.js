@@ -97,7 +97,6 @@ function sanitize(output){
 //Extracts data from the HTTP response and populates the custom table.
 function extractData(body) {
     var data = JSON.parse(body);
-    console.info(JSON.stringify(data.interfaces));
     data.interfaces.forEach(function (item) {
  
         var name = item.ipv4.name;
