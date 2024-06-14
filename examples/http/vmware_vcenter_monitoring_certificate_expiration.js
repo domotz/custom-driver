@@ -1,13 +1,13 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare vCenter Monitoring Certificate expiration
- * Description: This script is designed to retrieve and monitor VMware vCenter certificates, ensuring their validity by checking their expiration dates. 
+ * Description: This script is designed to retrieve and monitor VMware vCenter certificates, ensuring their validity by checking their expiration dates.
  * It extracts information for four types of vCenter server certificates: Machine SSL certificates, VMware Certificate Authority, STS Signing Certificates, and Trusted Root certificates.
  * 
  * Communication protocols is HTTPS and SSH
  * 
  * Tested on VMWare vCenter version 8.0.2
- *
+ * 
  * Creates Custom Driver table containing the following columns:
  *      - Issuer: The issuer of the certificate
  *      - Usage: The usage of the certificate
@@ -19,9 +19,9 @@
 
 // SSH options configuration
 var sshOptions = {
-    inter_command_timeout_ms: 6000,
-    global_timeout_ms: 30000,
-    prompt: "$",
+    inter_command_timeout_ms: 1000,
+    global_timeout_ms: 10000,
+    prompt_regex: /Command>|[$]/
 };
 
 // Table to store certificates information
@@ -36,19 +36,28 @@ var table = D.createTable(
     ]
 );
 
-// Function to handle the login procedure
-function login() {
-    var d = D.q.defer();
-    var config = {
-        url: "/api/session",
-        username: D.device.username(),
-        password: D.device.password(),
+/**
+ * Function to generate configuration options for HTTP requests
+ * @param {string} url The URL to send the request to
+ * @returns {object} The configuration object with URL, protocol, jar, and rejectUnauthorized properties
+ */
+function generateConfig (url) {
+    return {
+        url: url,
         protocol: "https",
-        auth: "basic",
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, function(error, response, body){
+}
+
+// Function to handle the login procedure
+function login () {
+    var d = D.q.defer();
+    var config = generateConfig("/api/session");
+    config.auth = "basic";
+    config.username = D.device.username();
+    config.password = D.device.password();
+    D.device.http.post(config, function (error, response, body){
         if (error) {          
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
@@ -70,17 +79,12 @@ function login() {
  * @param {object} sessionId The response from the login request, containing the session ID
  * @returns A promise containing the body of the response
  */
-function httpGet(url, sessionId) {
+function httpGet (url, sessionId) {
     var d = D.q.defer();
-    var config = {
-        url: url,   
-        protocol: "https",
-        jar: true,
-        rejectUnauthorized: false,
-        headers: {
-            "vmware-api-session-id": sessionId 
-        }
-    };
+    var config = generateConfig(url);
+    config.headers = {
+        "vmware-api-session-id": sessionId 
+    },
     D.device.http.get(config, function (error, response, body) {
         if (error) {          
             console.error(error);
@@ -100,8 +104,8 @@ function httpGet(url, sessionId) {
  * @param {object} sessionId The session ID from the login request
  * @returns A promise containing the TLS certificates information
  */
-function getTLSCertificate(sessionId) {
-    return httpGet("/api/vcenter/certificate-management/vcenter/tls", sessionId);   
+function getTLSCertificate (sessionId) {
+    return httpGet("/api/vcenter/certificate-management/vcenter/tls", sessionId);
 }
 
 /**
@@ -109,16 +113,16 @@ function getTLSCertificate(sessionId) {
  * @param {object} sessionId The session ID from the login request
  * @returns A promise containing the concatenated signing certificate chain
  */
-function getSigningCertificate(sessionId) {
+function getSigningCertificate (sessionId) {
     return httpGet("/api/vcenter/certificate-management/vcenter/signing-certificate", sessionId)
         .then(function(certifs){
             var signingCertChain = certifs.signing_cert_chains.map(function(chain) {
                 return chain.cert_chain;
             });
-            var activeCertChain = certifs.active_cert_chain.cert_chain;   
+            var activeCertChain = certifs.active_cert_chain.cert_chain;
             var concatenatedCertChain = signingCertChain[0].join('\n') + '\n' + activeCertChain.join('\n');
-            return concatenatedCertChain;        
-        });  
+            return concatenatedCertChain;
+        });
 }
 
 /**
@@ -126,7 +130,7 @@ function getSigningCertificate(sessionId) {
  * @param {object} sessionId The session ID from the login request
  * @returns A promise containing the trusted root certificates
  */
-function getTrustedRootCertificate(sessionId){
+function getTrustedRootCertificate (sessionId){
     return httpGet("/api/vcenter/certificate-management/vcenter/trusted-root-chains/", sessionId)
         .then(function (response) {
             var chainIds = response.map(function(cert){
@@ -139,15 +143,41 @@ function getTrustedRootCertificate(sessionId){
                             return chain;
                         });                   
                         return rootCertChain[0];
-                    });         
+                    });       
             });
-
-            return D.q.all(promises); 
+            return D.q.all(promises);
         })
         .catch(function (error) {
             console.error("Error getting trusted root certificates:", error);
             D.failure(D.errorType.GENERIC_ERROR);
-        });   
+        });
+}
+
+/**
+ * Function to load all certificates
+ * @param {string} sessionId  The session ID for authentication
+ * @returns An array of promises for certificate retrieval
+ */
+function loadCertificates (sessionId){
+    return D.q.all([
+        getTLSCertificate (sessionId),
+        getSigningCertificate (sessionId),
+        getTrustedRootCertificate (sessionId)
+    ]);
+}
+
+/**
+ * Function to generate SSH commands for certificate processing
+ * @param {Array} certificates An array containing certificate data
+ * @returns {Array} An array of SSH commands for processing certificates
+ */
+function genarateCommands (certificates) {
+    return [
+        'shell.set --enabled true', // Command to enable the shell
+        'shell', // Command to enter the shell
+        'echo "' + certificates[1] + '" | openssl x509 -text', // OpenSSL command for Signing Certificate
+        'echo "' + certificates[2] + '" | openssl x509 -text' // OpenSSL command for Trusted Root Certificate
+    ];
 }
 
 /**
@@ -155,21 +185,16 @@ function getTrustedRootCertificate(sessionId){
  * @param {string} certificate The certificate to be processed by the command
  * @returns A promise containing the command output
  */
-function executeCommand(certificate) {
+function executeCommands (certificates) {
     var d = D.q.defer();
-    var openShellCommand = "shell";
-    var opensslCommand = 'echo "' + certificate + '" | openssl x509 -text';
-
-    var commands = [openShellCommand, opensslCommand]; 
-    sshOptions.commands = commands; 
-
-    D.device.sendSSHCommands(sshOptions, function (out, err) {      
+    sshOptions.commands = genarateCommands(certificates);
+    D.device.sendSSHCommands(sshOptions, function (out, err) {
         if (err) {
-            d.reject(err)
+            d.reject(err);
         } else {
-            var data = JSON.stringify(out)
+            var data = JSON.stringify(out);
             if (data.indexOf("command not found") != -1){
-                console.error("Command not found. Unable to retrieve certificates information.")
+                console.error("Command not found. Unable to retrieve certificates information.");
                 D.failure(D.errorType.PARSING_ERROR);
             } else {
                 d.resolve(data);
@@ -185,7 +210,6 @@ function executeCommand(certificate) {
  * @returns {number} The number of days remaining until expiry
  */
 function calculateRemainingDays(expiryDate){
-    var expiryDate = new Date(expiryDate);
     var currentDate = new Date();
     return remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
 }
@@ -223,57 +247,39 @@ function convertToUTC(dateToConvert) {
  * @param {string} expiry The expiration date of the certificate
  */
 function populateTable(serialNumber, issuer, usage, expiry) {
-    var remainingDays = calculateRemainingDays(expiry);
+    var remainingDays = calculateRemainingDays(new Date(expiry));
     var isValid = certificateValidity(remainingDays);
     var expiryUTC = convertToUTC(expiry)
     var cleanedUsage = usage.filter(function(value) {
-        return value.trim() !== '' && value.trim() !== '[]';
+        return value.trim() !== '';
     }).join(', ');
-
     table.insertRecord(
         serialNumber, [issuer, cleanedUsage, expiryUTC, remainingDays, isValid]
     );
 }
 
 /**
- * Function to process vCenter certificates information and populate the table
- * @param {Array} data The array containing certificate information
+ * Function to extract certificate information from command output
+ * @param {string} data The command output containing certificate information
  */
-function vCenterCertificatesInfo (data){  
-    data.forEach(function(certificatesInfo){
-        certificates =  certificatesInfo.replace(/ +(?= )/g,'').trim();
-        var usageInfo = certificatesInfo.split("Key Usage:")[1];
-        var usage = usageInfo.split("\\r\\n", 2);
-        
-        var cleanedData = certificatesInfo.replace(/\\r\\n/g, '\n').replace(/ +(?= )/g,'').trim();
-        var serialNumberMatch = cleanedData.match(/Serial Number:\s*([^]+?)\s*Signature Algorithm:/);
-        var serialNumber = serialNumberMatch ? serialNumberMatch[1] : "N/A";
-
-        var ouMatch = cleanedData.match(/OU = ([^,]+?)\s*Validity/);
-        var ouInfo = ouMatch ? ouMatch[1] : "N/A";
-
-        var oMatch = cleanedData.match(/O = ([^,]+)/);
-        var oInfo = oMatch ? oMatch[1] : "N/A";
-
-        var notAfterMatch = cleanedData.match(/Not After\s*:\s*([^]+?)\s*Subject:/);
-        var expiry = notAfterMatch ? notAfterMatch[1] : "N/A";
-
-        populateTable(serialNumber, ouInfo + " - " + oInfo, usage, expiry);
-    });
+function extractCertificatesInfo (data){  
+    var certificatesInfo = data.split("echo");
+    for (var i = 1; i < certificatesInfo.length; i++) {
+        var cleanedData = certificatesInfo[i].replace(/ +(?= )/g, '').trim();
+        var serialNumberInfo = cleanedData.split("Serial Number:")[1];
+        var serialNumber = serialNumberInfo.split("\\r\\n ", 2);
+        var ouInfo = cleanedData.split("OU = ")[1];
+        var organizationalUnit = ouInfo.split("\\r\\n", 1);
+        var oInfo = cleanedData.split("O = ")[1];
+        var organization = oInfo.split(",", 1);
+        var issuer = organizationalUnit[0] + " - " + organization[0];
+        var usageInfo = cleanedData.split("Key Usage: ")[1].trim();
+        var usage = usageInfo.split("\\r\\n ", 2);   
+        var notAfterInfo = cleanedData.split("Not After : ")[1];
+        var expiry = notAfterInfo.split("\\r\\n ", 1);
+        populateTable(serialNumber[1], issuer, usage, expiry[0]);
+    }
     D.success(table);
-}
-
-/**
- * Function to load all certificates
- * @param {string} sessionId  The session ID for authentication
- * @returns An array of promises for certificate retrieval
- */
-function loadCertificates(sessionId){
-    return D.q.all([
-        getTLSCertificate(sessionId),
-        getSigningCertificate(sessionId),
-        getTrustedRootCertificate(sessionId)
-    ]);
 }
 
 /**
@@ -281,9 +287,10 @@ function loadCertificates(sessionId){
  * @label Validate Connection 
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare vCenter device
  */
-function validate(){
+function validate (){
     login()
         .then(loadCertificates)
+        .then(executeCommands)
         .then(function (response) {
             if (response) {
                 console.info("Data available");
@@ -302,28 +309,23 @@ function validate(){
 /**
  * @remote_procedure
  * @label Get VMware vCenter Certificates Information
- * @documentation This procedure is used to retrieves and stores certificates information for 
+ * @documentation This procedure is used to retrieve and store certificates information for VMware vCenter
  */
 function get_status() {
     login()
         .then(loadCertificates)
         .then(function(data){   
             var tlsInfo = data[0];
-            var serialNumber = tlsInfo.serial_number;
-            var ouInfo = tlsInfo.issuer_dn.match(/OU=([^,]+)/)[1];
-            var oInfo = tlsInfo.issuer_dn.match(/O=([^,]+)/)[1];
-            var issuer = ouInfo + " - " + oInfo;
-            var expiry = tlsInfo.valid_to;
-            var usage = tlsInfo.key_usage;
-
-            populateTable(serialNumber, issuer, usage, expiry);
-    
-            return D.q.all([
-                executeCommand(data[1]),
-                executeCommand(data[2])
-            ]);
+            var tlsSerialNumber = tlsInfo.serial_number;
+            var tlsOU = tlsInfo.issuer_dn.match(/OU=([^,]+)/)[1];
+            var tlsO = tlsInfo.issuer_dn.match(/O=([^,]+)/)[1];
+            var tlsIssuer = tlsOU + " - " + tlsO;
+            var tlsUsage = tlsInfo.key_usage;
+            var tlsExpiry = tlsInfo.valid_to;
+            populateTable(tlsSerialNumber, tlsIssuer, tlsUsage, tlsExpiry);
+            return executeCommands(data);
         })
-        .then(vCenterCertificatesInfo)
+        .then(extractCertificatesInfo)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);

@@ -10,8 +10,7 @@
         "others": [
             "VMware",
             "vCenter",
-            "Openssl",
-            "Access to the Bash shell must be enabled to can use openssl command"
+            "Openssl"
         ]
     },
     "tags": [
