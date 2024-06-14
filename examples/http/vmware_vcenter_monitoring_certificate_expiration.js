@@ -22,7 +22,7 @@ var sshOptions = {
     inter_command_timeout_ms: 1000,
     global_timeout_ms: 10000,
     prompt_regex: /Command>|[$]/
-};
+}
 
 // Table to store certificates information
 var table = D.createTable(
@@ -31,10 +31,10 @@ var table = D.createTable(
         { label: "Issuer", valueType: D.valueType.STRING },
         { label: "Usage", valueType: D.valueType.STRING },
         { label: "Expiry", valueType: D.valueType.DATETIME },
-        { label: "Remaining days" , unit: "Day", valueType: D.valueType.NUMBER },
+        { label: "Remaining days" , unit: "days", valueType: D.valueType.NUMBER },
         { label: "Is valid", valueType: D.valueType.STRING }
     ]
-);
+)
 
 /**
  * Function to generate configuration options for HTTP requests
@@ -47,30 +47,30 @@ function generateConfig (url) {
         protocol: "https",
         jar: true,
         rejectUnauthorized: false
-    };
+    }
 }
 
 // Function to handle the login procedure
 function login () {
-    var d = D.q.defer();
-    var config = generateConfig("/api/session");
-    config.auth = "basic";
-    config.username = D.device.username();
-    config.password = D.device.password();
+    var d = D.q.defer()
+    var config = generateConfig("/api/session")
+    config.auth = "basic"
+    config.username = D.device.username()
+    config.password = D.device.password()
     D.device.http.post(config, function (error, response, body){
         if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            console.error(error)
+            D.failure(D.errorType.GENERIC_ERROR)
         } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
         } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
+            D.failure(D.errorType.AUTHENTICATION_ERROR)
         } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR)
         } 
-        d.resolve(JSON.parse(body));
-    });
-    return d.promise;
+        d.resolve(JSON.parse(body))
+    })
+    return d.promise
 }
 
 /**
@@ -80,23 +80,23 @@ function login () {
  * @returns A promise containing the body of the response
  */
 function httpGet (url, sessionId) {
-    var d = D.q.defer();
-    var config = generateConfig(url);
+    var d = D.q.defer()
+    var config = generateConfig(url)
     config.headers = {
         "vmware-api-session-id": sessionId 
     },
     D.device.http.get(config, function (error, response, body) {
         if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            console.error(error)
+            D.failure(D.errorType.GENERIC_ERROR)
         } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
         } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR)
         } 
-        d.resolve(JSON.parse(body));
-    });
-    return d.promise;
+        d.resolve(JSON.parse(body))
+    })
+    return d.promise
 }
 
 /**
@@ -105,7 +105,7 @@ function httpGet (url, sessionId) {
  * @returns A promise containing the TLS certificates information
  */
 function getTLSCertificate (sessionId) {
-    return httpGet("/api/vcenter/certificate-management/vcenter/tls", sessionId);
+    return httpGet("/api/vcenter/certificate-management/vcenter/tls", sessionId)
 }
 
 /**
@@ -117,12 +117,12 @@ function getSigningCertificate (sessionId) {
     return httpGet("/api/vcenter/certificate-management/vcenter/signing-certificate", sessionId)
         .then(function(certifs){
             var signingCertChain = certifs.signing_cert_chains.map(function(chain) {
-                return chain.cert_chain;
-            });
-            var activeCertChain = certifs.active_cert_chain.cert_chain;
-            var concatenatedCertChain = signingCertChain[0].join('\n') + '\n' + activeCertChain.join('\n');
-            return concatenatedCertChain;
-        });
+                return chain.cert_chain
+            })
+            var activeCertChain = certifs.active_cert_chain.cert_chain
+            var concatenatedCertChain = signingCertChain[0].join('\n') + '\n' + activeCertChain.join('\n')
+            return concatenatedCertChain
+        })
 }
 
 /**
@@ -134,23 +134,23 @@ function getTrustedRootCertificate (sessionId){
     return httpGet("/api/vcenter/certificate-management/vcenter/trusted-root-chains/", sessionId)
         .then(function (response) {
             var chainIds = response.map(function(cert){
-                return cert.chain;
-            });
+                return cert.chain
+            })
             var promises = chainIds.map(function(chainId) {
                 return httpGet("/api/vcenter/certificate-management/vcenter/trusted-root-chains/" + chainId, sessionId)
                     .then(function (certifs) {
                         var rootCertChain = certifs.cert_chain.cert_chain.map(function(chain) {
-                            return chain;
-                        });                   
-                        return rootCertChain[0];
-                    });       
-            });
-            return D.q.all(promises);
+                            return chain
+                        })                   
+                        return rootCertChain[0]
+                    })       
+            })
+            return D.q.all(promises)
         })
         .catch(function (error) {
-            console.error("Error getting trusted root certificates:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error("Error getting trusted root certificates:", error)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }
 
 /**
@@ -163,7 +163,7 @@ function loadCertificates (sessionId){
         getTLSCertificate (sessionId),
         getSigningCertificate (sessionId),
         getTrustedRootCertificate (sessionId)
-    ]);
+    ])
 }
 
 /**
@@ -177,7 +177,7 @@ function genarateCommands (certificates) {
         'shell', // Command to enter the shell
         'echo "' + certificates[1] + '" | openssl x509 -text', // OpenSSL command for Signing Certificate
         'echo "' + certificates[2] + '" | openssl x509 -text' // OpenSSL command for Trusted Root Certificate
-    ];
+    ]
 }
 
 /**
@@ -186,22 +186,22 @@ function genarateCommands (certificates) {
  * @returns A promise containing the command output
  */
 function executeCommands (certificates) {
-    var d = D.q.defer();
-    sshOptions.commands = genarateCommands(certificates);
+    var d = D.q.defer()
+    sshOptions.commands = genarateCommands(certificates)
     D.device.sendSSHCommands(sshOptions, function (out, err) {
         if (err) {
-            d.reject(err);
+            d.reject(err)
         } else {
-            var data = JSON.stringify(out);
+            var data = JSON.stringify(out)
             if (data.indexOf("command not found") != -1){
-                console.error("Command not found. Unable to retrieve certificates information.");
-                D.failure(D.errorType.PARSING_ERROR);
+                console.error("Command not found. Unable to retrieve certificates information.")
+                D.failure(D.errorType.PARSING_ERROR)
             } else {
-                d.resolve(data);
+                d.resolve(data)
             }
         }
-    });
-    return d.promise;
+    })
+    return d.promise
 }
 
 /**
@@ -210,8 +210,9 @@ function executeCommands (certificates) {
  * @returns {number} The number of days remaining until expiry
  */
 function calculateRemainingDays(expiryDate){
-    var currentDate = new Date();
-    return remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
+    var currentDate = new Date()
+    var remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24))
+    return remainingDays >= 0 ? remainingDays : 0
 }
 
 /**
@@ -220,7 +221,7 @@ function calculateRemainingDays(expiryDate){
  * @returns {boolean} True if the certificate is valid, otherwise false
  */
 function certificateValidity(remainingDays){
-    return remainingDays > 0;
+    return remainingDays > 0
 }
 
 /**
@@ -229,14 +230,14 @@ function certificateValidity(remainingDays){
  * @returns {string} The date string in UTC format
  */
 function convertToUTC(dateToConvert) {
-    var date = new Date(dateToConvert);
-    var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1);
-    var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate();
-    var year = date.getUTCFullYear();
-    var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours();
-    var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes();
-    var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
-    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC";
+    var date = new Date(dateToConvert)
+    var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
+    var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
+    var year = date.getUTCFullYear()
+    var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
+    var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
+    var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
+    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
 }
 
 /**
@@ -247,15 +248,15 @@ function convertToUTC(dateToConvert) {
  * @param {string} expiry The expiration date of the certificate
  */
 function populateTable(serialNumber, issuer, usage, expiry) {
-    var remainingDays = calculateRemainingDays(new Date(expiry));
-    var isValid = certificateValidity(remainingDays);
+    var remainingDays = calculateRemainingDays(new Date(expiry))
+    var isValid = certificateValidity(remainingDays)
     var expiryUTC = convertToUTC(expiry)
     var cleanedUsage = usage.filter(function(value) {
-        return value.trim() !== '';
-    }).join(', ');
+        return value.trim() !== ''
+    }).join(', ')
     table.insertRecord(
         serialNumber, [issuer, cleanedUsage, expiryUTC, remainingDays, isValid]
-    );
+    )
 }
 
 /**
@@ -263,23 +264,23 @@ function populateTable(serialNumber, issuer, usage, expiry) {
  * @param {string} data The command output containing certificate information
  */
 function extractCertificatesInfo (data){  
-    var certificatesInfo = data.split("echo");
-    for (var i = 1; i < certificatesInfo.length; i++) {
-        var cleanedData = certificatesInfo[i].replace(/ +(?= )/g, '').trim();
-        var serialNumberInfo = cleanedData.split("Serial Number:")[1];
-        var serialNumber = serialNumberInfo.split("\\r\\n ", 2);
-        var ouInfo = cleanedData.split("OU = ")[1];
-        var organizationalUnit = ouInfo.split("\\r\\n", 1);
-        var oInfo = cleanedData.split("O = ")[1];
-        var organization = oInfo.split(",", 1);
-        var issuer = organizationalUnit[0] + " - " + organization[0];
-        var usageInfo = cleanedData.split("Key Usage: ")[1].trim();
-        var usage = usageInfo.split("\\r\\n ", 2);   
-        var notAfterInfo = cleanedData.split("Not After : ")[1];
-        var expiry = notAfterInfo.split("\\r\\n ", 1);
-        populateTable(serialNumber[1], issuer, usage, expiry[0]);
+    var certificatesInfo = data.split("echo")
+      for (var i = 1; i < certificatesInfo.length; i++) {
+        var cleanedData = certificatesInfo[i].replace(/ +(?= )/g, '').trim()
+        var serialNumberInfo = cleanedData.split("Serial Number:")[1]
+        var serialNumber = serialNumberInfo.split("\\r\\n ", 2)
+        var ouInfo = cleanedData.split("OU = ")[1]
+        var organizationalUnit = ouInfo.split("\\r\\n", 1)
+        var oInfo = cleanedData.split("O = ")[1]
+        var organization = oInfo.split(",", 1)
+        var issuer = organizationalUnit[0] + " - " + organization[0]
+        var usageInfo = cleanedData.split("Key Usage: ")[1].trim()
+        var usage = usageInfo.split("\\r\\n ", 2)   
+        var notAfterInfo = cleanedData.split("Not After : ")[1]
+        var expiry = notAfterInfo.split("\\r\\n ", 1)
+        populateTable(serialNumber[1], issuer, usage, expiry[0])
     }
-    D.success(table);
+    D.success(table)
 }
 
 /**
@@ -293,17 +294,17 @@ function validate (){
         .then(executeCommands)
         .then(function (response) {
             if (response) {
-                console.info("Data available");
-                D.success();
+                console.info("Data available")
+                D.success()
             } else {
-                console.error("No data available");
-                D.failure(D.errorType.GENERIC_ERROR);
+                console.error("No data available")
+                D.failure(D.errorType.GENERIC_ERROR)
             }
         })
         .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error(err)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }
 
 /**
@@ -315,19 +316,19 @@ function get_status() {
     login()
         .then(loadCertificates)
         .then(function(data){   
-            var tlsInfo = data[0];
-            var tlsSerialNumber = tlsInfo.serial_number;
-            var tlsOU = tlsInfo.issuer_dn.match(/OU=([^,]+)/)[1];
-            var tlsO = tlsInfo.issuer_dn.match(/O=([^,]+)/)[1];
-            var tlsIssuer = tlsOU + " - " + tlsO;
-            var tlsUsage = tlsInfo.key_usage;
-            var tlsExpiry = tlsInfo.valid_to;
-            populateTable(tlsSerialNumber, tlsIssuer, tlsUsage, tlsExpiry);
-            return executeCommands(data);
+            var tlsInfo = data[0]
+            var tlsSerialNumber = tlsInfo.serial_number
+            var tlsOU = tlsInfo.issuer_dn.match(/OU=([^,]+)/)[1]
+            var tlsO = tlsInfo.issuer_dn.match(/O=([^,]+)/)[1]
+            var tlsIssuer = tlsOU + " - " + tlsO
+            var tlsUsage = tlsInfo.key_usage
+            var tlsExpiry = tlsInfo.valid_to
+            populateTable(tlsSerialNumber, tlsIssuer, tlsUsage, tlsExpiry)
+            return executeCommands(data)
         })
         .then(extractCertificatesInfo)
         .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error(err)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }
