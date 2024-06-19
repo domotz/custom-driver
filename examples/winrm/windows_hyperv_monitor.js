@@ -5,7 +5,7 @@
  *
  * Communication protocol is WinRM
  *
- * Tested on Windows Versions:
+ * Tested on:
  *    - Windows 10
  *    - Windows Server 2019
  *    - Hyper-V 10.0.19041.1
