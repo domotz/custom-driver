@@ -89,7 +89,7 @@ const virtualMachineTable = D.createTable(
     { label: 'Memory', unit: 'MB', valueType: D.valueType.NUMBER },
     { label: 'CPU Usage', unit: '%', valueType: D.valueType.NUMBER },
     { label: 'Creation Time' },
-    { label: 'Processor Count' },
+    { label: 'Processors' },
     { label: 'Uptime' },
     { label: 'Status' }
   ]

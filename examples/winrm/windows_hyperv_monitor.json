@@ -8,7 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Powershell Version 5.1.19041.2364",
+            "Powershell Version 5.1.19041.4412",
             "Privilege required: Hyper-V Administrators",
             "WinRM Enabled",
             "Hyper-V"
