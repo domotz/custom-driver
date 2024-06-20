@@ -1,14 +1,14 @@
 {
     "logo": "microsoft-hyper-v.svg",
     "version": "1.0.0",
-    "name": "Hyper-V VM Snapshot",
-    "description": "This script retrieves information about the latest snapshots taken on Hyper-V virtual machines. It allows monitoring of snapshot creation time and age",
+    "name": "Windows Hyper-V VM Virtual Network Adapters",
+    "description": "This script retrieves information about the Hyper-V VM Virtual Network Adapters",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Powershell Version 5.1.19041.4412",
+            "Powershell Version 5.1.19041.2364",
             "Privilege required: Hyper-V Administrators",
             "WinRM Enabled",
             "Hyper-V",
@@ -17,17 +17,15 @@
     },
     "tags": [
         "windows",
+        "software",
         "hyper-v",
         "virtual-machine",
-        "snapshot",
-        "name",
-        "creation-time",
-        "age"
+        "network-adapters"
     ],
     "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[4]"
+        "table": "[7]"
     },
     "protocols": [
         "WINRM"

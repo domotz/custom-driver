@@ -1,8 +1,8 @@
 {
     "logo": "microsoft-hyper-v.svg",
     "version": "1.0.0",
-    "name": "Hyper-V VM Snapshot",
-    "description": "This script retrieves information about the latest snapshots taken on Hyper-V virtual machines. It allows monitoring of snapshot creation time and age",
+    "name": "Windows Hyper-V Show all VMs",
+    "description": "This script retrieves information about the Hyper-V Virtual machines",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -11,23 +11,19 @@
             "Powershell Version 5.1.19041.4412",
             "Privilege required: Hyper-V Administrators",
             "WinRM Enabled",
-            "Hyper-V",
-            "VM"
+            "Hyper-V"
         ]
     },
     "tags": [
         "windows",
+        "software",
         "hyper-v",
-        "virtual-machine",
-        "snapshot",
-        "name",
-        "creation-time",
-        "age"
+        "virtual-machine"
     ],
     "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[4]"
+        "table": "[10]"
     },
     "protocols": [
         "WINRM"

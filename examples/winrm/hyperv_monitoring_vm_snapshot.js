@@ -7,6 +7,7 @@
  * 
  * Tested on:
  *    - Windows 10
+ *    - Windows Server 2019
  *    - Hyper-V 10.0.19041.1
  *    - Powershell version 5.1.19041.4412
  * 
@@ -16,7 +17,7 @@
  *    - Creation time: The date and time when the latest snapshot was created
  *    - Age: The age of the latest snapshot in days
  *  
- * Privilege required: Administrator
+ * Privilege required: Hyper-V Administrators
  *   
  */
 

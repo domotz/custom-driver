@@ -1,0 +1,49 @@
+{
+    "logo": "onvif.svg",
+    "version": "1.0.0",
+    "name": "ONVIF camera monitoring",
+    "description": "Monitors the video capturing status of an ONVIF camera to check if capturing is still working or has stopped",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "ONVIF"      
+        ]
+    },
+    "tags": [
+        "camera",
+        "onvif",
+        "video",
+        "streaming",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2]"
+    },
+    "protocols": [
+        "ONVIF"
+    ],
+    "tested_on": [
+        {
+            "name": "LI-LIN",
+            "version": "LD2222"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "profileName",
+            "label": "Profile Name",
+            "value": ["ALL"]
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "onvifPort",
+            "label": "ONVIF port",
+            "value": 80
+        }
+    ]
+}
