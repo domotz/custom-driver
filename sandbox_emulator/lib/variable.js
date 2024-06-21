@@ -70,7 +70,8 @@ function createVariable (uid, name, value, unit, valueType, agentDriverSettings)
         "unit": unit,
         "valueType": valueType,
         "value": value,
-        "label": name
+        "label": name,
+        "type": "variable"
     };
 }
 

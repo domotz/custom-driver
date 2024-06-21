@@ -6,6 +6,7 @@ var { valueTypes, errorTypes } = require("../lib/constants");
 var createDevice = require("../lib/device").device;
 var createTable = require("../lib/table").createTable;
 var variableLibrary = require("../lib/variable")
+var backupLibrary = require("../lib/backup_lib")
 var cryptoLibrary = require("../lib/crypto")
 var bufferLibrary = require('../lib/buffer');
 
@@ -91,7 +92,14 @@ global.D = { /**
         if (args[1]) dataToShow.push(args[1])
         await Promise.all(dataToShow.map(async function (vars, index) {
             if (!vars) return;
-            if (vars && vars.getResult) {
+            if (vars.type == "backup"){
+                console.log("Label: " + vars.label)
+                console.log("Running: ")
+                console.log(vars.running)
+                console.log("Startup: ")
+                console.log(args.startup)
+            }
+            else if (vars.type == "table") {
                 var result = vars.getResult();
                 // saving table data
                 await Promise.all(result.rows.map(function (row) {
@@ -202,6 +210,7 @@ global.D = { /**
         driverVariable = variableLibrary.createVariable(uid, name, value, unit, valueType, { max_var_id_len: 50 });
         return driverVariable;
     },
+    createBackup: backupLibrary.createBackup,
     /**
      * The Custom Driver Crypto object.
      * Contains utility functions that offer ways of encapsulating secure credentials to be used as part of a secure HTTPS net or http connection.
