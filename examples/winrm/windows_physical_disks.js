@@ -12,9 +12,11 @@
  *  - 5.1.21996.1
  *
  * Creates a Custom Driver Table with the following columns:
- *    - Model: The model of the physical disk
+*    - Model: The model of the physical disk
  *    - Status: The current status of the disk
  *    - Size: The total size of the disk
+ *    - Free Space: The available space on the disk
+ *    - Usage: The percentage of the disk that is currently used
  *    - Media Type: The type of media the disk uses
  *    - Serial Number: The unique serial number assigned to the disk
  *    - Partitions: The number of partitions present on the disk
