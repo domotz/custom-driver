@@ -1,0 +1,39 @@
+{
+  "logo": "",
+  "version": "1.0.0",
+  "name": "macOS - OS General Information",
+  "description": "Monitors the general information for macintosh Operating System",
+  "category": "Software Integration",
+  "requirements": {
+      "credentials": true,
+      "sandbox_version": "1.12",
+      "others": [
+          "SSH Enabled"
+      ]
+  },
+  "tags": [
+      "macos",
+      "operating-system",
+      "name",
+      "version",
+      "build-number",
+      "machine-model",
+      "machine-name",
+      "architecture",
+      "serial-number"
+  ],
+  "sample_period_s": 86400,
+  "has_actions": false,
+  "expected_variables": {
+      "independent": "[7]"
+  },
+  "protocols": [
+      "SSH"
+  ],
+  "tested_on": [
+      {
+          "name": "macOS",
+          "version": "14.5"
+      }
+  ]
+}
