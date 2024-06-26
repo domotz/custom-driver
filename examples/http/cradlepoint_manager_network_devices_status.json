@@ -1,0 +1,50 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Cradlepoint NetCloud Manager - Network Device Status",
+    "description": "Retrieves the status of network devices for monitoring.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true
+    },
+    "tags": [
+        "model",
+        "product",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[3]"
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "deviceIds",
+            "label": "deviceIds"
+        },
+        {
+            "value_type": "STRING",
+            "name": "X_CP_API_ID",
+            "label": "X_CP_API_ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "X_CP_API_KEY",
+            "label": "X_CP_API_KEY"
+        },
+        {
+            "value_type": "STRING",
+            "name": "X_ECM_API_ID",
+            "label": "X_ECM_API_ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "X_ECM_API_KEY",
+            "label": "X_ECM_API_KEY"
+        }
+    ]
+}
