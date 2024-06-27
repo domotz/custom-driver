@@ -1,0 +1,47 @@
+{
+    "logo": "microsoft-hyper-v.svg",
+    "version": "1.0.0",
+    "name": "Windows Hyper-V VM Integration Services",
+    "description": "This script retrieves information about the Hyper-V VM Integration Services",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: Hyper-V Administrators",
+            "WinRM Enabled",
+            "Hyper-V",
+            "VM"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "hyper-v",
+        "virtual-machine",
+        "integration-services"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "10"
+        },
+        {
+            "name": "Windows Server",
+            "version": "2019"
+        },
+        {
+            "name": "Hyper-V",
+            "version": "10.0.19041.1"
+        }
+    ]
+}
