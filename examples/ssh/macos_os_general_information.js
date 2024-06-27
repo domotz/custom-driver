@@ -8,11 +8,11 @@
  * Tested on macOS Version 14.5
  *
  * Creates a custom driver variable:
- *    - Name: The name of the macOS operating system
- *    - Version: Description: The version number of the macOS
+ *    - OS Name: The name of the macOS operating system
+ *    - OS Version: Description: The version number of the macOS
  *    - Build Number: The specific build identifier of the macOS version
- *    - Machine model: The model of the Macintosh machine
- *    - Machine name: The name of the Macintosh machine
+ *    - Machine Model: The model of the Macintosh machine
+ *    - Machine Name: The name of the Macintosh machine
  *    - Architecture: The architecture type of the macOS
  *    - Serial Number: The serial number of the Macintosh machine
  * 
@@ -80,17 +80,17 @@ function extractVariables (output) {
   if (parsedData && parsedData.SPSoftwareDataType && parsedData.SPSoftwareDataType.length > 0) {
     var softwareInfo = parsedData.SPSoftwareDataType[0]
     if (softwareInfo.os_version) {
-      var name = softwareInfo.os_version.split(' ')[0] || 'N/A'
-      var version = softwareInfo.os_version.split(' ')[1] || 'N/A'
+      var osName = softwareInfo.os_version.split(' ')[0] || 'N/A'
+      var osVersion = softwareInfo.os_version.split(' ')[1] || 'N/A'
       var buildNumber = softwareInfo.os_version.split(' ')[2].replace(/[()]/g, '') || 'N/A'
     } 
   }
   var variables = [
-    D.createVariable('name', 'Name', name, null, D.valueType.STRING ),
-    D.createVariable('version', 'Version', version, null, D.valueType.STRING ),
+    D.createVariable('os-name', 'OS Name', osName, null, D.valueType.STRING ),
+    D.createVariable('os-version', 'OS Version', osVersion, null, D.valueType.STRING ),
     D.createVariable('build-number', 'Build Number', buildNumber, null, D.valueType.STRING ),
-    D.createVariable('machine-model', 'Machine model', machineModel, null, D.valueType.STRING ),
-    D.createVariable('machine-name', 'Machine name', machineName, null, D.valueType.STRING ),
+    D.createVariable('machine-model', 'Machine Model', machineModel, null, D.valueType.STRING ),
+    D.createVariable('machine-name', 'Machine Name', machineName, null, D.valueType.STRING ),
     D.createVariable('architecture', 'Architecture', architecture, null, D.valueType.STRING ),
     D.createVariable('serial-number', 'Serial Number', serialNumber, null, D.valueType.STRING )
   ]
