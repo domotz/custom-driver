@@ -5,8 +5,6 @@
  *
  * Communication protocol is https.
  *
- * Request Method: GET
- *
  * Output:
  * Extracts the following information from the data array:
  * - ID
@@ -16,12 +14,12 @@
  */
 
 // device Ids list filter param
-const deviceIdsFilter = D.getParameter('deviceIds')
+var deviceIdsFilter = D.getParameter('deviceIds')
 // headers params
-const X_CP_API_ID = D.getParameter('X_CP_API_ID')
-const X_CP_API_KEY = D.getParameter('X_CP_API_KEY')
-const X_ECM_API_ID = D.getParameter('X_ECM_API_ID')
-const X_ECM_API_KEY = D.getParameter('X_ECM_API_KEY')
+var X_CP_API_ID = D.getParameter('X_CP_API_ID')
+var X_CP_API_KEY = D.getParameter('X_CP_API_KEY')
+var X_ECM_API_ID = D.getParameter('X_ECM_API_ID')
+var X_ECM_API_KEY = D.getParameter('X_ECM_API_KEY')
 
 var headers = {
     'X-CP-API-ID': X_CP_API_ID,
@@ -30,101 +28,101 @@ var headers = {
     'X-ECM-API-KEY': X_ECM_API_KEY
 }
 
-if (deviceIdsFilter.length === 1 && deviceIdsFilter[0].toLowerCase() === 'all') {
-    var url =  "/api/v2/net_devices";
-}else{
-    var url =  "/api/v2/net_devices/?id__in=" + deviceIdsFilter.join(',');
+var url =  "/api/v2/net_devices";
+if (deviceIdsFilter.length !== 1 && deviceIdsFilter[0].toLowerCase() !== 'all') {
+    url += deviceIdsFilter.join(',');
 }
 
 // call API config
 var httpParams = {
     protocol: "https",
-    port: "",
     url: url,
     headers: headers
 };
 
-/**
-* Utility function.
-* Checks if the response object contains any errors.
-* Triggers Failure Callback in case of authentication error or unacceptable status codes.
-*/
-function validateAuthentication(response) {
-    if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR);
-    } else if (response.statusCode >= 400) {
-        D.failure(D.errorType.GENERIC_ERROR);
-    }
-}
-
-// calling get network devices status API
-function getNetworkDevicesStatus(successCallback) {
-    const device = D.createExternalDevice('www.cradlepointecm.com')
-    device.http.get(httpParams, function (error, response) {
-        if (error) {
-            console.error(error);
-            return D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if(!response){
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        validateAuthentication(response);
-        successCallback(response);
-    });
-}
-
-/**
-* @remote_procedure
-* @label Validate Association
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
-*/
-function validate() {
-    getNetworkDevicesStatus(function () {
-        D.success();
-    });
-}
-
-/**
-* @remote_procedure
-* @label Get Device Variables
-* @documentation This procedure is used for retrieving device * variables data
-*/
-function get_status() {
-    getNetworkDevicesStatus(function (response) {
-        var networkDevicesStatus = JSON.parse(response.body).data;
-        if (!networkDevicesStatus.length) {
-            console.info('There are no network devices status related to this filter.')
-        }
-        if (!Array.isArray(networkDevicesStatus) && typeof result === 'object') {
-            networkDevicesStatus = [].push(result)
-        }
-        for (let k = 0; k < networkDevicesStatus.length; k++) {
-            populateTable(
-                networkDevicesStatus[k].id,
-                networkDevicesStatus[k].mfg_model,
-                networkDevicesStatus[k].mfg_product,
-                networkDevicesStatus[k].connection_state
-            )
-        }
-        D.success(networkDevicesStatusTable);
-    });
-}
-
 // Creation of network devices status table
-const networkDevicesStatusTable = D.createTable(
+var networkDevicesStatusTable = D.createTable(
     'Network Devices Status',
     [
-        { label: 'Model' },
-        { label: 'Product' },
-        { label: 'Status' },
+        { label: 'Model', valueType: D.valueType.STRING },
+        { label: 'Product', valueType: D.valueType.STRING },
+        { label: 'Status', valueType: D.valueType.STRING }
     ]
 )
+
+// calling get network devices status API
+function getNetworkDevicesStatus() {
+    var d = D.q.defer();
+    var device = D.createExternalDevice('www.cradlepointecm.com')
+    device.http.get(httpParams, function (error, response, body) {
+        if (error) {
+            console.error(error);
+            return d.failure(D.errorType.GENERIC_ERROR);
+        }
+        if(!response){
+            d.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            d.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (response.statusCode !== 200) {
+            d.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
+    });
+    return d.promise;
+}
+
+/**
+ * @remote_procedure
+ * @label Validate Association
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ */
+function validate() {
+    getNetworkDevicesStatus().then(function () {
+        D.success();
+    })
+        .catch(function () {
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
+}
+
+/**
+ * @remote_procedure
+ * @label Get Device Variables
+ * @documentation This procedure is used for retrieving device * variables data
+ */
+function get_status() {
+    getNetworkDevicesStatus()
+        .then(function (bodyResponse) {
+            var networkDevicesStatus = bodyResponse.data;
+            if (!networkDevicesStatus.length) {
+                console.info('There are no network devices status related to this filter.');
+            }
+            if (!Array.isArray(networkDevicesStatus) && typeof networkDevicesStatus === 'object') {
+                networkDevicesStatus = [networkDevicesStatus];
+            }
+
+            for (let k = 0; k < networkDevicesStatus.length; k++) {
+                populateTable(
+                    networkDevicesStatus[k].id,
+                    networkDevicesStatus[k].mfg_model,
+                    networkDevicesStatus[k].mfg_product,
+                    networkDevicesStatus[k].connection_state
+                );
+            }
+
+            D.success(networkDevicesStatusTable);
+        })
+        .catch(function () {
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
+}
 
 /**
  * Populates a table with network devices status Table information.
  */
 function populateTable (id, Model, Product, Status) {
-    const recordId = sanitize(id)
+    var recordId = sanitize(id)
     Model = Model || 'N/A'
     Product = Product || 'N/A'
     Status = Status || 'N/A'
@@ -138,7 +136,7 @@ function populateTable (id, Model, Product, Status) {
  * @returns {string} - The sanitized string.
  */
 function sanitize (output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
     return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
 }
