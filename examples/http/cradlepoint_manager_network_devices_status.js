@@ -30,7 +30,7 @@ var headers = {
 
 var url =  "/api/v2/net_devices";
 if (deviceIdsFilter.length !== 1 && deviceIdsFilter[0].toLowerCase() !== 'all') {
-    url += deviceIdsFilter.join(',');
+    url += "/?id__in=" + deviceIdsFilter.join(',');
 }
 
 // call API config
