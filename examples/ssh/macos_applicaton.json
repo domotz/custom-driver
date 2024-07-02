@@ -1,0 +1,45 @@
+{
+  "logo": "",
+  "version": "1.0.0",
+  "name": "macOS - Applications",
+  "description": "Retrieves details of installed applications on macOS",
+  "category": "Software Integration",
+  "requirements": {
+      "credentials": true,
+      "sandbox_version": "1.12",
+      "others": [
+          "SSH Enabled"
+      ]
+  },
+  "tags": [
+      "macos",
+      "application",
+      "name",
+      "version",
+      "path",
+      "architecture",
+      "last-modified",
+      "source"
+  ],
+  "sample_period_s": 900,
+  "has_actions": false,
+  "expected_variables": {
+      "table": "[6]"
+  },
+  "protocols": [
+      "SSH"
+  ],
+  "tested_on": [
+      {
+          "name": "macOS",
+          "version": "14.5"
+      }
+  ],
+  "parameters": [
+      {
+          "value_type": "LIST",
+          "name": "applicationName",
+          "label": "Application Name"
+      }
+  ]
+}
