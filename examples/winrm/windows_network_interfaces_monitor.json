@@ -1,0 +1,39 @@
+{
+    "logo": "windows.svg",
+    "version": "1.0.0",
+    "name": "Windows Network Interface Monitoring",
+    "description": "This script retrieves information about network interfaces on Windows machines.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Powershell Version 5.1.19041.2364",
+            "Privilege required: User",
+            "WinRM Enabled"
+        ]
+    },
+    "tags": [
+        "windows",
+        "software",
+        "network"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "WINRM"
+    ],
+    "tested_on": [
+        {
+            "name": "Windows",
+            "version": "10"
+        },
+        {
+            "name": "Windows Server",
+            "version": "2019"
+        }
+    ]
+}
