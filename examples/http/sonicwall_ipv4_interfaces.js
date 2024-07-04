@@ -20,7 +20,9 @@
 
 // interface_name set it to 'ALL' to retrieve all interfaces,
 // or specify a list of interface names to filter and display only the selected interfaces 
-var interface_name = D.getParameter('interfaceName');
+var interfacesToMonitor = D.getParameter('interfaceName');
+
+var sonicWallAPIPort = 443;
 
 var table = D.createTable(
     "Interfaces", [
@@ -62,7 +64,7 @@ function login() {
         url: "/api/sonicos/auth",
         username: D.device.username(),
         password: D.device.password(),
-        port: 8444,
+        port: sonicWallAPIPort,
         protocol: "https",
         auth: "basic",
         jar: true,
@@ -78,7 +80,7 @@ function getInterfaces() {
     var config = {
         url: "/api/sonicos/interfaces/ipv4",
         protocol: "https",
-        port: 8444,
+        port: sonicWallAPIPort,
         jar: true,
         rejectUnauthorized: false
     };
@@ -96,31 +98,47 @@ function sanitize(output){
 function extractData(body) {
     var data = JSON.parse(body);
     data.interfaces.forEach(function (item) {
-        var name = item.ipv4.name;
-        if (interface_name[0].toLowerCase() === "all" || interface_name.some(function(res) {
-            return res.toLowerCase() === name.toLowerCase();
-        })) {      
+        var interfaceName = item.ipv4.name;
+        if (shouldBeMonitored(interfaceName)) {      
             var comment = item.ipv4.comment;
-            var recordId = sanitize(comment ? name + "-" + comment : name);
-            var ipAssignmentMode = item.ipv4.ip_assignment.mode;
-            var ip = ipAssignmentMode.static && ipAssignmentMode.static.ip || "";
-            var netmask = ipAssignmentMode.static && ipAssignmentMode.static.netmask || "";
-            var ipAddress = ip + " - " + netmask;
-            var gateway = ipAssignmentMode.static && ipAssignmentMode.static.gateway || "-";
-            var zone = item.ipv4.ip_assignment.zone || "-";
+            var recordId = sanitize(comment ? interfaceName + "-" + comment : interfaceName);
+
+            var ipAddress = "-";
+            var gateway = "-";
+            var zone = "-";
+            if (item.ipv4.ip_assignment && item.ipv4.ip_assignment.mode) {
+                var ipAssignmentMode = item.ipv4.ip_assignment.mode;
+                var ip = ipAssignmentMode.static && ipAssignmentMode.static.ip || "";
+                var netmask = ipAssignmentMode.static && ipAssignmentMode.static.netmask || "";
+                ipAddress = ip + " - " + netmask;
+                gateway = ipAssignmentMode.static && ipAssignmentMode.static.gateway || "-";
+                zone = item.ipv4.ip_assignment.zone || "-";
+            }
+
             var management = extractValue(item.ipv4.management) || "-";
+            management = management.replace(/true/g, "Yes").replace(/false/g, "No");
+
             var userLogin = extractValue(item.ipv4.user_login) || "-";
-            table.insertRecord(recordId, [
-                ipAddress,
-                gateway,
-                zone,
-                management.replace(/true/g, "Yes").replace(/false/g, "No"),
-                userLogin.replace(/true/g, "Yes").replace(/false/g, "No")
-            ]);
+            userLogin = userLogin.replace(/true/g, "Yes").replace(/false/g, "No");
+
+            populateTable(recordId, ipAddress, gateway, zone, management, userLogin);
         }
     });
 
     D.success(table);
+}
+
+function shouldBeMonitored(interfaceName)
+{
+    return (interfacesToMonitor[0].toLowerCase() === "all" || 
+            interfacesToMonitor.some(function(res) {
+                return res.toLowerCase() === interfaceName.toLowerCase();
+            })
+    ); 
+}
+
+function populateTable(recordId, ipAddress, gateway, zone, management, userLogin) {
+    table.insertRecord(recordId, [ipAddress, gateway, zone, management, userLogin]);
 }
 
 function extractValue(data) {

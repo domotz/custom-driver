@@ -1,0 +1,40 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall firewall - Product lifecycle",
+    "description": "Extract the product lifecycle information for a SonicWall device. This information is used to monitor the product lifecycle and check when a product is approaching end of support",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "firewall",
+        "product-lifecycle",
+        "last-order-day",
+        "active-retirement",
+        "one-year-support-last-order-day",
+        "limited-retirement-mode",
+        "end-ofs-upport"
+
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[10]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5145"
+        }
+    ]
+}

@@ -5,11 +5,11 @@
  *
  * Communication protocol is WinRM
  *
- * Tested on Windows Versions:
- *      - Windows 10
- *
- * Powershell Version:
- *      - 5.1.19041.2364
+ * Tested on:
+ *    - Windows 10
+ *    - Windows Server 2019
+ *    - Hyper-V 10.0.19041.1
+ *    - Powershell version 5.1.19041.4412
  *
  * Creates a Custom Driver table with the following columns:
  *    - Name: User-friendly name of the network adapter.
@@ -21,7 +21,7 @@
  *    - IsDeleted: Indicates if the adapter has been deleted (Yes or No).
  *
  * Privilege required:
- *    - Administrator
+ *    - Hyper-V Administrators
  *
  */
 

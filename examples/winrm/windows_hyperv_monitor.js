@@ -5,10 +5,11 @@
  *
  * Communication protocol is WinRM
  *
- * Tested on Windows Versions:
- *      - Windows 10
- * Powershell Version:
- *      - 5.1.19041.2364
+ * Tested on:
+ *    - Windows 10
+ *    - Windows Server 2019
+ *    - Hyper-V 10.0.19041.1
+ *    - Powershell version 5.1.19041.4412
  *
  * Creates a Custom Driver table with the following columns:
  *    - Id: Unique identifier for the disk within the virtual hard drive system.
@@ -24,7 +25,7 @@
  *    - Status : A summary of the current state and health of the virtual machine, providing insights into its operational status and any issues detected.
  *
  * Privilege required:
- *    - Administrator
+ *    - Hyper-V Administrators
  */
 
 // WinRM command to retrieve all Hyper-v VMs
@@ -88,7 +89,7 @@ const virtualMachineTable = D.createTable(
     { label: 'Memory', unit: 'MB', valueType: D.valueType.NUMBER },
     { label: 'CPU Usage', unit: '%', valueType: D.valueType.NUMBER },
     { label: 'Creation Time' },
-    { label: 'Processor Count' },
+    { label: 'Processors' },
     { label: 'Uptime' },
     { label: 'Status' }
   ]

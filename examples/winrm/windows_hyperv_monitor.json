@@ -8,8 +8,8 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Powershell Version 5.1.19041.2364",
-            "Privilege required: Administrator",
+            "Powershell Version 5.1.19041.4412",
+            "Privilege required: Hyper-V Administrators",
             "WinRM Enabled",
             "Hyper-V"
         ]
@@ -32,6 +32,10 @@
         {
             "name": "Windows",
             "version": "10"
+        },
+        {
+            "name": "Windows Server",
+            "version": "2019"
         },
         {
             "name": "Hyper-V",

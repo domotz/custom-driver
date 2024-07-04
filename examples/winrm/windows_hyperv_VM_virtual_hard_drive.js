@@ -5,10 +5,11 @@
  *
  * Communication protocol is WinRM
  *
- * Tested on Windows Versions:
- *      - Windows 10
- * Powershell Version:
- *      - 5.1.19041.2364
+ * Tested on:
+ *    - Windows 10
+ *    - Windows Server 2019
+ *    - Hyper-V 10.0.19041.1
+ *    - Powershell version 5.1.19041.4412
  *
  * Creates a Custom Driver table with the following columns:
  *    - Id: Unique identifier for the disk within the virtual hard drive system.
@@ -22,7 +23,7 @@
  *    - Is Deleted: Indicates if the virtual hard drive has been deleted (Yes or No).
  *
  * Privilege required:
- *    - Administrator
+ *    - Hyper-V Administrators
  */
 
 // The VM ID for which you want to display the Virtual Hard Drives.
