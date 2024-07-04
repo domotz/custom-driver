@@ -12,8 +12,10 @@
  * - Product
  * - Status
  */
-
-// device Ids list filter param
+// List of Net Device IDs to filter
+// deviceIds: ["34536881", "34536882", "34536883"] to display net devices information by a list of IDs
+// or
+// deviceIds = ["All"] to display all net devices.
 var deviceIdsFilter = D.getParameter('deviceIds')
 // headers params
 var X_CP_API_ID = D.getParameter('X_CP_API_ID')
@@ -95,11 +97,15 @@ function get_status() {
     getNetworkDevicesStatus()
         .then(function (bodyResponse) {
             var networkDevicesStatus = bodyResponse.data;
-            if (!networkDevicesStatus.length) {
-                console.info('There are no network devices status related to this filter.');
-            }
-            if (!Array.isArray(networkDevicesStatus) && typeof networkDevicesStatus === 'object') {
-                networkDevicesStatus = [networkDevicesStatus];
+
+            if (Array.isArray(networkDevicesStatus)) {
+                if (!networkDevicesStatus.length) {
+                    console.info('There are no network devices status related to this filter.');
+                }
+            }else{
+                if (typeof networkDevicesStatus === 'object'){
+                    networkDevicesStatus = [networkDevicesStatus];
+                }
             }
 
             for (let k = 0; k < networkDevicesStatus.length; k++) {
