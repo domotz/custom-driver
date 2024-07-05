@@ -1,0 +1,34 @@
+{
+    "logo": "macos.svg",
+    "version": "1.0.0",
+    "name": "macOS - CPU and Memory Usage",
+    "description": "Retrieves CPU and memory usage information from a macOS device",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "macos",
+        "operating-system",
+        "cpu",
+        "memory"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[9]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "macOS",
+            "version": "14.5"
+        }
+    ]
+  }
