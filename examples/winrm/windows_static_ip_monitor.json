@@ -1,8 +1,8 @@
 {
     "logo": "windows.svg",
     "version": "1.0.0",
-    "name": "Windows Network Interface Monitoring",
-    "description": "This script retrieves information about network interfaces on Windows machines.",
+    "name": "Windows Static IP Monitor",
+    "description": "This script retrieves and monitors static IP information for network interfaces on Windows machines.",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -16,6 +16,7 @@
     "tags": [
         "windows",
         "software",
+        "static-ip",
         "network"
     ],
     "sample_period_s": 600,
@@ -34,6 +35,14 @@
         {
             "name": "Windows Server",
             "version": "2019"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "interfaceAliases",
+            "label": "Network Interface Aliases",
+            "value": ["Ethernet", "Wi-Fi"]
         }
     ]
 }
