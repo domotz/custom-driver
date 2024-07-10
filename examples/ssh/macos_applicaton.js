@@ -14,6 +14,7 @@
  *    - Architecture: Architecture type of the application
  *    - Last modified: Last modified timestamp of the application
  *    - Source: Source from where the application was obtained
+ *    - Signed by: Signer or authority responsible for signing the application
  *
  **/
 
@@ -21,22 +22,13 @@
 var sshConfig = {
   'username': D.device.username(),
   'password': D.device.password(),
-  'timeout': 10000
+  'timeout': 20000
 }
 
 var applicationName = D.getParameter('applicationName')
+
 // Command to retrieve applications info
 var cmdApplications = 'system_profiler SPApplicationsDataType -json'
-// Fields to retrieve from the command output
-var fields = ' | grep -E "_name|version|path|arch_kind|obtained_from|lastModified"'
-var applications
-if (applicationName[0].toUpperCase() === 'ALL') {
-  applications = cmdApplications + fields
-} else {
-  var applicationFilter = applicationName.map(function(app) { return '"' + app + '"' }).join('|')
-  var filterCommand = " | grep -E '\\\"_name\\\" : (" + applicationFilter + ")' -A 11"
-  applications = cmdApplications + filterCommand + fields
-}
 
 // Table to store macOS applications information
 var applicationsTable = D.createTable(
@@ -47,7 +39,8 @@ var applicationsTable = D.createTable(
     { label: "Path", valueType: D.valueType.STRING },
     { label: "Architecture", valueType: D.valueType.STRING },
     { label: "Last modified", valueType: D.valueType.DATETIME }, 
-    { label: "Source", valueType: D.valueType.STRING }
+    { label: "Source", valueType: D.valueType.STRING },
+    { label: "Signed by", valueType: D.valueType.STRING }
   ]
 )
 
@@ -72,9 +65,9 @@ function checkSshError (err) {
  * @param {string} command The SSH command to execute
  * @returns {Promise} A promise that resolves with the command output or rejects with an error
  */
-function executeCommand (applications) {
+function executeCommand (cmdApplications) {
   var d = D.q.defer()
-  sshConfig.command = applications
+  sshConfig.command = cmdApplications
   D.device.sendSSHCommand(sshConfig, function (output, error) {
     if (error) {
       checkSshError(error)
@@ -106,25 +99,29 @@ function formatDate(date) {
     dateTime.getFullYear() + ' ' +
     dateTime.getHours() + ':' +
     dateTime.getMinutes() + ':' +
-    dateTime.getSeconds();
+    dateTime.getSeconds()
   return formattedDate
 }
 
 /**
  * Populates the applications table with retrieved data
- * @param {Array} data Array of application data objects
+ * @param {Array} applications Array of application data objects
  */
-function populateTable (data) {
-  data.forEach(function(app) {
+function populateTable (applications) {
+  applications.forEach(function(app) {
     var recordId = sanitize(app.name + "-" + app.version)
     var formattedLastModified = formatDate(app.lastModified)
+    var signedBy = Array.isArray(app.signedBy) ? app.signedBy.map(function(signer) {
+      return signer.replace(/[\[\]']+/g, ''); 
+    }).join(', ') : app.signedBy
     applicationsTable.insertRecord(recordId, [
       app.name,
       app.version || 'N/A',
       app.path || 'N/A',
       app.architecture || 'N/A',
       formattedLastModified,
-      app.source || 'N/A'
+      app.source || 'N/A',
+      signedBy || 'N/A'
     ])
   })
   D.success(applicationsTable)
@@ -136,37 +133,30 @@ function populateTable (data) {
  */
 function extractVariables (output) {
   if (output){
-    var lines = output.split('\n').map(function(line) { return line.trim() })
-    var applications = []
-    var currentApp = {}
-    lines.forEach(function(line) {
-      var match = line.match(/"([^"]+)"\s*:\s*"([^"]*)"/)
-      if (match) {
-        var key = match[1]
-        var value = match[2]
-        var keyMappings = {
-          _name: 'name',
-          arch_kind: 'architecture',
-          version: 'version',
-          path: 'path',
-          lastModified: 'lastModified',
-          obtained_from: 'source'
+    var parsedData = JSON.parse(output)
+    if (parsedData && parsedData.SPApplicationsDataType && parsedData.SPApplicationsDataType.length > 0) {
+      var filteredData = []
+      parsedData.SPApplicationsDataType.forEach(function(app){
+        if (applicationName[0].toUpperCase() === 'ALL' || applicationName.includes(app._name)) {
+          var applications =  {
+            name: app._name,
+            version: app.version,
+            path: app.path,
+            architecture: app.arch_kind,
+            lastModified: app.lastModified,
+            source: app.obtained_from,
+            signedBy: app.signed_by
+          }
+          filteredData.push(applications)
         }
-        if (key === '_name' && Object.keys(currentApp).length > 0) {
-          applications.push(currentApp)
-          currentApp = {}
-        }
-        var mappedKey = keyMappings[key]
-        if (mappedKey) {
-          currentApp[mappedKey] = value
-        }
-      }
-    })
-    if (Object.keys(currentApp).length > 0) {
-      applications.push(currentApp)
+      })
+      populateTable(filteredData)        
+    } else {
+      console.error('Invalid or empty SPApplicationsDataType')
+      D.failure(D.errorType.PARSING_ERROR);
     }
-    populateTable(applications)
   } else {
+    console.error('No data found')
     D.failure(D.errorType.PARSING_ERROR)
   }
 }
@@ -177,7 +167,7 @@ function extractVariables (output) {
  * @documentation This procedure is used to validate the driver and credentials provided during association.
  */
 function validate () {
-  executeCommand(applications)
+  executeCommand(cmdApplications)
     .then(parseValidateOutput)
     .catch(function (err) {
       console.error(err)
@@ -198,7 +188,7 @@ function parseValidateOutput (output) {
  * @documentation This procedure is used to extract details about installed applications on the system, including version information and installation paths
  */
 function get_status () {
-  executeCommand(applications)
+  executeCommand(cmdApplications)
     .then(extractVariables)
     .catch(checkSshError)
 }
