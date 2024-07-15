@@ -176,9 +176,12 @@ function validate () {
 }
 
 function parseValidateOutput (output) {
-  if (output.trim !== undefined && output.trim() !== '') {
+  if (output && typeof output === 'string' && output.trim() !== '') {
     console.log('Validation successful')
     D.success()
+  } else {
+    console.error('Output is empty or undefined');
+    D.failure(D.errorType.PARSING_ERROR);
   }
 }
 
