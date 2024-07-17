@@ -6,7 +6,6 @@
  * Communication protocol is https.
  *
  * Tested on:
- *    - Windows 10
  *    - Cradlepoint AER 2200
  *
  * Output:
