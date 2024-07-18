@@ -36,6 +36,10 @@
     "tested_on": [
         {
             "name": "Windows",
+            "version": "10"
+        },
+        {
+            "name": "Windows",
             "version": "11"
         }
     ]
