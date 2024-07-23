@@ -6,6 +6,7 @@
  * Communication protocol is WinRM
  *
  * Tested on Windows Version
+ *  - Windows 10
  *  - Windows 11
  *
  * Powershell Version:
