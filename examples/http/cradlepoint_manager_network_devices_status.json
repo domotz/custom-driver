@@ -1,0 +1,57 @@
+{
+    "logo": "cradlepoint.svg",
+    "version": "1.0.0",
+    "name": "Cradlepoint NetCloud Manager - Network Device Status",
+    "description": "Retrieves the status of network devices for monitoring.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12"
+    },
+    "tags": [
+        "model",
+        "product",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Cradlepoint AER",
+            "version": "2200"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "deviceIds",
+            "label": "devices Ids"
+        },
+        {
+            "value_type": "STRING",
+            "name": "X_CP_API_ID",
+            "label": "Content Provider API ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "X_CP_API_KEY",
+            "label": "Content Provider API Key"
+        },
+        {
+            "value_type": "STRING",
+            "name": "X_ECM_API_ID",
+            "label": "Enterprise Content Management API ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "X_ECM_API_KEY",
+            "label": "Enterprise Content Management API Key"
+        }
+    ]
+}

@@ -157,7 +157,8 @@ function createTable(label, columnHeaders, myConsole) {
          * @readonly
          * @memberof driverTable 
          */        
-        isTable: true
+        isTable: true,
+        type:"table"
     };
 }
 
