@@ -1,0 +1,40 @@
+{
+    "logo": "vmware-vsphere.svg",
+    "version": "1.0.0",
+    "name": "VMWare vCenter Monitoring Certificate expiration",
+    "description": "This script is designed to retrieve and monitor VMware vCenter certificates, ensuring their validity by checking their expiration dates.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware",
+            "vCenter",
+            "Openssl"
+        ]
+    },
+    "tags": [
+        "vmware",
+        "vcenter",
+        "certificate",
+        "ssl",
+        "certificate-authority",
+        "sts-signing",
+        "trusted-root"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[5]"
+    },
+    "protocols": [
+        "HTTPS",
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "VMWare vCenter",
+            "version": "8.0.2"
+        }
+    ]
+}

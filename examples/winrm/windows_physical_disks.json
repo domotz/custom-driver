@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Physical Disks",
     "description": "Monitors the status of physical disks within a Windows machine",
     "category": "Software Integration",
@@ -19,6 +19,8 @@
         "model",
         "status",
         "size",
+        "free-space",
+        "usage",
         "media-type",
         "serial-number",
         "partition"
@@ -26,12 +28,16 @@
     "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
-        "table": "[6]"
+        "table": "[8]"
     },
     "protocols": [
         "WINRM"
     ],
     "tested_on": [
+        {
+            "name": "Windows",
+            "version": "10"
+        },
         {
             "name": "Windows",
             "version": "11"
