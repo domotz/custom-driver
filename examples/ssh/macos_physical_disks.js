@@ -13,13 +13,13 @@
  *   - Size: Total size of the disk (in GB)
  *   - Free space: Total free space available on the disk (in GB)
  *   - Usage: Usage percentage of the disk
- *   - Media Type: Type of the disk media
+ *   - Serial Number: The unique serial number assigned to the disk
  *   - Partitions number: Number of partitions belonging to the disk
  *
  **/
 
 // SSH command to retrieve retrieve physical disks information
-var cmdGetPhysicalDisks = 'diskutil info -all'
+var cmdGetPhysicalDisks = 'system_profiler SPNVMeDataType -json'
 
 var sshConfig = {
   'username': D.device.username(),
@@ -36,7 +36,7 @@ var table = D.createTable(
     { label: 'Size', unit: 'GB', valueType: D.valueType.NUMBER },
     { label: 'Free Space', unit: 'GB', valueType: D.valueType.NUMBER },
     { label: 'Usage', unit: '%', valueType: D.valueType.NUMBER },
-    { label: 'Media Type', valueType: D.valueType.STRING },
+    { label: 'Serial Number', valueType: D.valueType.STRING },
     { label: 'Partitions Number', valueType: D.valueType.NUMBER }
   ]
 )
@@ -77,72 +77,6 @@ function executeCommand (cmdGetPhysicalDisks) {
 }
 
 /**
- * Parses the output of the SSH command to extract physical disk information
- * @param {string} output The output from the SSH command execution
- * @returns {Array} An array of objects representing parsed physical disk information
- */
-function parseOutput(output) {
-  var lines = output.trim().split('\n')
-  var physicalDisks = []
-  var currentDisk = {}
-
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i]
-    if (line === '' || line.indexOf('**********') === 0) {
-      continue
-    }
-    var match = line.match(/^(.*?):\s*(.*)$/)
-    if (match) {
-      var key = match[1].trim()
-      var value = match[2].trim()
-      if (key === 'Device Identifier') {
-        if (Object.keys(currentDisk).length > 0) {
-          physicalDisks.push(currentDisk);
-        }
-        currentDisk = { 'Device Identifier': value }
-      } else {
-        if (!currentDisk) {
-          continue
-        }
-        currentDisk[key] = value
-      }
-    }
-  }
-  if (Object.keys(currentDisk).length > 0) {
-    physicalDisks.push(currentDisk)
-  }
-  var filteredDisks = physicalDisks.filter(function(disk) {
-    return disk['Whole'] === 'Yes'
-  });
-
-  filteredDisks.forEach(function(disk) {
-    var partitionsCount = 0
-    var totalUsedSpace = 0
-    var diskIdentifier = disk['Device Identifier']
-    for (var j = 0; j < physicalDisks.length; j++) {
-      var partition = physicalDisks[j]
-      if (partition !== disk && partition['Part of Whole'] === diskIdentifier && partition['This disk is an APFS Volume Snapshot.  APFS Information'] === undefined) {
-        partitionsCount++;
-        if (partition['Volume Used Space'] && partition['Volume Used Space'].match(/\((\d+) Bytes\)/)) {
-          var volumeUsedSpace = parseInt(partition['Volume Used Space'].match(/\((\d+) Bytes\)/)[1])
-          totalUsedSpace += volumeUsedSpace
-        }
-      }
-    }
-
-    disk['Partitions Number'] = partitionsCount || 0
-    disk['Total Used Space'] = totalUsedSpace || 0
-  })
-  return filteredDisks
-}
-
-function sanitize (output) {
-  var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
-}
-
-/**
  * Converts bytes to gigabytes.
  * @param {number} bytes Number of bytes to convert
  * @returns {number} Equivalent number of gigabytes
@@ -152,28 +86,54 @@ function bytesToGB(bytes) {
 }
 
 /**
- * Extracts relevant variables from parsed physical disks and populates the table
- * @param {Array} physicalDisks Array of objects representing parsed physical disk information
+ * Parses the output of the SSH command to extract physical disk information
+ * @param {string} output The output from the SSH command execution
+ * @returns {Array} An array of objects representing parsed physical disk information
  */
-function extractVariables(physicalDisks) {
-  var disksList = []
-  physicalDisks.forEach(function (disk) {
-    var diskSize = parseFloat(disk['Disk Size'] ? disk['Disk Size'].replace(/^\D*([\d.]+).*/, '$1') : 0)
-    var usedSpace = disk['Total Used Space'] ? bytesToGB(disk['Total Used Space']) : 0
-    var usage = diskSize !== 0 ? (usedSpace / diskSize) * 100 : 0
-    var disks = {
-      id: disk['Device Identifier'],
-      name: disk['Device / Media Name'] || 'N/A',
-      status: disk['SMART Status'] || 'N/A',
-      size: diskSize,
-      freeSpace : (diskSize - usedSpace).toFixed(2),
-      usage: usage,
-      mediaType: disk['Media Type'] || 'N/A',
-      partitionsNumber: disk['Partitions Number'] 
+function parseOutput(output) {
+  if (output){
+    var parsedData = JSON.parse(output)
+    if (parsedData && parsedData.SPNVMeDataType && Array.isArray(parsedData.SPNVMeDataType) && parsedData.SPNVMeDataType.length > 0) {
+      var disksInfo = parsedData.SPNVMeDataType[0]._items
+      if (Array.isArray(disksInfo) && disksInfo.length > 0) {
+        var disksList = []
+        disksInfo.forEach(function(disk){
+          var freeSpace = disk.volumes && Array.isArray(disk.volumes) ? disk.volumes.reduce(function(acc, vol) { return acc + (vol.size_in_bytes || 0) }, 0) : 0
+          var sizeInBytes = disk.size_in_bytes || 0
+          var usage = sizeInBytes - freeSpace
+          var usagePercentage = sizeInBytes > 0 ? ((usage / sizeInBytes) * 100).toFixed(2) : 0
+          var disks = {
+            id: disk.bsd_name,
+            name: disk.device_model || 'N/A',
+            status: disk.smart_status || 'N/A',
+            size: bytesToGB(sizeInBytes),
+            freeSpace: bytesToGB(freeSpace),
+            usage: usagePercentage,
+            serialNumber: disk.device_serial,
+            partitionsNumber: (disk.volumes && Array.isArray(disk.volumes)) ? disk.volumes.length : 0
+          }
+          disksList.push(disks)
+        })
+        populateTable(disksList)
+      } else {
+        console.error('No Disks found in SPNVMeDataType')
+        D.failure(D.errorType.PARSING_ERROR)
+      }
+    } else {
+      console.error('SPNVMeDataType is not available or empty')
+      D.failure(D.errorType.PARSING_ERROR)
     }
-    disksList.push(disks)
-  })
-  populateTable(disksList)
+   
+  } else {
+    console.error('No data found')
+    D.failure(D.errorType.PARSING_ERROR)
+  }
+}
+
+function sanitize (output) {
+  var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
+  var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
 }
 
 function populateTable (disks) {
@@ -184,7 +144,7 @@ function populateTable (disks) {
       data.size,
       data.freeSpace,
       data.usage,
-      data.mediaType,
+      data.serialNumber,
       data.partitionsNumber
     ])
   })
@@ -223,6 +183,5 @@ function parseValidateOutput (output) {
 function get_status () {
   executeCommand(cmdGetPhysicalDisks)
     .then(parseOutput)
-    .then(extractVariables)
     .catch(checkSshError)
 }
