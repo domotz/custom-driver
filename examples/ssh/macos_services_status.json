@@ -1,0 +1,48 @@
+{
+    "logo": "macos.svg",
+    "version": "1.0.0",
+    "name": "macOS Services Monitoring",
+    "description": "Monitors the status of services on a Macintoch machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled",
+            "user running the script should be in the /etc/sudoers file with the following settings: integration-script ALL=(ALL) NOPASSWD: ALL"
+        ]
+    },
+    "tags": [
+        "macos",
+        "services",
+        "name",
+        "version",
+        "path",
+        "architecture",
+        "last-modified",
+        "source",
+        "signed-by"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[2]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "macOS",
+            "version": "14.5"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "sevrices",
+            "label": "Service Name",
+            "value": ["nsurlsessiond_privileged", "findmymacmessenger", "sophos.endpoint.scanextension", "appleh13camerad"]
+        }
+    ]
+  }
