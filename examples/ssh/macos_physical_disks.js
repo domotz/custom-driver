@@ -19,7 +19,7 @@
  **/
 
 // SSH command to retrieve retrieve physical disks information
-var cmdGetPhysicalDisks = 'system_profiler SPNVMeDataType -json'
+var cmdGetPhysicalDisks = 'system_profiler SPNVMeDataType SPStorageDataType -json'
 
 var sshConfig = {
   'username': D.device.username(),
@@ -91,28 +91,48 @@ function bytesToGB(bytes) {
  * @returns {Array} An array of objects representing parsed physical disk information
  */
 function parseOutput(output) {
-  if (output){
+  if (output) {
     var parsedData = JSON.parse(output)
-    if (parsedData && parsedData.SPNVMeDataType && Array.isArray(parsedData.SPNVMeDataType) && parsedData.SPNVMeDataType.length > 0) {
-      var disksInfo = parsedData.SPNVMeDataType[0]._items
+    var nvmeData = parsedData.SPNVMeDataType
+    var storageData = parsedData.SPStorageDataType
+    var disksList = []
+    if (nvmeData && Array.isArray(nvmeData) && nvmeData.length > 0) {
+      var disksInfo = nvmeData[0]._items
       if (Array.isArray(disksInfo) && disksInfo.length > 0) {
-        var disksList = []
-        disksInfo.forEach(function(disk){
-          var freeSpace = disk.volumes && Array.isArray(disk.volumes) ? disk.volumes.reduce(function(acc, vol) { return acc + (vol.size_in_bytes || 0) }, 0) : 0
+        disksInfo.forEach(function(disk) {
           var sizeInBytes = disk.size_in_bytes || 0
-          var usage = sizeInBytes - freeSpace
-          var usagePercentage = sizeInBytes > 0 ? ((usage / sizeInBytes) * 100).toFixed(2) : 0
-          var disks = {
+          var totalFreeSpace = 0
+          var partitionsNumber = 0
+          var filesystemFreeSpace = {}
+          var uniqueFilesystems = new Set() 
+          if (storageData && Array.isArray(storageData)) {
+            storageData.forEach(function(volume) {
+              if (volume.physical_drive && volume.physical_drive.device_name === disk.device_model) {
+                var fsType = volume.file_system || ''
+                if (!uniqueFilesystems.has(fsType)) {
+                  uniqueFilesystems.add(fsType)
+                  filesystemFreeSpace[fsType] = volume.free_space_in_bytes || 0
+                  totalFreeSpace += filesystemFreeSpace[fsType]
+                }
+                partitionsNumber += 1
+              }
+            })
+          }
+          var freeSpaceGB = bytesToGB(totalFreeSpace)
+          var totalSizeGB = bytesToGB(sizeInBytes)
+          var usedSpaceGB = totalSizeGB - freeSpaceGB
+          var usagePercentage = totalSizeGB > 0 ? ((usedSpaceGB / totalSizeGB) * 100).toFixed(2) : 0
+          var diskInfo = {
             id: disk.bsd_name,
             name: disk.device_model || 'N/A',
             status: disk.smart_status || 'N/A',
-            size: bytesToGB(sizeInBytes),
-            freeSpace: bytesToGB(freeSpace),
+            size: totalSizeGB,
+            freeSpace: freeSpaceGB,
             usage: usagePercentage,
-            serialNumber: disk.device_serial,
-            partitionsNumber: (disk.volumes && Array.isArray(disk.volumes)) ? disk.volumes.length : 0
+            serialNumber: disk.device_serial || 'N/A',
+            partitionsNumber: partitionsNumber
           }
-          disksList.push(disks)
+          disksList.push(diskInfo)
         })
         populateTable(disksList)
       } else {
@@ -123,7 +143,6 @@ function parseOutput(output) {
       console.error('SPNVMeDataType is not available or empty')
       D.failure(D.errorType.PARSING_ERROR)
     }
-   
   } else {
     console.error('No data found')
     D.failure(D.errorType.PARSING_ERROR)
