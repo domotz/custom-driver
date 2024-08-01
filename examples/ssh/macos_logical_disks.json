@@ -1,0 +1,33 @@
+{
+    "logo": "macos.svg",
+    "version": "1.0.0",
+    "name": "macOS - Logical Disks",
+    "description": "Monitors the status of logical disks within a Macintosh machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "macos",
+        "logical-disk",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[10]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "macOS",
+            "version": "14.5"
+        }
+    ]
+}
