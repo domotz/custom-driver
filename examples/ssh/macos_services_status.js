@@ -15,7 +15,7 @@
 **/
 
 // Filter for services to include in the command
-var servicesFilter  = D.getParameter('sevrices')
+var servicesFilter  = D.getParameter('services')
 
 // Command to list all services using launchctl
 var command = "sudo launchctl list"
@@ -75,7 +75,6 @@ var signalMap = {
 var table = D.createTable(
 	"Services List",
 	[
-		{ label: "Name", valueType: D.valueType.STRING},
 		{ label: "Status", valueType: D.valueType.STRING}
 	]
 )
@@ -178,9 +177,8 @@ function parseOutput(output) {
 				status = "Unknown"
 			}
 			var parsedLine = {
-				PID: pid,
-				Label: label,
-				Status: status
+                Label: label,
+                Status: status
 			}
 			parsedOutput.push(parsedLine)
 		})
@@ -204,12 +202,7 @@ function sanitize (output) {
 function populateTable (services) {
 	services.forEach(function(service) {
 		var recordId = sanitize(service.Label)
-		var status = service.Status
-		var name = service.Label
-		table.insertRecord(recordId, [
-			name.replace("com.apple.", ""),
-			status || 'N/A'
-		])
+		table.insertRecord(recordId, [ service.Status || 'N/A' ])
 	})
 	D.success(table)
 }
