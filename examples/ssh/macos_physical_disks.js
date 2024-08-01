@@ -77,15 +77,6 @@ function executeCommand (cmdGetPhysicalDisks) {
 }
 
 /**
- * Converts bytes to gigabytes.
- * @param {number} bytes Number of bytes to convert
- * @returns {number} Equivalent number of gigabytes
- */
-function bytesToGB(bytes) {
-  return (bytes / Math.pow(1024, 3)).toFixed(2)
-}
-
-/**
  * Parses the output of the SSH command to extract physical disk information
  * @param {string} output The output from the SSH command execution
  * @returns {Array} An array of objects representing parsed physical disk information
@@ -118,16 +109,16 @@ function parseOutput(output) {
               }
             })
           }
-          var freeSpaceGB = bytesToGB(totalFreeSpace)
-          var totalSizeGB = bytesToGB(sizeInBytes)
+          var freeSpaceGB = totalFreeSpace / 1000000000
+          var totalSizeGB = sizeInBytes / 1000000000
           var usedSpaceGB = totalSizeGB - freeSpaceGB
           var usagePercentage = totalSizeGB > 0 ? ((usedSpaceGB / totalSizeGB) * 100).toFixed(2) : 0
           var diskInfo = {
             id: disk.bsd_name,
             name: disk.device_model || 'N/A',
             status: disk.smart_status || 'N/A',
-            size: totalSizeGB,
-            freeSpace: freeSpaceGB,
+            size: totalSizeGB.toFixed(2),
+            freeSpace: freeSpaceGB.toFixed(2),
             usage: usagePercentage,
             serialNumber: disk.device_serial || 'N/A',
             partitionsNumber: partitionsNumber
