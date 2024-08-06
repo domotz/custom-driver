@@ -37,8 +37,8 @@ var cpuDetailsTable = D.createTable(
     [
       { label: 'CPU Name', valueType: D.valueType.STRING},
       { label: 'CPU Vendor', valueType: D.valueType.STRING },
-      { label: 'Speed', valueType: D.valueType.NUMBER , unit:'Hz'},
-      { label: 'Bus Speed', valueType: D.valueType.NUMBER , unit:'Hz'},
+      { label: 'Speed', valueType: D.valueType.NUMBER , unit:'MHz'},
+      { label: 'Bus Speed', valueType: D.valueType.NUMBER , unit:'MHz'},
     ]
 )
 
@@ -215,8 +215,8 @@ function generateTabelOutput(soapResponse) {
       "id": cpuPackage.find('index').text(),
       "cpuName": cpuPackage.find('description').text() || "N/A",
       "cpuVendor": cpuPackage.find('vendor').text() || "N/A",
-      "speed": cpuPackage.find('hz').text() || "N/A",
-      "busSpeed": cpuPackage.find('busHz').text() || "N/A",
+      "speed": (cpuPackage.find('hz').text() / 1e6).toFixed(2) || "N/A",
+      "busSpeed": (cpuPackage.find('busHz').text() / 1e6).toFixed(2) || "N/A",
     })
   });
   return cpuDetailsTable;
