@@ -1,0 +1,32 @@
+{
+  "logo": "vmware-esxi.svg",
+  "version": "1.0.0",
+  "name": "ESXi CPU Details",
+  "description": "Monitors the ESXi host CPU Details",
+  "category": "Hardware Integration",
+  "requirements": {
+    "credentials": true,
+    "sandbox_version": "1.12",
+    "others": [
+      "VMware ESXi"
+    ]
+  },
+  "tags": [
+    "esxi",
+    "vmware"
+  ],
+  "sample_period_s": 1800,
+  "has_actions": false,
+  "expected_variables": {
+    "table": "[4]"
+  },
+  "protocols": [
+    "HTTPS"
+  ],
+  "tested_on": [
+    {
+      "name": "ESXi",
+      "version": "8.0.0"
+    }
+  ]
+}
