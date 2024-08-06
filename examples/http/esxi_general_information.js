@@ -3,18 +3,22 @@
  * Name: ESXi General Information
  * Description: Monitors the general information of the ESXi host.
  *
+ * Communication protocol is HTTPS
+ *
+ * Tested on ESXi version: 8.0.0
+ *
  * Custom Driver Variables:
  *      - Name: Represents the name of the ESXi host.
- *      - ConnectionState: Tracks the current connection status of the ESXi host.
- *      - SystemModel: Indicates the hardware model of the ESXi host.
- *      - SystemVendor: Identifies the vendor of the ESXi host's hardware.
- *      - NumberOfNICs: Displays the number of Network Interface Cards (NICs) present in the ESXi host.
- *      - NumberOfHBAs: Shows the number of Host Bus Adapters (HBAs) available in the ESXi host.
- *      - ProductVersion: Specifies the version of the ESXi host software.
- *      - APIVersion: Details the version of the API available on the ESXi host.
- *      - OSType: The operating system type running on the ESXi host.
- *      - ProductLineID: Identifies the product line of the ESXi host.
- * *
+ *      - Connection State: Tracks the current connection status of the ESXi host.
+ *      - System Model: Indicates the hardware model of the ESXi host.
+ *      - System Vendor: Identifies the vendor of the ESXi host's hardware.
+ *      - Number Of NICs: Displays the number of Network Interface Cards (NICs) present in the ESXi host.
+ *      - Number Of HBAs: Shows the number of Host Bus Adapters (HBAs) available in the ESXi host.
+ *      - Product Version: Specifies the version of the ESXi host software.
+ *      - API Version: Details the version of the API available on the ESXi host.
+ *      - OS Type: The operating system type running on the ESXi host.
+ *      - Product Line ID: Identifies the product line of the ESXi host.
+ *
  **/
 
 // URL endpoint for accessing the vSphere SDK
