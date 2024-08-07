@@ -240,15 +240,17 @@ function generateVariables(soapResponse) {
     { id: 'num-cpu-threads', name: 'Number of CPU Threads', path: 'summary.hardware.numCpuThreads', "valueType": D.valueType.NUMBER }
   ];
 
-  return variables.map(function (variable){
+  let result = [];
+  for (let i = 0; i < variables.length; i++) {
     const value = getPropSetValue(variable.path);
     const finalValue = variable.callback ? variable.callback(value) : value;
-
-    return variable.valueType ?
-      D.createVariable(variable.id, variable.name, finalValue, variable.unit || null, variable.valueType) :
-      D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null)
-    }
-  );
+    result.push(
+        variable.valueType ?
+            D.createVariable(variable.id, variable.name, finalValue, variable.unit || null, variable.valueType) :
+            D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null)
+    );
+  }
+  return result
 }
 
 /**
