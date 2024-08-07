@@ -242,6 +242,7 @@ function generateVariables(soapResponse) {
 
   let result = [];
   for (let i = 0; i < variables.length; i++) {
+    const variable = variables[i];
     const value = getPropSetValue(variable.path);
     const finalValue = variable.callback ? variable.callback(value) : value;
     result.push(
