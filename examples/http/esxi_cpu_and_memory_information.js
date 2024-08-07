@@ -8,10 +8,10 @@
  * Tested on ESXi version: 8.0.0
  *
  * Custom Driver Variables:
- *      - Memory Usage: Represents the current memory usage of the ESXi host in megabytes.
- *      - Memory Size: Indicates the total memory size of the ESXi host in megabytes.
- *      - CPU Usage: Tracks the current CPU usage of the ESXi host in megahertz.
- *      - CPU Speed: Displays the CPU speed of the ESXi host in megahertz.
+ *      - Memory Usage: Represents the current memory usage of the ESXi host in gigahertz.
+ *      - Memory Size: Indicates the total memory size of the ESXi host in gigabytes.
+ *      - CPU Usage: Tracks the current CPU usage of the ESXi host in gigahertz.
+ *      - CPU Speed: Displays the CPU speed of the ESXi host in gigahertz.
  *      - CPU Model: Specifies the model of the CPU used in the ESXi host.
  *      - Number of CPU Cores: Shows the total number of CPU cores in the ESXi host.
  *      - Number of CPU Threads: Indicates the total number of CPU threads available on the ESXi host.
@@ -191,6 +191,33 @@ function retrieveProprieties(hostRef) {
 }
 
 /**
+ * Converts a value from bytes to gigabytes.
+ * @param {number} bytesValue - The value in bytes.
+ * @returns {string} The value converted to gigabytes, rounded to two decimal places.
+ */
+function convertBytesToGb(bytesValue) {
+  return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
+}
+
+/**
+ * Converts a value from megabytes to gigabytes.
+ * @param {number} MbValue - The value in megabytes.
+ * @returns {string} The value converted to gigabytes, rounded to two decimal places.
+ */
+function convertMbToGb(MbValue) {
+  return (MbValue / 1024).toFixed(2);
+}
+
+/**
+ * Converts a value from megahertz to gigahertz.
+ * @param {number} MHzValue - The value in megahertz.
+ * @returns {string} The value converted to gigahertz, rounded to two decimal places.
+ */
+function convertMHzToGHz(MHzValue) {
+  return (MHzValue / 1000).toFixed(2);
+}
+
+/**
  * Parses the SOAP response and generates variables from the retrieved properties.
  * @param {string} soapResponse - The SOAP response as a string.
  * @returns {Array} An array of variables created from the extracted properties.
@@ -204,10 +231,10 @@ function generateVariables(soapResponse) {
   }
 
   const variables = [
-    { id: 'overall-memory-usage', name: 'Memory Usage', path: 'summary.quickStats.overallMemoryUsage', "valueType": D.valueType.NUMBER, unit: "MB" },
-    { id: 'memory-size', name: 'Memory Size', path: 'hardware.memorySize', "valueType": D.valueType.NUMBER, unit: "MB", callback: function (bytesValue){ return (bytesValue / (1024 * 1024)).toFixed(2);} },
-    { id: 'overall-cpu-usage', name: 'CPU Usage', path: 'summary.quickStats.overallCpuUsage', "valueType": D.valueType.NUMBER, unit: "MHz" },
-    { id: 'cpu-mhz', name: 'CPU Speed', path: 'summary.hardware.cpuMhz', "valueType": D.valueType.NUMBER, unit: "MHz" },
+    { id: 'overall-memory-usage', name: 'Memory Usage', path: 'summary.quickStats.overallMemoryUsage', "valueType": D.valueType.NUMBER, unit: "GB", callback: convertMbToGb },
+    { id: 'memory-size', name: 'Memory Size', path: 'hardware.memorySize', "valueType": D.valueType.NUMBER, unit: "GB", callback: convertBytesToGb},
+    { id: 'overall-cpu-usage', name: 'CPU Usage', path: 'summary.quickStats.overallCpuUsage', "valueType": D.valueType.NUMBER, unit: "GHz", callback: convertMHzToGHz },
+    { id: 'cpu-mhz', name: 'CPU Speed', path: 'summary.hardware.cpuMhz', "valueType": D.valueType.NUMBER, unit: "GHz", callback: convertMHzToGHz },
     { id: 'cpu-model', name: 'CPU Model', path: 'summary.hardware.cpuModel', "valueType": D.valueType.STRING },
     { id: 'num-cpu-cores', name: 'Number of CPU Cores', path: 'summary.hardware.numCpuCores', "valueType": D.valueType.NUMBER },
     { id: 'num-cpu-threads', name: 'Number of CPU Threads', path: 'summary.hardware.numCpuThreads', "valueType": D.valueType.NUMBER }
