@@ -222,12 +222,16 @@ function generateVariables(soapResponse) {
     { id: 'os-type', name: 'OS Type', path: 'summary.config.product.osType', "valueType": D.valueType.STRING },
     { id: 'product-line-id', name: 'Product Line ID', path: 'summary.config.product.productLineId', "valueType": D.valueType.STRING }
   ];
-  return variables.map(function (variable){
-        return variable.valueType ?
+  let result = [];
+
+  for (let i = 0; i < variables.length; i++) {
+    const variable = variables[i]
+    result.push( variable.valueType ?
             D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null, variable.valueType) :
             D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null)
-      }
-  );
+    )
+  }
+  return result
 }
 
 /**
