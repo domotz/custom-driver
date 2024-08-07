@@ -18,7 +18,7 @@
   "sample_period_s": 1800,
   "has_actions": false,
   "expected_variables": {
-    "table": "[4]"
+    "table": "[5]"
   },
   "protocols": [
     "HTTPS"
