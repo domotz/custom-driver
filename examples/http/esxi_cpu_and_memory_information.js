@@ -21,17 +21,16 @@
 // URL endpoint for accessing the vSphere SDK
 const url = '/sdk'
 
-// Variable to store the headers for the SOAP request. This will include the vmware_soap_session.
-let headers = "";
-
-/**
- * Sets the request headers with the provided cookie information.
- * @param {Object} headerCookie - An object containing the 'Cookie' header with the appropriate value.
- */
-function setHeaders(headerCookie) {
-  headers = headerCookie;
-}
-
+// Specify the variable definitions IDs, names, paths, and value types.
+const variables = [
+  { id: 'overall-memory-usage', name: 'Memory Usage', path: 'summary.quickStats.overallMemoryUsage', "valueType": D.valueType.NUMBER, unit: "GB", callback: convertMbToGb },
+  { id: 'memory-size', name: 'Memory Size', path: 'hardware.memorySize', "valueType": D.valueType.NUMBER, unit: "GB", callback: convertBytesToGb},
+  { id: 'overall-cpu-usage', name: 'CPU Usage', path: 'summary.quickStats.overallCpuUsage', "valueType": D.valueType.NUMBER, unit: "GHz", callback: convertMHzToGHz },
+  { id: 'cpu-mhz', name: 'CPU Speed', path: 'summary.hardware.cpuMhz', "valueType": D.valueType.NUMBER, unit: "GHz", callback: convertMHzToGHz },
+  { id: 'cpu-model', name: 'CPU Model', path: 'summary.hardware.cpuModel', "valueType": D.valueType.STRING },
+  { id: 'num-cpu-cores', name: 'Number of CPU Cores', path: 'summary.hardware.numCpuCores', "valueType": D.valueType.NUMBER },
+  { id: 'num-cpu-threads', name: 'Number of CPU Threads', path: 'summary.hardware.numCpuThreads', "valueType": D.valueType.NUMBER }
+];
 
 /**
  * Sends a SOAP request and returns a promise with the parsed response.
@@ -47,7 +46,7 @@ function sendSoapRequest (body, extractData) {
     protocol: "https",
     rejectUnauthorized: false,
     body,
-    headers
+    jar: true
   }
 
   D.device.http.post(config, function (error, response, body) {
@@ -80,15 +79,13 @@ function createSoapPayload (soapBody) {
 }
 
 /**
- * Extracts the 'Set-Cookie' header from the response.
- * @param {Object} body - The body of the response.
- * @param {Object} response - The response object containing the headers.
- * @returns {Object} An object containing the 'Cookie' header with the appropriate value from the 'set-cookie' header.
+ * Parses the SOAP response to extract the Session Key.
+ * @param {string} soapResponse - The SOAP response as a string.
+ * @returns {string} The Session Key extracted from the SOAP response.
  */
-function getHeaderCookie(body, response) {
-  return {
-    Cookie: response.headers['set-cookie'][0]
-  }
+function getSessionKey(soapResponse) {
+  const $ = D.htmlParse(soapResponse)
+  return $('returnval').find('key').first().text()
 }
 
 /**
@@ -103,8 +100,8 @@ function login () {
       '   <password>' + D.device.password() + '</password>' +
       '</vim25:Login>'
   )
-  // Send the SOAP request and handle the response to extract the cookie header.
-  return sendSoapRequest(payload, getHeaderCookie)
+  // Send the SOAP request and handle the response to extract the Session Key.
+  return sendSoapRequest(payload, getSessionKey)
 }
 
 /**
@@ -230,16 +227,6 @@ function generateVariables(soapResponse) {
     return $("propSet").has("name:contains('" + path + "')").find("val").text() || "N/A";
   }
 
-  const variables = [
-    { id: 'overall-memory-usage', name: 'Memory Usage', path: 'summary.quickStats.overallMemoryUsage', "valueType": D.valueType.NUMBER, unit: "GB", callback: convertMbToGb },
-    { id: 'memory-size', name: 'Memory Size', path: 'hardware.memorySize', "valueType": D.valueType.NUMBER, unit: "GB", callback: convertBytesToGb},
-    { id: 'overall-cpu-usage', name: 'CPU Usage', path: 'summary.quickStats.overallCpuUsage', "valueType": D.valueType.NUMBER, unit: "GHz", callback: convertMHzToGHz },
-    { id: 'cpu-mhz', name: 'CPU Speed', path: 'summary.hardware.cpuMhz', "valueType": D.valueType.NUMBER, unit: "GHz", callback: convertMHzToGHz },
-    { id: 'cpu-model', name: 'CPU Model', path: 'summary.hardware.cpuModel', "valueType": D.valueType.STRING },
-    { id: 'num-cpu-cores', name: 'Number of CPU Cores', path: 'summary.hardware.numCpuCores', "valueType": D.valueType.NUMBER },
-    { id: 'num-cpu-threads', name: 'Number of CPU Threads', path: 'summary.hardware.numCpuThreads', "valueType": D.valueType.NUMBER }
-  ];
-
   let result = [];
   for (let i = 0; i < variables.length; i++) {
     const variable = variables[i];
@@ -260,22 +247,24 @@ function generateVariables(soapResponse) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
 function validate () {
-  login().
-  then(D.success)
-      .catch(function (err) {
-        console.error(err);
+  login()
+      .then(function (sessionKey) {
+        if(sessionKey && sessionKey.length > 0){
+          D.success();
+        }
+      })
+      .catch(function () {
         D.failure(D.errorType.GENERIC_ERROR);
       });
 }
 
 /**
  * @remote_procedure
- * @label Get ESXi General Information
- * @documentation This procedure retrieves the general information of the ESXi host
+ * @label Get ESXi CPU and Memory Information
+ * @documentation This procedure retrieves the ESXi host CPU and Memory Information
  */
 function get_status() {
   login().
-  then(setHeaders).
   then(createAllHostContainer).
   then(fetchContainer).
   then(retrieveProprieties).
