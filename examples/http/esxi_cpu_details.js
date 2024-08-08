@@ -20,17 +20,6 @@
 // URL endpoint for accessing the vSphere SDK
 const url = '/sdk'
 
-// Variable to store the headers for the SOAP request. This will include the vmware_soap_session.
-let headers = "";
-
-/**
- * Sets the request headers with the provided cookie information.
- * @param {Object} headerCookie - An object containing the 'Cookie' header with the appropriate value.
- */
-function setHeaders(headerCookie) {
-  headers = headerCookie;
-}
-
 // Creation of CPU Details table
 var cpuDetailsTable = D.createTable(
     'CPU Details',
@@ -56,7 +45,7 @@ function sendSoapRequest (body, extractData) {
     protocol: "https",
     rejectUnauthorized: false,
     body,
-    headers
+    jar: true
   }
 
   D.device.http.post(config, function (error, response, body) {
@@ -70,7 +59,7 @@ function sendSoapRequest (body, extractData) {
     } else if (response.statusCode !== 200) {
       D.failure(D.errorType.GENERIC_ERROR)
     } else {
-      const result = extractData(body, response)
+      const result = extractData(body)
       d.resolve(result)
     }
   })
@@ -89,15 +78,13 @@ function createSoapPayload (soapBody) {
 }
 
 /**
- * Extracts the 'Set-Cookie' header from the response.
- * @param {Object} body - The body of the response.
- * @param {Object} response - The response object containing the headers.
- * @returns {Object} An object containing the 'Cookie' header with the appropriate value from the 'set-cookie' header.
+ * Parses the SOAP response to extract the Session Key.
+ * @param {string} soapResponse - The SOAP response as a string.
+ * @returns {string} The Session Key extracted from the SOAP response.
  */
-function getHeaderCookie(body, response) {
-  return {
-    Cookie: response.headers['set-cookie'][0]
-  }
+function getSessionKey(soapResponse) {
+  const $ = D.htmlParse(soapResponse)
+  return $('returnval').find('key').first().text()
 }
 
 /**
@@ -112,8 +99,8 @@ function login () {
       '   <password>' + D.device.password() + '</password>' +
       '</vim25:Login>'
   )
-  // Send the SOAP request and handle the response to extract the cookie header.
-  return sendSoapRequest(payload, getHeaderCookie)
+  // Send the SOAP request and handle the response to extract the Session Key.
+  return sendSoapRequest(payload, getSessionKey)
 }
 
 /**
@@ -228,10 +215,13 @@ function generateTabelOutput(soapResponse) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
 function validate () {
-  login().
-  then(D.success)
-      .catch(function (err) {
-        console.error(err);
+  login()
+      .then(function (sessionKey) {
+        if(sessionKey && sessionKey.length > 0){
+          D.success();
+        }
+      })
+      .catch(function () {
         D.failure(D.errorType.GENERIC_ERROR);
       });
 }
@@ -243,7 +233,6 @@ function validate () {
  */
 function get_status() {
   login().
-  then(setHeaders).
   then(createAllHostContainer).
   then(fetchContainer).
   then(retrieveProprieties).
