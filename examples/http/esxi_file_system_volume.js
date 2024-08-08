@@ -21,6 +21,7 @@
  * - Version
  * - Disk Name
  * - Partition
+ * - Path
  * - Is VMFS Upgradable
  *
  **/
@@ -28,16 +29,6 @@
 // URL endpoint for accessing the vSphere SDK
 const url = '/sdk'
 
-// Variable to store the headers for the SOAP request. This will include the vmware_soap_session.
-let headers = "";
-
-/**
- * Sets the request headers with the provided cookie information.
- * @param {Object} headerCookie - An object containing the 'Cookie' header with the appropriate value.
- */
-function setHeaders(headerCookie) {
-  headers = headerCookie;
-}
 
 // Creation of File System Volume table
 var fileSystemVolumeTable = D.createTable(
@@ -47,13 +38,14 @@ var fileSystemVolumeTable = D.createTable(
       { label: 'Type', valueType: D.valueType.STRING },
       { label: 'Access Mode', valueType: D.valueType.STRING },
       { label: 'Is Accessible', valueType: D.valueType.STRING },
-      { label: 'Capacity', valueType: D.valueType.STRING , unit: "GB"},
-      { label: 'Block Size', valueType: D.valueType.STRING , unit: "MB"},
-      { label: 'Max Blocks', valueType: D.valueType.STRING },
-      { label: 'Major Version', valueType: D.valueType.STRING },
+      { label: 'Capacity', valueType: D.valueType.NUMBER , unit: "GB"},
+      { label: 'Block Size', valueType: D.valueType.NUMBER , unit: "MB"},
+      { label: 'Max Blocks', valueType: D.valueType.NUMBER },
+      { label: 'Major Version', valueType: D.valueType.NUMBER },
       { label: 'Version', valueType: D.valueType.STRING },
       { label: 'Disk Name', valueType: D.valueType.STRING },
-      { label: 'Partition', valueType: D.valueType.STRING },
+      { label: 'Partition', valueType: D.valueType.NUMBER },
+      { label: 'Path', valueType: D.valueType.STRING },
       { label: 'Is VMFS Upgradable', valueType: D.valueType.STRING }
     ]
 )
@@ -72,7 +64,7 @@ function sendSoapRequest (body, extractData) {
     protocol: "https",
     rejectUnauthorized: false,
     body,
-    headers
+    jar: true
   }
 
   D.device.http.post(config, function (error, response, body) {
@@ -105,15 +97,13 @@ function createSoapPayload (soapBody) {
 }
 
 /**
- * Extracts the 'Set-Cookie' header from the response.
- * @param {Object} body - The body of the response.
- * @param {Object} response - The response object containing the headers.
- * @returns {Object} An object containing the 'Cookie' header with the appropriate value from the 'set-cookie' header.
+ * Parses the SOAP response to extract the Session Key.
+ * @param {string} soapResponse - The SOAP response as a string.
+ * @returns {string} The Session Key extracted from the SOAP response.
  */
-function getHeaderCookie(body, response) {
-  return {
-    Cookie: response.headers['set-cookie'][0]
-  }
+function getSessionKey(soapResponse) {
+  const $ = D.htmlParse(soapResponse)
+  return $('returnval').find('key').first().text()
 }
 
 /**
@@ -129,7 +119,7 @@ function login () {
       '</vim25:Login>'
   )
   // Send the SOAP request and handle the response to extract the cookie header.
-  return sendSoapRequest(payload, getHeaderCookie)
+  return sendSoapRequest(payload, getSessionKey)
 }
 
 /**
@@ -213,6 +203,19 @@ function convertBytesToGb(bytesValue) {
 }
 
 /**
+ * Extracts a UUID-like string from a given path.
+ * This function splits the path by slashes and checks the last segment for its length to determine if it matches a UUID format.
+ * The function supports UUIDs with or without hyphens.
+ *
+ * @param {string} path - The path from which the UUID-like string will be extracted.
+ * @returns {string|null} The extracted UUID-like string if its length is 32 or 36 characters; otherwise, null.
+ */
+function extractUUIDFromPath(path) {
+  const parts = path.split('/');
+  return parts[parts.length - 1];
+}
+
+/**
  * Populates a table with File System Volume.
  */
 function populateTable (volumeDetails) {
@@ -228,6 +231,7 @@ function populateTable (volumeDetails) {
     volumeDetails.version,
     volumeDetails.diskName,
     volumeDetails.partition,
+    volumeDetails.path,
     volumeDetails.isVmfsUpgradable
   ]);
 }
@@ -257,6 +261,7 @@ function generateTabelOutput(soapResponse) {
       "version": volume.find('version').text() || "N/A",
       "diskName": extent.find('diskName').text() || "N/A",
       "partition": extent.find('partition').text() || "N/A",
+      "path": mountInfo.find('path').text() || "N/A",
       "isVmfsUpgradable": volume.find('vmfsUpgradable').text() || "N/A",
     })
     i++
@@ -285,7 +290,6 @@ function validate () {
  */
 function get_status() {
   login().
-  then(setHeaders).
   then(createAllHostContainer).
   then(fetchContainer).
   then(retrieveProprieties).
@@ -294,17 +298,4 @@ function get_status() {
         console.error(err);
         D.failure(D.errorType.GENERIC_ERROR);
       });
-}
-
-/**
- * Extracts a UUID-like string from a given path.
- * This function splits the path by slashes and checks the last segment for its length to determine if it matches a UUID format.
- * The function supports UUIDs with or without hyphens.
- *
- * @param {string} path - The path from which the UUID-like string will be extracted.
- * @returns {string|null} The extracted UUID-like string if its length is 32 or 36 characters; otherwise, null.
- */
-function extractUUIDFromPath(path) {
-  const parts = path.split('/');
-  return parts[parts.length - 1];
 }
