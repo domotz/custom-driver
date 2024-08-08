@@ -275,12 +275,15 @@ function generateTabelOutput(soapResponse) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
 function validate () {
-  login().
-  then(D.success)
-      .catch(function (err) {
-        console.error(err);
-        D.failure(D.errorType.GENERIC_ERROR);
-      });
+  login()
+  .then(function (sessionKey) {
+        if(sessionKey && sessionKey.length > 0){
+          D.success();
+        }
+    })
+        .catch(function () {
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
