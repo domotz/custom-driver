@@ -228,8 +228,8 @@ function validate () {
 
 /**
  * @remote_procedure
- * @label Get ESXi General Information
- * @documentation This procedure retrieves the general information of the ESXi host
+ * @label Get ESXi CPU details
+ * @documentation This procedure retrieves the ESXi host CPU details
  */
 function get_status() {
   login().
