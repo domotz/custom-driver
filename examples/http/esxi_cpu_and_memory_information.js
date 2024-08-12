@@ -158,6 +158,17 @@ function fetchContainer(containerId) {
 }
 
 /**
+ * Generates an XML string that wraps each variable's path in a <vim25:pathSet> tag.
+ * The resulting XML segments are concatenated with a space separator.
+ * @returns {string} An XML-formatted string representing the path sets for each variable.
+ */
+function generatesPathSetXml() {
+  return variables.map(function(variable) {
+    return '<vim25:pathSet>' + variable.path + '</vim25:pathSet>';
+  }).join(' ');
+}
+
+/**
  * Constructs and sends a SOAP request to retrieve properties for a specified host reference.
  * @param {string} hostRef - The reference ID of the host whose properties are to be retrieved.
  * @returns {Promise} A promise that resolves with the properties of the host as extracted from the SOAP response.
@@ -169,13 +180,7 @@ function retrieveProprieties(hostRef) {
       '   <vim25:specSet>' +
       '      <vim25:propSet>' +
       '         <vim25:type>HostSystem</vim25:type>' +
-      '         <vim25:pathSet>summary.quickStats.overallMemoryUsage</vim25:pathSet>' +
-      '         <vim25:pathSet>hardware.memorySize</vim25:pathSet>' +
-      '         <vim25:pathSet>summary.quickStats.overallCpuUsage</vim25:pathSet>' +
-      '         <vim25:pathSet>summary.hardware.cpuModel</vim25:pathSet>' +
-      '         <vim25:pathSet>summary.hardware.cpuMhz</vim25:pathSet>' +
-      '         <vim25:pathSet>summary.hardware.numCpuCores</vim25:pathSet>' +
-      '         <vim25:pathSet>summary.hardware.numCpuThreads</vim25:pathSet>' +
+                generatesPathSetXml() +
       '      </vim25:propSet>' +
       '      <vim25:objectSet>' +
       '         <vim25:obj type="HostSystem">' + hostRef + '</vim25:obj>' +
