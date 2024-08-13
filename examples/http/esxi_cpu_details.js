@@ -184,7 +184,6 @@ function retrieveProprieties(hostRef) {
  * Populates a table with CPU Details.
  */
 function populateTable (cpuDetails) {
-  console.log('insertRecord', [cpuDetails.cpuName, cpuDetails.cpuVendor, cpuDetails.speed, cpuDetails.busSpeed])
   cpuDetailsTable.insertRecord(cpuDetails.id, [cpuDetails.cpuName, cpuDetails.cpuVendor, cpuDetails.speed, cpuDetails.busSpeed])
 }
 
