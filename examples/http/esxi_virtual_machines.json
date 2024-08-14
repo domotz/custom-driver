@@ -1,0 +1,42 @@
+{
+    "logo": "vmware-esxi.svg",
+    "version": "1.0.0",
+    "name": "ESXi Virtual Machines",
+    "description": "Retrieves detailed information about virtual machines from an ESXi server",
+    "category": "Hardware Integration",
+    "requirements": {
+      "credentials": true,
+      "sandbox_version": "1.12",
+      "others": [
+        "VMware ESXi",
+        "VM"
+      ]
+    },
+    "tags": [
+      "esxi",
+      "vmware",
+      "virtual-machine"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+      "table": "[20]"
+    },
+    "protocols": [
+      "HTTPS"
+    ],
+    "tested_on": [
+      {
+        "name": "ESXi",
+        "version": "8.0.0"
+      }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "vmId",
+            "label": "VM ID",
+            "value": ["ALL"]
+        }
+    ]
+  }
