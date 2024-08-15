@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver
- * Name: ESXi Datastore Details
- * Description: Monitors the ESXi host Datastore Details.
+ * Name: ESXi Network Details
+ * Description: Monitors the ESXi host Network Details.
  *
  * Communication protocol is HTTPS
  *
@@ -20,9 +20,9 @@
 // URL endpoint for accessing the vSphere SDK
 const url = '/sdk'
 
-// Creation of Datastore Details table
-const datastoreDetailsTable = D.createTable(
-    'Datastore Details',
+// Creation of Network Details table
+const networkDetailsTable = D.createTable(
+    'Network Details',
     [
       {label: 'Name', valueType: D.valueType.STRING},
       {label: 'Overall Status', valueType: D.valueType.STRING},
@@ -45,7 +45,6 @@ function sendSoapRequest(body, extractData) {
     protocol: "https",
     rejectUnauthorized: false,
     body,
-    port: 46175,
     jar: true
   }
 
@@ -118,12 +117,12 @@ function getContainerIdFromSoap(soapResponse) {
  * Constructs and sends a SOAP request to create a container view for all host systems.
  * @returns {Promise} A promise that resolves with the container ID from the SOAP response.
  */
-function createAllDataStoreContainer() {
+function createAllNetworksContainer() {
   const payload = createSoapPayload(
       '<CreateContainerView xmlns="urn:vim25">' +
       '    <_this type="ViewManager">ViewManager</_this>' +
-      '    <container type="Folder">ha-folder-datastore</container>' +
-      '    <type>Datastore</type>' +
+      '    <container type="Folder">ha-folder-network</container>' +
+      '    <type>Network</type>' +
       '    <recursive>true</recursive>' +
       '</CreateContainerView>'
   )
@@ -134,15 +133,15 @@ function createAllDataStoreContainer() {
 /**
  * Extracts the host reference from the SOAP response.
  * @param {string} soapResponse - The SOAP response as a string.
- * @returns {*[]} The list of datastore references extracted from the SOAP response.
+ * @returns {*[]} The list of network references extracted from the SOAP response.
  */
-function getDataStoreRefFromSoap(soapResponse) {
+function getNetworksRefFromSoap(soapResponse) {
   const $ = D.htmlParse(soapResponse)
-  let datastoreRefs = []
+  let networkRefs = []
   $('returnval').find('ManagedObjectReference').each(function () {
-    datastoreRefs.push($(this).text())
+    networkRefs.push($(this).text())
   })
-  return datastoreRefs
+  return networkRefs
 }
 
 /**
@@ -158,7 +157,7 @@ function fetchContainer(containerId) {
       '</Fetch>'
   )
   // Send the SOAP request and extract the host reference from the response.
-  return sendSoapRequest(payload, getDataStoreRefFromSoap)
+  return sendSoapRequest(payload, getNetworksRefFromSoap)
 }
 
 /**
@@ -177,27 +176,22 @@ function generateXmlObjectSetByMoRefAndType(refs, type) {
 
 /**
  * Constructs and sends a SOAP request to retrieve properties for a specified host reference.
- * @param {string[]} dataStoresRef - The reference ID of a datastore whose properties are to be retrieved.
+ * @param {string[]} networksRef - The reference ID of a network whose properties are to be retrieved.
  * @returns {Promise} A promise that resolves with the properties of the host as extracted from the SOAP response.
  */
-function retrieveProprieties(dataStoresRef) {
+function retrieveProprieties(networksRef) {
   const payload = createSoapPayload(
       '<vim25:RetrieveProperties>' +
       '   <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' +
       '   <vim25:specSet>' +
       '      <vim25:propSet>' +
-      '         <vim25:type>Datastore</vim25:type>\n' +
-      '         <vim25:pathSet>name</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.capacity</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.freeSpace</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.uncommitted</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.url</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.accessible</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.type</vim25:pathSet>\n' +
-      '         <vim25:pathSet>host</vim25:pathSet>\n' +
+      '         <vim25:type>Network</vim25:type>' +
+      '         <vim25:pathSet>name</vim25:pathSet>' +
+      '         <vim25:pathSet>summary.accessible</vim25:pathSet>' +
       '         <vim25:pathSet>vm</vim25:pathSet>' +
+      '         <vim25:pathSet>overallStatus</vim25:pathSet>' +
       '      </vim25:propSet>' +
-      generateXmlObjectSetByMoRefAndType(dataStoresRef, "Datastore") +
+      generateXmlObjectSetByMoRefAndType(networksRef, "Network") +
       '   </vim25:specSet>' +
       '</vim25:RetrieveProperties>'
   )
@@ -206,14 +200,14 @@ function retrieveProprieties(dataStoresRef) {
 }
 
 /**
- * Populates a table with Datastore Details.
+ * Populates a table with Network Details.
  */
-function populateTable(datastoreDetails) {
-  datastoreDetailsTable.insertRecord(datastoreDetails.id, [
-    datastoreDetails.name,
-    datastoreDetails.overallStatus,
-    datastoreDetails.accessible,
-    datastoreDetails.virtualMachines
+function populateTable(networkDetails) {
+  networkDetailsTable.insertRecord(networkDetails.id, [
+    networkDetails.name,
+    networkDetails.overallStatus,
+    networkDetails.accessible,
+    networkDetails.virtualMachines
   ]);
 }
 
@@ -267,17 +261,17 @@ function generateTableOutput(soapResponse) {
   const promises = [];
 
   $('returnval').each(function () {
-    const datastoreInfo = $(this);
-    const vmRefs = datastoreInfo.find('propSet:has(name:contains("vm")) ManagedObjectReference').map(function () {
+    const networkInfo = $(this);
+    const vmRefs = networkInfo.find('propSet:has(name:contains("vm")) ManagedObjectReference').map(function () {
       return $(this).text();
     }).get();
 
     const promise = getVmNamesByMoRefs(vmRefs).then(function (vmNames) {
       populateTable({
-        id: datastoreInfo.find('obj').text(),
-        name: datastoreInfo.find('propSet:has(name:contains("name")) val').text() || "N/A",
-        overallStatus: datastoreInfo.find('propSet:has(name:contains("overallStatus")) val').text() || "N/A",
-        accessible: datastoreInfo.find('propSet:has(name:contains("summary.accessible")) val').text() === 'true' ? 'Yes' : 'No',
+        id: networkInfo.find('obj').text(),
+        name: networkInfo.find('propSet:has(name:contains("name")) val').text() || "N/A",
+        overallStatus: networkInfo.find('propSet:has(name:contains("overallStatus")) val').text() || "N/A",
+        accessible: networkInfo.find('propSet:has(name:contains("summary.accessible")) val').text() === 'true' ? 'Yes' : 'No',
         virtualMachines: vmNames
       });
     });
@@ -285,7 +279,7 @@ function generateTableOutput(soapResponse) {
   });
 
   D.q.all(promises).then(function () {
-    D.success(datastoreDetailsTable);
+    D.success(networkDetailsTable);
   });
 }
 
@@ -308,12 +302,12 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get ESXi Datastore details
- * @documentation This procedure retrieves the ESXi host Datastore details
+ * @label Get ESXi Network details
+ * @documentation This procedure retrieves the ESXi host Network details
  */
 function get_status() {
   login()
-      .then(createAllDataStoreContainer)
+      .then(createAllNetworksContainer)
       .then(fetchContainer)
       .then(retrieveProprieties)
       .catch(function (err) {
