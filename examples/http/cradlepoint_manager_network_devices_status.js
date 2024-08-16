@@ -5,6 +5,9 @@
  *
  * Communication protocol is https.
  *
+ * Tested on:
+ *    - Cradlepoint AER 2200
+ *
  * Output:
  * Extracts the following information from the data array:
  * - ID

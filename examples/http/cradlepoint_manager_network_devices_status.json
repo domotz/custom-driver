@@ -23,8 +23,8 @@
     ],
     "tested_on": [
         {
-            "name": "Windows",
-            "version": "10"
+            "name": "Cradlepoint AER",
+            "version": "2200"
         }
     ],
     "parameters": [

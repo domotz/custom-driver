@@ -7,7 +7,7 @@
  *
  * Tested on:
  *    - Windows 10
- *    - Windows Server 2019
+ *    - Windows 11
  *    - Powershell version 5.1.19041.4412
  *
  * Creates a Custom Driver Table with the following columns:
