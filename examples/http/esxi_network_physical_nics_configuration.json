@@ -1,0 +1,32 @@
+{
+  "logo": "vmware-esxi.svg",
+  "version": "1.0.0",
+  "name": "ESXi Network Physical NIC Configuration",
+  "description": "Monitors the ESXi host Network Physical NIC Configuration",
+  "category": "Hardware Integration",
+  "requirements": {
+    "credentials": true,
+    "sandbox_version": "1.12",
+    "others": [
+      "VMware ESXi"
+    ]
+  },
+  "tags": [
+    "esxi",
+    "vmware"
+  ],
+  "sample_period_s": 1800,
+  "has_actions": false,
+  "expected_variables": {
+    "table": "[10]"
+  },
+  "protocols": [
+    "HTTPS"
+  ],
+  "tested_on": [
+    {
+      "name": "ESXi",
+      "version": "8.0.0"
+    }
+  ]
+}
