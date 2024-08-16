@@ -9,8 +9,6 @@
  *
  * Output:
  * Extracts the following information from the data array:
- * - ID
- * - vSwitch
  * - Allow Promiscuous
  * - MAC Address Changes
  * - Forged Transmits
@@ -49,7 +47,6 @@ const url = '/sdk'
 const networkPortGroupConfigurationTable = D.createTable(
     'Network Port Group Configuration',
     [
-      { label: 'vSwitch', valueType: D.valueType.STRING },
       { label: 'Allow Promiscuous', valueType: D.valueType.STRING },
       { label: 'MAC Address Changes', valueType: D.valueType.STRING },
       { label: 'Forged Transmits', valueType: D.valueType.STRING },
@@ -234,7 +231,6 @@ function retrieveProprieties(hostRef) {
  */
 function populateTable(portGroupDetails) {
   networkPortGroupConfigurationTable.insertRecord(portGroupDetails.id, [
-    portGroupDetails.vSwitch,
     portGroupDetails.allowPromiscuous,
     portGroupDetails.macChanges,
     portGroupDetails.forgedTransmits,
@@ -289,7 +285,6 @@ function generateTableOutput(soapResponse) {
 
     populateTable({
       id: portGroupInfo.children('key').text() || "N/A",
-      vSwitch: portGroupInfo.find('vswitch').text() || "N/A",
       allowPromiscuous: computedPolicy.find('security allowPromiscuous').text() || "N/A",
       macChanges: computedPolicy.find('security macChanges').text() || "N/A",
       forgedTransmits: computedPolicy.find('security forgedTransmits').text() || "N/A",
