@@ -269,13 +269,39 @@ function populateTable(vSwitchDetails) {
 }
 
 /**
+ * Generates a unique identifier based on a key and index, ensuring it adheres to a sanitization format.
+ * @param {string} key - The key used to generate the identifier.
+ * @param {number} index - The index used to create a unique identifier.
+ * @returns {string} The generated identifier in a sanitized format.
+ */
+function generateId(key, index) {
+    if(key) {
+        return sanitize(key, 45) + "-" + index
+    }
+    return index.toString()
+}
+
+
+/**
+ * Sanitizes a string by removing reserved words and limiting its length.
+ * @param {string} output - The string to be sanitized.
+ * @param {number} maxLength - The maximum length of the sanitized string.
+ * @returns {string} The sanitized string, truncated and formatted.
+ */
+function sanitize(output, maxLength){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, maxLength).replace(/\s+/g, '-').toLowerCase();
+}
+
+/**
  * Parses the SOAP response and generates variables from the retrieved properties.
  * @param {string} soapResponse - The SOAP response as a string.
  * @returns {{upsertRecord: function(string, Array<*>): void, getResult: function(): DriverTableResult, insertRecord: function(string, Array<*>): void, isTable: boolean, type: string}} the output tabel created from the extracted properties.
  */
 function generateTableOutput(soapResponse) {
     const $ = D.htmlParse(soapResponse);
-
+    let index = 0 ;
     $('propSet:has(name:contains("config.network.vswitch")) HostVirtualSwitch').each(function() {
         const vSwitchInfo = $(this);
         const spec = vSwitchInfo.find('spec');
@@ -284,9 +310,8 @@ function generateTableOutput(soapResponse) {
         const failureCriteria = nicTeaming.find('failureCriteria');
         const offloadPolicy = policy.find('offloadPolicy');
         const shapingPolicy = policy.find('shapingPolicy');
-
         populateTable({
-            id: vSwitchInfo.find('key').text() || "N/A",
+            id: generateId(vSwitchInfo.find('key').text(), ++index),
             name: vSwitchInfo.find('name').text() || "N/A",
             key: vSwitchInfo.find('key').text() || "N/A",
             numPorts: parseInt(vSwitchInfo.find('numPorts').text()) || 0,
