@@ -1,0 +1,47 @@
+{
+    "logo": "dante-director.svg",
+    "version": "1.0.0",
+    "name": "Dante Director - Device Status Monitoring",
+    "description": "This script integrates with the Dante Managed API to fetch and monitor device statuses. It retrieves detailed information about each device, including connectivity status, subscription status and channel information",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Dante Director web UI Access"
+        ]
+    },
+    "tags": [
+        "dante",
+        "device",
+        "status",
+        "rx-channel",
+        "tx-channel"
+    ],
+    "sample_period_s": "900",
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Dante Managed API",
+            "version": "v1.5"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "domainID",
+            "label": "Domain ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "apiKey",
+            "label": "API Key"
+        }
+    ]
+}
