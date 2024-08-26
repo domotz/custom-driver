@@ -1,0 +1,37 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall - Failover Load Balancing Groups",
+    "description": "Monitors Sonicwall failover load balancing groups",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS",
+            "IPv4"
+        ]
+    },
+    "tags": [
+        "sonicwall"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[8,999]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall",
+            "version": "TZ370W"
+        },
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.1.1-7058-R6162"
+        }        
+    ]
+}
