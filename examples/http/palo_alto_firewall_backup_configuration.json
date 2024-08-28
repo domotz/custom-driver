@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "paloalto.svg",
     "version": "1.0",
     "name": "Palo Alto Firewall Backup configuration",
     "description": "Extracts the configuration of the Palo Alto Firewall and backs it up",
