@@ -130,7 +130,7 @@ function extractData(data) {
       var productModelName = device.identity && device.identity.productModelName ? device.identity.productModelName: 'N/A'
       var danteVersion = device.identity && device.identity.danteVersion ? device.identity.danteVersion: 'N/A'
       var address = (device.interfaces && Array.isArray(device.interfaces) && device.interfaces.length > 0)
-      ? device.interfaces[0].address
+      ? device.interfaces.map(function(interface) { return interface.address }).join(', ')
       : 'N/A'
       var statusId = device.status && device.status.id ? device.status.id : 'N/A'
       var clockingStatus = device.status && device.status.clocking ? device.status.clocking : 'N/A'
