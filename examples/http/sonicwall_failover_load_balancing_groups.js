@@ -5,12 +5,11 @@
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on SonicWALL TZ370W
+ * Tested on SonicWALL TZ370W, SonicOS 7.1.1-7058-R6162
  *
  * Creates a Custom Driver Table with the following columns:
  *      - Group Name: failover group name
  *      - Member Name: failover group member name
- *      - IP Address
  *      - Link Status
  *      - Load balancing status
  *      - Probe status
@@ -95,28 +94,29 @@ function sanitize(output){
 //Extracts data from the HTTP response and populates the custom table.
 function extractData(body) {
     var data = JSON.parse(body);
-    console.info(JSON.stringify(data));
-    data.forEach(function (item) {
-            var groupName = item.group_name;
-            var memberName = item.member_name;
-            var recordId = sanitize(groupName ? memberName + groupName : memberName);
-            var linkstatus = item.link_status;
-            var lbstatus = item.lb_status;
-            var probestatus = item.probe_status;
-            var maintargetstatus = item.main_target_status;
-            var alternatetargetstatus = item.alternate_target_status;
+    if (data)
+    {
+        data.forEach(function (item) {
+                var groupName = item.group_name? item.group_name: 'N/A';
+                var memberName = item.member_name? item.member_name : 'N/A';
+                var recordId = sanitize(item.group_name ? memberName + groupName : memberName);
+                var linkstatus = item.link_status? item.link_status : 'N/A';
+                var lbstatus = item.lb_status? item.lb_status : 'N/A';
+                var probestatus = item.probe_status? item.probe_status : 'N/A';
+                var maintargetstatus = item.main_target_status? item.main_target_status : 'N/A';
+                var alternatetargetstatus = item.alternate_target_status? item.alternate_target_status : 'N/A';
 
-            table.insertRecord(recordId, [
-                groupName,
-                memberName,
-                linkstatus,
-                lbstatus,
-                probestatus,
-                maintargetstatus,
-                alternatetargetstatus
-            ]);
-    });
-
+                table.insertRecord(recordId, [
+                    groupName,
+                    memberName,
+                    linkstatus,
+                    lbstatus,
+                    probestatus,
+                    maintargetstatus,
+                    alternatetargetstatus
+                ]);
+        });
+    }
     D.success(table);
 }
 
