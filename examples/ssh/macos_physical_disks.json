@@ -1,0 +1,39 @@
+{
+    "logo": "macos.svg",
+    "version": "1.0.0",
+    "name": "macOS - Physical Disks",
+    "description": "Monitors the status of physical disks within a Macintosh machine",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "macos",
+        "physical-disk",
+        "model",
+        "status",
+        "size",
+        "free-space",
+        "usage",
+        "media-type",
+        "partition-number"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[7]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "macOS",
+            "version": "14.5"
+        }
+    ]
+  }
