@@ -17,6 +17,7 @@
  *    - Guest OS ID: Identifier for the guest OS
  *    - Number of CPUs: Number of virtual CPUs
  *    - Memory: Amount of memory allocated (in MB)
+ *    - Memory Usage: Amount of host memory currently being used by the virtual machine (in MB)
  *    - VMware Tools Status: Status of VMware Tools
  *    - VMware Tools Version Status: Version status of VMware Tools
  *    - VMware Tools Running Status: Running status of VMware Tools
@@ -54,6 +55,7 @@ var table = D.createTable(
     { label: 'Guest OS ID', valueType: D.valueType.STRING },
     { label: 'Number of CPUs', valueType: D.valueType.NUMBER },
     { label: 'Memory', valueType: D.valueType.NUMBER, unit:'MB'},
+    { label: 'Memory Usage', valueType: D.valueType.NUMBER, unit:'MB'},
     { label: 'VMware Tools Status', valueType: D.valueType.STRING },
     { label: 'VMware Tools Version Status', valueType: D.valueType.STRING },
     { label: 'VMware Tools Running Status', valueType: D.valueType.STRING },
@@ -73,26 +75,27 @@ var table = D.createTable(
  * Each path corresponds to a specific VM attribute that we want to include in the results
  */
 const paths = [
-  "config.name", 
-  "runtime.powerState",
-  "summary.overallStatus",
-  "runtime.numMksConnections",
-  "config.guestFullName",
-  "guest.guestState",
-  "summary.config.guestId",
-  "config.hardware.numCPU",
-  "config.hardware.memoryMB",
-  "guest.toolsStatus",
-  "guest.toolsVersionStatus2",
-  "guest.toolsRunningStatus",
-  "summary.config.vmPathName",
-  "summary.runtime.host",
-  "runtime.connectionState",
-  "summary.runtime.maxMemoryUsage",
-  "summary.runtime.maxCpuUsage",
-  "config.template",
-  "summary.config.numEthernetCards",
-  "summary.config.numVirtualDisks"
+  'config.name', 
+  'runtime.powerState',
+  'summary.overallStatus',
+  'runtime.numMksConnections',
+  'config.guestFullName',
+  'guest.guestState',
+  'summary.config.guestId',
+  'config.hardware.numCPU',
+  'config.hardware.memoryMB',
+  'summary.quickStats.hostMemoryUsage',
+  'guest.toolsStatus',
+  'guest.toolsVersionStatus2',
+  'guest.toolsRunningStatus',
+  'summary.config.vmPathName',
+  'summary.runtime.host',
+  'runtime.connectionState',
+  'summary.runtime.maxMemoryUsage',
+  'summary.runtime.maxCpuUsage',
+  'config.template',
+  'summary.config.numEthernetCards',
+  'summary.config.numVirtualDisks'
 ]
 
 /**
@@ -285,6 +288,7 @@ function populateTable(vmDetails) {
     vmDetails['summary.config.guestId'] || 'N/A',
     vmDetails['config.hardware.numCPU'] || 0,
     vmDetails['config.hardware.memoryMB'] || 0,
+    vmDetails['summary.quickStats.hostMemoryUsage'] || 0,
     vmDetails['guest.toolsStatus'] || 'N/A',
     vmDetails['guest.toolsVersionStatus2'] || 'N/A',
     vmDetails['guest.toolsRunningStatus'] || 'N/A',
