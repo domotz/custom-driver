@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare Monitoring Host List",
     "description": "This script retrieves list of hosts in a VMWare server",
     "category": "Software Integration",
@@ -15,17 +15,13 @@
     },
     "tags": [
         "vmware",
-        "vsphere",
         "vcenter",
-        "host",
-        "name",
-        "connection-state",
-        "power-state"
+        "host"
     ],
     "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3]"
+        "independent": "[13]"
     },
     "protocols": [
         "HTTPS"
@@ -33,7 +29,15 @@
     "tested_on": [
         {
             "name": "VMWare vCenter",
-            "version": "7.0.3"
+            "version": "8.0.2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "name": "hostId",
+            "label": "Host ID",
+            "value": "ALL"
         }
     ]
 }
