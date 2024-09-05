@@ -314,7 +314,7 @@ function generateTableOutput(soapResponse) {
             id: generateId(vSwitchInfo.find('key').text(), ++index),
             name: vSwitchInfo.find('name').text() || "N/A",
             key: vSwitchInfo.find('key').text() || "N/A",
-            numPorts: parseInt(vSwitchInfo.find('numPorts').text()) || 0,
+            numPorts: parseInt(vSwitchInfo.find('numPorts').filter(function() {return $(this).parents('spec').length === 0;}).text()) || 0,
             numPortsAvailable: parseInt(vSwitchInfo.find('numPortsAvailable').text()) || 0,
             mtu: parseInt(vSwitchInfo.find('mtu').text()) || 0,
             portGroup: vSwitchInfo.find('portgroup').map(function() { return $(this).text(); }).get(),
