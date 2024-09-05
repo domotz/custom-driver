@@ -9,6 +9,9 @@
  *
  * Output:
  * Extracts the following information from the data array:
+ * - Port Group Name
+ * - VLAN ID
+ * - MAC Address
  * - Allow Promiscuous
  * - MAC Address Changes
  * - Forged Transmits
@@ -27,15 +30,13 @@
  * - TCP Segmentation
  * - Zero Copy Transmission
  * - Shaping Policy Enabled
- * - Port Group Name
- * - VLAN ID
+
  * - vSwitch Name
  * - Security Policy
  * - NIC Teaming Policy
  * - NIC Teaming Failure Criteria
  * - Offload Policy
  * - Shaping Policy
- * - MAC Address
  *
  **/
 
@@ -47,33 +48,33 @@ const url = '/sdk'
 const networkPortGroupConfigurationTable = D.createTable(
     'Network Port Group Configuration',
     [
-      { label: 'Allow Promiscuous', valueType: D.valueType.STRING },
-      { label: 'MAC Address Changes', valueType: D.valueType.STRING },
-      { label: 'Forged Transmits', valueType: D.valueType.STRING },
-      { label: 'Reverse Policy', valueType: D.valueType.STRING },
-      { label: 'Notify Switches', valueType: D.valueType.STRING },
-      { label: 'Rolling Order', valueType: D.valueType.STRING },
-      { label: 'Check Speed', valueType: D.valueType.STRING },
-      { label: 'Speed', valueType: D.valueType.NUMBER },
-      { label: 'Check Duplex', valueType: D.valueType.STRING },
-      { label: 'Full Duplex', valueType: D.valueType.STRING },
-      { label: 'Check Error Percentage', valueType: D.valueType.STRING },
-      { label: 'Error Percentage', valueType: D.valueType.NUMBER },
-      { label: 'Check Beacon', valueType: D.valueType.STRING },
-      { label: 'Active NIC', valueType: D.valueType.STRING },
-      { label: 'Checksum Offload', valueType: D.valueType.STRING },
-      { label: 'TCP Segmentation', valueType: D.valueType.STRING },
-      { label: 'Zero Copy Transmission', valueType: D.valueType.STRING },
-      { label: 'Shaping Policy Enabled', valueType: D.valueType.STRING },
-      { label: 'Port Group Name', valueType: D.valueType.STRING },
-      { label: 'VLAN ID', valueType: D.valueType.NUMBER },
-      { label: 'vSwitch Name', valueType: D.valueType.STRING },
-      { label: 'Security Policy', valueType: D.valueType.STRING },
-      { label: 'NIC Teaming Policy', valueType: D.valueType.STRING },
-      { label: 'NIC Teaming Failure Criteria', valueType: D.valueType.STRING },
-      { label: 'Offload Policy', valueType: D.valueType.STRING },
-      { label: 'Shaping Policy', valueType: D.valueType.STRING },
-      { label: 'MAC Address', valueType: D.valueType.STRING }
+        { label: 'Port Group Name', valueType: D.valueType.STRING },
+        { label: 'VLAN ID', valueType: D.valueType.NUMBER },
+        { label: 'MAC Address', valueType: D.valueType.STRING },
+        { label: 'Allow Promiscuous', valueType: D.valueType.STRING },
+        { label: 'MAC Address Changes', valueType: D.valueType.STRING },
+        { label: 'Forged Transmits', valueType: D.valueType.STRING },
+        { label: 'Reverse Policy', valueType: D.valueType.STRING },
+        { label: 'Notify Switches', valueType: D.valueType.STRING },
+        { label: 'Rolling Order', valueType: D.valueType.STRING },
+        { label: 'Check Speed', valueType: D.valueType.STRING },
+        { label: 'Speed', valueType: D.valueType.NUMBER },
+        { label: 'Check Duplex', valueType: D.valueType.STRING },
+        { label: 'Full Duplex', valueType: D.valueType.STRING },
+        { label: 'Check Error Percentage', valueType: D.valueType.STRING },
+        { label: 'Error Percentage', valueType: D.valueType.NUMBER, unit:'%' },
+        { label: 'Check Beacon', valueType: D.valueType.STRING },
+        { label: 'Active NIC', valueType: D.valueType.STRING },
+        { label: 'Checksum Offload', valueType: D.valueType.STRING },
+        { label: 'TCP Segmentation', valueType: D.valueType.STRING },
+        { label: 'Zero Copy Transmission', valueType: D.valueType.STRING },
+        { label: 'Shaping Policy Enabled', valueType: D.valueType.STRING },
+        { label: 'vSwitch Name', valueType: D.valueType.STRING },
+        { label: 'Security Policy', valueType: D.valueType.STRING },
+        { label: 'NIC Teaming Policy', valueType: D.valueType.STRING },
+        { label: 'NIC Teaming Failure Criteria', valueType: D.valueType.STRING },
+        { label: 'Offload Policy', valueType: D.valueType.STRING },
+        { label: 'Shaping Policy', valueType: D.valueType.STRING }
     ]
 )
 
@@ -231,6 +232,9 @@ function retrieveProprieties(hostRef) {
  */
 function populateTable(portGroupDetails) {
   networkPortGroupConfigurationTable.insertRecord(portGroupDetails.id, [
+    portGroupDetails.portGroupName,
+    portGroupDetails.vlanId,
+    portGroupDetails.macAddress,
     portGroupDetails.allowPromiscuous,
     portGroupDetails.macChanges,
     portGroupDetails.forgedTransmits,
@@ -249,15 +253,12 @@ function populateTable(portGroupDetails) {
     portGroupDetails.tcpSegmentation,
     portGroupDetails.zeroCopyTransmission,
     portGroupDetails.shapingPolicyEnabled,
-    portGroupDetails.portGroupName,
-    portGroupDetails.vlanId,
     portGroupDetails.vSwitchName,
     portGroupDetails.securityPolicy,
     portGroupDetails.nicTeamingPolicy,
     portGroupDetails.nicTeamingFailureCriteria,
     portGroupDetails.offloadPolicy,
-    portGroupDetails.shapingPolicy,
-    portGroupDetails.macAddress
+    portGroupDetails.shapingPolicy
   ]);
 }
 
@@ -285,6 +286,9 @@ function generateTableOutput(soapResponse) {
 
     populateTable({
       id: portGroupInfo.children('key').text() || "N/A",
+      portGroupName: spec.find('name').text() || "N/A",
+      vlanId: parseInt(spec.find('vlanId').text()) || 0,
+      macAddress: getMacAddress(portGroupInfo.find('port')),
       allowPromiscuous: computedPolicy.find('security allowPromiscuous').text() || "N/A",
       macChanges: computedPolicy.find('security macChanges').text() || "N/A",
       forgedTransmits: computedPolicy.find('security forgedTransmits').text() || "N/A",
@@ -303,15 +307,12 @@ function generateTableOutput(soapResponse) {
       tcpSegmentation: computedPolicy.find('offloadPolicy tcpSegmentation').text() || "N/A",
       zeroCopyTransmission: computedPolicy.find('offloadPolicy zeroCopyXmit').text() || "N/A",
       shapingPolicyEnabled: computedPolicy.find('shapingPolicy enabled').text() || "N/A",
-      portGroupName: spec.find('name').text() || "N/A",
-      vlanId: parseInt(spec.find('vlanId').text()) || 0,
       vSwitchName: spec.find('vswitchName').text() || "N/A",
       securityPolicy: spec.find('policy security').text() || "N/A",
       nicTeamingPolicy: spec.find('policy nicTeaming').text() || "N/A",
       nicTeamingFailureCriteria: spec.find('policy nicTeaming failureCriteria').text() || "N/A",
       offloadPolicy: spec.find('policy offloadPolicy').text() || "N/A",
-      shapingPolicy: spec.find('policy shapingPolicy').text() || "N/A",
-      macAddress: getMacAddress(portGroupInfo.find('port'))
+      shapingPolicy: spec.find('policy shapingPolicy').text() || "N/A"
     });
   });
 
