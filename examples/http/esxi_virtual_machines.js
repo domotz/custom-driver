@@ -16,8 +16,9 @@
  *    - Guest State: State of the guest OS
  *    - Guest OS ID: Identifier for the guest OS
  *    - Number of CPUs: Number of virtual CPUs
- *    - Memory: Amount of memory allocated (in MB)
- *    - Memory Usage: Amount of host memory currently being used by the virtual machine (in MB)
+ *    - Memory Usage: Percentage of allocated memory currently being used by the virtual machine
+ *    - Free Memory: Amount of free memory available to the virtual machine (in MB)
+ *    - Memory: Amount of memory allocated to the virtual machine (in MB)
  *    - VMware Tools Status: Status of VMware Tools
  *    - VMware Tools Version Status: Version status of VMware Tools
  *    - VMware Tools Running Status: Running status of VMware Tools
@@ -44,8 +45,7 @@ const filteredVMIds = D.getParameter('vmID')
 
 // Table to store virtual machine details
 var table = D.createTable(
-  'Virtual Machines',
-  [
+  'Virtual Machines',[
     { label: 'Name', valueType: D.valueType.STRING},
     { label: 'Power State', valueType: D.valueType.STRING },
     { label: 'Overall Status', valueType: D.valueType.STRING },
@@ -54,8 +54,9 @@ var table = D.createTable(
     { label: 'Guest State', valueType: D.valueType.STRING },
     { label: 'Guest OS ID', valueType: D.valueType.STRING },
     { label: 'Number of CPUs', valueType: D.valueType.NUMBER },
+    { label: 'Memory Usage', valueType: D.valueType.NUMBER, unit:'%'},
+    { label: 'Free Memory', valueType: D.valueType.NUMBER, unit:'MB'},
     { label: 'Memory', valueType: D.valueType.NUMBER, unit:'MB'},
-    { label: 'Memory Usage', valueType: D.valueType.NUMBER, unit:'MB'},
     { label: 'VMware Tools Status', valueType: D.valueType.STRING },
     { label: 'VMware Tools Version Status', valueType: D.valueType.STRING },
     { label: 'VMware Tools Running Status', valueType: D.valueType.STRING },
@@ -83,8 +84,8 @@ const paths = [
   'guest.guestState',
   'summary.config.guestId',
   'config.hardware.numCPU',
-  'config.hardware.memoryMB',
   'summary.quickStats.hostMemoryUsage',
+  'config.hardware.memoryMB',
   'guest.toolsStatus',
   'guest.toolsVersionStatus2',
   'guest.toolsRunningStatus',
@@ -267,6 +268,15 @@ function parseVMDetails(soapResponse) {
     paths.forEach(function(path) {
       vmDetails[path] = properties[path]
     })
+
+    const totalMemory = vmDetails['config.hardware.memoryMB'] || 0
+    const memoryUsage = vmDetails['summary.quickStats.hostMemoryUsage'] || 0
+    const freeMemory = totalMemory - memoryUsage
+    const memoryUsagePercent = totalMemory > 0 ? (memoryUsage / totalMemory * 100).toFixed(2) : 0
+    vmDetails['Total Memory'] = totalMemory
+    vmDetails['Free Memory'] = freeMemory
+    vmDetails['Memory Usage Percentage'] = memoryUsagePercent
+
     vmDetailsList.push(vmDetails)
   })
   vmDetailsList.forEach(populateTable)
@@ -287,8 +297,9 @@ function populateTable(vmDetails) {
     vmDetails['guest.guestState'] || 'N/A',
     vmDetails['summary.config.guestId'] || 'N/A',
     vmDetails['config.hardware.numCPU'] || 0,
-    vmDetails['config.hardware.memoryMB'] || 0,
-    vmDetails['summary.quickStats.hostMemoryUsage'] || 0,
+    vmDetails['Memory Usage Percentage'] || 0,
+    vmDetails['Free Memory'] || 0,
+    vmDetails['Total Memory'],
     vmDetails['guest.toolsStatus'] || 'N/A',
     vmDetails['guest.toolsVersionStatus2'] || 'N/A',
     vmDetails['guest.toolsRunningStatus'] || 'N/A',
@@ -300,7 +311,7 @@ function populateTable(vmDetails) {
     vmDetails['config.template'] || 'N/A',
     vmDetails['summary.config.numEthernetCards'] || 0,
     vmDetails['summary.config.numVirtualDisks'] || 0
-  ]);
+  ])
 }
 
 /**
