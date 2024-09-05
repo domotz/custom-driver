@@ -30,7 +30,6 @@
  * - TCP Segmentation
  * - Zero Copy Transmission
  * - Shaping Policy Enabled
-
  * - vSwitch Name
  * - Security Policy
  * - NIC Teaming Policy
@@ -309,7 +308,7 @@ function generateTableOutput(soapResponse) {
       shapingPolicyEnabled: computedPolicy.find('shapingPolicy enabled').text() || "N/A",
       vSwitchName: spec.find('vswitchName').text() || "N/A",
       securityPolicy: spec.find('policy security').text() || "N/A",
-      nicTeamingPolicy: spec.find('policy nicTeaming').text() || "N/A",
+      nicTeamingPolicy: spec.find('policy nicTeaming > policy').text() || "N/A",
       nicTeamingFailureCriteria: spec.find('policy nicTeaming failureCriteria').text() || "N/A",
       offloadPolicy: spec.find('policy offloadPolicy').text() || "N/A",
       shapingPolicy: spec.find('policy shapingPolicy').text() || "N/A"
