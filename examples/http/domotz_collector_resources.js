@@ -19,7 +19,7 @@
  *   - Load Average 1min: System load average over the last 1 minute
  *   - Load Average 5min: System load average over the last 5 minutes
  *   - Load Average 15min: System load average over the last 15 minutes
- *   - Free Memory: Free memory available in bytes
+ *   - Free Memory: Free memory available in GB
  * 
  **/
   
@@ -48,25 +48,29 @@ function getResources() {
   return d.promise
 }
 
+function getDisplayValue(value) {
+  return (value === undefined || value === null || value === '') ? 'N/A' : value
+}
+
 /**
  * Extracts and processes resource data from the response
  * @param {Object} data The resource data to process
  */
 function extractData(data) {
-  if (data && Object.keys(data).length > 0){
+  if (data && Object.keys(data).length > 0) {
     var variables = [
-      D.createVariable('status', 'Status', data.status || 'N/A', null, D.valueType.STRING),
-      D.createVariable('mode', 'Mode', data.mode || 'N/A', null, D.valueType.STRING),
-      D.createVariable('platform', 'Platform', data.package && data.package.full_platform ? data.package.full_platform : 'N/A', null, D.valueType.STRING),
-      D.createVariable('architecture', 'Architecture', data.package && data.package.pkg_architecture ? data.package.pkg_architecture : 'N/A', null, D.valueType.STRING),
-      D.createVariable('agent-version', 'Agent Version', data.package && data.package.agent_version ? data.package.agent_version : 'N/A', null, D.valueType.STRING),
-      D.createVariable('node-version', 'Node Version', data.package && data.package.node_version ? data.package.node_version : 'N/A', null, D.valueType.STRING),
-      D.createVariable('system-uptime', 'System Uptime', data.uptime && data.uptime.system ? data.uptime.system : 0, "s", D.valueType.NUMBER),
-      D.createVariable('process-uptime', 'Process Uptime', data.uptime && data.uptime.process ? data.uptime.process : 0, "s", D.valueType.NUMBER),
-      D.createVariable('load-average-1-min', 'Load Average 1min', (data.loadavg && data.loadavg.length > 0) ? loadavg[0] : 0, null, D.valueType.NUMBER),
-      D.createVariable('load-average-5-min', 'Load Average 5min', (data.loadavg && data.loadavg.length > 0) ? loadavg[1] : 0, null, D.valueType.NUMBER),
-      D.createVariable('load-average-15-min', 'Load Average 15min', (data.loadavg && data.loadavg.length > 0) ? loadavg[2] : 0, null, D.valueType.NUMBER),
-      D.createVariable('freemem', 'Free Mem', data.freemem || 0, "Bytes", D.valueType.NUMBER),
+      D.createVariable('status', 'Status', getDisplayValue(data.status), null, D.valueType.STRING),
+      D.createVariable('mode', 'Mode', getDisplayValue(data.mode), null, D.valueType.STRING),
+      D.createVariable('platform', 'Platform', getDisplayValue(data.package && data.package.full_platform), null, D.valueType.STRING),
+      D.createVariable('architecture', 'Architecture', getDisplayValue(data.package && data.package.pkg_architecture), null, D.valueType.STRING),
+      D.createVariable('agent-version', 'Agent Version', getDisplayValue(data.package && data.package.agent_version), null, D.valueType.STRING),
+      D.createVariable('node-version', 'Node Version', getDisplayValue(data.package && data.package.node_version), null, D.valueType.STRING),
+      D.createVariable('system-uptime', 'System Uptime', getDisplayValue(data.uptime && data.uptime.system), "s", D.valueType.NUMBER),
+      D.createVariable('process-uptime', 'Process Uptime', getDisplayValue(data.uptime && data.uptime.process), "s", D.valueType.NUMBER),
+      D.createVariable('load-average-1-min', 'Load Average 1min', (data.loadavg && data.loadavg.length > 0) ? data.loadavg[0] : 'N/A', null, D.valueType.NUMBER),
+      D.createVariable('load-average-5-min', 'Load Average 5min', (data.loadavg && data.loadavg.length > 1) ? data.loadavg[1] : 'N/A', null, D.valueType.NUMBER),
+      D.createVariable('load-average-15-min', 'Load Average 15min', (data.loadavg && data.loadavg.length > 2) ? data.loadavg[2] : 'N/A', null, D.valueType.NUMBER),
+      D.createVariable('freemem', 'Free Mem', isNaN(data.freemem) ? 'N/A' : (data.freemem / 1000000000).toFixed(2), "GB", D.valueType.NUMBER)
     ]
     D.success(variables)
   } else {
@@ -74,7 +78,6 @@ function extractData(data) {
     D.failure(D.errorType.PARSING_ERROR)
   }
 }
-
 /**
  * @remote_procedure
  * @label Validate Association
