@@ -19,7 +19,7 @@
  * - Notify Switches
  * - Rolling Order
  * - Check Speed
- * - Speed
+ * - Speed (Mbps)
  * - Check Duplex
  * - Full Duplex
  * - Check Error Percentage
@@ -57,7 +57,7 @@ const networkPortGroupConfigurationTable = D.createTable(
         { label: 'Notify Switches', valueType: D.valueType.STRING },
         { label: 'Rolling Order', valueType: D.valueType.STRING },
         { label: 'Check Speed', valueType: D.valueType.STRING },
-        { label: 'Speed', valueType: D.valueType.NUMBER },
+        { label: 'Speed', valueType: D.valueType.NUMBER, unit: "Mbps" },
         { label: 'Check Duplex', valueType: D.valueType.STRING },
         { label: 'Full Duplex', valueType: D.valueType.STRING },
         { label: 'Check Error Percentage', valueType: D.valueType.STRING },
