@@ -17,15 +17,15 @@
  *    - Guest OS ID: Identifier for the guest OS
  *    - Number of CPUs: Number of virtual CPUs
  *    - Memory Usage: Percentage of allocated memory currently being used by the virtual machine
- *    - Free Memory: Amount of free memory available to the virtual machine (in MB)
- *    - Memory: Amount of memory allocated to the virtual machine (in MB)
+ *    - Free Memory: Amount of free memory available to the virtual machine (in GB)
+ *    - Memory: Amount of memory allocated to the virtual machine (in GB)
  *    - VMware Tools Status: Status of VMware Tools
  *    - VMware Tools Version Status: Version status of VMware Tools
  *    - VMware Tools Running Status: Running status of VMware Tools
  *    - VM Path Name: Path name of the VM
  *    - Host: Host where the VM is running
  *    - Connection State: Connection state of the VM
- *    - Maximum Memory Usage: Maximum memory usage (in MB)
+ *    - Maximum Memory Usage: Maximum memory usage (in GB)
  *    - Maximum CPU Usage: Maximum CPU usage (in MHz)
  *    - Template: Indicates if the VM is a template
  *    - Number Ethernet Cards: Number of virtual Ethernet cards
@@ -55,15 +55,15 @@ var table = D.createTable(
     { label: 'Guest OS ID', valueType: D.valueType.STRING },
     { label: 'Number of CPUs', valueType: D.valueType.NUMBER },
     { label: 'Memory Usage', valueType: D.valueType.NUMBER, unit:'%'},
-    { label: 'Free Memory', valueType: D.valueType.NUMBER, unit:'MB'},
-    { label: 'Memory', valueType: D.valueType.NUMBER, unit:'MB'},
+    { label: 'Free Memory', valueType: D.valueType.NUMBER, unit:'GB'},
+    { label: 'Memory', valueType: D.valueType.NUMBER, unit:'GB'},
     { label: 'VMware Tools Status', valueType: D.valueType.STRING },
     { label: 'VMware Tools Version Status', valueType: D.valueType.STRING },
     { label: 'VMware Tools Running Status', valueType: D.valueType.STRING },
     { label: 'VM Path Name', valueType: D.valueType.STRING },
     { label: 'Host', valueType: D.valueType.STRING },
     { label: 'Connection State', valueType: D.valueType.STRING },
-    { label: 'Maximum Memory Usage', valueType: D.valueType.NUMBER, unit:'MB'},
+    { label: 'Maximum Memory Usage', valueType: D.valueType.NUMBER, unit:'GB'},
     { label: 'Maximum CPU Usage', valueType: D.valueType.NUMBER, unit:'MHz'},
     { label: 'Template', valueType: D.valueType.STRING },
     { label: 'Number Ethernet Cards', valueType: D.valueType.NUMBER },
@@ -233,7 +233,7 @@ function retrieveVMDetails(vmIds) {
     '  <vim25:obj type="VirtualMachine">' + vmID + '</vim25:obj>' +
     '</vim25:objectSet>'
   }).join('')
-  const payload =  createSoapPayload(
+  const payload = createSoapPayload(
     '<vim25:RetrieveProperties>' + 
     '  <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' + 
     '  <vim25:specSet>' + 
@@ -255,7 +255,6 @@ function retrieveVMDetails(vmIds) {
 function parseVMDetails(soapResponse) {
   const $ = D.htmlParse(soapResponse)
   const vmDetailsList = []
-
   $('returnval').each(function() {
     const recordId = $(this).find('obj').text()
     const properties = {}
@@ -268,15 +267,14 @@ function parseVMDetails(soapResponse) {
     paths.forEach(function(path) {
       vmDetails[path] = properties[path]
     })
-
-    const totalMemory = vmDetails['config.hardware.memoryMB'] || 0
+    const totalMemory = vmDetails['config.hardware.memoryMB'] || 'N/A'
     const memoryUsage = vmDetails['summary.quickStats.hostMemoryUsage'] || 0
     const freeMemory = totalMemory - memoryUsage
-    const memoryUsagePercent = totalMemory > 0 ? (memoryUsage / totalMemory * 100).toFixed(2) : 0
-    vmDetails['Total Memory'] = totalMemory
-    vmDetails['Free Memory'] = freeMemory
+    const memoryUsagePercent = totalMemory > 0 ? (memoryUsage / totalMemory * 100).toFixed(2) : 'N/A'
     vmDetails['Memory Usage Percentage'] = memoryUsagePercent
-
+    vmDetails['Free Memory'] = freeMemory >= 0 ? (freeMemory / 1000).toFixed(2) : 'N/A'
+    vmDetails['Total Memory'] = totalMemory >= 0 ? (totalMemory / 1000).toFixed(2) : 'N/A'
+    vmDetails['Max Memory Usage'] = vmDetails['summary.runtime.maxMemoryUsage'] ? (vmDetails['summary.runtime.maxMemoryUsage'] / 1000).toFixed(2) :' N/A'
     vmDetailsList.push(vmDetails)
   })
   vmDetailsList.forEach(populateTable)
@@ -292,13 +290,13 @@ function populateTable(vmDetails) {
     vmDetails['config.name'] || 'N/A',
     vmDetails['runtime.powerState'] || 'N/A',
     vmDetails['summary.overallStatus'] || 'N/A',
-    vmDetails['runtime.numMksConnections'] || 0,
+    vmDetails['runtime.numMksConnections'] || 'N/A',
     vmDetails['config.guestFullName'] || 'N/A',
     vmDetails['guest.guestState'] || 'N/A',
     vmDetails['summary.config.guestId'] || 'N/A',
-    vmDetails['config.hardware.numCPU'] || 0,
-    vmDetails['Memory Usage Percentage'] || 0,
-    vmDetails['Free Memory'] || 0,
+    vmDetails['config.hardware.numCPU'] || 'N/A',
+    vmDetails['Memory Usage Percentage'],
+    vmDetails['Free Memory'],
     vmDetails['Total Memory'],
     vmDetails['guest.toolsStatus'] || 'N/A',
     vmDetails['guest.toolsVersionStatus2'] || 'N/A',
@@ -306,11 +304,11 @@ function populateTable(vmDetails) {
     vmDetails['summary.config.vmPathName'] || 'N/A',
     vmDetails['summary.runtime.host'] || 'N/A',
     vmDetails['runtime.connectionState'] || 'N/A',
-    vmDetails['summary.runtime.maxMemoryUsage'] || 0,
-    vmDetails['summary.runtime.maxCpuUsage'] || 0,
+    vmDetails['Max Memory Usage'],
+    vmDetails['summary.runtime.maxCpuUsage']  || 'N/A',
     vmDetails['config.template'] || 'N/A',
-    vmDetails['summary.config.numEthernetCards'] || 0,
-    vmDetails['summary.config.numVirtualDisks'] || 0
+    vmDetails['summary.config.numEthernetCards'] || 'N/A',
+    vmDetails['summary.config.numVirtualDisks'] || 'N/A'
   ])
 }
 
