@@ -1,0 +1,34 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Domotz Collector Diagnostic",
+    "description": "Monitor and troubleshoot the diagnostic data of an agent",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Domotz Agent installed and running on the network"
+        ]
+    },
+    "tags": [
+        "domotz-agent",
+        "diagnostic", 
+        "error"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[2]",
+        "table": "[1]"
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Domotz Agent",
+            "version": "6.1.0-b001"
+        }
+    ]
+}
