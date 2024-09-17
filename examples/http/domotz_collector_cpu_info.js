@@ -23,12 +23,12 @@ var table = D.createTable(
   'CPUs Info',
   [
     { label: 'Model', valueType: D.valueType.STRING },
-    { label: 'Speed', valueType: D.valueType.NUMBER },
-    { label: 'User Time', valueType: D.valueType.NUMBER },
-    { label: 'Nice Time', valueType: D.valueType.NUMBER },
-    { label: 'Sys Time', valueType: D.valueType.NUMBER },
-    { label: 'Idle Time', valueType: D.valueType.NUMBER },
-    { label: 'IRQ Time', valueType: D.valueType.NUMBER }
+    { label: 'Speed', unit: "MHz", valueType: D.valueType.NUMBER },
+    { label: 'User Time', unit: "s", valueType: D.valueType.NUMBER },
+    { label: 'Nice Time', unit: "s", valueType: D.valueType.NUMBER },
+    { label: 'Sys Time', unit: "s", valueType: D.valueType.NUMBER },
+    { label: 'Idle Time', unit: "s", valueType: D.valueType.NUMBER },
+    { label: 'IRQ Time', unit: "s", valueType: D.valueType.NUMBER }
   ]
 )
 
