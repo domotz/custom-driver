@@ -19,7 +19,8 @@
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "table": "[10]"
+        "independent": "[2]",
+        "table": "[8]"
     },
     "protocols": [
         "SSH"
