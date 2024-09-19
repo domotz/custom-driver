@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver 
  * Name: VMWare vCenter Monitoring Host List
- * Description: This script retrieves list of hosts in a VMWare server.
+ * Description: This script retrieves list of hosts in a VMWare server
  * 
  * Communication protocol is HTTPS
  * 
@@ -106,14 +106,14 @@ function getHostList(sessionId) {
       if (Array.isArray(data) && data.length > 0) {
         var hosts = data.map(function(item) { return item.host })
         var filteredHosts
-          if (hostId.length === 1 && hostId[0].toLowerCase() === 'all') {
-            filteredHosts = hosts
-          } else {
-            filteredHosts = hosts.filter(function(host) {
-              return hostId.includes(host)
-            })
-          }
-          d.resolve(filteredHosts)
+        if (hostId.includes('ALL')) {
+          filteredHosts = hosts
+        } else {
+          filteredHosts = hosts.filter(function(host) {
+            return host === hostId
+          })
+        }
+        d.resolve(filteredHosts)
       } else {
         console.error('No hosts found')
         D.failure(D.errorType.PARSING_ERROR)
@@ -214,7 +214,7 @@ function extractData(body) {
     D.success(table)
   } else {
     console.error("No data available")
-    D.failure(D.errorType.PARSING_ERROR)
+    D.failure(D.errorType.GENERIC_ERROR)
   }
 }
 
