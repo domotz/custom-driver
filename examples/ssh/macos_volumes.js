@@ -11,8 +11,8 @@
  *   - Name: Volume Name
  *   - Node: Device Node (path) of the volume
  *   - Partition: The disk that this volume is part of
+ *   - Partition Usage: The percentage of the volumes total space that is currently used
  *   - Mount Point: The path where the volume is mounted
- *   - Partition Usage: The percentage of the volume's total space that is currently used
  *   - File System: File system type used by the volume
  *   - ReadOnly: Indicates if the volume is read-only
  *   - Status: The status of the volume
@@ -35,8 +35,8 @@ var table = D.createTable(
     { label: "Name", valueType: D.valueType.STRING },
     { label: "Node", valueType: D.valueType.STRING },
     { label: "Partition", valueType: D.valueType.STRING },
-    { label: "Mount Point", valueType: D.valueType.STRING },
     { label: "Partition Usage", unit: "%", valueType: D.valueType.NUMBER },
+    { label: "Mount Point", valueType: D.valueType.STRING },
     { label: "File System", valueType: D.valueType.STRING },
     { label: "ReadOnly", valueType: D.valueType.STRING },
     { label: "Status", valueType: D.valueType.STRING }
@@ -86,7 +86,7 @@ function executeCommand (cmdGetVolumes) {
 function parseOutput(output) {
   if (output) {
     var lines = output.trim().split('\n')
-    var logicalDisks = []
+    var volumes = []
     var currentDisk = {}
     for (var i = 0; i < lines.length; i++) {
       if (lines[i] === '' || lines[i].indexOf('**********') === 0) { continue }
@@ -96,7 +96,7 @@ function parseOutput(output) {
         var value = match[2].trim()
         if (key === 'Device Identifier') {
           if (Object.keys(currentDisk).length > 0) {
-            logicalDisks.push(currentDisk);
+            volumes.push(currentDisk)
           }
           currentDisk = { 'Device Identifier': value }
         } else {
@@ -106,9 +106,9 @@ function parseOutput(output) {
       }
     }
     if (Object.keys(currentDisk).length > 0) {
-      logicalDisks.push(currentDisk)
+      volumes.push(currentDisk)
     }
-    var filteredDisks = logicalDisks.filter(function(disk) {
+    var filteredDisks = volumes.filter(function(disk) {
       return disk['Mount Point'] && disk['Mount Point'].includes('/Volumes')
     })
     return filteredDisks
@@ -127,26 +127,25 @@ function sanitize (output) {
 
 /**
  * Extracts relevant variables from parsed volumes and populates the table
- * @param {Array} logicalDisks Array of objects representing parsed logical disk information
+ * @param {Array} volumes Array of objects representing parsed logical disk information
  */
-function populateTable(logicalDisks) {
-
-  logicalDisks.forEach(function (disk) {
-    var usedSpaceBytes = disk['Volume Used Space'] ? parseInt(disk['Volume Used Space'].match(/(\d+) Bytes/)[1]) : 0
-    var containerTotalSpace = disk['Container Total Space'] ? disk['Container Total Space'].match(/(\d+) Bytes/) : 0
-    var volumeTotalSpace = disk['Volume Total Space'] ? disk['Volume Total Space'].match(/(\d+) Bytes/) : 0
+function populateTable(volumes) {
+  volumes.forEach(function (volume) {
+    var usedSpaceBytes = volume['Volume Used Space'] ? parseInt(volume['Volume Used Space'].match(/(\d+) Bytes/)[1]) : 0
+    var containerTotalSpace = volume['Container Total Space'] ? volume['Container Total Space'].match(/(\d+) Bytes/) : 0
+    var volumeTotalSpace = volume['Volume Total Space'] ? volume['Volume Total Space'].match(/(\d+) Bytes/) : 0
     var totalSpaceBytes = containerTotalSpace ? parseInt(containerTotalSpace[1]) : (volumeTotalSpace ? parseInt(volumeTotalSpace[1]) : 0)
     var usagePercentage = totalSpaceBytes > 0 ? ((usedSpaceBytes / totalSpaceBytes) * 100).toFixed(2) : 0
-    table.insertRecord(sanitize(disk['Device Identifier']), 
+    table.insertRecord(sanitize(volume['Device Identifier']), 
       [
-        disk['Volume Name'] || 'N/A',
-        disk['Device Node'] || 'N/A',
-        disk['Part of Whole'] || 'N/A',
-        disk['Mount Point'] || 'N/A',
+        volume['Volume Name'] || 'N/A',
+        volume['Device Node'] || 'N/A',
+        volume['Part of Whole'] || 'N/A',
         usagePercentage,
-        disk['File System Personality'] || 'N/A',
-        disk['Volume Read-Only'] || 'N/A',
-        disk['SMART Status'] || 'N/A'
+        volume['Mount Point'] || 'N/A',
+        volume['File System Personality'] || 'N/A',
+        volume['Volume Read-Only'] || 'N/A',
+        volume['SMART Status'] || 'N/A'
       ]
     )
   })
