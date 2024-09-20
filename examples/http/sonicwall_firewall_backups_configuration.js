@@ -19,10 +19,12 @@ var sonicWallPort = D.getParameter('sonicWallPort')
 function getConfigBackup() {
     var d = D.q.defer()
     var config = {
-        url: "/api/",
+        url: "/api/sonicos/config/current",
         protocol: "https",
         rejectUnauthorized: false,
-        port: sonicWallPort
+        port: sonicWallPort,
+        username: D.device.username(),
+        password: D.device.password()
     }
     D.device.http.get(config, function(error, response, body){
         if (error) {          

@@ -6,7 +6,7 @@
     "type": "CONFIGURATION_MANAGEMENT",
     "category": "Configuration Management",
     "requirements": {
-        "credentials": false,
+        "credentials": true,
         "sandbox_version": "1.16",
         "others": [
             "SonicWall",
