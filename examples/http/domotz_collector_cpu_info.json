@@ -14,13 +14,12 @@
     "tags": [
         "domotz-agent",
         "cpu",
-        "Model",
-        "Speed",
-        "User Time",
-        "Nice Time",
-        "Sys Time",
-        "Idle Time",
-        "IRQ Time"
+        "speed",
+        "time",
+        "nice",
+        "system",
+        "idle",
+        "irq"
     ],
     "sample_period_s": 900,
     "has_actions": false,
