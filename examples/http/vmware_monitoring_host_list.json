@@ -21,7 +21,7 @@
     "sample_period_s": 600,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[13]"
+        "table": "[13]"
     },
     "protocols": [
         "HTTPS"
@@ -34,7 +34,7 @@
     ],
     "parameters": [
         {
-            "value_type": "LIST",
+            "value_type": "STRING",
             "name": "hostId",
             "label": "Host ID",
             "value": "ALL"
