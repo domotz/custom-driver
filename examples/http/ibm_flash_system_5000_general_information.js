@@ -123,6 +123,9 @@ function login() {
  * @returns {number|string} Cleaned value.
  */
 function cleanValue(value, valueType) {
+    if(!value){
+        return "N/A"
+    }
     return valueType === D.valueType.NUMBER ? parseFloat(value.replace(/[^0-9.]/g, '')) : value
 }
 
