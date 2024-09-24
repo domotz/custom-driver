@@ -91,11 +91,12 @@ function callHttps(endpoint, headers) {
         if (error) {
             console.error(error)
             D.failure(D.errorType.GENERIC_ERROR)
-        } else if (!response) {
+        } else if (!response || response.statusCode === 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 400) {
+        } else if (response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode !== 200) {
+        }
+        else if (response.statusCode !== 200) {
             D.failure(D.errorType.GENERIC_ERROR)
         } else {
             d.resolve(JSON.parse(body));
@@ -203,6 +204,19 @@ function mergeOutputs() {
     return baseResponseList;
 }
 
+function retrieveAndStoreData(body) {
+    const promises = [];
+    for (let i = 0; i < endpoints.length; i++) {
+        const endpointDetails = endpoints[i]
+        const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
+            .then(function (response) {
+                storeResponse(response, endpointDetails.endpoint, endpointDetails.key)
+            })
+        promises.push(promise)
+    }
+    return D.q.all(promises)
+}
+
 /**
  * @remote_procedure
  * @label Validate Association
@@ -210,25 +224,14 @@ function mergeOutputs() {
  */
 function validate() {
     login()
-        .then(function (body) {
-            const promises = [];
-            for (let i = 0; i < endpoints.length; i++) {
-                const endpointDetails = endpoints[i]
-                const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-                    .then(function (response) {
-                        storeResponse(response, endpointDetails.endpoint, endpointDetails.key)
-                    })
-                promises.push(promise);
-            }
-            D.q.all(promises)
-                .then(function () {
-                    D.success()
-                });
+        .then(retrieveAndStoreData)
+        .then(function(){
+            D.success()
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error('Validation failed: ', error)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }
 
 /**
@@ -238,25 +241,14 @@ function validate() {
  */
 function get_status() {
     login()
-        .then(function (body) {
-            const promises = [];
-            for (let i = 0; i < endpoints.length; i++) {
-                const endpointDetails = endpoints[i]
-                const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-                    .then(function (response) {
-                        storeResponse(response, endpointDetails.endpoint, endpointDetails.key)
-                    })
-                promises.push(promise);
-            }
-            D.q.all(promises)
-                .then(function () {
-                    let managedDisksDetailsList = mergeOutputs()
-                    populateEndpointVariables(managedDisksDetailsList)
-                    D.success(managedDisksTable)
-                });
+        .then(retrieveAndStoreData)
+        .then(mergeOutputs)
+        .then(function (managedDisksDetailsList) {
+            populateEndpointVariables(managedDisksDetailsList)
+            D.success(managedDisksTable)
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error('Validation failed: ', error)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }
