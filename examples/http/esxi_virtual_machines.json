@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "name": "ESXi Virtual Machines",
     "description": "Retrieves detailed information about virtual machines from an ESXi server",
-    "category": "Hardware Integration",
+    "category": "Software Integration",
     "requirements": {
       "credentials": true,
       "sandbox_version": "1.12",

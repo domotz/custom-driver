@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi CPU Details",
   "description": "Monitors the ESXi host CPU Details",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",
