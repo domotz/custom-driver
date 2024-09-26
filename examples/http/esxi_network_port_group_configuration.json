@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Network Port Group Configuration",
   "description": "Monitors the ESXi host Network Port Group Configuration",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Network Virtual NIC Configuration",
   "description": "Monitors the ESXi host Network Virtual NIC Configuration",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",

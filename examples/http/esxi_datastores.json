@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Datastore Details",
   "description": "Monitors the ESXi host Datastore Details",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",
