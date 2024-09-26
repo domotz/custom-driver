@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Network DNS Configuration",
   "description": "Monitors the Network DNS Configuration of the ESXi host",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",

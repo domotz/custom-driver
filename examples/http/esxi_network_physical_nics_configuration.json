@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Network Physical NIC Configuration",
   "description": "Monitors the ESXi host Network Physical NIC Configuration",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",

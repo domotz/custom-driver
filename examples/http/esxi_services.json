@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Services",
   "description": "Monitors the ESXi host Services",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",
