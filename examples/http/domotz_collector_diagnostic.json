@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "domotz.svg",
     "version": "1.0.0",
     "name": "Domotz Collector Diagnostic",
     "description": "Monitor and troubleshoot the diagnostic data of an agent",
