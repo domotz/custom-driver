@@ -223,7 +223,7 @@ function validate() {
     login()
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-                .then(function (response) {
+                .then(function () {
                     D.success()
                 })
         })
