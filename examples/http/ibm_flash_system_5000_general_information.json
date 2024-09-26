@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "ibm.svg",
     "version": "1.0.0",
     "name": "IBM FlashSystem5000 General Information",
     "description": "Monitors the general information of the IBM FlashSystem5000",
