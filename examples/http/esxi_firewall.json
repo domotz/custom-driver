@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Firewall",
   "description": "Monitors the ESXi host Firewall",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",
