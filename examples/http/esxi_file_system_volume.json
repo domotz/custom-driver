@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi File System Volume",
   "description": "Monitors the ESXi host File System Volume",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",

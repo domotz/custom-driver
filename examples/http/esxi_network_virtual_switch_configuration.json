@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi Network Virtual Switch Configuration",
   "description": "Monitors the ESXi host Network Virtual Switch Configuration",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",

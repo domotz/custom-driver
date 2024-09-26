@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "ESXi General Information",
   "description": "Monitors the general information of the ESXi host",
-  "category": "Hardware Integration",
+  "category": "Software Integration",
   "requirements": {
     "credentials": true,
     "sandbox_version": "1.12",
