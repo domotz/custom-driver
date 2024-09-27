@@ -1,0 +1,35 @@
+{
+    "logo": "ibm.svg",
+    "version": "1.0.0",
+    "name": "IBM FlashSystem5000 Fibre Channel I/O Ports",
+    "description": "Retrieves information about the Fibre Channel I/O ports in the IBM FlashSystem 5000",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "IBM FlashSystem5000"
+        ]
+    },
+    "tags": [
+        "ibm",
+        "flash-system-5000",
+        "physical-drive",
+        "fibre-channel",
+        "port"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[13]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FlashSystem5000",
+            "version": "8.5.0.6"
+        }
+    ]
+}
