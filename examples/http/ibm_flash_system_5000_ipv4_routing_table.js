@@ -8,16 +8,13 @@
  * Tested on FlashSystem5000 version: 8.5.0.6
  *
  * Extracts the following information from the data array:
- *      - Quorum Index
- *      - Status
- *      - Name
- *      - Controller ID
- *      - Controller Name
- *      - Active
- *      - Object Type
- *      - Override
- *      - Site ID
- *      - Site Name
+ *      - Destination
+ *      - Gateway
+ *      - Interface
+ *      - Table
+ *      - Protocol
+ *      - Source IP
+ *      - Scope
  *
  **/
 
