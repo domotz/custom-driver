@@ -51,7 +51,7 @@ function callHttps(endpoint, headers, callBack) {
     const config = {
         url: endpoint,
         protocol: "https",
-        port: 43775,
+        port: 7443,
         rejectUnauthorized: false,
         headers: headers
     };
@@ -111,7 +111,6 @@ function login() {
 function populateTable() {
     for (let i = 0; i < routingInfoList.length; i++) {
         const routingDetails = routingInfoList[i];
-        console.log('routingDetails: ', routingDetails)
         routingInfoTable.insertRecord((i + 1).toString(), [
             routingDetails['destination'] || "N/A",
             routingDetails['gateway'] || "N/A",
