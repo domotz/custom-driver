@@ -1,0 +1,28 @@
+{
+    "logo": "azure.svg",
+    "version": "1.0.0",
+    "name": "Azure VMs List",
+    "description": "Monitor Azure Compute Virtual Machines: this script retrieves information about Virtual Machine image, operationg system, resource group, size and location ",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Azure Compute"        
+        ]
+    },
+    "tags": [
+        "azure",
+        "compute",
+        "vm"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[8]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": []
+}
