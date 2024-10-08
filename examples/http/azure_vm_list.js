@@ -113,10 +113,17 @@ function processVMsResponse(d) {
 
         let vmInfoList = bodyAsJSON.value.map(extractVmInfo);
         if (resourceGroup.toString().toLowerCase() !== "all") {
+            const allVmLength = vmInfoList.length
             vmInfoList = vmInfoList.filter(function (vm) {
                 return resourceGroup === vm.resourceGroup;
             });
+            if (!allVmLength) {
+                console.info('There is no Virtual machine');
+            } else if ( vmInfoList.length === 0) {
+                console.info('There is no Virtual machine related to this Resource Group');
+            }
         }
+
         vmInfoList.map(populateTable);
         d.resolve();
     }
