@@ -24,5 +24,32 @@
     "protocols": [
         "HTTPS"
     ],
-    "tested_on": []
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantID",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "client_id",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "client_secret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "subscriptionId",
+            "label": "Subscription Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "resourceGroup",
+            "label": "Resource Group"
+        }
+    ]
 }
