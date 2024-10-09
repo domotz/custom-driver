@@ -1,22 +1,21 @@
 /**
  * Domotz Custom Driver
- * Name: macOS - Disk partitions
+ * Name: macOS - Disk Partitions
  * Description: Monitors the status of disk partitions within a Macintosh machine
  * 
  * Communication protocol is SSH
  * 
  * Tested on macOS Version 14.5
  * 
- * 
- * Creates a custom driver table with the following columns: 
+ * Creates a custom table with rows for each disk partition, including the following columns
+ *   - ID: The name of the disk partition
  *   - Usage: Percentage of disk space used
  *   - Free Space: Amount of free disk space available
  *   - Size: Total disk space available
- * 
  **/
 
-// SSH command to retrieve retrieve disk partitons information
-var cmdGetDiskPartion = 'diskutil info -all'
+// SSH command to retrieve retrieve disk partitions information
+var cmdGetDiskPartition = 'diskutil info -all'
 
 var sshConfig = {
   'username': D.device.username(),
@@ -24,15 +23,23 @@ var sshConfig = {
   'timeout': 10000
 }
 
+var table = D.createTable(
+  "Disk partitions", 
+  [
+    { label: "Usage", unit: '%', valueType: D.valueType.NUMBER },
+    { label: "Free Space", unit: "GB", valueType: D.valueType.NUMBER },
+    { label: "Size", unit: "GB", valueType: D.valueType.NUMBER }
+  ]
+)
 /**
  * Checks SSH command errors and handles them appropriately
  * @param {Error} err The error object from the SSH command execution
  */
 function checkSshError (err) {
-  if(err.message) console.error(err.message)
-  if(err.code == 5){
+  if (err.message) console.error(err.message)
+  if (err.code === 5){
     D.failure(D.errorType.AUTHENTICATION_ERROR)
-  } else if (err.code == 255 || err.code == 1) {
+  } else if (err.code === 255 || err.code === 1) {
     D.failure(D.errorType.RESOURCE_UNAVAILABLE)
   } else {
     console.error(err)
@@ -42,16 +49,20 @@ function checkSshError (err) {
 
 /**
  * Executes an SSH command using the provided configuration
- * @param {string} cmdGetDiskPartion The SSH command to execute
+ * @param {string} cmdGetDiskPartition The SSH command to execute
  * @returns {Promise} A promise that resolves with the command output or rejects with an error
  */
-function executeCommand (cmdGetDiskPartion) {
+function executeCommand (cmdGetDiskPartition) {
   var d = D.q.defer()
-  sshConfig.command = cmdGetDiskPartion
+  sshConfig.command = cmdGetDiskPartition
   D.device.sendSSHCommand(sshConfig, function (output, error) {
-    if (error) {
-      checkSshError(error)
-      d.reject(error)
+    if (error) { 
+      if (error.message.indexOf('command not found') !== -1){
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else { 
+        checkSshError(error)
+        d.reject(error)
+      }
     } else {
       d.resolve(output)
     }
@@ -60,9 +71,9 @@ function executeCommand (cmdGetDiskPartion) {
 }
 
 /**
- * Parses the output of the SSH command to extract disk partitons information
+ * Parses the output of the SSH command to extract disk partitions information
  * @param {string} output The output from the SSH command execution
- * @returns {Array} An array of objects representing parsed disk partitons information
+ * @returns {Array} An array of objects representing parsed disk partitions information
  */
 function parseOutput(output) {
   if (output) {
@@ -93,7 +104,6 @@ function parseOutput(output) {
       return disk['Mount Point'] && disk['Mount Point'].includes('/Volumes')
     })
     return filteredDisks
-
   } else {
     console.error('No data found')
     D.failure(D.errorType.PARSING_ERROR)
@@ -106,30 +116,19 @@ function sanitize (output) {
   return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
 }
 
-function convertToAppropriateUnits(bytes) {
-  if (bytes >= 1e9) {
-    return {
-      value: (bytes / 1e9).toFixed(2),
-      unit: 'GB'
-    }
-  } else {
-    return {
-      value: (bytes / 1e6).toFixed(2),
-      unit: 'MB'
-    }
-  }
-}
+function convertToGB(bytes) {
+  return (bytes / 1e9).toFixed(2)
+} 
 
 /**
- * Extracts relevant variables from parsed disk partitons and populates the table
- * @param {Array} partitions Array of objects representing parsed disk partitonsinformation
+ * Extracts relevant variables from parsed disk partitions and populates the table
+ * @param {Array} partitions Array of objects representing parsed disk partitionsinformation
  */
 function populateTable(partitions) {
   var parentDiskValues = {}
-  var table
   partitions.forEach(function (disk) {
     var containerTotalSpace = disk['Container Total Space'] ? disk['Container Total Space'].match(/(\d+) Bytes/) : 0
-    var volumeTotalSpace = disk['Volume Total Space'] ? disk['Volume Total Space'].match(/(\d+) Bytes/) : 0;
+    var volumeTotalSpace = disk['Volume Total Space'] ? disk['Volume Total Space'].match(/(\d+) Bytes/) : 0
     var totalSpaceBytes = containerTotalSpace ? parseInt(containerTotalSpace[1]) : (volumeTotalSpace ? parseInt(volumeTotalSpace[1]) : 0)
     var containerFreeSpace = disk['Container Free Space'] ? disk['Container Free Space'].match(/(\d+) Bytes/) : 0
     var volumeFreeSpace = disk['Volume Free Space'] ? disk['Volume Free Space'].match(/(\d+) Bytes/) : 0
@@ -138,23 +137,11 @@ function populateTable(partitions) {
     var percentageUsedSpace = totalSpaceBytes > 0 ? (totalUsedSpace / totalSpaceBytes) * 100 : 0
     var parentDisk = disk['Part of Whole']
     if (!parentDiskValues[parentDisk]) {
-      var freeSpace = convertToAppropriateUnits(totalFreeSpaceBytes)
-      var size = convertToAppropriateUnits(totalSpaceBytes)
+      var freeSpace = convertToGB(totalFreeSpaceBytes)
+      var size = convertToGB(totalSpaceBytes)
       parentDiskValues[parentDisk] = {
-        freeSpace: freeSpace.value,
-        size: size.value,
-        freeSpaceUnit: freeSpace.unit,
-        sizeUnit: size.unit
-      }
-      if (!table) {
-        table = D.createTable(
-          "Disk partitions", 
-          [
-            { label: "Usage", unit: '%', valueType: D.valueType.NUMBER },
-            { label: "Free Space", unit: parentDiskValues[parentDisk].freeSpaceUnit, valueType: D.valueType.NUMBER },
-            { label: "Size", unit: parentDiskValues[parentDisk].sizeUnit, valueType: D.valueType.NUMBER }
-          ]
-        )
+        freeSpace: freeSpace,
+        size: size,
       }
       table.insertRecord(sanitize(parentDisk), 
         [
@@ -168,13 +155,22 @@ function populateTable(partitions) {
   D.success(table)
 }
 
+function parseValidateOutput (output) {
+  if (output.trim() !== '') {
+    console.log('Validation successful')
+    D.success()
+  } else {
+    console.log('Validation failed')
+    D.failure(D.errorType.GENERIC_ERROR)
+  }
+}
 /**
  * @remote_procedure
  * @label Validate SSH connectivity with the device
  * @documentation This procedure is used to validate the driver and credentials provided during association.
  */
 function validate () {
-  executeCommand(cmdGetDiskPartion)
+  executeCommand(cmdGetDiskPartition)
     .then(parseValidateOutput)
     .catch(function (err) {
       console.error(err)
@@ -182,23 +178,15 @@ function validate () {
     })
 }
 
-function parseValidateOutput (output) {
-  if (output && typeof output === 'string' && output.trim() !== '') {
-    console.log('Validation successful')
-    D.success()
-  } else {
-    console.error('Output is empty or undefined')
-    D.failure(D.errorType.PARSING_ERROR)
-  }
-}
+
 
 /**
   * @remote_procedure
-  * @label Get disk partitons Info
-  * @documentation This procedure retrieves information about disk partitons within a Macintosh machine
+  * @label Get disk partitions Info
+  * @documentation This procedure retrieves information about disk partitions within a Macintosh machine
  */
 function get_status () {
-  executeCommand(cmdGetDiskPartion)
+  executeCommand(cmdGetDiskPartition)
     .then(parseOutput)
     .then(populateTable)
     .catch(checkSshError)
