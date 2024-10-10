@@ -1,0 +1,32 @@
+{
+    "logo": "ibm.svg",
+    "version": "1.0.0",
+    "name": "IBM FlashSystem5000 Cloud Call Home information",
+    "description": "Monitors the Cloud Call Home information of the IBM FlashSystem5000",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "IBM FlashSystem5000"
+        ]
+    },
+    "tags": [
+        "ibm",
+        "flash-system-5000"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FlashSystem5000",
+            "version": "8.5.0.6"
+        }
+    ]
+}
