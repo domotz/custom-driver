@@ -1,0 +1,34 @@
+{
+    "logo": "ibm.svg",
+    "version": "1.0.0",
+    "name": "IBM FlashSystem5000 Enclosure Details",
+    "description": "Retrieves Enclosure information the IBM FlashSystem 5000",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "IBM FlashSystem5000"
+        ]
+    },
+    "tags": [
+        "ibm",
+        "flash-system-5000",
+        "enclosure",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[16]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FlashSystem5000",
+            "version": "8.5.0.6"
+        }
+    ]
+}
