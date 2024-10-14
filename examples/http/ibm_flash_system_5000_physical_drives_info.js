@@ -31,7 +31,7 @@
 
 const endpoints = [
   { endpoint: "lsdrive", key: "id" },
-  { endpoint: "lsarraymember", key: "mdisk_id" }
+  { endpoint: "lsarraymember", key: "member_id" }
 ]
 
 let httpResponses = []
@@ -158,16 +158,19 @@ function storeResponse(response, key) {
  */
 function mergeOutputs() {
   if (httpResponses.length < 2) return []
-  return httpResponses.reduce(function(baseList, current) {
-    const currentResponseList = current.response
-    const baseKey = current.key
-    return baseList.map(function(baseObject) {
+  let baseResponseList = httpResponses[0].response
+  const baseKey = httpResponses[0].key
+  for (let i = 1; i < httpResponses.length; i++) {
+    const currentResponseList = httpResponses[i].response
+    const currentKey = httpResponses[i].key
+    baseResponseList = baseResponseList.map(function(baseObject) {
       const matchedObject = currentResponseList.find(function(currentObject) {
-        return baseObject[baseKey] === currentObject[baseKey]
+        return baseObject[baseKey] === currentObject[currentKey]
       })
       return matchedObject ? Object.assign({}, baseObject, matchedObject) : baseObject
     })
-  }, httpResponses[0].response)
+  }
+  return baseResponseList
 }
 
 /**
@@ -215,11 +218,11 @@ function validate() {
 function get_status() {
   login()
     .then(retrieveAndStoreData)
-    .then(function() {
-      const physicalDrives = mergeOutputs()
+    .then(mergeOutputs)
+    .then(function (physicalDrives) {
       populateTable(physicalDrives)
       D.success(physicalDrivesTable)
-    })
+  })
     .catch(function(error) {
       console.error('Failed to retrieve status: ', error)
       D.failure(D.errorType.GENERIC_ERROR)
