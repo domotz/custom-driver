@@ -1,0 +1,38 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0.0",
+    "name": "Sonicwall firewall - IPv4 DHCP Leases",
+    "description": "Extract IPv4 DHCP Leases statistics",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "firewall",
+        "dhcp"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[5]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.0.1-5145"
+        },
+        {
+            "name": "SonicWall SonicOS",
+            "version": "6.5.4.14-109n"
+        }
+    ]
+}
