@@ -5,7 +5,7 @@
  * 
  * Communication protocol is HTTPS
  * 
- * Tested on SonicWALL NSA 3500, NSv 270
+ * Tested on SonicWall NSA 3500 (SonicOS 6.5.4.14-109n), NSv 270 (SonicOS 7.0.1-5119-R4713)
  *
  * Creates the following variables:
  *      - Current: current DHCP leases
@@ -131,9 +131,8 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Sonicwall Product lifecycle
- * @documentation This procedure is used to retrieve the product lifecycle information for a SonicWall device. The product lifecycle includes five phases: Last Day Order (LDO), Active Retirement (ARM), One-Year Support Last Day Order, Limited Retirement Mode (LRM), and End of Support (EOS). 
- * This information is used to monitor the product lifecycle and check when a product is approaching end of support
+ * @label Get Sonicwall firewall IPv4 DHCP leases
+ * @documentation This procedure is used to retrieve IPv4 DHCP leases statistics from a SonicWall firewall.
  */
 function get_status() {
     login()
