@@ -426,8 +426,12 @@ function getNonTimeStampKey(data) {
  */
 function extractVmPerformance(performanceInfo, vmInfo) {
     if (performanceInfo.name.value) {
-        const key = getNonTimeStampKey(performanceInfo.timeseries[0].data);
-        vmInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A";
+        if (performanceInfo.timeseries && performanceInfo.timeseries[0] && performanceInfo.timeseries[0].data) {
+            const key = getNonTimeStampKey(performanceInfo.timeseries[0].data);
+            vmInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A";
+        } else {
+            vmInfo[performanceInfo.name.value] = "N/A"
+        }
     }
 }
 
