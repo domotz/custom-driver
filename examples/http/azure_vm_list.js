@@ -15,24 +15,33 @@
  *      - Image Publisher
  *      - Image
  *      - Image Version
+ *      - Image SKU
+ *      - Data Disks
+ *      - Provisioning State
+ *      - Hibernation Enabled
+ *      - Managed Disk
+ *      - Computer Name
+ *      - Network Interfaces
+ *      - Zone
  *      - Power State
- *      - Available Memory
- *      - Disk Read
- *      - Disk Write
  *      - Network Out Total
  *      - Network In Total
  *      - OS Disk Write
- *      - CPU Credits Remaining
  *      - OS Disk Latency
  *      - Percentage CPU
  *      - OS Disk Read
  *      - Temp Disk Latency
  *      - Temp Disk Read
  *      - Temp Disk Write
- *      - CPU Credits Consumed
+ *      - Available Memory
+ *      - Disk Read
+ *      - Disk Write
  *      - Data Disk Read
  *      - Data Disk Write
  *      - Data Disk Latency
+ *      - CPU Credits Remaining
+ *      - CPU Credits Consumed
+ *
  **/
 
 /**
