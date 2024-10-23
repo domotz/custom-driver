@@ -1,0 +1,60 @@
+{
+    "logo": "azure.svg",
+    "version": "1.0.0",
+    "name": "Azure Disks Information",
+    "description": "Monitor Azure Compute Disks: this script retrieves information about Disk",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Azure Compute"
+        ]
+    },
+    "tags": [
+        "azure",
+        "compute",
+        "vm"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[27]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantID",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "client_id",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "client_secret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "subscriptionId",
+            "label": "Subscription Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "resourceGroups",
+            "label": "Resource Groups"
+        },
+        {
+            "value_type": "LIST",
+            "name": "vmNames",
+            "label": "VM Names"
+        }
+    ]
+}
