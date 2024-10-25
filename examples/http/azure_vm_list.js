@@ -85,26 +85,7 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 
 let accessToken;
 
-const performanceMetrics = ["Available Memory Bytes", "Disk Read Bytes", "Disk Write Bytes", "Network Out Total", "Network In Total", "OS Disk Write Bytes/sec", "CPU Credits Remaining", "OS Disk Latency", "Percentage CPU", "OS Disk Read Bytes/sec", "Temp Disk Latency", "Temp Disk Read Bytes/sec", "Temp Disk Write Bytes/sec", "CPU Credits Consumed", "Data Disk Read Bytes/sec", "Data Disk Write Bytes/sec", "Data Disk Latency"]
-
-const vmProperties = [
-    {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName'},
-    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup'},
-    {label: 'OS', valueType: D.valueType.STRING, key: 'osType'},
-    {label: 'Location', valueType: D.valueType.STRING, key: 'location'},
-    {label: 'Size', valueType: D.valueType.STRING, key: 'size'},
-    {label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher'},
-    {label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer'},
-    {label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion'},
-    {label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku'},
-    {label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks'},
-    {label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState'},
-    {label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled'},
-    {label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk'},
-    {label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName'},
-    {label: 'Network Interfaces', valueType: D.valueType.STRING, key: 'networkInterfaces'},
-    {label: 'Zone', valueType: D.valueType.STRING, key: 'zone'},
-    {label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus'},
+const performanceMetrics = [
     {label: 'Network Out Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out Total', callback: convertBytesToGb},
     {label: 'Network In Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In Total', callback: convertBytesToGb},
     {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'},
@@ -123,6 +104,26 @@ const vmProperties = [
     {label: 'CPU Credits Remaining', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'},
     {label: 'CPU Credits Consumed', valueType: D.valueType.NUMBER,	key: 'CPU Credits Consumed'}
 ]
+
+const vmProperties = [
+    {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName'},
+    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup'},
+    {label: 'OS', valueType: D.valueType.STRING, key: 'osType'},
+    {label: 'Location', valueType: D.valueType.STRING, key: 'location'},
+    {label: 'Size', valueType: D.valueType.STRING, key: 'size'},
+    {label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher'},
+    {label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer'},
+    {label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion'},
+    {label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku'},
+    {label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks'},
+    {label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState'},
+    {label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled'},
+    {label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk'},
+    {label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName'},
+    {label: 'Network Interfaces', valueType: D.valueType.STRING, key: 'networkInterfaces'},
+    {label: 'Zone', valueType: D.valueType.STRING, key: 'zone'},
+    {label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus'}
+].concat(performanceMetrics);
 
 const vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function(item){
     const tableDef = { label: item.label, valueType: item.valueType };
@@ -144,7 +145,7 @@ const vmInfoExtractors = [
     { key: "imageOffer", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A" }},
     { key: "imageVersion", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A" }},
     { key: "imageSku", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A" }},
-    { key: "dataDisks", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks &&  vm.properties.storageProfile.dataDisks.length() ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A") }},
+    { key: "dataDisks", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks &&  vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A") }},
     { key: "osType", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A" }},
     { key: "managedDisk", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A" }},
     { key: "computerName", extract: function(vm){return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A" }},
@@ -511,10 +512,11 @@ function initPerformances(vmInfo) {
  * @returns {Promise} A promise that resolves when performance metrics for all VMs have been retrieved or resolved.
  */
 function retrieveVMsPerformanceMetrics(vmInfoList) {
+    const performanceKeys = performanceMetrics.map(function (metric) {return metric.key}).join(',')
     const promises = vmInfoList.map(function (vmInfo) {
         const d = D.q.defer();
         if (vmInfo.displayStatus === "VM running") {
-            const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + performanceMetrics.join(',') + "&timespan=PT1M");
+            const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + performanceKeys + "&timespan=PT1M");
             azureCloudManagementService.http.get(config, processVmPerformanceResponse(d, vmInfo));
             return d.promise;
         } else {
