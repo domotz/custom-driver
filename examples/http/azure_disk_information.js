@@ -78,7 +78,13 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 
 let accessToken;
 
-const performanceMetrics = ["Composite Disk Read Bytes/sec", "Composite Disk Read Operations/sec", "Composite Disk Write Bytes/sec", "Composite Disk Write Operations/sec", "DiskPaidBurstIOPS"]
+const performanceMetrics = [
+    {label: 'Composite Disk Read', valueType: D.valueType.NUMBER, key: 'Composite Disk Read Bytes/sec', unit: 'bps'},
+    {label: 'Composite Disk Write', valueType: D.valueType.NUMBER, key: 'Composite Disk Write Bytes/sec', unit: 'bps'},
+    {label: 'Composite Disk Read Ops', valueType: D.valueType.NUMBER, key: 'Composite Disk Read Operations/sec', unit: 'ops/sec'},
+    {label: 'Composite Disk Write Ops', valueType: D.valueType.NUMBER, key: 'Composite Disk Write Operations/sec', unit: 'ops/sec'},
+    {label: 'Disk On-demand Burst Ops', valueType: D.valueType.NUMBER, key: 'DiskPaidBurstIOPS'}
+]
 
 const diskProperties = [
     {label: 'Name', valueType: D.valueType.STRING, key: 'name'},
@@ -102,13 +108,8 @@ const diskProperties = [
     {label: 'Creation time of the disk', valueType: D.valueType.STRING, key: 'timeCreated', callback: convertToUTC},
     {label: 'Provisioning state', valueType: D.valueType.STRING, key: 'provisioningState'},
     {label: 'Disk state', valueType: D.valueType.STRING, key: 'diskState'},
-    {label: 'Disk tier', valueType: D.valueType.STRING, key: 'diskTier'},
-    {label: 'Composite Disk Read', valueType: D.valueType.NUMBER, key: 'Composite Disk Read Bytes/sec', unit: 'bps'},
-    {label: 'Composite Disk Write', valueType: D.valueType.NUMBER, key: 'Composite Disk Write Bytes/sec', unit: 'bps'},
-    {label: 'Composite Disk Read Ops', valueType: D.valueType.NUMBER, key: 'Composite Disk Read Operations/sec', unit: 'ops/sec'},
-    {label: 'Composite Disk Write Ops', valueType: D.valueType.NUMBER, key: 'Composite Disk Write Operations/sec', unit: 'ops/sec'},
-    {label: 'Disk On-demand Burst Ops', valueType: D.valueType.NUMBER, key: 'DiskPaidBurstIOPS'}
-];
+    {label: 'Disk tier', valueType: D.valueType.STRING, key: 'diskTier'}
+].concat(performanceMetrics);
 
 const diskTable = D.createTable('Azure Disks', diskProperties.map(function (item) {
     const tableDef = {label: item.label, valueType: item.valueType};
@@ -434,7 +435,8 @@ function retrieveDisksPerformanceMetrics(diskInfoList) {
     const promises = diskInfoList.map(function (diskInfo) {
         const d = D.q.defer();
         initPerformances(diskInfo)
-        const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + performanceMetrics.join(',') + "&timespan=PT1M");
+        const performanceKeys = performanceMetrics.map(function (metric) {return metric.key}).join(',')
+        const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + performanceKeys + "&timespan=PT1M");
         azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
         return d.promise;
     })
