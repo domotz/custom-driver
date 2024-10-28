@@ -85,6 +85,54 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 
 let accessToken;
 
+// This is the list of all allowed performance metrics that can be retrieved from a running VM.
+// To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
+// const allowedPerformanceMetrics = [
+//     {label: 'OS Disk Max Burst BW', valueType: D.valueType.NUMBER, key: 'OS Disk Max Burst Bandwidth'},
+//     {label: 'OS Disk Target BW', valueType: D.valueType.NUMBER, key: 'OS Disk Target Bandwidth'},
+//     {label: 'OS Disk Max Burst IOPS', valueType: D.valueType.NUMBER, key: 'OS Disk Max Burst IOPS'},
+//     {label: 'Network In', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In', callback: convertBytesToGb },
+//     {label: 'OS Disk Target IOPS', valueType: D.valueType.NUMBER, key: 'OS Disk Target IOPS'},
+//     {label: 'Premium Disk Cache Hit', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium OS Disk Cache Read Hit'},
+//     {label: 'Network Out', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out', callback: convertBytesToGb },
+//     {label: 'Inbound Flows', valueType: D.valueType.NUMBER, key: 'Inbound Flows'},
+//     {label: 'Outbound Flows', valueType: D.valueType.NUMBER, key: 'Outbound Flows'},
+//     {label: 'Inbound Flow Rate', valueType: D.valueType.NUMBER, key: 'Inbound Flows Maximum Creation Rate'},
+//     {label: 'Outbound Flow Rate', valueType: D.valueType.NUMBER, key: 'Outbound Flows Maximum Creation Rate'},
+//     {label: 'Premium Disk Miss', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium OS Disk Cache Read Miss'},
+//     {label: 'Disk Queue Depth', valueType: D.valueType.NUMBER, key: 'OS Disk Queue Depth'},
+//     {label: 'BW Consumed %', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Bandwidth Consumed Percentage'},
+//     {label: 'IOPS Consumed %', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk IOPS Consumed Percentage'},
+//     {label: 'Burst BPS Credits %', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Used Burst BPS Credits Percentage'},
+//     {label: 'Burst IO Credits %', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Used Burst IO Credits Percentage'},
+//     {label: 'Temp Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Temp Disk Read Operations/Sec'},
+//     {label: 'Temp Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Temp Disk Write Operations/Sec'},
+//     {label: 'Temp Disk Queue', valueType: D.valueType.NUMBER, key: 'Temp Disk Queue Depth'},
+//     {label: 'Cached BW Consumed', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached Bandwidth Consumed Percentage'},
+//     {label: 'Cached IOPS %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached IOPS Consumed Percentage'},
+//     {label: 'Uncached BW %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached Bandwidth Consumed Percentage'},
+//     {label: 'Uncached IOPS %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached IOPS Consumed Percentage'},
+//     {label: 'Remote Burst IO %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst IO Credits Percentage'},
+//     {label: 'Remote Burst BPS %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst BPS Credits Percentage'},
+//     {label: 'Data Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Read Operations/Sec'},
+//     {label: 'Data Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Write Operations/Sec'},
+//     {label: 'Data Disk Queue', valueType: D.valueType.NUMBER, key: 'Data Disk Queue Depth'},
+//     {label: 'Data BW Consumed', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Bandwidth Consumed Percentage'},
+//     {label: 'Data IOPS Consumed', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk IOPS Consumed Percentage'},
+//     {label: 'Data Disk Target BW', valueType: D.valueType.NUMBER, key: 'Data Disk Target Bandwidth'},
+//     {label: 'Data Disk Target IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Target IOPS'},
+//     {label: 'Data Max Burst BW', valueType: D.valueType.NUMBER, key: 'Data Disk Max Burst Bandwidth'},
+//     {label: 'Data Max Burst IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Max Burst IOPS'},
+//     {label: 'Burst BPS Credits %', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Used Burst BPS Credits Percentage'},
+//     {label: 'Burst IO Credits %', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Used Burst IO Credits Percentage'},
+//     {label: 'Cache Read Hit', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium Data Disk Cache Read Hit'},
+//     {label: 'Cache Read Miss', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium Data Disk Cache Read Miss'},
+//     {label: 'Local Burst IO %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst IO Credits Percentage'},
+//     {label: 'Local Burst BPS %', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst BPS Credits Percentage'}
+// ];
+
+// This is the list of selected performance metrics retrieved when a VM is running.
+// To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
 const performanceMetrics = [
     {label: 'Network Out Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out Total', callback: convertBytesToGb},
     {label: 'Network In Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In Total', callback: convertBytesToGb},
@@ -102,7 +150,12 @@ const performanceMetrics = [
     {label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'},
     {label: 'Data Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'Data Disk Latency'},
     {label: 'CPU Credits Remaining', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'},
-    {label: 'CPU Credits Consumed', valueType: D.valueType.NUMBER,	key: 'CPU Credits Consumed'}
+    {label: 'CPU Credits Consumed', valueType: D.valueType.NUMBER,	key: 'CPU Credits Consumed'},
+    {label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'},
+    {label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'},
+    {label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'},
+    {label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'},
+    {label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'}
 ]
 
 const vmProperties = [
@@ -126,7 +179,7 @@ const vmProperties = [
 ].concat(performanceMetrics);
 
 const vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function(item){
-    const tableDef = { label: item.label, valueType: item.valueType };
+    const tableDef = {label: item.label, valueType: item.valueType };
     if (item.unit) {
         tableDef.unit = item.unit;
     }
@@ -196,6 +249,7 @@ function checkHTTPError(error, response) {
     } else if (response.statusCode === 401 || response.statusCode === 403) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200) {
+        console.log('response : ', response)
         D.failure(D.errorType.GENERIC_ERROR);
     }
 }
@@ -344,7 +398,7 @@ function insertRecord(vm) {
     const d = D.q.defer();
 
     const recordValues = vmProperties.map(function(item){
-        const value = vm[item.key];
+        const value = vm[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
 
@@ -458,6 +512,8 @@ function processVmPerformanceResponse(d, vmInfo) {
             bodyAsJSON.value.map(function (performanceInfo) {
                 extractVmPerformance(performanceInfo, vmInfo)
             });
+            console.log('bodyAsJSON : ', bodyAsJSON)
+            console.log('vmInfo : ', vmInfo)
             d.resolve(vmInfo);
         } catch (parseError) {
             console.error("Error parsing VM configuration:", parseError);
@@ -482,49 +538,50 @@ function retrieveVMsConfiguration(vmInfoList) {
 }
 
 /**
- * Initializes the performance metrics for a VM, setting default values as "N/A".
- * @param {Object} vmInfo - The VM information object to initialize with default performance values.
- */
-function initPerformances(vmInfo) {
-    vmInfo["Network Out Total"] = "N/A"
-    vmInfo["Network In Total"] = "N/A"
-    vmInfo["OS Disk Write Bytes/sec"] = "N/A"
-    vmInfo["OS Disk Latency"] = "N/A"
-    vmInfo["Percentage CPU"] = "N/A"
-    vmInfo["OS Disk Read Bytes/sec"] = "N/A"
-    vmInfo["Temp Disk Latency"] = "N/A"
-    vmInfo["Temp Disk Read Bytes/sec"] = "N/A"
-    vmInfo["Temp Disk Write Bytes/sec"] = "N/A"
-    vmInfo["Available Memory Bytes"] = "N/A"
-    vmInfo["Disk Read Bytes"] = "N/A"
-    vmInfo["Disk Write Bytes"] = "N/A"
-    vmInfo["Data Disk Read Bytes/sec"] = "N/A"
-    vmInfo["Data Disk Write Bytes/sec"] = "N/A"
-    vmInfo["Data Disk Latency"] = "N/A"
-    vmInfo["CPU Credits Remaining"] = "N/A"
-    vmInfo["CPU Credits Consumed"] = "N/A"
-}
-
-/**
- * Retrieves performance metrics for Azure VMs from the configured or all resource groups.
- * It collects metrics for VMs that are currently running.
- * @param {Array} vmInfoList - A list of VM information objects, each containing details like resource group, VM name, and display status.
- * @returns {Promise} A promise that resolves when performance metrics for all VMs have been retrieved or resolved.
+ * Retrieves performance metrics for a list of virtual machines.
+ * @param {Array} vmInfoList - The list of virtual machine information objects.
+ * @returns {Promise} - A promise that resolves with an array of virtual machine information objects.
  */
 function retrieveVMsPerformanceMetrics(vmInfoList) {
-    const performanceKeys = performanceMetrics.map(function (metric) {return metric.key}).join(',')
+    const performanceKeyGroups = [];
+    const maxGroupSize = 20;
+
+    for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
+        performanceKeyGroups.push(
+            performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+                return metric.key
+            }).join(',')
+        );
+    }
+
     const promises = vmInfoList.map(function (vmInfo) {
         const d = D.q.defer();
+
         if (vmInfo.displayStatus === "VM running") {
-            const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + performanceKeys + "&timespan=PT1M");
-            azureCloudManagementService.http.get(config, processVmPerformanceResponse(d, vmInfo));
-            return d.promise;
+            const groupPromises = performanceKeyGroups.map(function(group){
+                return new Promise(function(resolve, reject) {
+                    const config = generateConfig(
+                        "/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M"
+                    );
+                    azureCloudManagementService.http.get(config, function(error, response, body) {
+                        processVmPerformanceResponse({
+                            resolve: resolve,
+                            reject: reject
+                        }, vmInfo)(error, response, body);
+                    });
+                });
+            });
+            D.q.all(groupPromises).then(function()
+            {
+                d.resolve(vmInfo)
+            }).catch(d.reject);
         } else {
-            initPerformances(vmInfo)
             d.resolve(vmInfo);
-            return d.promise;
         }
-    })
+
+        return d.promise;
+    });
+
     return D.q.all(promises);
 }
 
