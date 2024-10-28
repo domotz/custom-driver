@@ -78,6 +78,12 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 
 let accessToken;
 
+// This is the list of all allowed performance metrics that can be retrieved.
+// To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
+// const allowedPerformanceMetrics = []
+
+// This is the list of selected performance metrics retrieved.
+// To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
 const performanceMetrics = [
     {label: 'Composite Disk Read', valueType: D.valueType.NUMBER, key: 'Composite Disk Read Bytes/sec', unit: 'bps'},
     {label: 'Composite Disk Write', valueType: D.valueType.NUMBER, key: 'Composite Disk Write Bytes/sec', unit: 'bps'},
@@ -299,16 +305,16 @@ function extractDiskInfo(disk) {
 
 /**
  * Inserts a record into the disk table.
- * @param {Object} Disk - The disk information to insert into the table.
+ * @param {Object} disk - The disk information to insert into the table.
  * @returns {Promise} A promise that resolves when the record is inserted.
  */
-function insertRecord(Disk) {
+function insertRecord(disk) {
     const d = D.q.defer();
     const recordValues = diskProperties.map(function (item) {
-        const value = Disk[item.key];
+        const value = disk[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
-    diskTable.insertRecord(Disk.id, recordValues);
+    diskTable.insertRecord(disk.id, recordValues);
     d.resolve();
     return d.promise;
 }
@@ -404,27 +410,15 @@ function processDiskPerformanceResponse(d, diskInfo) {
  * @returns {string} The date string in UTC format
  */
 function convertToUTC(dateToConvert) {
-    var date = new Date(dateToConvert)
-    var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
-    var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
-    var year = date.getUTCFullYear()
-    var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
-    var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
-    var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
+    const date = new Date(dateToConvert)
+    const month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
+    const day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
+    const year = date.getUTCFullYear()
+    const hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
+    const minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
+    const seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
     return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
 }
-
-/**
- * Initializes the disk performance metrics with default values.
- * @param {Object} diskInfo - The disk information object to initialize.
- */
-function initPerformances(diskInfo) {
-    diskInfo["diskReadBytes"] = "N/A"
-    diskInfo["diskWriteBytes"] = "N/A"
-    diskInfo["diskReadOps"] = "N/A"
-    diskInfo["diskWriteOps"] = "N/A"
-    diskInfo["diskBurstOps"] = "N/A"
- }
 
 /**
  * Retrieves performance metrics for each disk in the provided disk information list.
@@ -432,14 +426,29 @@ function initPerformances(diskInfo) {
  * @returns {Promise} A promise that resolves when all performance metrics have been retrieved.
  */
 function retrieveDisksPerformanceMetrics(diskInfoList) {
+    const performanceKeyGroups = [];
+    const maxGroupSize = 20;
+
+    for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
+        performanceKeyGroups.push(
+            performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+                return metric.key
+            }).join(',')
+        );
+    }
     const promises = diskInfoList.map(function (diskInfo) {
         const d = D.q.defer();
-        initPerformances(diskInfo)
-        const performanceKeys = performanceMetrics.map(function (metric) {return metric.key}).join(',')
-        const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + performanceKeys + "&timespan=PT1M");
-        azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
+        const groupPromises = performanceKeyGroups.map(function (group) {
+            return new D.q.defer(function () {
+                const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+                azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
+            });
+        });
+        D.q.all(groupPromises).then(function () {
+            d.resolve(diskInfo)
+        }).catch(d.reject);
         return d.promise;
-    })
+    });
     return D.q.all(promises);
 }
 
