@@ -249,7 +249,6 @@ function checkHTTPError(error, response) {
     } else if (response.statusCode === 401 || response.statusCode === 403) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200) {
-        console.log('response : ', response)
         D.failure(D.errorType.GENERIC_ERROR);
     }
 }
@@ -512,8 +511,6 @@ function processVmPerformanceResponse(d, vmInfo) {
             bodyAsJSON.value.map(function (performanceInfo) {
                 extractVmPerformance(performanceInfo, vmInfo)
             });
-            console.log('bodyAsJSON : ', bodyAsJSON)
-            console.log('vmInfo : ', vmInfo)
             d.resolve(vmInfo);
         } catch (parseError) {
             console.error("Error parsing VM configuration:", parseError);
