@@ -439,7 +439,7 @@ function retrieveDisksPerformanceMetrics(diskInfoList) {
     const promises = diskInfoList.map(function (diskInfo) {
         const d = D.q.defer();
         const groupPromises = performanceKeyGroups.map(function (group) {
-            return new D.q.defer(function () {
+            return new Promise(function () {
                 const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
                 azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
             });
