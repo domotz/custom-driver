@@ -1,0 +1,56 @@
+{
+    "logo": "azure.svg",
+    "version": "1.0.0",
+    "name": "Azure Storage Accounts",
+    "description": "Retrieves information about Azure storage accounts and their associated performance metrics",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Azure Storage"        
+        ]
+    },
+    "tags": [
+        "azure",
+        "storage-account",
+        "storage"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[16]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantId",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "subscriptionId",
+            "label": "Subscription Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "resourceGroups",
+            "label": "Resource Groups",
+            "value": ["All"]
+        }
+    ]
+}
