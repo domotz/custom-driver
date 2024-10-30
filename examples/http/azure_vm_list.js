@@ -44,46 +44,21 @@
  *
  **/
 
-/**
- * @description tenantID
- * @type STRING
- */
+// Parameters for Azure authentication
 const tenantID = D.getParameter('tenantID');
-
-/**
- * @description client_id
- * @type STRING
- */
 const client_id = D.getParameter('client_id');
-
-/**
- * @description client_secret
- * @type SECRET_TEXT
- */
 const client_secret = D.getParameter('client_secret');
-
-/**
- * @description subscriptionId
- * @type STRING
- */
 const subscriptionId = D.getParameter('subscriptionId');
 
-/**
- * @description resource Groups
- * @type LIST
- */
 const resourceGroups = D.getParameter('resourceGroups');
-
-/**
- * @description VM Names
- * @type LIST
- */
 const vmNames = D.getParameter('vmNames');
 
 const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com');
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
+let vmProperties;
+let vmTable;
 
 // This is the list of all allowed performance metrics that can be retrieved from a running VM.
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
@@ -158,53 +133,68 @@ const performanceMetrics = [
     {label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'}
 ]
 
-const vmProperties = [
-    {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName'},
-    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup'},
-    {label: 'OS', valueType: D.valueType.STRING, key: 'osType'},
-    {label: 'Location', valueType: D.valueType.STRING, key: 'location'},
-    {label: 'Size', valueType: D.valueType.STRING, key: 'size'},
-    {label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher'},
-    {label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer'},
-    {label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion'},
-    {label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku'},
-    {label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks'},
-    {label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState'},
-    {label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled'},
-    {label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk'},
-    {label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName'},
-    {label: 'Network Interfaces', valueType: D.valueType.STRING, key: 'networkInterfaces'},
-    {label: 'Zone', valueType: D.valueType.STRING, key: 'zone'},
-    {label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus'}
-].concat(performanceMetrics);
-
-const vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function(item){
-    const tableDef = {label: item.label, valueType: item.valueType };
-    if (item.unit) {
-        tableDef.unit = item.unit;
-    }
-    return tableDef;
-}));
+const vmConfigExtractors = [
+    {label: 'OS Name', valueType: D.valueType.STRING, key: 'osName', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.osName ? bodyAsJSON.osName : "N/A";}},
+    {label: 'OS Version', valueType: D.valueType.STRING, key: 'osVersion', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.osVersion ? bodyAsJSON.osVersion : "N/A";}},
+    {label: 'Extension Type', valueType: D.valueType.STRING, key: 'type', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length ? bodyAsJSON.vmAgent.extensionHandlers[0].type : "N/A";}},
+    {label: 'Extension Status', valueType: D.valueType.STRING, key: 'statusCode', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.code ? bodyAsJSON.vmAgent.extensionHandlers[0].status.code : "N/A";}},
+    {label: 'Extension Status msg', valueType: D.valueType.STRING, key: 'statusMessage', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.message ? bodyAsJSON.vmAgent.extensionHandlers[0].status.message : "N/A";}},
+    {label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.statuses[1] && bodyAsJSON.statuses[1].displayStatus ? bodyAsJSON.statuses[1].displayStatus : "N/A"}}
+];
 
 const vmInfoExtractors = [
-    { key: "id", extract: function(vm){return sanitize(vm.properties.vmId) }},
-    { key: "vmName", extract: function(vm){return vm.name || "N/A" }},
-    { key: "resourceGroup", extract: extractResourceGroup },
-    { key: "location", extract: function(vm){return vm.location || "N/A" }},
-    { key: "size", extract: function(vm){return (vm.properties.hardwareProfile && vm.properties.hardwareProfile.vmSize) || "N/A" }},
-    { key: "provisioningState", extract: function(vm){return vm.properties.provisioningState || "N/A" }},
-    { key: "hibernationEnabled", extract: function(vm){return (vm.properties.additionalCapabilities && vm.properties.additionalCapabilities.hibernationEnabled) || "N/A" }},
-    { key: "imagePublisher", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.publisher) || "N/A" }},
-    { key: "imageOffer", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A" }},
-    { key: "imageVersion", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A" }},
-    { key: "imageSku", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A" }},
-    { key: "dataDisks", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks &&  vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A") }},
-    { key: "osType", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A" }},
-    { key: "managedDisk", extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A" }},
-    { key: "computerName", extract: function(vm){return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A" }},
-    { key: "networkInterfaces", extract: extractNetworkInterfaces },
-    { key: "zone", extract: function(vm){return (vm.zones && vm.zones[0]) || "N/A" }}
+    {label: 'id', key: "id", extract: function(vm){return sanitize(vm.properties.vmId)}},
+    {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function(vm){return vm.name || "N/A" }},
+    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup },
+    {label: 'OS Type', valueType: D.valueType.STRING, key: 'osType', extract: function(vm){return vm.location || "N/A" }},
+    {label: 'Location', valueType: D.valueType.STRING, key: 'location', extract: function(vm){return (vm.properties.hardwareProfile && vm.properties.hardwareProfile.vmSize) || "N/A" }},
+    {label: 'Size', valueType: D.valueType.STRING, key: 'size', extract: function(vm){return vm.properties.provisioningState || "N/A" }},
+    {label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher', extract: function(vm){return (vm.properties.additionalCapabilities && vm.properties.additionalCapabilities.hibernationEnabled) || "N/A" }},
+    {label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.publisher) || "N/A" }},
+    {label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A" }},
+    {label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A" }},
+    {label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A" }},
+    {label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks &&  vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A") }},
+    {label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A" }},
+    {label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A" }},
+    {label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName', extract: function(vm){return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A" }},
+    {label: 'Network Interfaces', valueType: D.valueType.STRING, key: 'networkInterfaces', extract: extractNetworkInterfaces },
+    {label: 'Zone', valueType: D.valueType.STRING, key: 'zone', extract: function(vm){return (vm.zones && vm.zones[0]) || "N/A" }}
 ];
+
+/**
+ * Generates Virtual Machine properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
+ * @returns {Promise} A promise that resolves when Virtual Machine properties are generated.
+ * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `vmConfigExtractors` and `performanceMetrics`.
+ */
+function generateVirtualMachineScaleSetProperties() {
+    return D.q.all(
+        vmInfoExtractors.map(function(extractorInfo) {
+            return new Promise(function(resolve) {
+                if (extractorInfo.key !== 'id') {
+                    resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType, 'unit':extractorInfo.unit ? extractorInfo.unit: null});
+                } else {
+                    resolve(null);
+                }
+            });
+        })
+    ).then(function(results) {
+        vmProperties = results.filter(function(result){ return result !== null }).concat(vmConfigExtractors).concat(performanceMetrics);
+    });
+}
+
+/**
+ * Creates a table for displaying Azure Virtual Machine properties.
+ */
+function createVirtualMachineScaleSetTable() {
+    vmTable = vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function(item){
+        const tableDef = {label: item.label, valueType: item.valueType };
+        if (item.unit) {
+            tableDef.unit = item.unit;
+        }
+        return tableDef;
+    }));
+}
 
 /**
  * Extracts network interface IDs from the VM object and returns them as a comma-separated string.
@@ -280,10 +270,9 @@ function processLoginResponse(d) {
 function filterVmInfoListByResourceGroups(vmInfoList) {
     if (!(resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all')) {
         return vmInfoList.filter(function (vm) {
-            const result =  resourceGroups.some(function (group) {
+            return resourceGroups.some(function (group) {
                 return group.toLowerCase() === vm.resourceGroup.toLowerCase()
-            });
-            return result
+            })
         });
     }
     return vmInfoList;
@@ -431,6 +420,12 @@ function retrieveVMs() {
     return d.promise;
 }
 
+function extractVmConfig(vmInfo, bodyAsJSON) {
+    vmConfigExtractors.map(function(item){
+        vmInfo[item.key] = item.extract(bodyAsJSON);
+    })
+}
+
 /**
  * Processes the VM configuration API response and updates the VM display status.
  * @param {Object} d - The deferred promise object.
@@ -445,8 +440,7 @@ function processVmConfigResponse(d, vmInfo) {
         }
         try {
             const bodyAsJSON = JSON.parse(body);
-            if (!bodyAsJSON.statuses[1].displayStatus) D.failure(D.errorType.GENERIC_ERROR);
-            vmInfo.displayStatus = bodyAsJSON && bodyAsJSON.statuses[1] && bodyAsJSON.statuses[1].displayStatus ? bodyAsJSON.statuses[1].displayStatus : "N/A";
+            extractVmConfig(vmInfo, bodyAsJSON);
             d.resolve(vmInfo);
         } catch (parseError) {
             console.error("Error parsing VM configuration:", parseError);
@@ -575,10 +569,8 @@ function retrieveVMsPerformanceMetrics(vmInfoList) {
         } else {
             d.resolve(vmInfo);
         }
-
         return d.promise;
     });
-
     return D.q.all(promises);
 }
 
@@ -606,6 +598,7 @@ function publishVMTable() {
  */
 function validate() {
     login()
+        .then(generateVirtualMachineScaleSetProperties)
         .then(retrieveVMs)
         .then(retrieveVMsConfiguration)
         .then(retrieveVMsPerformanceMetrics)
@@ -625,6 +618,8 @@ function validate() {
  */
 function get_status() {
     login()
+        .then(generateVirtualMachineScaleSetProperties)
+        .then(createVirtualMachineScaleSetTable)
         .then(retrieveVMs)
         .then(retrieveVMsConfiguration)
         .then(retrieveVMsPerformanceMetrics)
