@@ -36,47 +36,21 @@
  *      - Disk On-demand Burst Ops
  *
  **/
-
-/**
- * @description tenantID
- * @type STRING
- */
+// Parameters for Azure authentication
 const tenantID = D.getParameter('tenantID');
-
-/**
- * @description client_id
- * @type STRING
- */
 const client_id = D.getParameter('client_id');
-
-/**
- * @description client_secret
- * @type SECRET_TEXT
- */
 const client_secret = D.getParameter('client_secret');
-
-/**
- * @description subscriptionId
- * @type STRING
- */
 const subscriptionId = D.getParameter('subscriptionId');
 
-/**
- * @description resource Groups
- * @type LIST
- */
 const resourceGroups = D.getParameter('resourceGroups');
-
-/**
- * @description VM Names
- * @type LIST
- */
 const vmNames = D.getParameter('vmNames');
 
 const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com');
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
+let diskProperties
+let diskTable;
 
 // This is the list of all allowed performance metrics that can be retrieved.
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
@@ -92,64 +66,66 @@ const performanceMetrics = [
     {label: 'Disk On-demand Burst Ops', valueType: D.valueType.NUMBER, key: 'DiskPaidBurstIOPS'}
 ]
 
-const diskProperties = [
-    {label: 'Name', valueType: D.valueType.STRING, key: 'name'},
-    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup'},
-    {label: 'Location of the resource', valueType: D.valueType.STRING, key: 'location'},
-    {label: 'Availability zone', valueType: D.valueType.STRING, key: 'availabilityZone'},
-    {label: 'SKU name', valueType: D.valueType.STRING, key: 'skuName'},
-    {label: 'SKU tier', valueType: D.valueType.STRING, key: 'skuTier'},
-    {label: 'Os', valueType: D.valueType.STRING, key: 'osType'},
-    {label: 'Hyper-V generation', valueType: D.valueType.STRING, key: 'hyperVGeneration'},
-    {label: 'Supports hibernation', valueType: D.valueType.STRING, key: 'supportsHibernation'},
-    {label: 'Accelerated networking support', valueType: D.valueType.STRING, key: 'acceleratedNetworking'},
-    {label: 'Architecture', valueType: D.valueType.STRING, key: 'architecture'},
-    {label: 'Disk creation option', valueType: D.valueType.STRING, key: 'createOption'},
-    {label: 'Disk size', valueType: D.valueType.NUMBER, key: 'diskSizeGB', unit: 'Gb'},
-    {label: 'Disk IOPS for read/write', valueType: D.valueType.NUMBER, key: 'diskIOPS'},
-    {label: 'Disk throughput for read/write', valueType: D.valueType.NUMBER, key: 'diskThroughput', unit: 'MBps'},
-    {label: 'Encryption type', valueType: D.valueType.STRING, key: 'encryptionType'},
-    {label: 'Network access policy', valueType: D.valueType.STRING, key: 'networkAccessPolicy'},
-    {label: 'Public network access policy', valueType: D.valueType.STRING, key: 'publicNetworkAccess'},
-    {label: 'Creation time of the disk', valueType: D.valueType.STRING, key: 'timeCreated', callback: convertToUTC},
-    {label: 'Provisioning state', valueType: D.valueType.STRING, key: 'provisioningState'},
-    {label: 'Disk state', valueType: D.valueType.STRING, key: 'diskState'},
-    {label: 'Disk tier', valueType: D.valueType.STRING, key: 'diskTier'}
-].concat(performanceMetrics);
-
-const diskTable = D.createTable('Azure Disks', diskProperties.map(function (item) {
-    const tableDef = {label: item.label, valueType: item.valueType};
-    if (item.unit) {
-        tableDef.unit = item.unit;
-    }
-    return tableDef;
-}));
-
 const diskInfoExtractors = [
     {key: "id", extract: function (disk) {return sanitize(disk.properties.uniqueId)}},
-    {key: "name", extract: function (disk) {return disk.name || "N/A";}},
-    {key: "resourceGroup", extract: extractResourceGroup},
-    {key: "location", extract: function (disk) {return disk.location || "N/A";}},
-    {key: "availabilityZone", extract: function (disk) {return disk.zones ? disk.zones.join(", ") : "N/A";}},
-    {key: "skuName", extract: function (disk) {return disk.sku.name || "N/A";}},
-    {key: "skuTier", extract: function (disk) {return disk.sku.tier || "N/A";}},
-    {key: "osType", extract: function (disk) {return disk.properties.osType || "N/A";}},
-    {key: "hyperVGeneration", extract: function (disk) {return disk.properties.hyperVGeneration || "N/A";}},
-    {key: "supportsHibernation", extract: function (disk) {return disk.properties.supportsHibernation ? "Yes" : "No";}},
-    {key: "acceleratedNetworking", extract: function (disk) {return disk.properties.supportedCapabilities.acceleratedNetwork ? "Supported" : "Not Supported";}},
-    {key: "architecture", extract: function (disk) {return disk.properties.supportedCapabilities.architecture || "N/A";}},
-    {key: "createOption", extract: function (disk) {return disk.properties.creationData.createOption || "N/A";}},
-    {key: "diskSizeGB", extract: function (disk) {return disk.properties.diskSizeGB || 0;}},
-    {key: "diskIOPS", extract: function (disk) {return disk.properties.diskIOPSReadWrite || 0;}},
-    {key: "diskThroughput", extract: function (disk) {return disk.properties.diskMBpsReadWrite || 0;}},
-    {key: "encryptionType", extract: function (disk) {return disk.properties.encryption.type || "N/A";}},
-    {key: "networkAccessPolicy", extract: function (disk) {return disk.properties.networkAccessPolicy || "N/A";}},
-    {key: "publicNetworkAccess", extract: function (disk) {return disk.properties.publicNetworkAccess || "N/A";}},
-    {key: "timeCreated", extract: function (disk) {return disk.properties.timeCreated || "N/A";}},
-    {key: "provisioningState", extract: function (disk) {return disk.properties.provisioningState || "N/A";}},
-    {key: "diskState", extract: function (disk) {return disk.properties.diskState || "N/A";}},
-    {key: "diskTier", extract: function (disk) {return disk.properties.tier || "N/A";}}
+    {label: 'Name', valueType: D.valueType.STRING, key: 'name', extract: function (disk) {return disk.name || "N/A";}},
+    {label: 'Resource Group', valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup},
+    {label: 'Location of the resource', valueType: D.valueType.STRING, key: "location", extract: function (disk) {return disk.location || "N/A";}},
+    {label: 'Availability zone', valueType: D.valueType.STRING, key: "availabilityZone", extract: function (disk) {return disk.zones ? disk.zones.join(", ") : "N/A";}},
+    {label: 'SKU name', valueType: D.valueType.STRING, key: "skuName", extract: function (disk) {return disk.sku.name || "N/A";}},
+    {label: 'SKU tier', valueType: D.valueType.STRING, key: "skuTier", extract: function (disk) {return disk.sku.tier || "N/A";}},
+    {label: 'Os', valueType: D.valueType.STRING, key: "osType", extract: function (disk) {return disk.properties.osType || "N/A";}},
+    {label: 'Hyper-V generation', valueType: D.valueType.STRING, key: "hyperVGeneration", extract: function (disk) {return disk.properties.hyperVGeneration || "N/A";}},
+    {label: 'Supports hibernation', valueType: D.valueType.STRING, key: "supportsHibernation", extract: function (disk) {return disk.properties.supportsHibernation ? "Yes" : "No";}},
+    {label: 'Accelerated networking support', valueType: D.valueType.STRING, key: "acceleratedNetworking", extract: function (disk) {return disk.properties.supportedCapabilities.acceleratedNetwork ? "Supported" : "Not Supported";}},
+    {label: 'Architecture', valueType: D.valueType.STRING, key: "architecture", extract: function (disk) {return disk.properties.supportedCapabilities.architecture || "N/A";}},
+    {label: 'Disk creation option', valueType: D.valueType.STRING, key: "createOption", extract: function (disk) {return disk.properties.creationData.createOption || "N/A";}},
+    {label: 'Disk size', valueType: D.valueType.NUMBER, key: "diskSizeGB", extract: function (disk) {return disk.properties.diskSizeGB || 0;}},
+    {label: 'Disk IOPS for read/write', valueType: D.valueType.NUMBER, key: "diskIOPS", extract: function (disk) {return disk.properties.diskIOPSReadWrite || 0;}},
+    {label: 'Disk throughput for read/write', valueType: D.valueType.NUMBER, key: "diskThroughput", extract: function (disk) {return disk.properties.diskMBpsReadWrite || 0;}},
+    {label: 'Encryption type', valueType: D.valueType.STRING, key: "encryptionType", extract: function (disk) {return disk.properties.encryption.type || "N/A";}},
+    {label: 'Network access policy', valueType: D.valueType.STRING, key: "networkAccessPolicy", extract: function (disk) {return disk.properties.networkAccessPolicy || "N/A";}},
+    {label: 'Public network access policy', valueType: D.valueType.STRING, key: "publicNetworkAccess", extract: function (disk) {return disk.properties.publicNetworkAccess || "N/A";}},
+    {label: 'Creation time of the disk', valueType: D.valueType.STRING, key: 'timeCreated', callback: convertToUTC, extract: function (disk) {return disk.properties.timeCreated || "N/A";}},
+    {label: 'Provisioning state', valueType: D.valueType.STRING, key: "provisioningState", extract: function (disk) {return disk.properties.provisioningState || "N/A";}},
+    {label: 'Disk state', valueType: D.valueType.STRING, key: "diskState", extract: function (disk) {return disk.properties.diskState || "N/A";}},
+    {label: 'Disk tier', valueType: D.valueType.STRING, key: "diskTier", extract: function (disk) {return disk.properties.tier || "N/A";}}
 ];
+
+/**
+ * Generates disk properties by extracting information from the defined diskInfoExtractors.
+ * @returns {Promise} A promise that resolves when disk properties are generated.
+ * It populates the global variable `diskProperties` and concatenates them with `performanceMetrics`.
+ */
+function generateDiskProperties() {
+    return D.q.all(
+        diskInfoExtractors.map(function(extractorInfo) {
+            return new Promise(function(resolve) {
+                if (extractorInfo.key !== 'id') {
+                    resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType});
+                } else {
+                    resolve(null);
+                }
+            });
+        })
+    ).then(function(results) {
+        diskProperties = results.filter(function(result){ return result !== null }).concat(performanceMetrics);
+    });
+}
+
+/**
+ * Creates a table for displaying Azure Disk properties.
+ * using the `D.createTable` method with the properties defined in `diskProperties`.
+ */
+function createDiskTable() {
+    diskTable = D.createTable('Azure Disks', diskProperties.map(function (item) {
+        const tableDef = {label: item.label, valueType: item.valueType};
+        if (item.unit) {
+            tableDef.unit = item.unit;
+        }
+        return tableDef;
+    }));
+}
 
 /**
  * Extracts the resource group from the disk object.
@@ -311,8 +287,8 @@ function extractDiskInfo(disk) {
 function insertRecord(disk) {
     const d = D.q.defer();
     const recordValues = diskProperties.map(function (item) {
-        const value = disk[item.key] || "N/A";
-        return item.callback ? item.callback(value) : value;
+        const value = disk[item.key] || 'N/A';
+        return item.callback && value !== "N/A" ? item.callback(value) : value;
     });
     diskTable.insertRecord(disk.id, recordValues);
     d.resolve();
@@ -476,6 +452,7 @@ function publishDiskTable() {
  */
 function validate() {
     login()
+        .then(generateDiskProperties)
         .then(retrieveDisks)
         .then(retrieveDisksPerformanceMetrics)
         .then(function () {
@@ -494,6 +471,8 @@ function validate() {
  */
 function get_status() {
     login()
+        .then(generateDiskProperties)
+        .then(createDiskTable)
         .then(retrieveDisks)
         .then(retrieveDisksPerformanceMetrics)
         .then(populateTable)
