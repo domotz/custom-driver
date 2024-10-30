@@ -102,7 +102,7 @@ function generateDiskProperties() {
         diskInfoExtractors.map(function(extractorInfo) {
             return new Promise(function(resolve) {
                 if (extractorInfo.key !== 'id') {
-                    resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType});
+                    resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType, 'unit':extractorInfo.unit ? extractorInfo.unit: null});
                 } else {
                     resolve(null);
                 }
