@@ -28,33 +28,30 @@
     "parameters": [
         {
             "value_type": "STRING",
-            "name": "tenantID",
+            "name": "tenantId",
             "label": "Tenant Id"
         },
         {
             "value_type": "STRING",
-            "name": "client_id",
+            "name": "clientId",
             "label": "Client Id"
         },
         {
             "value_type": "SECRET_TEXT",
-            "name": "client_secret",
+            "name": "clientSecret",
             "label": "Client Secret"
-        },
-        {
-            "value_type": "STRING",
-            "name": "subscriptionId",
-            "label": "Subscription Id"
         },
         {
             "value_type": "LIST",
             "name": "resourceGroups",
-            "label": "Resource Groups"
+            "label": "Resource Group",
+            "value": ["All"]
         },
         {
             "value_type": "LIST",
             "name": "vmNames",
-            "label": "VM Names"
+            "label": "VM Name",
+            "value": ["All"]
         }
     ]
 }

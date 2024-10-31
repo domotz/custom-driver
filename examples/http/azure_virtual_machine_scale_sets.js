@@ -59,9 +59,9 @@
  *
  **/
 // Parameters for Azure authentication
-const tenantID = D.getParameter('tenantID');
-const client_id = D.getParameter('client_id');
-const client_secret = D.getParameter('client_secret');
+const tenantId = D.getParameter('tenantId');
+const clientId = D.getParameter('clientId');
+const clientSecret = D.getParameter('clientSecret');
 const subscriptionId = D.getParameter('subscriptionId');
 
 const resourceGroups = D.getParameter('resourceGroups');
@@ -111,61 +111,174 @@ let virtualMachineScaleSetTable;
 
 // This is the list of selected performance metrics retrieved.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
-const performanceMetrics = [
-    {label: 'Available Memory', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Available Memory Bytes', callback: convertBytesToGb },
-    {label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb },
-    {label: 'Network Out Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out Total', callback: convertBytesToGb },
-    {label: 'Network In Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In Total', callback: convertBytesToGb },
-    {label: 'CPU Credits Left', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'},
-    {label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'},
-    {label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'},
-    {label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb },
-    {label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'},
-    {label: 'CPU Credits Used', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'},
-    {label: 'VmAvailability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'},
-    {label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'},
-    {label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'},
-    {label: 'Data Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Read Operations/Sec'},
-    {label: 'Data Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Write Operations/Sec'},
-    {label: 'Data BW', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Bandwidth Consumed Percentage'},
-    {label: 'Data IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk IOPS Consumed Percentage'},
-    {label: 'Data Disk Target BW', valueType: D.valueType.NUMBER, key: 'Data Disk Target Bandwidth'},
-    {label: 'DataDisk Target IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Target IOPS'},
-    {label: 'OS Disk BW', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Bandwidth Consumed Percentage'},
-    {label: 'OS Disk IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk IOPS Consumed Percentage'},
-    {label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'},
-    {label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'},
-    {label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'},
-    {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'}
-]
+const performanceMetrics = [{
+    label: 'Available Memory',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Available Memory Bytes',
+    callback: convertBytesToGb
+}, {
+    label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb
+}, {
+    label: 'Network Out Total',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Network Out Total',
+    callback: convertBytesToGb
+}, {
+    label: 'Network In Total',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Network In Total',
+    callback: convertBytesToGb
+}, {label: 'CPU Credits Left', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'}, {
+    label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'
+}, {
+    label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'
+}, {
+    label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb
+}, {
+    label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'
+}, {label: 'CPU Credits Used', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'}, {
+    label: 'VmAvailability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'
+}, {
+    label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'
+}, {
+    label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'
+}, {
+    label: 'Data Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Read Operations/Sec'
+}, {
+    label: 'Data Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Write Operations/Sec'
+}, {
+    label: 'Data BW', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Bandwidth Consumed Percentage'
+}, {
+    label: 'Data IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk IOPS Consumed Percentage'
+}, {
+    label: 'Data Disk Target BW', valueType: D.valueType.NUMBER, key: 'Data Disk Target Bandwidth'
+}, {label: 'DataDisk Target IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Target IOPS'}, {
+    label: 'OS Disk BW', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Bandwidth Consumed Percentage'
+}, {
+    label: 'OS Disk IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk IOPS Consumed Percentage'
+}, {
+    label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'
+}, {
+    label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'
+}, {
+    label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'
+}, {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'}]
 
-const virtualMachineScaleSetInfoExtractors = [
-    { key: "id", label: 'Id', valueType: D.valueType.STRING, extract: function (value){return sanitize(value.properties.uniqueId)}},
-    { key: "name", label: 'Name', valueType: D.valueType.STRING, extract: function (value){return value && value.name || "N/A"}},
-    { key: "resourceGroup", label: 'Resource Group', valueType: D.valueType.STRING, extract: extractResourceGroup },
-    { key: "location", label: 'Location', valueType: D.valueType.STRING, extract: function (value){return value && value.location || "N/A"}},
-    { key: "skuName", label: 'SKU Name', valueType: D.valueType.STRING, extract: function (value){return value && value.sku && value.sku.name || "N/A"}},
-    { key: "skuTier", label: 'SKU Tier', valueType: D.valueType.STRING, extract: function (value){return value && value.sku && value.sku.tier || "N/A"}},
-    { key: "skuCapacity", label: 'SKU Capacity', valueType: D.valueType.NUMBER, extract: function (value){return value && value.sku && value.sku.capacity || "N/A"}},
-    { key: "etag", label: 'Etag', valueType: D.valueType.STRING, extract: function (value){return value && value.etag || "N/A"}},
-    { key: "orchestrationMode", label: 'Orchestration Mode', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.orchestrationMode || "N/A"}},
-    { key: "upgradePolicyMode", label: 'Upgrade Policy Mode', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.upgradePolicy && value.properties.upgradePolicy.mode || "N/A"}},
-    { key: "scaleInPolicyRules", label: 'Scale-in Policy Rules', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.rules && value.properties.scaleInPolicy.rules[0] || "N/A"}},
-    { key: "scaleInForceDeletion", label: 'Scale-in Force Deletion', valueType: D.valueType.BOOLEAN, extract: function (value){return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.forceDeletion || "N/A"}},
-    { key: "computerNamePrefix", label: 'Computer Name Prefix', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.osProfile && value.properties.virtualMachineProfile.osProfile.computerNamePrefix || "N/A"}},
-    { key: "osType", label: 'OS Type', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.osType || "N/A"}},
-    { key: "osDiskSizeGB", label: 'OS Disk Size', valueType: D.valueType.NUMBER, unit: 'Gb', extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.diskSizeGB || "N/A"}},
-    { key: "diskControllerType", label: 'Disk Controller Type', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.diskControllerType || "N/A"}},
-    { key: "imagePublisher", label: 'Image Publisher', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.publisher || "N/A"}},
-    { key: "imageOffer", label: 'Image Offer', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.offer || "N/A"}},
-    { key: "imageSku", label: 'Image SKU', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.sku || "N/A"}},
-    { key: "imageVersion", label: 'Image Version', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.version || "N/A"}},
-    { key: "networkInterfaceName", label: 'Network Interface Name', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].name || "N/A"}},
-    { key: "networkIPConfigurations", label: 'Network IP Configurations', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0].name || "N/A"}},
-    { key: "provisioningState", label: 'Provisioning State', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.provisioningState || "N/A"}},
-    { key: "platformFaultDomainCount", label: 'Platform Fault Domain Count', valueType: D.valueType.NUMBER, extract: function (value){return value && value.properties && value.properties.platformFaultDomainCount || "N/A"}},
-    { key: "timeCreated", label: 'Time Created', valueType: D.valueType.STRING, extract: function (value){return value && value.properties && value.properties.timeCreated ? convertToUTC(value.properties.timeCreated) : "N/A"}}
-];
+const virtualMachineScaleSetInfoExtractors = [{
+    key: "id", label: 'Id', valueType: D.valueType.STRING, extract: function (value) {
+        return sanitize(value.properties.uniqueId)
+    }
+}, {
+    key: "name", label: 'Name', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.name || "N/A"
+    }
+}, {key: "resourceGroup", label: 'Resource Group', valueType: D.valueType.STRING, extract: extractResourceGroup}, {
+    key: "location", label: 'Location', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.location || "N/A"
+    }
+}, {
+    key: "skuName", label: 'SKU Name', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.sku && value.sku.name || "N/A"
+    }
+}, {
+    key: "skuTier", label: 'SKU Tier', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.sku && value.sku.tier || "N/A"
+    }
+}, {
+    key: "skuCapacity", label: 'SKU Capacity', valueType: D.valueType.NUMBER, extract: function (value) {
+        return value && value.sku && value.sku.capacity || "N/A"
+    }
+}, {
+    key: "etag", label: 'Etag', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.etag || "N/A"
+    }
+}, {
+    key: "orchestrationMode", label: 'Orchestration Mode', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.orchestrationMode || "N/A"
+    }
+}, {
+    key: "upgradePolicyMode", label: 'Upgrade Policy Mode', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.upgradePolicy && value.properties.upgradePolicy.mode || "N/A"
+    }
+}, {
+    key: "scaleInPolicyRules",
+    label: 'Scale-in Policy Rules',
+    valueType: D.valueType.STRING,
+    extract: function (value) {
+        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.rules && value.properties.scaleInPolicy.rules[0] || "N/A"
+    }
+}, {
+    key: "scaleInForceDeletion",
+    label: 'Scale-in Force Deletion',
+    valueType: D.valueType.BOOLEAN,
+    extract: function (value) {
+        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.forceDeletion || "N/A"
+    }
+}, {
+    key: "computerNamePrefix", label: 'Computer Name Prefix', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.osProfile && value.properties.virtualMachineProfile.osProfile.computerNamePrefix || "N/A"
+    }
+}, {
+    key: "osType", label: 'OS Type', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.osType || "N/A"
+    }
+}, {
+    key: "osDiskSizeGB", label: 'OS Disk Size', valueType: D.valueType.NUMBER, unit: 'Gb', extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.diskSizeGB || "N/A"
+    }
+}, {
+    key: "diskControllerType", label: 'Disk Controller Type', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.diskControllerType || "N/A"
+    }
+}, {
+    key: "imagePublisher", label: 'Image Publisher', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.publisher || "N/A"
+    }
+}, {
+    key: "imageOffer", label: 'Image Offer', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.offer || "N/A"
+    }
+}, {
+    key: "imageSku", label: 'Image SKU', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.sku || "N/A"
+    }
+}, {
+    key: "imageVersion", label: 'Image Version', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.version || "N/A"
+    }
+}, {
+    key: "networkInterfaceName",
+    label: 'Network Interface Name',
+    valueType: D.valueType.STRING,
+    extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].name || "N/A"
+    }
+}, {
+    key: "networkIPConfigurations",
+    label: 'Network IP Configurations',
+    valueType: D.valueType.STRING,
+    extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0].name || "N/A"
+    }
+}, {
+    key: "provisioningState", label: 'Provisioning State', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.provisioningState || "N/A"
+    }
+}, {
+    key: "platformFaultDomainCount",
+    label: 'Platform Fault Domain Count',
+    valueType: D.valueType.NUMBER,
+    extract: function (value) {
+        return value && value.properties && value.properties.platformFaultDomainCount || "N/A"
+    }
+}, {
+    key: "timeCreated", label: 'Time Created', valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.timeCreated ? convertToUTC(value.properties.timeCreated) : "N/A"
+    }
+}];
 
 /**
  * Generates Virtual Machine Scale Sets properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
@@ -173,18 +286,23 @@ const virtualMachineScaleSetInfoExtractors = [
  * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `performanceMetrics`.
  */
 function generateVirtualMachineScaleSetProperties() {
-    return D.q.all(
-        virtualMachineScaleSetInfoExtractors.map(function(extractorInfo) {
-            return new Promise(function(resolve) {
-                if (extractorInfo.key !== 'id') {
-                    resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType, 'unit':extractorInfo.unit ? extractorInfo.unit: null });
-                } else {
-                    resolve(null);
-                }
-            });
-        })
-    ).then(function(results) {
-        virtualMachineScaleSetProperties = results.filter(function(result){ return result !== null }).concat(performanceMetrics);
+    return D.q.all(virtualMachineScaleSetInfoExtractors.map(function (extractorInfo) {
+        return new Promise(function (resolve) {
+            if (extractorInfo.key !== 'id') {
+                resolve({
+                    'key': extractorInfo.key,
+                    'label': extractorInfo.label,
+                    'valueType': extractorInfo.valueType,
+                    'unit': extractorInfo.unit ? extractorInfo.unit : null
+                });
+            } else {
+                resolve(null);
+            }
+        });
+    })).then(function (results) {
+        virtualMachineScaleSetProperties = results.filter(function (result) {
+            return result !== null
+        }).concat(performanceMetrics);
     });
 }
 
@@ -194,8 +312,8 @@ function generateVirtualMachineScaleSetProperties() {
  * using the `D.createTable` method with the properties defined in `virtualMachineScaleSetProperties`.
  */
 function createVirtualMachineScaleSetTable() {
-    virtualMachineScaleSetTable = D.createTable('Azure Virtual Machine Scale Sets', virtualMachineScaleSetProperties.map(function(item) {
-        const tableDef = { label: item.label, valueType: item.valueType };
+    virtualMachineScaleSetTable = D.createTable('Azure Virtual Machine Scale Sets', virtualMachineScaleSetProperties.map(function (item) {
+        const tableDef = {label: item.label, valueType: item.valueType};
         if (item.unit) {
             tableDef.unit = item.unit;
         }
@@ -317,12 +435,12 @@ function processVirtualMachineScaleSetsResponse(d) {
 function login() {
     const d = D.q.defer();
     const config = {
-        url: "/" + tenantID + "/oauth2/token", protocol: "https", headers: {
+        url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         }, form: {
             grant_type: "client_credentials",
-            client_id: client_id,
-            client_secret: client_secret,
+            client_id: clientId,
+            client_secret: clientSecret,
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
@@ -423,7 +541,7 @@ function extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachin
         if (performanceInfo.timeseries && performanceInfo.timeseries[0] && performanceInfo.timeseries[0].data) {
             const key = getNonTimeSeriesKey(performanceInfo.timeseries[0].data);
             virtualMachineScaleSetInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A";
-        }else{
+        } else {
             virtualMachineScaleSetInfo[performanceInfo.name.value] = "N/A"
         }
     }
@@ -438,7 +556,9 @@ function extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachin
 function processVirtualMachineScaleSetPerformanceResponse(d, virtualMachineScaleSetInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
-        if (error || response.statusCode !== 200) {return;}
+        if (error || response.statusCode !== 200) {
+            return;
+        }
         try {
             const bodyAsJSON = JSON.parse(body);
             if (!bodyAsJSON.value) {
@@ -494,11 +614,9 @@ function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSe
     const maxGroupSize = 20;
 
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
-        performanceKeyGroups.push(
-            performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-                return metric.key
-            }).join(',')
-        );
+        performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+            return metric.key
+        }).join(','));
     }
     const promises = virtualMachineScaleSetInfoList.map(function (diskInfo) {
         const d = D.q.defer();
