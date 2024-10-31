@@ -1,0 +1,34 @@
+{
+    "logo": "ibm.svg",
+    "version": "1.0.0",
+    "name": "IBM FlashSystem5000 Enclosure Power Supply Unit",
+    "description": "information about each power-supply unit (PSU) within the enclosure of the IBM FlashSystem5000",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "IBM FlashSystem5000"
+        ]
+    },
+    "tags": [
+        "ibm",
+        "flash-system-5000",
+        "psu",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[4]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "FlashSystem5000",
+            "version": "8.5.0.6"
+        }
+    ]
+}

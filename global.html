@@ -660,6 +660,40 @@ Validated version is returned by D.createBackup, should be passed to D.success()
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>ignoredLines</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">List of regular expressions
+They are used to decide if a line should be considered when comparing configurations for misalignment.
+The regex engine directly substitutes the match text with an empty string.
+Do not pass flags in the regex, the format is not supported.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -2033,6 +2067,375 @@ If true or not set the device host_name is used as host</td>
             
 
             <td class="description last">The protocol to use in the request</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="snmpCallback">snmpCallback</h4>
+
+
+
+
+<div class="description">
+    The SNMP query callback
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">callback</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>output</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;string, string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The output object from the snmp query execution as a key-value pair for each oid and it corresponding value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ErrorResult">ErrorResult</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Will be present if the snmp query resulted in an error.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="snmpSessionOptions">snmpSessionOptions</h4>
+
+
+
+
+<div class="description">
+    The SNMP Session Options
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    161
+                
+                </td>
+            
+
+            <td class="description last">UDP port to send requests to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    5000
+                
+                </td>
+            
+
+            <td class="description last">The time the snmp session queries will persist for (in milisenconds).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRepetitions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    24
+                
+                </td>
+            
+
+            <td class="description last">How many rows of a table are to be retrieved in a single GetBulk operation. Used in SNMP Walk</td>
         </tr>
 
     
@@ -3829,7 +4232,7 @@ If true or not set the device host_name is used as host</td>
 
             
 
-            <td class="description last">A numeric value that changes over time in an increasing manner. 
+            <td class="description last">A numeric value that changes over time in an increasing manner.
 Only the rate of change is calculated and stored</td>
         </tr>
 
@@ -3853,7 +4256,7 @@ Only the rate of change is calculated and stored</td>
 
             
 
-            <td class="description last">A numeric value similar to the RATE type but ignoring values lower 
+            <td class="description last">A numeric value similar to the RATE type but ignoring values lower
 than the previous collected value in the rate of change comparison</td>
         </tr>
 
@@ -4768,375 +5171,6 @@ Created via D.createVariable
 
 
             
-                
-<h4 class="name" id="snmpCallback">snmpCallback</h4>
-
-
-
-
-<div class="description">
-    The SNMP query callback
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">callback</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>output</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object.&lt;string, string></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">The output object from the snmp query execution as a key-value pair for each oid and it corresponding value</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#ErrorResult">ErrorResult</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Will be present if the snmp query resulted in an error.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
-                
-<h4 class="name" id="snmpSessionOptions">snmpSessionOptions</h4>
-
-
-
-
-<div class="description">
-    The SNMP Session Options
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>port</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    161
-                
-                </td>
-            
-
-            <td class="description last">UDP port to send requests to</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>timeout</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    5000
-                
-                </td>
-            
-
-            <td class="description last">The time the snmp session queries will persist for (in milisenconds).</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxRepetitions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    24
-                
-                </td>
-            
-
-            <td class="description last">How many rows of a table are to be retrieved in a single GetBulk operation. Used in SNMP Walk</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-            
     
 
     
@@ -5150,13 +5184,13 @@ Created via D.createVariable
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="D.html">D</a></li><li><a href="D._unsafe.html">_unsafe</a></li><li><a href="D._unsafe.buffer.html">buffer</a></li><li><a href="D.crypto.html">crypto</a></li><li><a href="D.crypto.Cipher.html">Cipher</a></li><li><a href="D.crypto.Decipher.html">Decipher</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="DomotzConfigurationManagement.html">DomotzConfigurationManagement</a></li><li><a href="DomotzGeneric.html">DomotzGeneric</a></li><li><a href="console.html">console</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deviceLibrary">deviceLibrary</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="D.external__.html">_</a></li></ul><h3>Namespaces</h3><ul><li><a href="console.html">console</a></li><li><a href="D.html">D</a></li><li><a href="D._unsafe.html">_unsafe</a></li><li><a href="D._unsafe.buffer.html">buffer</a></li><li><a href="D.crypto.html">crypto</a></li><li><a href="D.crypto.Cipher.html">Cipher</a></li><li><a href="D.crypto.Decipher.html">Decipher</a></li><li><a href="D.device.html">device</a></li><li><a href="D.device.http.html">http</a></li><li><a href="D.math.html">math</a></li><li><a href="DomotzConfigurationManagement.html">DomotzConfigurationManagement</a></li><li><a href="DomotzGeneric.html">DomotzGeneric</a></li><li><a href="driverTable.html">driverTable</a></li><li><a href="snmpSession.html">snmpSession</a></li></ul><h3>Global</h3><ul><li><a href="global.html#deviceLibrary">deviceLibrary</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Mar 01 2024 15:31:11 GMT+0200 (Eastern European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Mon Oct 07 2024 11:42:37 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
