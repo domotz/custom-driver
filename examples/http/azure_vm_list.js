@@ -45,9 +45,9 @@
  **/
 
 // Parameters for Azure authentication
-const tenantID = D.getParameter('tenantID');
-const client_id = D.getParameter('client_id');
-const client_secret = D.getParameter('client_secret');
+const tenantId = D.getParameter('tenantID');
+const clientId = D.getParameter('clientId');
+const clientSecret = D.getParameter('clientSecret');
 const subscriptionId = D.getParameter('subscriptionId');
 
 const resourceGroups = D.getParameter('resourceGroups');
@@ -108,59 +108,190 @@ let vmTable;
 
 // This is the list of selected performance metrics retrieved when a VM is running.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
-const performanceMetrics = [
-    {label: 'Network Out Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out Total', callback: convertBytesToGb},
-    {label: 'Network In Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In Total', callback: convertBytesToGb},
-    {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'},
-    {label: 'OS Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'OS Disk Latency'},
-    {label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'},
-    {label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'},
-    {label: 'Temp Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'Temp Disk Latency'},
-    {label: 'Temp Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Temp Disk Read Bytes/sec'},
-    {label: 'Temp Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Temp Disk Write Bytes/sec'},
-    {label: 'Available Memory', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Available Memory Bytes', callback: convertBytesToGb},
-    {label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb},
-    {label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb},
-    {label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'},
-    {label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'},
-    {label: 'Data Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'Data Disk Latency'},
-    {label: 'CPU Credits Remaining', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'},
-    {label: 'CPU Credits Consumed', valueType: D.valueType.NUMBER,	key: 'CPU Credits Consumed'},
-    {label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'},
-    {label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'},
-    {label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'},
-    {label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'},
-    {label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'}
-]
+const performanceMetrics = [{
+    label: 'Network Out Total',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Network Out Total',
+    callback: convertBytesToGb
+}, {
+    label: 'Network In Total',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Network In Total',
+    callback: convertBytesToGb
+}, {
+    label: 'OS Disk Write',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'OS Disk Write Bytes/sec'
+}, {
+    label: 'OS Disk Latency',
+    valueType: D.valueType.NUMBER,
+    unit: 'ms',
+    key: 'OS Disk Latency'
+}, {label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'}, {
+    label: 'OS Disk Read',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'OS Disk Read Bytes/sec'
+}, {
+    label: 'Temp Disk Latency',
+    valueType: D.valueType.NUMBER,
+    unit: 'ms',
+    key: 'Temp Disk Latency'
+}, {
+    label: 'Temp Disk Read',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'Temp Disk Read Bytes/sec'
+}, {label: 'Temp Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Temp Disk Write Bytes/sec'}, {
+    label: 'Available Memory',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Available Memory Bytes',
+    callback: convertBytesToGb
+}, {
+    label: 'Disk Read',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Disk Read Bytes',
+    callback: convertBytesToGb
+}, {
+    label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb
+}, {
+    label: 'Data Disk Read',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'Data Disk Read Bytes/sec'
+}, {
+    label: 'Data Disk Write',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'Data Disk Write Bytes/sec'
+}, {
+    label: 'Data Disk Latency',
+    valueType: D.valueType.NUMBER,
+    unit: 'ms',
+    key: 'Data Disk Latency'
+}, {
+    label: 'CPU Credits Remaining',
+    valueType: D.valueType.NUMBER,
+    key: 'CPU Credits Remaining'
+}, {label: 'CPU Credits Consumed', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'}, {
+    label: 'Disk Read Ops',
+    valueType: D.valueType.NUMBER,
+    unit: 'ops/sec',
+    key: 'Disk Read Operations/Sec'
+}, {
+    label: 'Disk Write Ops',
+    valueType: D.valueType.NUMBER,
+    unit: 'ops/sec',
+    key: 'Disk Write Operations/Sec'
+}, {
+    label: 'OS Disk Read Ops',
+    valueType: D.valueType.NUMBER,
+    unit: 'ops/sec',
+    key: 'OS Disk Read Operations/Sec'
+}, {
+    label: 'OS Disk Write Ops',
+    valueType: D.valueType.NUMBER,
+    unit: 'ops/sec',
+    key: 'OS Disk Write Operations/Sec'
+}, {label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'}]
 
-const vmConfigExtractors = [
-    {label: 'OS Name', valueType: D.valueType.STRING, key: 'osName', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.osName ? bodyAsJSON.osName : "N/A";}},
-    {label: 'OS Version', valueType: D.valueType.STRING, key: 'osVersion', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.osVersion ? bodyAsJSON.osVersion : "N/A";}},
-    {label: 'Extension Type', valueType: D.valueType.STRING, key: 'type', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length ? bodyAsJSON.vmAgent.extensionHandlers[0].type : "N/A";}},
-    {label: 'Extension Status', valueType: D.valueType.STRING, key: 'statusCode', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.code ? bodyAsJSON.vmAgent.extensionHandlers[0].status.code : "N/A";}},
-    {label: 'Extension Status msg', valueType: D.valueType.STRING, key: 'statusMessage', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.message ? bodyAsJSON.vmAgent.extensionHandlers[0].status.message : "N/A";}},
-    {label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus', extract: function (bodyAsJSON) {return bodyAsJSON && bodyAsJSON.statuses[1] && bodyAsJSON.statuses[1].displayStatus ? bodyAsJSON.statuses[1].displayStatus : "N/A"}}
-];
+const vmConfigExtractors = [{
+    label: 'OS Name', valueType: D.valueType.STRING, key: 'osName', extract: function (bodyAsJSON) {
+        return bodyAsJSON && bodyAsJSON.osName ? bodyAsJSON.osName : "N/A";
+    }
+}, {
+    label: 'OS Version', valueType: D.valueType.STRING, key: 'osVersion', extract: function (bodyAsJSON) {
+        return bodyAsJSON && bodyAsJSON.osVersion ? bodyAsJSON.osVersion : "N/A";
+    }
+}, {
+    label: 'Extension Type', valueType: D.valueType.STRING, key: 'type', extract: function (bodyAsJSON) {
+        return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length ? bodyAsJSON.vmAgent.extensionHandlers[0].type : "N/A";
+    }
+}, {
+    label: 'Extension Status', valueType: D.valueType.STRING, key: 'statusCode', extract: function (bodyAsJSON) {
+        return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.code ? bodyAsJSON.vmAgent.extensionHandlers[0].status.code : "N/A";
+    }
+}, {
+    label: 'Extension Status msg', valueType: D.valueType.STRING, key: 'statusMessage', extract: function (bodyAsJSON) {
+        return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.message ? bodyAsJSON.vmAgent.extensionHandlers[0].status.message : "N/A";
+    }
+}, {
+    label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus', extract: function (bodyAsJSON) {
+        return bodyAsJSON && bodyAsJSON.statuses[1] && bodyAsJSON.statuses[1].displayStatus ? bodyAsJSON.statuses[1].displayStatus : "N/A"
+    }
+}];
 
-const vmInfoExtractors = [
-    {label: 'id', key: "id", extract: function(vm){return sanitize(vm.properties.vmId)}},
-    {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function(vm){return vm.name || "N/A" }},
-    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup },
-    {label: 'OS Type', valueType: D.valueType.STRING, key: 'osType', extract: function(vm){return vm.location || "N/A" }},
-    {label: 'Location', valueType: D.valueType.STRING, key: 'location', extract: function(vm){return (vm.properties.hardwareProfile && vm.properties.hardwareProfile.vmSize) || "N/A" }},
-    {label: 'Size', valueType: D.valueType.STRING, key: 'size', extract: function(vm){return vm.properties.provisioningState || "N/A" }},
-    {label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher', extract: function(vm){return (vm.properties.additionalCapabilities && vm.properties.additionalCapabilities.hibernationEnabled) || "N/A" }},
-    {label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.publisher) || "N/A" }},
-    {label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A" }},
-    {label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A" }},
-    {label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A" }},
-    {label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks &&  vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A") }},
-    {label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A" }},
-    {label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk', extract: function(vm){return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A" }},
-    {label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName', extract: function(vm){return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A" }},
-    {label: 'Network Interfaces', valueType: D.valueType.STRING, key: 'networkInterfaces', extract: extractNetworkInterfaces },
-    {label: 'Zone', valueType: D.valueType.STRING, key: 'zone', extract: function(vm){return (vm.zones && vm.zones[0]) || "N/A" }}
-];
+const vmInfoExtractors = [{
+    label: 'id', key: "id", extract: function (vm) {
+        return sanitize(vm.properties.vmId)
+    }
+}, {
+    label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function (vm) {
+        return vm.name || "N/A"
+    }
+}, {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup}, {
+    label: 'OS Type', valueType: D.valueType.STRING, key: 'osType', extract: function (vm) {
+        return vm.location || "N/A"
+    }
+}, {
+    label: 'Location', valueType: D.valueType.STRING, key: 'location', extract: function (vm) {
+        return (vm.properties.hardwareProfile && vm.properties.hardwareProfile.vmSize) || "N/A"
+    }
+}, {
+    label: 'Size', valueType: D.valueType.STRING, key: 'size', extract: function (vm) {
+        return vm.properties.provisioningState || "N/A"
+    }
+}, {
+    label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher', extract: function (vm) {
+        return (vm.properties.additionalCapabilities && vm.properties.additionalCapabilities.hibernationEnabled) || "N/A"
+    }
+}, {
+    label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.publisher) || "N/A"
+    }
+}, {
+    label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A"
+    }
+}, {
+    label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A"
+    }
+}, {
+    label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A"
+    }
+}, {
+    label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks && vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A")
+    }
+}, {
+    label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A"
+    }
+}, {
+    label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk', extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A"
+    }
+}, {
+    label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName', extract: function (vm) {
+        return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A"
+    }
+}, {
+    label: 'Network Interfaces',
+    valueType: D.valueType.STRING,
+    key: 'networkInterfaces',
+    extract: extractNetworkInterfaces
+}, {
+    label: 'Zone', valueType: D.valueType.STRING, key: 'zone', extract: function (vm) {
+        return (vm.zones && vm.zones[0]) || "N/A"
+    }
+}];
 
 /**
  * Generates Virtual Machine properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
@@ -168,18 +299,23 @@ const vmInfoExtractors = [
  * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `vmConfigExtractors` and `performanceMetrics`.
  */
 function generateVirtualMachineScaleSetProperties() {
-    return D.q.all(
-        vmInfoExtractors.map(function(extractorInfo) {
-            return new Promise(function(resolve) {
-                if (extractorInfo.key !== 'id') {
-                    resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType, 'unit':extractorInfo.unit ? extractorInfo.unit: null});
-                } else {
-                    resolve(null);
-                }
-            });
-        })
-    ).then(function(results) {
-        vmProperties = results.filter(function(result){ return result !== null }).concat(vmConfigExtractors).concat(performanceMetrics);
+    return D.q.all(vmInfoExtractors.map(function (extractorInfo) {
+        return new Promise(function (resolve) {
+            if (extractorInfo.key !== 'id') {
+                resolve({
+                    'key': extractorInfo.key,
+                    'label': extractorInfo.label,
+                    'valueType': extractorInfo.valueType,
+                    'unit': extractorInfo.unit ? extractorInfo.unit : null
+                });
+            } else {
+                resolve(null);
+            }
+        });
+    })).then(function (results) {
+        vmProperties = results.filter(function (result) {
+            return result !== null
+        }).concat(vmConfigExtractors).concat(performanceMetrics);
     });
 }
 
@@ -187,8 +323,8 @@ function generateVirtualMachineScaleSetProperties() {
  * Creates a table for displaying Azure Virtual Machine properties.
  */
 function createVirtualMachineScaleSetTable() {
-    vmTable = vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function(item){
-        const tableDef = {label: item.label, valueType: item.valueType };
+    vmTable = vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function (item) {
+        const tableDef = {label: item.label, valueType: item.valueType};
         if (item.unit) {
             tableDef.unit = item.unit;
         }
@@ -203,7 +339,7 @@ function createVirtualMachineScaleSetTable() {
  */
 function extractNetworkInterfaces(vm) {
     if (vm.properties.networkProfile && vm.properties.networkProfile.networkInterfaces) {
-        return vm.properties.networkProfile.networkInterfaces.map(function (ni){
+        return vm.properties.networkProfile.networkInterfaces.map(function (ni) {
             const match = ni.id.match(/networkInterfaces\/([^\/]*)$/);
             return match ? match[1] : "N/A";
         }).join(', ');
@@ -325,12 +461,12 @@ function processVMsResponse(d) {
 function login() {
     const d = D.q.defer();
     const config = {
-        url: "/" + tenantID + "/oauth2/token", protocol: "https", headers: {
+        url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         }, form: {
             grant_type: "client_credentials",
-            client_id: client_id,
-            client_secret: client_secret,
+            client_id: clientId,
+            client_secret: clientSecret,
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
@@ -359,7 +495,7 @@ function extractVmInfo(vm) {
 
     const extractedInfo = {};
 
-    vmInfoExtractors.forEach(function(row){
+    vmInfoExtractors.forEach(function (row) {
         extractedInfo[row.key] = row.extract(vm);
     });
     return extractedInfo;
@@ -385,7 +521,7 @@ function convertBytesToGb(bytesValue) {
 function insertRecord(vm) {
     const d = D.q.defer();
 
-    const recordValues = vmProperties.map(function(item){
+    const recordValues = vmProperties.map(function (item) {
         const value = vm[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
@@ -421,7 +557,7 @@ function retrieveVMs() {
 }
 
 function extractVmConfig(vmInfo, bodyAsJSON) {
-    vmConfigExtractors.map(function(item){
+    vmConfigExtractors.map(function (item) {
         vmInfo[item.key] = item.extract(bodyAsJSON);
     })
 }
@@ -538,32 +674,26 @@ function retrieveVMsPerformanceMetrics(vmInfoList) {
     const maxGroupSize = 20;
 
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
-        performanceKeyGroups.push(
-            performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-                return metric.key
-            }).join(',')
-        );
+        performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+            return metric.key
+        }).join(','));
     }
 
     const promises = vmInfoList.map(function (vmInfo) {
         const d = D.q.defer();
 
         if (vmInfo.displayStatus === "VM running") {
-            const groupPromises = performanceKeyGroups.map(function(group){
-                return new Promise(function(resolve, reject) {
-                    const config = generateConfig(
-                        "/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M"
-                    );
-                    azureCloudManagementService.http.get(config, function(error, response, body) {
+            const groupPromises = performanceKeyGroups.map(function (group) {
+                return new Promise(function (resolve, reject) {
+                    const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+                    azureCloudManagementService.http.get(config, function (error, response, body) {
                         processVmPerformanceResponse({
-                            resolve: resolve,
-                            reject: reject
+                            resolve: resolve, reject: reject
                         }, vmInfo)(error, response, body);
                     });
                 });
             });
-            D.q.all(groupPromises).then(function()
-            {
+            D.q.all(groupPromises).then(function () {
                 d.resolve(vmInfo)
             }).catch(d.reject);
         } else {
