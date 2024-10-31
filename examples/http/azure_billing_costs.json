@@ -1,0 +1,53 @@
+{
+    "logo": "azure.svg",
+    "version": "1.0.0",
+    "name": "Azure Billing Costs",
+    "description": "This script retrieves Azure billing metrics to monitor costs and usage, categorized by several key dimensions",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Azure",
+            "Cost Management"       
+        ]
+    },
+    "tags": [
+        "azure",
+        "billing",
+        "cost"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1]",
+        "table": "[7]"
+
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantId",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "subscriptionId",
+            "label": "Subscription Id"
+        }
+    ]
+}
