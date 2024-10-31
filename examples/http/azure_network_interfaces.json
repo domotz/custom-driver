@@ -15,7 +15,7 @@
         "azure",
         "network",
         "network-interface",
-        "vm"
+        "virtual-machine"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
@@ -50,13 +50,13 @@
         {
             "value_type": "LIST",
             "name": "resourceGroups",
-            "label": "Resource Groups",
+            "label": "Resource Group",
             "value": ["All"]
         },
         {
             "value_type": "LIST",
             "name": "vmNames",
-            "label": "VM Names",
+            "label": "VM Name",
             "value": ["All"]
         }
     ]
