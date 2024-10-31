@@ -49,12 +49,14 @@
         {
             "value_type": "LIST",
             "name": "resourceGroups",
-            "label": "Resource Group"
+            "label": "Resource Group",
+            "value": ["All"]
         },
         {
             "value_type": "LIST",
             "name": "vmNames",
-            "label": "VM Name"
+            "label": "VM Name",
+            "value": ["All"]
         }
     ]
 }
