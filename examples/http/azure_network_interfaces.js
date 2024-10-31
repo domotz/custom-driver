@@ -49,6 +49,8 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com')
 
 let accessToken
+let networkInterfacesProperties;
+let networkInterfacesTable;
 
 // This is the list of all allowed performance metrics that can be retrieved.
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
@@ -63,40 +65,126 @@ const performanceMetrics = [
   {label: 'Packets Received', valueType: D.valueType.NUMBER, key: "PacketsReceivedRate"}
 ]
 
-const networkInterfacesProperties = [
-  { key: 'resourceGroupName', label: 'Resource Group', valueType: D.valueType.STRING },
-  { key: 'provisioningState', label: 'Provisioning State', valueType: D.valueType.STRING },
-  { key: 'resourceGuid', label: 'Resource GUID', valueType: D.valueType.STRING },
-  { key: 'ipConfigurationName', label: 'IP Configuration Name', valueType: D.valueType.STRING },
-  { key: 'ipConfigProvisioningState', label: 'IP Config Provisioning State', valueType: D.valueType.STRING },
-  { key: 'privateIPAddress', label: 'Private IP Address', valueType: D.valueType.STRING },
-  { key: 'ipAllocationMethod', label: 'IP Allocation Method', valueType: D.valueType.STRING },
-  { key: 'primaryIpConfiguration', label: 'Primary IP Configuration', valueType: D.valueType.STRING },
-  { key: 'privateIPAddressVersion', label: 'Private IP Version', valueType: D.valueType.STRING },
-  { key: 'dnsServers', label: 'DNS servers', valueType: D.valueType.STRING },
-  { key: 'appliedDnsServers', label: 'Applied DNS servers', valueType: D.valueType.STRING },
-  { key: 'internalDomainNameSuffix', label: 'Internal Domain Name Suffix', valueType: D.valueType.STRING },
-  { key: 'macAddress', label: 'MAC Address', valueType: D.valueType.STRING },
-  { key: 'enableAcceleratedNetworking', label: 'Accelerated Networking', valueType: D.valueType.STRING },
-  { key: 'vnetEncryptionSupported', label: 'Virtual Network Encryption', valueType: D.valueType.STRING },
-  { key: 'enableIPForwarding', label: 'IP Forwarding', valueType: D.valueType.STRING },
-  { key: 'disableTcpStateTracking', label: 'Disable TCP State Tracking', valueType: D.valueType.STRING },
-  { key: 'networkSecurityGroup', label: 'Network Security Group', valueType: D.valueType.STRING },
-  { key: 'primaryNetworkInterface', label: 'Primary Network Interface', valueType: D.valueType.STRING },
-  { key: 'associatedVirtualMachine', label: 'Associated Virtual Machine', valueType: D.valueType.STRING },
-  { key: 'nicType', label: 'NIC Type', valueType: D.valueType.STRING },
-  { key: 'location', label: 'Location', valueType: D.valueType.STRING },
-  { key: 'kind', label: 'Kind', valueType: D.valueType.STRING }
-].concat(performanceMetrics);
+const networkInterfaceInfoExtractors = [
+  {key: "id", extract: function (networkInterface) { return sanitize (networkInterface.name) }},
+  {label: "Resource Group", valueType: D.valueType.STRING, key: "resourceGroupName", extract: function (networkInterface) {
+      if (networkInterface.id) {
+        const matches = networkInterface.id.match(/resourceGroups\/([^/]+)/);
+        return matches ? matches[1] : "N/A";
+      }
+      return "N/A";
+    }},
+  {label: "Provisioning State", valueType: D.valueType.STRING, key: "provisioningState", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.provisioningState || "N/A";}},
+  {label: "Resource GUID", valueType: D.valueType.STRING, key: "resourceGuid", extract: function (networkInterface) { return networkInterface.properties && networkInterface.properties.resourceGuid || "N/A"; }},
+  {label: "IP Configuration Name", valueType: D.valueType.STRING, key: "ipConfigurationName", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
+          networkInterface.properties.ipConfigurations[0] &&
+          networkInterface.properties.ipConfigurations[0].name || "N/A";
+    }},
+  {label: "IP Config Provisioning State", valueType: D.valueType.STRING, key: "ipConfigProvisioningState", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
+          networkInterface.properties.ipConfigurations[0] &&
+          networkInterface.properties.ipConfigurations[0].properties &&
+          networkInterface.properties.ipConfigurations[0].properties.provisioningState || "N/A";
+    }},
+  {label: "Private IP Address", valueType: D.valueType.STRING, key: "privateIPAddress", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
+          networkInterface.properties.ipConfigurations[0] &&
+          networkInterface.properties.ipConfigurations[0].properties &&
+          networkInterface.properties.ipConfigurations[0].properties.privateIPAddress || "N/A";
+    }},
+  {label: "IP Allocation Method", valueType: D.valueType.STRING, key: "ipAllocationMethod", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
+          networkInterface.properties.ipConfigurations[0] &&
+          networkInterface.properties.ipConfigurations[0].properties &&
+          networkInterface.properties.ipConfigurations[0].properties.privateIPAllocationMethod || "N/A";
+    }},
+  {label: "Primary IP Configuration", valueType: D.valueType.STRING, key: "primaryIpConfiguration", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
+          networkInterface.properties.ipConfigurations[0] &&
+          networkInterface.properties.ipConfigurations[0].properties &&
+          networkInterface.properties.ipConfigurations[0].properties.primary || "N/A";
+    }},
+  {label: "Private IP Version", valueType: D.valueType.STRING, key: "privateIPAddressVersion", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
+          networkInterface.properties.ipConfigurations[0] &&
+          networkInterface.properties.ipConfigurations[0].properties &&
+          networkInterface.properties.ipConfigurations[0].properties.privateIPAddressVersion || "N/A";
+    }},
+  {label: "DNS servers", valueType: D.valueType.STRING, key: "dnsServers", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.dnsSettings &&
+      networkInterface.properties.dnsSettings.dnsServers ?
+          networkInterface.properties.dnsSettings.dnsServers.join(", ") : "N/A";
+    }},
+  {label: "Applied DNS servers", valueType: D.valueType.STRING, key: "appliedDnsServers", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.dnsSettings &&
+      networkInterface.properties.dnsSettings.appliedDnsServers ?
+          networkInterface.properties.dnsSettings.appliedDnsServers.join(", ") : "N/A";
+    }},
+  {label: "nternal Domain Name Suffix", valueType: D.valueType.STRING, key: "internalDomainNameSuffix", extract: function (networkInterface) {
+      return networkInterface.properties && networkInterface.properties.dnsSettings &&
+          networkInterface.properties.dnsSettings.internalDomainNameSuffix || "N/A";
+    }},
+  {label: "MAC Address", valueType: D.valueType.STRING, key: "macAddress", extract: function (networkInterface) { return networkInterface.properties && networkInterface.properties.macAddress || "N/A"; }},
+  {label: "Accelerated Networking", valueType: D.valueType.STRING, key: "enableAcceleratedNetworking", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.enableAcceleratedNetworking || "N/A";}},
+  {label: "Virtual Network Encryption", valueType: D.valueType.STRING, key: "vnetEncryptionSupported", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.vnetEncryptionSupported || "N/A";}},
+  {label: "IP Forwarding", valueType: D.valueType.STRING, key: "enableIPForwarding", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.enableIPForwarding || "N/A";}},
+  {label: "Disable TCP State Tracking", valueType: D.valueType.STRING, key: "disableTcpStateTracking", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.disableTcpStateTracking || "N/A";}},
+  {label: "Network Security Group", valueType: D.valueType.STRING, key: "networkSecurityGroup", extract: function (networkInterface) {
+      if (networkInterface.properties && networkInterface.properties.networkSecurityGroup &&
+          networkInterface.properties.networkSecurityGroup.id) {
+        const matches = networkInterface.properties.networkSecurityGroup.id.match(/networkSecurityGroups\/([^/]+)/);
+        return matches ? matches[1] : "N/A";
+      }
+      return "N/A";
+    }},
+  {label: "Primary Network Interface", valueType: D.valueType.STRING, key: "primaryNetworkInterface", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.primary || "N/A";}},
+  {label: "Associated Virtual Machine", valueType: D.valueType.STRING, key: "associatedVirtualMachine", extract: function (networkInterface) {
+      if (networkInterface.properties && networkInterface.properties.virtualMachine &&
+          networkInterface.properties.virtualMachine.id) {
+        const matches = networkInterface.properties.virtualMachine.id.match(/virtualMachines\/([^/]+)/);
+        return matches ? matches[1] : "N/A";
+      }
+      return "N/A";
+    }},
+  {label: "NIC Type", valueType: D.valueType.STRING, key: "nicType", extract: function (networkInterface) { return networkInterface.properties && networkInterface.properties.nicType || "N/A"; }},
+  {label: "Location", valueType: D.valueType.STRING, key: "location", extract: function (networkInterface) { return networkInterface.location || "N/A"; }},
+  {label: "Kind", valueType: D.valueType.STRING, key: "kind", extract: function (networkInterface) { return networkInterface.kind || "N/A"; }}
+];
 
-// Table to store network interface information
-const networkInterfacesTable = D.createTable('networkInterfacesTable', networkInterfacesProperties.map(function (item) {
-  const tableDef = {label: item.label, valueType: item.valueType};
-  if (item.unit) {
-    tableDef.unit = item.unit;
-  }
-  return tableDef;
-}));
+/**
+ * Generates network interface properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
+ * @returns {Promise} A promise that resolves when network interface properties are generated.
+ * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `networkInterfaceInfoExtractors` and `performanceMetrics`.
+ */
+function generateNetworkInterfaceProperties() {
+  return D.q.all(
+      networkInterfaceInfoExtractors.map(function(extractorInfo) {
+        return new Promise(function(resolve) {
+          if (extractorInfo.key !== 'id') {
+            resolve({'key': extractorInfo.key, 'label': extractorInfo.label, 'valueType': extractorInfo.valueType, 'unit':extractorInfo.unit ? extractorInfo.unit: null});
+          } else {
+            resolve(null);
+          }
+        });
+      })
+  ).then(function(results) {
+    networkInterfacesProperties = results.filter(function(result){ return result !== null }).concat(performanceMetrics);
+  });
+}
+
+/**
+ * Creates a table for displaying Azure network interface properties.
+ */
+function createNetworkInterfaceTable() {
+  networkInterfacesTable = D.createTable('Network Interfaces Table', networkInterfacesProperties.map(function (item) {
+    const tableDef = {label: item.label, valueType: item.valueType};
+    if (item.unit) {
+      tableDef.unit = item.unit;
+    }
+    return tableDef;
+  }));
+}
 
 /**
  * Sanitizes the output by removing reserved words and formatting it.
@@ -108,93 +196,6 @@ function sanitize(output) {
   const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
   return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
 }
-
-const networkInterfaceInfoExtractors = [
-  {key: "id", extract: function (networkInterface) { return sanitize (networkInterface.name) }},
-  {key: "resourceGroupName", extract: function (networkInterface) {
-      if (networkInterface.id) {
-        const matches = networkInterface.id.match(/resourceGroups\/([^/]+)/);
-        return matches ? matches[1] : "N/A";
-      }
-      return "N/A";
-    }},
-  {key: "provisioningState", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.provisioningState || "N/A";}},
-  {key: "resourceGuid", extract: function (networkInterface) { return networkInterface.properties && networkInterface.properties.resourceGuid || "N/A"; }},
-  {key: "ipConfigurationName", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
-          networkInterface.properties.ipConfigurations[0] &&
-          networkInterface.properties.ipConfigurations[0].name || "N/A";
-    }},
-  {key: "ipConfigProvisioningState", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
-          networkInterface.properties.ipConfigurations[0] &&
-          networkInterface.properties.ipConfigurations[0].properties &&
-          networkInterface.properties.ipConfigurations[0].properties.provisioningState || "N/A";
-    }},
-  {key: "privateIPAddress", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
-          networkInterface.properties.ipConfigurations[0] &&
-          networkInterface.properties.ipConfigurations[0].properties &&
-          networkInterface.properties.ipConfigurations[0].properties.privateIPAddress || "N/A";
-    }},
-  {key: "ipAllocationMethod", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
-          networkInterface.properties.ipConfigurations[0] &&
-          networkInterface.properties.ipConfigurations[0].properties &&
-          networkInterface.properties.ipConfigurations[0].properties.privateIPAllocationMethod || "N/A";
-    }},
-  {key: "primaryIpConfiguration", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
-          networkInterface.properties.ipConfigurations[0] &&
-          networkInterface.properties.ipConfigurations[0].properties &&
-          networkInterface.properties.ipConfigurations[0].properties.primary || "N/A";
-    }},
-  {key: "privateIPAddressVersion", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.ipConfigurations &&
-          networkInterface.properties.ipConfigurations[0] &&
-          networkInterface.properties.ipConfigurations[0].properties &&
-          networkInterface.properties.ipConfigurations[0].properties.privateIPAddressVersion || "N/A";
-    }},
-  {key: "dnsServers", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.dnsSettings &&
-      networkInterface.properties.dnsSettings.dnsServers ?
-          networkInterface.properties.dnsSettings.dnsServers.join(", ") : "N/A";
-    }},
-  {key: "appliedDnsServers", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.dnsSettings &&
-      networkInterface.properties.dnsSettings.appliedDnsServers ?
-          networkInterface.properties.dnsSettings.appliedDnsServers.join(", ") : "N/A";
-    }},
-  {key: "internalDomainNameSuffix", extract: function (networkInterface) {
-      return networkInterface.properties && networkInterface.properties.dnsSettings &&
-          networkInterface.properties.dnsSettings.internalDomainNameSuffix || "N/A";
-    }},
-  {key: "macAddress", extract: function (networkInterface) { return networkInterface.properties && networkInterface.properties.macAddress || "N/A"; }},
-  {key: "enableAcceleratedNetworking", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.enableAcceleratedNetworking || "N/A";}},
-  {key: "vnetEncryptionSupported", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.vnetEncryptionSupported || "N/A";}},
-  {key: "enableIPForwarding", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.enableIPForwarding || "N/A";}},
-  {key: "disableTcpStateTracking", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.disableTcpStateTracking || "N/A";}},
-  {key: "networkSecurityGroup", extract: function (networkInterface) {
-      if (networkInterface.properties && networkInterface.properties.networkSecurityGroup &&
-          networkInterface.properties.networkSecurityGroup.id) {
-        const matches = networkInterface.properties.networkSecurityGroup.id.match(/networkSecurityGroups\/([^/]+)/);
-        return matches ? matches[1] : "N/A";
-      }
-      return "N/A";
-    }},
-  {key: "primaryNetworkInterface", extract: function (networkInterface) {return networkInterface.properties && networkInterface.properties.primary || "N/A";}},
-  {key: "associatedVirtualMachine", extract: function (networkInterface) {
-      if (networkInterface.properties && networkInterface.properties.virtualMachine &&
-          networkInterface.properties.virtualMachine.id) {
-        const matches = networkInterface.properties.virtualMachine.id.match(/virtualMachines\/([^/]+)/);
-        return matches ? matches[1] : "N/A";
-      }
-      return "N/A";
-    }},
-  {key: "nicType", extract: function (networkInterface) { return networkInterface.properties && networkInterface.properties.nicType || "N/A"; }},
-  {key: "location", extract: function (networkInterface) { return networkInterface.location || "N/A"; }},
-  {key: "kind", extract: function (networkInterface) { return networkInterface.kind || "N/A"; }}
-];
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -418,7 +419,7 @@ function retrieveNIPerformanceMetrics(networkInterfaceList) {
   const maxGroupSize = 20;
   for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
     performanceKeyGroups.push(
-        performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+    performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
           return metric.key
         }).join(',')
     );
@@ -464,6 +465,7 @@ function publishDiskTable() {
  */
 function validate() {
   login()
+      .then(generateNetworkInterfaceProperties)
       .then(retrieveNetworkInterfaces)
       .then(retrieveNIPerformanceMetrics)
       .then(function () {
@@ -482,6 +484,8 @@ function validate() {
  */
 function get_status() {
   login()
+      .then(generateNetworkInterfaceProperties)
+      .then(createNetworkInterfaceTable)
       .then(retrieveNetworkInterfaces)
       .then(retrieveNIPerformanceMetrics)
       .then(populateTable)
