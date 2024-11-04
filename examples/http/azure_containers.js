@@ -65,14 +65,14 @@ const containerDetailsExtractors = [
         }
     },
     {
-        label: 'Resources Memory', key: 'containerResourcesMemory', unit: 'Gb', extract: function (container) {
+        label: 'Memory', key: 'containerResourcesMemory', unit: 'Gb', extract: function (container) {
             return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.memoryInGB
                 ? container.properties.resources.requests.memoryInGB
                 : "N/A";
         }
     },
     {
-        label: 'Resources CPU', key: 'containerResourcesCPU', extract: function (container) {
+        label: 'CPU', key: 'containerResourcesCPU', extract: function (container) {
             return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.cpu
                 ? container.properties.resources.requests.cpu
                 : "N/A";
@@ -150,7 +150,7 @@ function generateContainerGroupProperties() {
  * Creates a table for displaying Azure Container Group properties.
  */
 function createContainerGroupTable() {
-    containerGroupsTable = containerGroupsTable = D.createTable('Azure Container Groups', containerGroupProperties.map(function (item) {
+    containerGroupsTable = containerGroupsTable = D.createTable('Azure Containers', containerGroupProperties.map(function (item) {
         const tableDef = {label: item.label, valueType: item.valueType};
         if (item.unit) {
             tableDef.unit = item.unit;
@@ -335,6 +335,15 @@ function convertBytesToGb(bytesValue) {
 }
 
 /**
+ * Generates a SHA-256 hash of the provided value.
+ * @param {string} value - The input string to hash.
+ * @returns {string} The SHA-256 hash of the input value in hexadecimal format.
+ */
+function md5(value) {
+    return D.crypto.hash(value, "md5", null, "hex");
+}
+
+/**
  * Inserts a containerGroup record into the containerGroup table with the given containerGroup information.
  * @param {Object} container - The containerGroup information object.
  * @returns {Promise} A promise that resolves when the record has been successfully inserted into the table.
@@ -346,7 +355,7 @@ function insertRecord(container) {
         const value = container[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
-    containerGroupsTable.insertRecord(sanitize(container.containerName), recordValues);
+    containerGroupsTable.insertRecord(sanitize(md5(container.resourceGroup + container.resourceName + container.containerName)), recordValues);
     d.resolve();
     return d.promise;
 }
