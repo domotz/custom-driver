@@ -9,6 +9,7 @@
  * Extracts the following information from the data array:
  *      - Name
  *      - Resource Group
+ *      - Managed By
  *      - Location of the resource
  *      - Availability zone
  *      - SKU name
@@ -80,7 +81,9 @@ const diskInfoExtractors = [{
     label: 'Name', valueType: D.valueType.STRING, key: 'name', extract: function (disk) {
         return disk.name || "N/A";
     }
-}, {label: 'Resource Group', valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup}, {
+}, {label: 'Resource Group', valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup
+}, {label: 'Managed By', valueType: D.valueType.STRING, key: "managedBy", extract: extractManagedBy
+}, {
     label: 'Location of the resource', valueType: D.valueType.STRING, key: "location", extract: function (disk) {
         return disk.location || "N/A";
     }
@@ -230,6 +233,20 @@ function extractResourceGroup(disk) {
         if (resourceGroupMatch && resourceGroupMatch[1]) resourceGroup = resourceGroupMatch[1];
     }
     return resourceGroup;
+}
+
+/**
+ * Extracts the Managed by from the disk object.
+ * @param {Object} disk - The disk object containing the Managed by information in its ID.
+ * @returns {string} The name of the Managed by, or "N/A" if not found.
+ */
+function extractManagedBy(disk) {
+    let managedBy = "N/A";
+    if (disk.managedBy) {
+        const managedByMatch = disk.managedBy.match(/\/virtualMachines\/([^\/]*)$/);
+        if (managedByMatch && managedByMatch[1]) managedBy = managedByMatch[1];
+    }
+    return managedBy;
 }
 
 /**
