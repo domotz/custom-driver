@@ -31,31 +31,6 @@
  *      - Provisioning State
  *      - Platform Fault Domain Count
  *      - Time Created
- *      - Available Memory
- *      - Disk Write
- *      - Network Out Total
- *      - Network In Total
- *      - CPU Credits Left
- *      - Percentage CPU
- *      - Disk Write Ops
- *      - Disk Read
- *      - Disk Read Ops
- *      - CPU Credits Used
- *      - VmAvailability
- *      - Data Disk Read
- *      - Data Disk Write
- *      - Data Disk Read Ops
- *      - Data Disk Write Ops
- *      - Data BW
- *      - Data IOPS
- *      - Data Disk Target BW
- *      - DataDisk Target IOPS
- *      - OS Disk BW
- *      - OS Disk IOPS
- *      - OS Disk Read Ops
- *      - OS Disk Write Ops
- *      - OS Disk Read
- *      - OS Disk Write
  *
  **/
 // Parameters for Azure authentication
@@ -74,98 +49,7 @@ let accessToken;
 let virtualMachineScaleSetProperties;
 let virtualMachineScaleSetTable;
 
-// This is the list of all allowed performance metrics that can be retrieved.
-// To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
-// const allowedPerformanceMetrics = [
-//     {label: 'Cached BW', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached Bandwidth Consumed Percentage'},
-//     {label: 'Cached IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached IOPS Consumed Percentage'},
-//     {label: 'Uncached BW', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached Bandwidth Consumed Percentage'},
-//     {label: 'Uncached IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached IOPS Consumed Percentage'},
-//     {label: 'Local Burst BPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst BPS Credits Percentage'},
-//     {label: 'Network In', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In', callback: convertBytesToGb },
-//     {label: 'Network Out', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out', callback: convertBytesToGb },
-//     {label: 'Premium Disk Miss', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium Data Disk Cache Read Miss'},
-//     {label: 'OS Disk Cache Hit', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium OS Disk Cache Read Hit'},
-//     {label: 'OS Disk Cache Miss', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium OS Disk Cache Read Miss'},
-//     {label: 'Remote Burst IO', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst IO Credits Percentage'},
-//     {label: 'Remote Burst BPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst BPS Credits Percentage'},
-//     {label: 'Local Burst IO', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst IO Credits Percentage'},
-//     {label: 'Data Disk Queue', valueType: D.valueType.NUMBER, key: 'Data Disk Queue Depth'},
-//     {label: 'Data Max Burst BW', valueType: D.valueType.NUMBER, key: 'Data Disk Max Burst Bandwidth'},
-//     {label: 'Data Max Burst IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Max Burst IOPS'},
-//     {label: 'OS Disk Queue', valueType: D.valueType.NUMBER, key: 'OS Disk Queue Depth'},
-//     {label: 'Inbound Flow Rate', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Inbound Flows Maximum Creation Rate'},
-//     {label: 'Outbound Flow Rate', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Outbound Flows Maximum Creation Rate'},
-//     {label: 'Outbound Flows', valueType: D.valueType.NUMBER, key: 'Outbound Flows'},
-//     {label: 'Inbound Flows', valueType: D.valueType.NUMBER, key: 'Inbound Flows'},
-//     {label: 'Data BW Burst', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Used Burst BPS Credits Percentage'},
-//     {label: 'Data IO Burst', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Used Burst IO Credits Percentage'},
-//     {label: 'OS Max Burst BW', valueType: D.valueType.NUMBER, key: 'OS Disk Max Burst Bandwidth'},
-//     {label: 'OS Max Burst IOPS', valueType: D.valueType.NUMBER, key: 'OS Disk Max Burst IOPS'},
-//     {label: 'OS Disk Target BW', valueType: D.valueType.NUMBER, key: 'OS Disk Target Bandwidth'},
-//     {label: 'OS Disk Target IOPS', valueType: D.valueType.NUMBER, key: 'OS Disk Target IOPS'},
-//     {label: 'OS BW Burst', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Used Burst BPS Credits Percentage'},
-//     {label: 'OS IO Burst', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Used Burst IO Credits Percentage'},
-//     {label: 'Premium Disk Hit', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium Data Disk Cache Read Hit'}
-// ];
 
-// This is the list of selected performance metrics retrieved.
-// To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
-const performanceMetrics = [{
-    label: 'Available Memory',
-    valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Available Memory Bytes',
-    callback: convertBytesToGb
-}, {
-    label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb
-}, {
-    label: 'Network Out Total',
-    valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Network Out Total',
-    callback: convertBytesToGb
-}, {
-    label: 'Network In Total',
-    valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Network In Total',
-    callback: convertBytesToGb
-}, {label: 'CPU Credits Left', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'}, {
-    label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'
-}, {
-    label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'
-}, {
-    label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb
-}, {
-    label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'
-}, {label: 'CPU Credits Used', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'}, {
-    label: 'VmAvailability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'
-}, {
-    label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'
-}, {
-    label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'
-}, {
-    label: 'Data Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Read Operations/Sec'
-}, {
-    label: 'Data Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Write Operations/Sec'
-}, {
-    label: 'Data BW', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Bandwidth Consumed Percentage'
-}, {
-    label: 'Data IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk IOPS Consumed Percentage'
-}, {
-    label: 'Data Disk Target BW', valueType: D.valueType.NUMBER, key: 'Data Disk Target Bandwidth'
-}, {label: 'DataDisk Target IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Target IOPS'}, {
-    label: 'OS Disk BW', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Bandwidth Consumed Percentage'
-}, {
-    label: 'OS Disk IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk IOPS Consumed Percentage'
-}, {
-    label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'
-}, {
-    label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'
-}, {
-    label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'
-}, {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'}]
 
 const virtualMachineScaleSetInfoExtractors = [{
     key: "id", label: 'Id', valueType: D.valueType.STRING, extract: function (value) {
@@ -283,7 +167,7 @@ const virtualMachineScaleSetInfoExtractors = [{
 /**
  * Generates Virtual Machine Scale Sets properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
  * @returns {Promise} A promise that resolves when Virtual Machine Scale Sets properties are generated.
- * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `performanceMetrics`.
+ * It populates the global variable `virtualMachineScaleSetProperties`.
  */
 function generateVirtualMachineScaleSetProperties() {
     return D.q.all(virtualMachineScaleSetInfoExtractors.map(function (extractorInfo) {
@@ -302,7 +186,7 @@ function generateVirtualMachineScaleSetProperties() {
     })).then(function (results) {
         virtualMachineScaleSetProperties = results.filter(function (result) {
             return result !== null
-        }).concat(performanceMetrics);
+        })
     });
 }
 
@@ -605,36 +489,6 @@ function convertBytesToGb(bytesValue) {
 }
 
 /**
- * Retrieves performance metrics for each Virtual Machine Scale Set in the provided Virtual Machine Scale Set information list.
- * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects.
- * @returns {Promise} A promise that resolves when all performance metrics have been retrieved.
- */
-function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSetInfoList) {
-    const performanceKeyGroups = [];
-    const maxGroupSize = 20;
-
-    for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
-        performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-            return metric.key
-        }).join(','));
-    }
-    const promises = virtualMachineScaleSetInfoList.map(function (diskInfo) {
-        const d = D.q.defer();
-        const groupPromises = performanceKeyGroups.map(function (group) {
-            return new Promise(function () {
-                const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-                azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
-            });
-        });
-        D.q.all(groupPromises).then(function () {
-            d.resolve(diskInfo)
-        }).catch(d.reject);
-        return d.promise;
-    });
-    return D.q.all(promises);
-}
-
-/**
  * Populates all Virtual Machine Scale Sets into the output table by calling insertRecord for each Virtual Machine Scale Set in the list.
  * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects to be inserted into the table.
  * @returns {Promise} A promise that resolves when all records have been inserted into the table.
@@ -660,7 +514,6 @@ function validate() {
     login()
         .then(generateVirtualMachineScaleSetProperties)
         .then(retrieveVirtualMachineScaleSets)
-        .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
         .then(function () {
             D.success();
         })
@@ -680,7 +533,6 @@ function get_status() {
         .then(generateVirtualMachineScaleSetProperties)
         .then(createVirtualMachineScaleSetTable)
         .then(retrieveVirtualMachineScaleSets)
-        .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
         .then(populateTable)
         .then(publishVirtualMachineScaleSetTable)
         .catch(function (error) {
