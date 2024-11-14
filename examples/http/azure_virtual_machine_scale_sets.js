@@ -31,6 +31,14 @@
  *      - Provisioning State
  *      - Platform Fault Domain Count
  *      - Time Created
+ *      - Available Memory
+ *      - Disk Write
+ *      - Network Out Total
+ *      - Network In Total
+ *      - CPU Credits Left
+ *      - Percentage CPU
+ *      - CPU Credits Used
+ *      - Vm Availability
  *
  **/
 // Parameters for Azure authentication
@@ -49,7 +57,47 @@ let accessToken;
 let virtualMachineScaleSetProperties;
 let virtualMachineScaleSetTable;
 
+// This is the list of all allowed performance metrics that can be retrieved.
+// To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
+// const allowedPerformanceMetrics = [
+//     {label: 'Network In', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In', callback: convertBytesToGb },
+//     {label: 'Network Out', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out', callback: convertBytesToGb },
+//     {label: 'Remote Burst IO', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst IO Credits Percentage'},
+//     {label: 'Remote Burst BPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst BPS Credits Percentage'},
+//     {label: 'Local Burst IO', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst IO Credits Percentage'},
+//     {label: 'Inbound Flow Rate', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Inbound Flows Maximum Creation Rate'},
+//     {label: 'Outbound Flow Rate', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Outbound Flows Maximum Creation Rate'},
+//     {label: 'Outbound Flows', valueType: D.valueType.NUMBER, key: 'Outbound Flows'},
+//     {label: 'Inbound Flows', valueType: D.valueType.NUMBER, key: 'Inbound Flows'},
+// ];
 
+// This is the list of selected performance metrics retrieved.
+// To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
+const performanceMetrics = [{
+    label: 'Available Memory',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Available Memory Bytes',
+    callback: convertBytesToGb
+}, {
+    label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb
+}, {
+    label: 'Network Out Total',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Network Out Total',
+    callback: convertBytesToGb
+}, {
+    label: 'Network In Total',
+    valueType: D.valueType.NUMBER,
+    unit: 'Gb',
+    key: 'Network In Total',
+    callback: convertBytesToGb
+}, {label: 'CPU Credits Left', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'}, {
+    label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'
+}, {label: 'CPU Credits Used', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'}, {
+    label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'
+}]
 
 const virtualMachineScaleSetInfoExtractors = [{
     key: "id", label: 'Id', valueType: D.valueType.STRING, extract: function (value) {
@@ -167,7 +215,7 @@ const virtualMachineScaleSetInfoExtractors = [{
 /**
  * Generates Virtual Machine Scale Sets properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
  * @returns {Promise} A promise that resolves when Virtual Machine Scale Sets properties are generated.
- * It populates the global variable `virtualMachineScaleSetProperties`.
+ * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `performanceMetrics`.
  */
 function generateVirtualMachineScaleSetProperties() {
     return D.q.all(virtualMachineScaleSetInfoExtractors.map(function (extractorInfo) {
@@ -186,7 +234,7 @@ function generateVirtualMachineScaleSetProperties() {
     })).then(function (results) {
         virtualMachineScaleSetProperties = results.filter(function (result) {
             return result !== null
-        })
+        }).concat(performanceMetrics);
     });
 }
 
@@ -489,6 +537,36 @@ function convertBytesToGb(bytesValue) {
 }
 
 /**
+ * Retrieves performance metrics for each Virtual Machine Scale Set in the provided Virtual Machine Scale Set information list.
+ * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects.
+ * @returns {Promise} A promise that resolves when all performance metrics have been retrieved.
+ */
+function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSetInfoList) {
+    const performanceKeyGroups = [];
+    const maxGroupSize = 20;
+
+    for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
+        performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+            return metric.key
+        }).join(','));
+    }
+    const promises = virtualMachineScaleSetInfoList.map(function (diskInfo) {
+        const d = D.q.defer();
+        const groupPromises = performanceKeyGroups.map(function (group) {
+            return new Promise(function () {
+                const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+                azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
+            });
+        });
+        D.q.all(groupPromises).then(function () {
+            d.resolve(diskInfo)
+        }).catch(d.reject);
+        return d.promise;
+    });
+    return D.q.all(promises);
+}
+
+/**
  * Populates all Virtual Machine Scale Sets into the output table by calling insertRecord for each Virtual Machine Scale Set in the list.
  * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects to be inserted into the table.
  * @returns {Promise} A promise that resolves when all records have been inserted into the table.
@@ -514,6 +592,7 @@ function validate() {
     login()
         .then(generateVirtualMachineScaleSetProperties)
         .then(retrieveVirtualMachineScaleSets)
+        .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
         .then(function () {
             D.success();
         })
@@ -533,6 +612,7 @@ function get_status() {
         .then(generateVirtualMachineScaleSetProperties)
         .then(createVirtualMachineScaleSetTable)
         .then(retrieveVirtualMachineScaleSets)
+        .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
         .then(populateTable)
         .then(publishVirtualMachineScaleSetTable)
         .catch(function (error) {
