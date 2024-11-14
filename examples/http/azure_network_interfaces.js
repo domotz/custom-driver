@@ -1,6 +1,6 @@
 /**
  * Domotz Custom Driver
- * Name: Azure Networ Interfaces
+ * Name: Azure Network Interfaces
  * Description: This script retrieves information about network interfaces and their associated performance metrics
  *
  * Communication protocol is HTTPS
@@ -329,7 +329,7 @@ function processLoginResponse(d) {
  */
 function filterNetworkInterfaces(networkInterfaces) {
     return networkInterfaces.filter(function (networkInterface) {
-        const associatedVM = networkInterface.associatedVrtualMachine
+        const associatedVM = networkInterface.associatedVirtualMachine
         const resourceGroupName = networkInterface.resourceGroupName
         const vmFilter = (vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
             return vmName.toLowerCase() === associatedVM.toLowerCase()
@@ -534,7 +534,7 @@ function populateTable(networkInterfaceList) {
 /**
  * Publishes the Disks table.
  */
-function publishDiskTable() {
+function publishNetworkInterfacesTable() {
     D.success(networkInterfacesTable);
 }
 
@@ -570,7 +570,7 @@ function get_status() {
         .then(retrieveNetworkInterfaces)
         .then(retrieveNIPerformanceMetrics)
         .then(populateTable)
-        .then(publishDiskTable)
+        .then(publishNetworkInterfacesTable)
         .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
