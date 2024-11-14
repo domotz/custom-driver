@@ -15,22 +15,18 @@
  * 			- SKU Name
  * 			- SKU Tier
  * 			- Kind
- * 
- * The following performance metrics are retrieved dynamically:
- *      - Availability (%)
- *      - Egress (GB)
- *      - Ingress (GB)
- *      - Success E2E Latency (ms)
- *      - Success Server Latency (ms)
+ *      - Availability 
+ *      - Egress
+ *      - Ingress
+ *      - Success E2E Latency
+ *      - Success Server Latency 
  *      - Transactions
- *      - Used Capacity (GB)
+ *      - Used Capacity 
  * 
- * Additional metrics can be added or removed from the metricList array
  * 
  **/
 
 // Parameters for Azure authentication
-
 const tenantId = D.getParameter('tenantId')
 const clientId = D.getParameter('clientId')
 const clientSecret = D.getParameter('clientSecret')
@@ -45,40 +41,9 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 
 // Variable to store access token for Azure API calls
 let accessToken
+let storageAccountTable
 
-// Define metrics to retrieve from Azure storage accounts
-// All metric List can be monitored ['Availability:Percent','Egress:Bytes','Ingress:Bytes','SuccessE2ELatency:MilliSeconds','SuccessServerLatency:MilliSeconds','Transactions:Count','UsedCapacity:Bytes']
-const metricList = [
-	'Availability:%',
-	'Egress:Bytes',
-	'Ingress:Bytes',
-	'SuccessE2ELatency:ms',
-	'SuccessServerLatency:ms',
-	'Transactions',
-	'UsedCapacity:Bytes'
-]
-
-/**
- * Parses a metric string and returns an object with label and unit
- * @param {string} metric The metric string in the format "label:unit"
- * @returns {Object} An object containing the label and unit of the metric
- */
-function parseMetric(metric) {
-	const parts = metric.split(":")
-	return {
-		label: parts[0],
-		unit: parts[1] || ''
-	}
-}
-
-/**
- * Creates a payload of parsed metrics
- * @returns {Array} An array of metric objects with label and unit
- */
-function createMetricsPayload() {
-	return metricList.map(parseMetric)
-}
-
+// Columns for the storage account table
 const storageAccountColumns = [
 	{ label: 'Resource Group', valueType: D.valueType.STRING },
 	{ label: 'Location', valueType: D.valueType.STRING },
@@ -91,20 +56,16 @@ const storageAccountColumns = [
 	{ label: 'Kind', valueType: D.valueType.STRING }
 ]
 
-// Create metric columns, replacing 'Bytes' with 'GB' where necessary
-const metricColumns = metricList.map(function(metric) {
-	const metricInfo = parseMetric(metric)
-	if (metricInfo.unit === 'Bytes') {
-		metricInfo.unit = 'GB'
-	}
-	return metricInfo
-})
-
-// Combine storage account columns and metric columns into a single array
-const allColumns = storageAccountColumns.concat(metricColumns)
-
-// Create the storage account table with all defined columns
-const storageAccountTables = D.createTable('Storage Accounts', allColumns)
+// Define metrics to retrieve from Azure storage accounts
+const metricList = [
+  { label: 'Availability', valueType: D.valueType.NUMBER, unit: '%', key: 'Availability' },
+  { label: 'Egress', valueType: D.valueType.NUMBER, unit: 'MB', key: 'Egress', callback: convertToMB },
+  { label: 'Ingress', valueType: D.valueType.NUMBER, unit: 'MB', key: 'Ingress', callback: convertToMB },
+  { label: 'Success E2E Latency', valueType: D.valueType.NUMBER, key: 'SuccessE2ELatency' },
+  { label: 'Success Server Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'SuccessServerLatency' },
+  { label: 'Transactions', valueType: D.valueType.NUMBER, key: 'Transactions' },
+  { label: 'Used Capacity', valueType: D.valueType.NUMBER, unit: 'MB', key: 'UsedCapacity', callback: convertToMB }
+]
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -270,65 +231,6 @@ function extractMetricsInfo(metricsResponse) {
   return metricsInfo
 }
 
-/**
- * Function to convert date to UTC format
- * @param {string} dateToConvert The date string to be converted
- * @returns {string} The date string in UTC format
- */
-function convertToUTC(dateToConvert) {
-	var date = new Date(dateToConvert)
-	var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
-	var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
-	var year = date.getUTCFullYear()
-	var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
-	var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
-	var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
-	return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
-}
-
-/**
- * Converts bytes to gigabytes
- * @param {number} bytes The number of bytes to convert
- * @returns {number} The value in gigabytes or 'N/A'
- */
-function convertToGB(bytes) {
-	return bytes !== 'N/A' ? (bytes / 1e9).toFixed(2) : bytes
-} 
-
-/**
- * Inserts records into the storage accounts table with associated metrics
- * @param {Array} storageAccounts The list of storage accounts to insert
- * @param {Array} metricsList The list of performance metrics corresponding to the storage accounts
- */
-function insertRecord(storageAccounts, metricsList) {
-	storageAccounts.forEach(function(account, index) {
-		const metricsData = metricsList[index] || {}
-		const rowData = [
-			account.resourceGroupName,
-			account.location,
-			account.provisioningState,
-			convertToUTC(account.creationTime),
-			account.primaryLocation,
-			account.statusOfPrimary,
-			account.skuName,
-			account.skuTier,
-			account.kind
-		]
-		metricList.forEach(function(metric) {
-			const metricName = metric.split(":")[0]
-			let metricValue = metricsData[metricName] || 'N/A'
-			if (metric.split(":")[1] === 'Bytes') {
-				metricValue = convertToGB(metricValue)
-			}
-			if (typeof metricValue === 'number') {
-				metricValue = (metricValue === 0 || Number.isInteger(metricValue)) ? metricValue : metricValue.toFixed(2)
-			}
-			rowData.push(metricValue)
-		})
-		storageAccountTables.insertRecord(account.name, rowData)
-	})
-	D.success(storageAccountTables)
-}
 
 /**
  * Generates the configuration object for making API requests to Azure
@@ -359,20 +261,130 @@ function retrieveStorageAccounts() {
 }
 
 /**
- * Retrieves performance metrics for the specified storage accounts
- * @param {Array} storageAccounts The list of storage accounts to get metrics for
- * @returns {Promise} A promise that resolves with a list of performance metrics
+ * Retrieves performance metrics for the given storage accounts
+ * @param {Array} storageAccounts The list of storage accounts to retrieve metrics for
+ * @returns {Promise} A promise that resolves when metrics have been retrieved for all storage accounts
  */
 function retrieveStorageAccountsMetrics(storageAccounts) {
+  const performanceKeyGroups = []
+  const maxGroupSize = 20
+  for (let i = 0; i < metricList.length; i += maxGroupSize) {
+    performanceKeyGroups.push(metricList.slice(i, i + maxGroupSize).map(function (metric) {
+      return metric.key
+    }).join(','))
+  }
   const promises = storageAccounts.map(function (storageAccount) {
     const d = D.q.defer()
-		const metrics = createMetricsPayload()
-		const metricNames = metrics.map(function(metric){return metric.label}).join(',')
-    const config = generateConfig('/resourceGroups/' + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + metricNames + '&timespan=PT1H')
-    azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(d))
+    const groupPromises = performanceKeyGroups.map(function (group) {
+      return new Promise(function () {
+        const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + group + "&timespan=PT1H")
+        azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(d, storageAccount))
+      })
+    })
+    D.q.all(groupPromises).then(function () {
+      d.resolve(storageAccount)
+    }).catch(d.reject)
     return d.promise
   })
   return D.q.all(promises)
+}
+
+/**
+ * Creates a table to display Azure storage accounts and their associated metrics
+ */
+function createStorageAccountTable() {
+  const metricColumns = metricList.map(function (metric) {
+    return {
+      label: metric.label,
+      valueType: metric.valueType,
+      unit: metric.unit || null
+    }
+  })
+  const allColumns = storageAccountColumns.concat(metricColumns)
+  storageAccountTable = D.createTable('Azure Storage Accounts', allColumns.map(function (item) {
+    const tableDef = { label: item.label, valueType: item.valueType }
+    if (item.unit) {
+      tableDef.unit = item.unit
+    }
+    return tableDef
+  }))
+}
+
+/**
+ * Function to convert date to UTC format
+ * @param {string} dateToConvert The date string to be converted
+ * @returns {string} The date string in UTC format
+ */
+function convertToUTC(dateToConvert) {
+	var date = new Date(dateToConvert)
+	var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
+	var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
+	var year = date.getUTCFullYear()
+	var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
+	var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
+	var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
+	return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
+}
+
+/**
+ * Formats the value to 2 decimal places, unless it's an integer
+ * If the value is not a valid number or is 'N/A', returns 'N/A'
+ * @param {number|string} value The value to format (can be a string or number)
+ * @returns {string} The formatted value, or 'N/A' if the value is invalid
+ */
+function formatToTwoDecimals(value) {
+  if (isNaN(value) || value === 'N/A') {
+    return 'N/A'
+  }
+  const numValue = parseFloat(value)
+  if (Number.isInteger(numValue)) {
+    return numValue.toString()
+  }
+  return numValue.toFixed(2)
+}
+
+/**
+ * Converts bytes to megabytes (MB)
+ * @param {number} bytes The number of bytes to convert
+ * @returns {number} The value in megabytes or 'N/A'
+ */
+function convertToMB(bytes) {
+  return formatToTwoDecimals(bytes !== 'N/A' ? bytes / 1e6 : bytes)
+} 
+
+/**
+ * Sanitizes the output by removing reserved words and formatting it.
+ * @param {string} output - The string to be sanitized.
+ * @returns {string} The sanitized string.
+ */
+function sanitize(output) {
+  const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
+  const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+}
+
+/**
+ * Inserts a record of a storage account and its metrics into the table
+ * @param {Object} storageAccount The storage account object
+ * @param {Object} metrics The metrics data for the storage account
+ */
+function insertRecord(storageAccount, metrics) {
+  const recordValues = [
+    storageAccount.resourceGroupName,
+    storageAccount.location,
+    storageAccount.provisioningState,
+    convertToUTC(storageAccount.creationTime),
+    storageAccount.primaryLocation,
+    storageAccount.statusOfPrimary,
+    storageAccount.skuName,
+    storageAccount.skuTier,
+    storageAccount.kind
+  ]
+  metricList.forEach(function (metric) {
+    const metricValue = metrics[metric.key] || 'N/A'
+    recordValues.push(metric.callback ? formatToTwoDecimals(metric.callback(metricValue)) : formatToTwoDecimals(metricValue));
+  })
+  storageAccountTable.insertRecord(sanitize(storageAccount.name), recordValues)
 }
 
 /**
@@ -403,12 +415,17 @@ function validate() {
 function get_status() {
   login()
     .then(retrieveStorageAccounts)
-		.then(function(storageAccounts) {
-			return retrieveStorageAccountsMetrics(storageAccounts)
-			.then(function(metricsList) {
-				return insertRecord(storageAccounts, metricsList)
-			})
-	  })
+    .then(function(storageAccounts) {
+      return retrieveStorageAccountsMetrics(storageAccounts)
+        .then(function(metricsData) {
+          createStorageAccountTable()
+          storageAccounts.forEach(function(storageAccount, index) {
+            const metrics = metricsData[index]
+            insertRecord(storageAccount, metrics)
+          })
+          D.success(storageAccountTable)
+        })
+    })
     .catch(function (error) {
       console.error(error)
       D.failure(D.errorType.GENERIC_ERROR)
