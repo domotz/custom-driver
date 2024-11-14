@@ -9,17 +9,9 @@
  * Extracts the following information from the data array:
  *      - Name
  *      - Resource Group
- *      - Available Memory
- *      - Disk Write
- *      - Network Out Total
- *      - Network In Total
- *      - CPU Credits Left
- *      - Percentage CPU
  *      - Disk Write Ops
  *      - Disk Read
  *      - Disk Read Ops
- *      - CPU Credits Used
- *      - Vm Availability
  *      - Data Disk Read
  *      - Data Disk Write
  *      - Data Disk Read Ops
@@ -60,22 +52,13 @@ let virtualMachineScaleSetTable;
 //     {label: 'Uncached BW', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached Bandwidth Consumed Percentage'},
 //     {label: 'Uncached IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached IOPS Consumed Percentage'},
 //     {label: 'Local Burst BPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst BPS Credits Percentage'},
-//     {label: 'Network In', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In', callback: convertBytesToGb },
-//     {label: 'Network Out', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out', callback: convertBytesToGb },
 //     {label: 'Premium Disk Miss', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium Data Disk Cache Read Miss'},
 //     {label: 'OS Disk Cache Hit', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium OS Disk Cache Read Hit'},
 //     {label: 'OS Disk Cache Miss', valueType: D.valueType.NUMBER, unit: '%', key: 'Premium OS Disk Cache Read Miss'},
-//     {label: 'Remote Burst IO', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst IO Credits Percentage'},
-//     {label: 'Remote Burst BPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Remote Used Burst BPS Credits Percentage'},
-//     {label: 'Local Burst IO', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Local Used Burst IO Credits Percentage'},
 //     {label: 'Data Disk Queue', valueType: D.valueType.NUMBER, key: 'Data Disk Queue Depth'},
 //     {label: 'Data Max Burst BW', valueType: D.valueType.NUMBER, key: 'Data Disk Max Burst Bandwidth'},
 //     {label: 'Data Max Burst IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Max Burst IOPS'},
 //     {label: 'OS Disk Queue', valueType: D.valueType.NUMBER, key: 'OS Disk Queue Depth'},
-//     {label: 'Inbound Flow Rate', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Inbound Flows Maximum Creation Rate'},
-//     {label: 'Outbound Flow Rate', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Outbound Flows Maximum Creation Rate'},
-//     {label: 'Outbound Flows', valueType: D.valueType.NUMBER, key: 'Outbound Flows'},
-//     {label: 'Inbound Flows', valueType: D.valueType.NUMBER, key: 'Inbound Flows'},
 //     {label: 'Data BW Burst', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Used Burst BPS Credits Percentage'},
 //     {label: 'Data IO Burst', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Used Burst IO Credits Percentage'},
 //     {label: 'OS Max Burst BW', valueType: D.valueType.NUMBER, key: 'OS Disk Max Burst Bandwidth'},
@@ -91,35 +74,11 @@ let virtualMachineScaleSetTable;
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
 const performanceMetrics = [
     {
-    label: 'Available Memory',
-    valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Available Memory Bytes',
-    callback: convertBytesToGb
-}, {
-    label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb
-}, {
-    label: 'Network Out Total',
-    valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Network Out Total',
-    callback: convertBytesToGb
-}, {
-    label: 'Network In Total',
-    valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Network In Total',
-    callback: convertBytesToGb
-}, {label: 'CPU Credits Left', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'}, {
-    label: 'CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'
-}, {
     label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'
 }, {
     label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb
 }, {
     label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'
-}, {label: 'CPU Credits Used', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'}, {
-    label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'
 }, {
     label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'
 }, {
