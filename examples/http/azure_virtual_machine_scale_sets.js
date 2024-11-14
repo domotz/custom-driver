@@ -20,8 +20,6 @@
  *      - Scale-in Force Deletion
  *      - Computer Name Prefix
  *      - OS Type
- *      - OS Disk Size
- *      - Disk Controller Type
  *      - Image Publisher
  *      - Image Offer
  *      - Image SKU
@@ -153,14 +151,6 @@ const virtualMachineScaleSetInfoExtractors = [{
 }, {
     key: "osType", label: 'OS Type', valueType: D.valueType.STRING, extract: function (value) {
         return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.osType || "N/A"
-    }
-}, {
-    key: "osDiskSizeGB", label: 'OS Disk Size', valueType: D.valueType.NUMBER, unit: 'Gb', extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.diskSizeGB || "N/A"
-    }
-}, {
-    key: "diskControllerType", label: 'Disk Controller Type', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.diskControllerType || "N/A"
     }
 }, {
     key: "imagePublisher", label: 'Image Publisher', valueType: D.valueType.STRING, extract: function (value) {
