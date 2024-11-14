@@ -9,8 +9,11 @@
  * Extracts the following information from the data array:
  *      - Name
  *      - Resource Group
+ *      - Disk Controller Type
+ *      - OS Disk Size
  *      - Disk Write Ops
  *      - Disk Read
+ *      - Disk Write
  *      - Disk Read Ops
  *      - Data Disk Read
  *      - Data Disk Write
@@ -74,36 +77,52 @@ let virtualMachineScaleSetTable;
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
 const performanceMetrics = [
     {
-    label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'
-}, {
-    label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb
-}, {
-    label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'
-}, {
-    label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'
-}, {
-    label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'
-}, {
-    label: 'Data Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Read Operations/Sec'
-}, {
-    label: 'Data Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Data Disk Write Operations/Sec'
-}, {
-    label: 'Data BW', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Bandwidth Consumed Percentage'
-}, {
-    label: 'Data IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk IOPS Consumed Percentage'
-}, {
-    label: 'Data Disk Target BW', valueType: D.valueType.NUMBER, key: 'Data Disk Target Bandwidth'
-}, {label: 'DataDisk Target IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Target IOPS'}, {
-    label: 'OS Disk BW', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Bandwidth Consumed Percentage'
-}, {
-    label: 'OS Disk IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk IOPS Consumed Percentage'
-}, {
-    label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'
-}, {
-    label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'
-}, {
-    label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'
-}, {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'}]
+        label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec'
+    }, {
+        label: 'Disk Read',
+        valueType: D.valueType.NUMBER,
+        unit: 'Gb',
+        key: 'Disk Read Bytes',
+        callback: convertBytesToGb
+    }, {
+        label: 'Disk Write',
+        valueType: D.valueType.NUMBER,
+        unit: 'Gb',
+        key: 'Disk Write Bytes',
+        callback: convertBytesToGb
+    }, {
+        label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'
+    }, {
+        label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'
+    }, {
+        label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'
+    }, {
+        label: 'Data Disk Read Ops',
+        valueType: D.valueType.NUMBER,
+        unit: 'ops/sec',
+        key: 'Data Disk Read Operations/Sec'
+    }, {
+        label: 'Data Disk Write Ops',
+        valueType: D.valueType.NUMBER,
+        unit: 'ops/sec',
+        key: 'Data Disk Write Operations/Sec'
+    }, {
+        label: 'Data BW', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk Bandwidth Consumed Percentage'
+    }, {
+        label: 'Data IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'Data Disk IOPS Consumed Percentage'
+    }, {
+        label: 'Data Disk Target BW', valueType: D.valueType.NUMBER, key: 'Data Disk Target Bandwidth'
+    }, {label: 'DataDisk Target IOPS', valueType: D.valueType.NUMBER, key: 'Data Disk Target IOPS'}, {
+        label: 'OS Disk BW', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk Bandwidth Consumed Percentage'
+    }, {
+        label: 'OS Disk IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'OS Disk IOPS Consumed Percentage'
+    }, {
+        label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'
+    }, {
+        label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'
+    }, {
+        label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'
+    }, {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'}]
 
 const virtualMachineScaleSetInfoExtractors = [{
     key: "id", label: 'Id', valueType: D.valueType.STRING, extract: function (value) {
@@ -113,7 +132,25 @@ const virtualMachineScaleSetInfoExtractors = [{
     key: "name", label: 'Name', valueType: D.valueType.STRING, extract: function (value) {
         return value && value.name || "N/A"
     }
-}, {key: "resourceGroup", label: 'Resource Group', valueType: D.valueType.STRING, extract: extractResourceGroup}];
+}, {key: "resourceGroup", label: 'Resource Group', valueType: D.valueType.STRING, extract: extractResourceGroup},
+    {
+        key: "diskControllerType",
+        label: 'Disk Controller Type',
+        valueType: D.valueType.STRING,
+        extract: function (value) {
+            return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.diskControllerType || "N/A"
+        }
+    },
+    {
+        key: "osDiskSizeGB",
+        label: 'OS Disk Size',
+        valueType: D.valueType.NUMBER,
+        unit: 'Gb',
+        extract: function (value) {
+            return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.diskSizeGB || "N/A"
+        }
+    }
+];
 
 /**
  * Generates Virtual Machine Scale Sets properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
