@@ -30,13 +30,5 @@
             "name": "SonicWall SonicOS",
             "version": "7.1.1-7058"
         }
-    ],
-    "parameters": [
-        {
-            "value_type": "NUMBER",
-            "name": "sonicWallPort",
-            "label": "SonicWall Port",
-            "Value": 443
-        }
     ]
 }

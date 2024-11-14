@@ -10,7 +10,7 @@
  * 
  **/
 
-var sonicWallPort = D.getParameter('sonicWallPort')
+var sonicWallPort = 443
 
 //Processes the HTTP response and handles errors
 function processResponse(d) {
@@ -100,10 +100,19 @@ function backup(){
         .then(function(deviceConfiguration) {
             if (deviceConfiguration && Object.keys(deviceConfiguration).length > 0) {
                 var backup = JSON.parse(deviceConfiguration)
-                delete backup.log
                 var backupResult = D.createBackup({
                     label: "Device Configuration",
-                    running: JSON.stringify(backup, null, 2)
+                    running: JSON.stringify(backup, null, 1),
+                    ignoredLines: [
+                        "\n[\s]+\"(system_)?(up)?time\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"([a-z]+_)?secret\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"password\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"date\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"[a-z_]*_*password\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"password\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"[a-z]+_pass\"\:[\s]\".*?\",??",
+                        "\n[\s]+\"passphrase\"\:[\s]\".*?\",??",
+                    ] 
                 })
                 D.success(backupResult)
             } else {
