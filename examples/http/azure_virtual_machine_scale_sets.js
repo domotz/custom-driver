@@ -32,7 +32,6 @@
  *      - Platform Fault Domain Count
  *      - Time Created
  *      - Available Memory
- *      - Disk Write
  *      - Network Out Total
  *      - Network In Total
  *      - CPU Credits Left
@@ -79,8 +78,6 @@ const performanceMetrics = [{
     unit: 'Gb',
     key: 'Available Memory Bytes',
     callback: convertBytesToGb
-}, {
-    label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb
 }, {
     label: 'Network Out Total',
     valueType: D.valueType.NUMBER,
