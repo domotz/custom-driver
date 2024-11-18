@@ -51,7 +51,6 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
-let virtualMachineScaleSetProperties;
 let virtualMachineScaleSetTable;
 
 // This is the list of all allowed performance metrics that can be retrieved.
@@ -95,7 +94,7 @@ const performanceMetrics = [{
 }]
 
 const virtualMachineScaleSetInfoExtractors = [{
-    key: "id", label: 'Id', valueType: D.valueType.STRING, extract: function (value) {
+    key: "id", valueType: D.valueType.STRING, extract: function (value) {
         return sanitize(value.properties.uniqueId)
     }
 }, {
@@ -201,43 +200,20 @@ const virtualMachineScaleSetInfoExtractors = [{
 
 /**
  * Generates Virtual Machine Scale Sets properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
- * @returns {Promise} A promise that resolves when Virtual Machine Scale Sets properties are generated.
- * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `performanceMetrics`.
+ * @returns {Array} return concatenation of `virtualMachineScaleSetInfoExtractors` and `performanceMetrics`.
  */
 function generateVirtualMachineScaleSetProperties() {
-    return D.q.all(virtualMachineScaleSetInfoExtractors.map(function (extractorInfo) {
-        return new Promise(function (resolve) {
-            if (extractorInfo.key !== 'id') {
-                resolve({
-                    'key': extractorInfo.key,
-                    'label': extractorInfo.label,
-                    'valueType': extractorInfo.valueType,
-                    'unit': extractorInfo.unit ? extractorInfo.unit : null
-                });
-            } else {
-                resolve(null);
-            }
-        });
-    })).then(function (results) {
-        virtualMachineScaleSetProperties = results.filter(function (result) {
-            return result !== null
-        }).concat(performanceMetrics);
+    return virtualMachineScaleSetInfoExtractors.concat(performanceMetrics).filter(function (result) {
+        return result.label
     });
 }
-
 
 /**
  * Creates a table for displaying Azure Virtual Machine Scale Sets properties.
  * using the `D.createTable` method with the properties defined in `virtualMachineScaleSetProperties`.
  */
-function createVirtualMachineScaleSetTable() {
-    virtualMachineScaleSetTable = D.createTable('Azure Virtual Machine Scale Sets', virtualMachineScaleSetProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType};
-        if (item.unit) {
-            tableDef.unit = item.unit;
-        }
-        return tableDef;
-    }));
+function createVirtualMachineScaleSetTable(virtualMachineScaleSetProperties) {
+    virtualMachineScaleSetTable = D.createTable('Azure Virtual Machine Scale Sets', virtualMachineScaleSetProperties);
 }
 
 /**
@@ -292,35 +268,18 @@ function processLoginResponse(d) {
 }
 
 /**
- * Filters the list of Virtual Machine Scale Set information by specified resource groups.
+ * Filters the list of Virtual Machine Scale Set information.
  * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects.
- * @returns {Array} The filtered list of Virtual Machine Scale Set information based on resource groups.
+ * @returns {Array} The filtered list of Virtual Machine Scale Set information.
  */
-function filterVirtualMachineScaleSetInfoListByResourceGroups(virtualMachineScaleSetInfoList) {
-    if (!(resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all')) {
-        return virtualMachineScaleSetInfoList.filter(function (virtualMachineScaleSet) {
-            return resourceGroups.some(function (group) {
-                return group.toLowerCase() === virtualMachineScaleSet.resourceGroup.toLowerCase()
-            })
-        });
-    }
-    return virtualMachineScaleSetInfoList;
-}
-
-/**
- * Filters the list of Virtual Machine Scale Set information by specified VM names.
- * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects.
- * @returns {Array} The filtered list of Virtual Machine Scale Set information based on VM names.
- */
-function filterVirtualMachineScaleSetInfoListByVmNames(virtualMachineScaleSetInfoList) {
-    if (!(vmNames.length === 1 && vmNames[0].toLowerCase() === 'all')) {
-        return virtualMachineScaleSetInfoList.filter(function (virtualMachineScaleSet) {
-            return vmNames.some(function (vmName) {
-                return vmName.toLowerCase() === virtualMachineScaleSet.name.toLowerCase();
-            });
-        });
-    }
-    return virtualMachineScaleSetInfoList;
+function filterVirtualMachineScaleSetInfoList(virtualMachineScaleSetInfoList) {
+    return virtualMachineScaleSetInfoList.filter(function (virtualMachineScaleSet) {
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === virtualMachineScaleSet.resourceGroup.toLowerCase()
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
+            return vmName.toLowerCase() === virtualMachineScaleSet.name.toLowerCase();
+        }))
+    });
 }
 
 /**
@@ -341,7 +300,7 @@ function processVirtualMachineScaleSetsResponse(d) {
         if (!virtualMachineScaleSetInfoList.length) {
             console.info('There is no Virtual machine');
         } else {
-            virtualMachineScaleSetInfoList = filterVirtualMachineScaleSetInfoListByResourceGroups(filterVirtualMachineScaleSetInfoListByVmNames(virtualMachineScaleSetInfoList));
+            virtualMachineScaleSetInfoList = filterVirtualMachineScaleSetInfoList(virtualMachineScaleSetInfoList);
         }
         d.resolve(virtualMachineScaleSetInfoList);
     }
@@ -395,17 +354,14 @@ function extractVirtualMachineScaleSetInfo(virtualMachineScaleSet) {
 /**
  * Inserts a record into the Virtual Machine Scale Set table.
  * @param {Object} virtualMachineScaleSet - The Virtual Machine Scale Set information to insert into the table.
- * @returns {Promise} A promise that resolves when the record is inserted.
+ * @param virtualMachineScaleSetProperties
  */
-function insertRecord(virtualMachineScaleSet) {
-    const d = D.q.defer();
+function insertRecord(virtualMachineScaleSet, virtualMachineScaleSetProperties) {
     const recordValues = virtualMachineScaleSetProperties.map(function (item) {
         const value = virtualMachineScaleSet[item.key] || 'N/A';
         return item.callback && value !== 'N/A' ? item.callback(value) : value;
     });
     virtualMachineScaleSetTable.insertRecord(virtualMachineScaleSet.id, recordValues);
-    d.resolve();
-    return d.promise;
 }
 
 /**
@@ -530,25 +486,20 @@ function convertBytesToGb(bytesValue) {
  */
 function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSetInfoList) {
     const performanceKeyGroups = [];
+    const promises = []
     const maxGroupSize = 20;
-
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
             return metric.key
         }).join(','));
     }
-    const promises = virtualMachineScaleSetInfoList.map(function (diskInfo) {
-        const d = D.q.defer();
-        const groupPromises = performanceKeyGroups.map(function (group) {
-            return new Promise(function () {
-                const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-                azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
-            });
+    virtualMachineScaleSetInfoList.map(function (diskInfo) {
+        performanceKeyGroups.map(function (group) {
+            const d = D.q.defer();
+            const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+            azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
+            promises.push(d.promise);
         });
-        D.q.all(groupPromises).then(function () {
-            d.resolve(diskInfo)
-        }).catch(d.reject);
-        return d.promise;
     });
     return D.q.all(promises);
 }
@@ -556,18 +507,12 @@ function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSe
 /**
  * Populates all Virtual Machine Scale Sets into the output table by calling insertRecord for each Virtual Machine Scale Set in the list.
  * @param {Array} virtualMachineScaleSetInfoList - A list of Virtual Machine Scale Set information objects to be inserted into the table.
- * @returns {Promise} A promise that resolves when all records have been inserted into the table.
+ * @param virtualMachineScaleSetProperties
  */
-function populateTable(virtualMachineScaleSetInfoList) {
-    const promises = virtualMachineScaleSetInfoList.map(insertRecord);
-    return D.q.all(promises);
-}
-
-/**
- * Publishes the Virtual Machine Scale Sets table.
- */
-function publishVirtualMachineScaleSetTable() {
-    D.success(virtualMachineScaleSetTable);
+function populateTable(virtualMachineScaleSetInfoList, virtualMachineScaleSetProperties) {
+    virtualMachineScaleSetInfoList.map(function (virtualMachineScaleSetInfo) {
+        insertRecord(virtualMachineScaleSetInfo, virtualMachineScaleSetProperties)
+    });
 }
 
 /**
@@ -577,7 +522,6 @@ function publishVirtualMachineScaleSetTable() {
  */
 function validate() {
     login()
-        .then(generateVirtualMachineScaleSetProperties)
         .then(retrieveVirtualMachineScaleSets)
         .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
         .then(function () {
@@ -596,12 +540,14 @@ function validate() {
  */
 function get_status() {
     login()
-        .then(generateVirtualMachineScaleSetProperties)
-        .then(createVirtualMachineScaleSetTable)
         .then(retrieveVirtualMachineScaleSets)
         .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
-        .then(populateTable)
-        .then(publishVirtualMachineScaleSetTable)
+        .then(function (virtualMachineScaleSetInfoList) {
+            const virtualMachineScaleSetProperties = generateVirtualMachineScaleSetProperties()
+            createVirtualMachineScaleSetTable(virtualMachineScaleSetProperties)
+            populateTable(virtualMachineScaleSetInfoList, virtualMachineScaleSetProperties)
+            D.success(virtualMachineScaleSetTable);
+        })
         .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
