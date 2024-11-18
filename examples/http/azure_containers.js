@@ -7,7 +7,22 @@
  *
  * Output:
  * Extracts the following information from the data array:
- *      - Name
+ *      - Image
+ *      - Memory
+ *      - CPU
+ *      - Resource Group
+ *      - container Group
+ *      - DNS Name Label
+ *      - IP Address
+ *      - IP Address Type
+ *      - Location
+ *      - OS Type
+ *      - Provisioning State
+ *      - Restart Policy
+ *      - Cpu Usage
+ *      - Memory Usage
+ *      - Network Received
+ *      - Network Transmitted
  *
  **/
 
@@ -24,7 +39,6 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
-// let containerGroupProperties;
 let containerGroupsTable;
 
 // This is the list of all allowed performance metrics that can be retrieved.
@@ -185,32 +199,6 @@ function filterContainerGroupInfoList(containerGroupInfoList) {
     });
 }
 
-// /**
-//  * Filters the list of Container Group information by specified container names.
-//  * @param {Array} containerGroupInfoList - A list of Container Group information objects.
-//  * @returns {Array} The filtered list of Container Group information based on Container names.
-//  */
-// function filterContainerGroupInfoListByContainerNames(containerGroupInfoList) {
-//     if (!(containerNames.length === 1 && containerNames[0].toLowerCase() === 'all')) {
-//         return containerGroupInfoList.filter(function (containerGroup) {
-//             return containerNames.some(function (containerName) {
-//                 return containerName.toLowerCase() === containerGroup.containerName.toLowerCase();
-//             });
-//         });
-//     }
-//     return containerGroupInfoList;
-// }
-
-// /**
-//  * Filters the list of Container Group information by specified container names.
-//  * @param {Array} containerGroupInfoList - A list of Container Group information objects.
-//  * @returns {Array} The filtered list of Container Group information based on Container names.
-//  */
-// function filterContainerGroupHadContainers(containerGroupInfoList) {
-//     return containerGroupInfoList.filter(function (containerGroup) {
-//         return containerGroup.containers.length;
-//     });
-// }
 
 /**
  * Processes the response from the Container Groups API call, extracts Container Groups data, and populates the table.
