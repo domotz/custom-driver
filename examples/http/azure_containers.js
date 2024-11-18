@@ -24,7 +24,7 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
-let containerGroupProperties;
+// let containerGroupProperties;
 let containerGroupsTable;
 
 // This is the list of all allowed performance metrics that can be retrieved.
@@ -34,63 +34,45 @@ let containerGroupsTable;
 
 // This is the list of selected performance metrics retrieved.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
-const performanceMetrics = [
-    {label: 'Cpu Usage', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'CpuUsage', callback: convertBytesToGb},
-    {label: 'Memory Usage', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'MemoryUsage', callback: convertBytesToGb},
-    {
-        label: 'Network Received',
-        valueType: D.valueType.NUMBER,
-        unit: 'bps',
-        key: 'NetworkBytesReceivedPerSecond',
-        callback: convertBytesToGb
-    },
-    {
-        label: 'Network Transmitted',
-        valueType: D.valueType.NUMBER,
-        unit: 'bps',
-        key: 'NetworkBytesTransmittedPerSecond',
-        callback: convertBytesToGb
-    }
-]
+const performanceMetrics = [{
+    label: 'Cpu Usage', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'CpuUsage', callback: convertBytesToGb
+}, {label: 'Memory Usage', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'MemoryUsage', callback: convertBytesToGb}, {
+    label: 'Network Received',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'NetworkBytesReceivedPerSecond',
+    callback: convertBytesToGb
+}, {
+    label: 'Network Transmitted',
+    valueType: D.valueType.NUMBER,
+    unit: 'bps',
+    key: 'NetworkBytesTransmittedPerSecond',
+    callback: convertBytesToGb
+}]
 
-const containerDetailsExtractors = [
-    {
-        label: 'Id', key: 'containerName', extract: function (container) {
-            return container.name || "N/A";
-        }
-    },
-    {
-        label: 'Image', key: 'containerImage', extract: function (container) {
-            return container.properties && container.properties.image ? container.properties.image : "N/A";
-        }
-    },
-    {
-        label: 'Memory', key: 'containerResourcesMemory', unit: 'Gb', extract: function (container) {
-            return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.memoryInGB
-                ? container.properties.resources.requests.memoryInGB
-                : "N/A";
-        }
-    },
-    {
-        label: 'CPU', key: 'containerResourcesCPU', extract: function (container) {
-            return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.cpu
-                ? container.properties.resources.requests.cpu
-                : "N/A";
-        }
+const containerDetailsExtractors = [{
+    label: 'Image', key: 'containerImage', extract: function (container) {
+        return container.properties && container.properties.image ? container.properties.image : "N/A";
     }
-];
+}, {
+    label: 'Memory', key: 'containerResourcesMemory', unit: 'Gb', extract: function (container) {
+        return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.memoryInGB ? container.properties.resources.requests.memoryInGB : "N/A";
+    }
+}, {
+    label: 'CPU', key: 'containerResourcesCPU', extract: function (container) {
+        return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.cpu ? container.properties.resources.requests.cpu : "N/A";
+    }
+}];
 
 const containerGroupExtractors = [{
     key: 'containers', extract: function (value) {
         return value.properties.containers || [];
     }
-}, {label: 'Resource Group', key: 'resourceGroup', extract: extractResourceGroup},
-    {
-        label: 'Container Group', key: 'resourceName', extract: function (value) {
-            return value.name || "N/A";
-        }
-    },
-    {
+}, {label: 'Resource Group', key: 'resourceGroup', extract: extractResourceGroup}, {
+    label: 'Container Group', key: 'resourceName', extract: function (value) {
+        return value.name || "N/A";
+    }
+}, {
     label: 'DNS Name Label', key: 'dnsNameLabel', extract: function (value) {
         return value.properties && value.properties.ipAddress && value.properties.ipAddress.dnsNameLabel ? value.properties.ipAddress.dnsNameLabel : "N/A";
     }
@@ -122,41 +104,19 @@ const containerGroupExtractors = [{
 
 /**
  * Generates Container Group Machine properties by extracting information from the defined containerGroupConfigExtractors.
- * @returns {Promise} A promise that resolves when Container Group properties are generated.
- * It populates the global variable `containerGroupProperties` and concatenates them with `containerGroupConfigExtractors` and `performanceMetrics`.
+ * @returns {Array} return concatenation of `containerDetailsExtractors`, `containerGroupConfigExtractors` and `performanceMetrics`.
  */
 function generateContainerGroupProperties() {
-    return D.q.all(containerDetailsExtractors.concat(containerGroupExtractors).map(function (extractorInfo) {
-        return new Promise(function (resolve) {
-            if (extractorInfo.label && extractorInfo.label.toLowerCase() !== 'id') {
-                resolve({
-                    'key': extractorInfo.key,
-                    'label': extractorInfo.label,
-                    'valueType': extractorInfo.valueType,
-                    'unit': extractorInfo.unit ? extractorInfo.unit : null
-                });
-            } else {
-                resolve(null);
-            }
-        });
-    })).then(function (results) {
-        containerGroupProperties = results.filter(function (result) {
-            return result !== null
-        }).concat(performanceMetrics);
+    return containerDetailsExtractors.concat(containerGroupExtractors).concat(performanceMetrics).filter(function (result) {
+        return result.label
     });
 }
 
 /**
  * Creates a table for displaying Azure Container Group properties.
  */
-function createContainerGroupTable() {
-    containerGroupsTable = containerGroupsTable = D.createTable('Azure Containers', containerGroupProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType};
-        if (item.unit) {
-            tableDef.unit = item.unit;
-        }
-        return tableDef;
-    }));
+function createContainerGroupTable(containerGroupProperties) {
+    containerGroupsTable = D.createTable('Azure Containers', containerGroupProperties);
 }
 
 /**
@@ -215,43 +175,42 @@ function processLoginResponse(d) {
  * @param {Array} containerGroupInfoList - A list of Container Group information objects.
  * @returns {Array} The filtered list of Container Group information based on resource groups.
  */
-function filterContainerGroupInfoListByResourceGroups(containerGroupInfoList) {
-    if (!(resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all')) {
-        return containerGroupInfoList.filter(function (containerGroup) {
-            return resourceGroups.some(function (group) {
-                return group.toLowerCase() === containerGroup.resourceGroup.toLowerCase()
-            })
-        });
-    }
-    return containerGroupInfoList;
-}
-
-/**
- * Filters the list of Container Group information by specified container names.
- * @param {Array} containerGroupInfoList - A list of Container Group information objects.
- * @returns {Array} The filtered list of Container Group information based on Container names.
- */
-function filterContainerGroupInfoListByContainerNames(containerGroupInfoList) {
-    if (!(containerNames.length === 1 && containerNames[0].toLowerCase() === 'all')) {
-        return containerGroupInfoList.filter(function (containerGroup) {
-            return containerNames.some(function (containerName) {
-                return containerName.toLowerCase() === containerGroup.containerName.toLowerCase();
-            });
-        });
-    }
-    return containerGroupInfoList;
-}
-
-/**
- * Filters the list of Container Group information by specified container names.
- * @param {Array} containerGroupInfoList - A list of Container Group information objects.
- * @returns {Array} The filtered list of Container Group information based on Container names.
- */
-function filterContainerGroupHadContainers(containerGroupInfoList) {
+function filterContainerGroupInfoList(containerGroupInfoList) {
     return containerGroupInfoList.filter(function (containerGroup) {
-        return containerGroup.containers.length;
+        return containerGroup.containers.length && ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (group) {
+            return group.toLowerCase() === containerGroup.resourceGroup.toLowerCase()
+        })) && ((containerNames.length === 1 && containerNames[0].toLowerCase() === 'all') || containerNames.some(function (containerName) {
+                return containerName.toLowerCase() === containerGroup.resourceName.toLowerCase()
+            }))
     });
 }
+
+// /**
+//  * Filters the list of Container Group information by specified container names.
+//  * @param {Array} containerGroupInfoList - A list of Container Group information objects.
+//  * @returns {Array} The filtered list of Container Group information based on Container names.
+//  */
+// function filterContainerGroupInfoListByContainerNames(containerGroupInfoList) {
+//     if (!(containerNames.length === 1 && containerNames[0].toLowerCase() === 'all')) {
+//         return containerGroupInfoList.filter(function (containerGroup) {
+//             return containerNames.some(function (containerName) {
+//                 return containerName.toLowerCase() === containerGroup.containerName.toLowerCase();
+//             });
+//         });
+//     }
+//     return containerGroupInfoList;
+// }
+
+// /**
+//  * Filters the list of Container Group information by specified container names.
+//  * @param {Array} containerGroupInfoList - A list of Container Group information objects.
+//  * @returns {Array} The filtered list of Container Group information based on Container names.
+//  */
+// function filterContainerGroupHadContainers(containerGroupInfoList) {
+//     return containerGroupInfoList.filter(function (containerGroup) {
+//         return containerGroup.containers.length;
+//     });
+// }
 
 /**
  * Processes the response from the Container Groups API call, extracts Container Groups data, and populates the table.
@@ -271,7 +230,7 @@ function processContainerGroupsResponse(d) {
         if (!containerGroupInfoList.length) {
             console.info('There is no Container Group');
         } else {
-            containerGroupInfoList = filterContainerGroupInfoListByResourceGroups(filterContainerGroupInfoListByContainerNames(filterContainerGroupHadContainers(containerGroupInfoList)));
+            containerGroupInfoList = filterContainerGroupInfoList(containerGroupInfoList);
         }
         d.resolve(containerGroupInfoList);
     }
@@ -335,9 +294,9 @@ function convertBytesToGb(bytesValue) {
 }
 
 /**
- * Generates a SHA-256 hash of the provided value.
+ * Generates a md5 hash of the provided value.
  * @param {string} value - The input string to hash.
- * @returns {string} The SHA-256 hash of the input value in hexadecimal format.
+ * @returns {string} The md5 hash of the input value in hexadecimal format.
  */
 function md5(value) {
     return D.crypto.hash(value, "md5", null, "hex");
@@ -346,18 +305,14 @@ function md5(value) {
 /**
  * Inserts a containerGroup record into the containerGroup table with the given containerGroup information.
  * @param {Object} container - The containerGroup information object.
- * @returns {Promise} A promise that resolves when the record has been successfully inserted into the table.
+ * @param containerGroupProperties
  */
-function insertRecord(container) {
-    const d = D.q.defer();
-
+function insertRecord(container, containerGroupProperties) {
     const recordValues = containerGroupProperties.map(function (item) {
         const value = container[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
     containerGroupsTable.insertRecord(sanitize(md5(container.resourceGroup + container.resourceName + container.containerName)), recordValues);
-    d.resolve();
-    return d.promise;
 }
 
 /**
@@ -454,30 +409,22 @@ function processContainerGroupPerformanceResponse(d, containerGroupInfo) {
  */
 function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
     const performanceKeyGroups = [];
+    const promises = []
     const maxGroupSize = 20;
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
             return metric.key
         }).join(','));
     }
-    const promises = containerGroupInfoList.map(function (containerGroupInfo) {
-        const d = D.q.defer();
-
-        const groupPromises = performanceKeyGroups.map(function (group) {
-            return new Promise(function (resolve, reject) {
-                const config = generateConfig("/resourceGroups/" + containerGroupInfo.resourceGroup + "/providers/Microsoft.ContainerInstance/containerGroups/" + containerGroupInfo.resourceName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-                azureCloudManagementService.http.get(config, function (error, response, body) {
-                    processContainerGroupPerformanceResponse({
-                        resolve: resolve, reject: reject
-                    }, containerGroupInfo)(error, response, body);
-                });
+    containerGroupInfoList.map(function (containerGroupInfo) {
+        performanceKeyGroups.map(function (group) {
+            const d = D.q.defer();
+            const config = generateConfig("/resourceGroups/" + containerGroupInfo.resourceGroup + "/providers/Microsoft.ContainerInstance/containerGroups/" + containerGroupInfo.resourceName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+            azureCloudManagementService.http.get(config, function (error, response, body) {
+                processContainerGroupPerformanceResponse(d, containerGroupInfo)(error, response, body);
             });
+            promises.push(d.promise);
         });
-        D.q.all(groupPromises).then(function () {
-            d.resolve(containerGroupInfo)
-        }).catch(d.reject);
-
-        return d.promise;
     });
     return D.q.all(promises);
 }
@@ -485,32 +432,17 @@ function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
 /**
  * Populates all Container Groups into the output table by calling insertRecord for each Container Group in the list.
  * @param {Array} containerGroupInfoList - A list of Container Group information objects to be inserted into the table.
- * @returns {Promise} A promise that resolves when all records have been inserted into the table.
+ * @param containerGroupProperties
  */
-function populateTable(containerGroupInfoList) {
-    const containersListInfo = containerGroupInfoList.map(function (groupInfo) {
-        let containerGroupInfo = {};
-        for (let key in groupInfo) {
-            if (key !== "containers") {
-                containerGroupInfo[key] = groupInfo[key];
-            }
-        }
+function populateTable(containerGroupInfoList, containerGroupProperties) {
+    containerGroupInfoList.map(function (groupInfo) {
         groupInfo.containers.forEach(function (containerInfo) {
             containerDetailsExtractors.map(function (containerExtractor) {
-                containerGroupInfo[containerExtractor.key] = containerExtractor.extract(containerInfo);
+                groupInfo[containerExtractor.key] = containerExtractor.extract(containerInfo);
             })
         })
-        return containerGroupInfo
+        insertRecord(groupInfo, containerGroupProperties)
     })
-    const promises = containersListInfo.map(insertRecord);
-    return D.q.all(promises);
-}
-
-/**
- * Publishes the Container Group table.
- */
-function publishVMTable() {
-    D.success(containerGroupsTable);
 }
 
 /**
@@ -520,7 +452,6 @@ function publishVMTable() {
  */
 function validate() {
     login()
-        .then(generateContainerGroupProperties)
         .then(retrieveContainerGroups)
         .then(retrieveContainerGroupsPerformanceMetrics)
         .then(function () {
@@ -539,12 +470,14 @@ function validate() {
  */
 function get_status() {
     login()
-        .then(generateContainerGroupProperties)
-        .then(createContainerGroupTable)
         .then(retrieveContainerGroups)
         .then(retrieveContainerGroupsPerformanceMetrics)
-        .then(populateTable)
-        .then(publishVMTable)
+        .then(function (containerGroupInfoList) {
+            const containerGroupProperties = generateContainerGroupProperties()
+            createContainerGroupTable(containerGroupProperties)
+            populateTable(containerGroupInfoList, containerGroupProperties)
+            D.success(containerGroupsTable);
+        })
         .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
