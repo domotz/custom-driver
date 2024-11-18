@@ -50,7 +50,6 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
-let diskProperties
 let diskTable;
 
 // This is the list of all allowed performance metrics that can be retrieved.
@@ -183,27 +182,11 @@ const diskInfoExtractors = [{
 
 /**
  * Generates disk properties by extracting information from the defined diskInfoExtractors.
- * @returns {Promise} A promise that resolves when disk properties are generated.
- * It populates the global variable `diskProperties` and concatenates them with `performanceMetrics`.
+ * @returns {Array} return concatenation of `diskInfoExtractors` and `performanceMetrics`.
  */
 function generateDiskProperties() {
-    return D.q.all(diskInfoExtractors.map(function (extractorInfo) {
-        return new Promise(function (resolve) {
-            if (extractorInfo.key !== 'id') {
-                resolve({
-                    'key': extractorInfo.key,
-                    'label': extractorInfo.label,
-                    'valueType': extractorInfo.valueType,
-                    'unit': extractorInfo.unit ? extractorInfo.unit : null
-                });
-            } else {
-                resolve(null);
-            }
-        });
-    })).then(function (results) {
-        diskProperties = results.filter(function (result) {
-            return result !== null
-        }).concat(performanceMetrics);
+    return diskInfoExtractors.concat(performanceMetrics).filter(function (result) {
+        return result.label
     });
 }
 
@@ -211,14 +194,8 @@ function generateDiskProperties() {
  * Creates a table for displaying Azure Disk properties.
  * using the `D.createTable` method with the properties defined in `diskProperties`.
  */
-function createDiskTable() {
-    diskTable = D.createTable('Azure Disks', diskProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType};
-        if (item.unit) {
-            tableDef.unit = item.unit;
-        }
-        return tableDef;
-    }));
+function createDiskTable(diskProperties) {
+    diskTable = D.createTable('Azure Disks', diskProperties);
 }
 
 /**
@@ -287,35 +264,18 @@ function processLoginResponse(d) {
 }
 
 /**
- * Filters the list of disk information by specified resource groups.
+ * Filters the list of disk information.
  * @param {Array} diskInfoList - A list of disk information objects.
- * @returns {Array} The filtered list of disk information based on resource groups.
+ * @returns {Array} The filtered list of disk information.
  */
-function filterDiskInfoListByResourceGroups(diskInfoList) {
-    if (!(resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all')) {
-        return diskInfoList.filter(function (disk) {
-            return resourceGroups.some(function (group) {
-                return group.toLowerCase() === disk.resourceGroup.toLowerCase()
-            })
-        });
-    }
-    return diskInfoList;
-}
-
-/**
- * Filters the list of disk information by specified VM names.
- * @param {Array} diskInfoList - A list of Disk information objects.
- * @returns {Array} The filtered list of Disk information based on VM names.
- */
-function filterDiskInfoListByVmNames(diskInfoList) {
-    if (!(vmNames.length === 1 && vmNames[0].toLowerCase() === 'all')) {
-        return diskInfoList.filter(function (disk) {
-            return vmNames.some(function (vmName) {
-                return vmName.toLowerCase() === disk.name.toLowerCase();
-            });
-        });
-    }
-    return diskInfoList;
+function filterDiskInfoList(diskInfoList) {
+    return diskInfoList.filter(function (diskInfo) {
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === diskInfo.resourceGroup.toLowerCase()
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
+            return vmName.toLowerCase() === diskInfo.name.toLowerCase();
+        }))
+    });
 }
 
 /**
@@ -336,7 +296,7 @@ function processDisksResponse(d) {
         if (!diskInfoList.length) {
             console.info('There is no Virtual machine');
         } else {
-            diskInfoList = filterDiskInfoListByResourceGroups(filterDiskInfoListByVmNames(diskInfoList));
+            diskInfoList = filterDiskInfoList(diskInfoList);
         }
         d.resolve(diskInfoList);
     }
@@ -390,17 +350,14 @@ function extractDiskInfo(disk) {
 /**
  * Inserts a record into the disk table.
  * @param {Object} disk - The disk information to insert into the table.
- * @returns {Promise} A promise that resolves when the record is inserted.
+ * @param diskProperties
  */
-function insertRecord(disk) {
-    const d = D.q.defer();
+function insertRecord(disk, diskProperties) {
     const recordValues = diskProperties.map(function (item) {
         const value = disk[item.key] || 'N/A';
         return item.callback && value !== "N/A" ? item.callback(value) : value;
     });
     diskTable.insertRecord(disk.id, recordValues);
-    d.resolve();
-    return d.promise;
 }
 
 /**
@@ -513,25 +470,20 @@ function convertToUTC(dateToConvert) {
  */
 function retrieveDisksPerformanceMetrics(diskInfoList) {
     const performanceKeyGroups = [];
+    const promises = []
     const maxGroupSize = 20;
-
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
             return metric.key
         }).join(','));
     }
-    const promises = diskInfoList.map(function (diskInfo) {
-        const d = D.q.defer();
-        const groupPromises = performanceKeyGroups.map(function (group) {
-            return new Promise(function () {
-                const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-                azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
-            });
+   diskInfoList.map(function (diskInfo) {
+        performanceKeyGroups.map(function (group) {
+            const d = D.q.defer();
+            const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+            azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
+            promises.push(d.promise);
         });
-        D.q.all(groupPromises).then(function () {
-            d.resolve(diskInfo)
-        }).catch(d.reject);
-        return d.promise;
     });
     return D.q.all(promises);
 }
@@ -539,18 +491,12 @@ function retrieveDisksPerformanceMetrics(diskInfoList) {
 /**
  * Populates all disks into the output table by calling insertRecord for each Disk in the list.
  * @param {Array} diskInfoList - A list of Disk information objects to be inserted into the table.
- * @returns {Promise} A promise that resolves when all records have been inserted into the table.
+ * @param diskProperties
  */
-function populateTable(diskInfoList) {
-    const promises = diskInfoList.map(insertRecord);
-    return D.q.all(promises);
-}
-
-/**
- * Publishes the Disks table.
- */
-function publishDiskTable() {
-    D.success(diskTable);
+function populateTable(diskInfoList, diskProperties) {
+    diskInfoList.map(function(diskInfo) {
+        insertRecord(diskInfo, diskProperties)
+    });
 }
 
 /**
@@ -560,7 +506,6 @@ function publishDiskTable() {
  */
 function validate() {
     login()
-        .then(generateDiskProperties)
         .then(retrieveDisks)
         .then(retrieveDisksPerformanceMetrics)
         .then(function () {
@@ -579,12 +524,14 @@ function validate() {
  */
 function get_status() {
     login()
-        .then(generateDiskProperties)
-        .then(createDiskTable)
         .then(retrieveDisks)
         .then(retrieveDisksPerformanceMetrics)
-        .then(populateTable)
-        .then(publishDiskTable)
+        .then(function (virtualMachineScaleSetInfoList) {
+            const diskProperties = generateDiskProperties()
+            createDiskTable(diskProperties)
+            populateTable(virtualMachineScaleSetInfoList, diskProperties)
+            D.success(diskTable);
+        })
         .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
