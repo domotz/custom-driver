@@ -52,10 +52,6 @@ let accessToken
 let networkInterfacesProperties
 let networkInterfacesTable
 
-// This is the list of all allowed performance metrics that can be retrieved.
-// To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
-// const allowedPerformanceMetrics = []
-
 // Performance metrics to retrieve from Azure
 // This array contains the names of specific performance metrics related to network interfaces
 const performanceMetrics = [
@@ -65,12 +61,10 @@ const performanceMetrics = [
     { label: 'Packets Received', valueType: D.valueType.NUMBER, key: "PacketsReceivedRate" }
 ]
 
+// Array of extractors for network interface properties
 const networkInterfaceInfoExtractors = [
+    { key: "id", extract: function (networkInterface) {return sanitize(networkInterface.name)}}, 
     {
-        key: "id", extract: function (networkInterface) {
-            return sanitize(networkInterface.name)
-        }
-    }, {
         label: "Resource Group",
         valueType: D.valueType.STRING,
         key: "resourceGroupName",
@@ -229,53 +223,41 @@ const networkInterfaceInfoExtractors = [
 ]
 
 /**
- * Generates network interface properties by extracting information from the defined virtualMachineScaleSetInfoExtractors.
- * @returns {Promise} A promise that resolves when network interface properties are generated.
- * It populates the global variable `virtualMachineScaleSetProperties` and concatenates them with `networkInterfaceInfoExtractors` and `performanceMetrics`.
- */
-function generateNetworkInterfaceProperties() {
-    return D.q.all(networkInterfaceInfoExtractors.map(function (extractorInfo) {
-        return new Promise(function (resolve) {
-            if (extractorInfo.key !== 'id') {
-                resolve({
-                    'key': extractorInfo.key,
-                    'label': extractorInfo.label,
-                    'valueType': extractorInfo.valueType,
-                    'unit': extractorInfo.unit ? extractorInfo.unit : null
-                })
-            } else {
-                resolve(null)
-            }
-        })
-    })).then(function (results) {
-        networkInterfacesProperties = results.filter(function (result) {
-            return result !== null
-        }).concat(performanceMetrics)
-    })
-}
-
-/**
- * Creates a table for displaying Azure network interface properties.
- */
-function createNetworkInterfaceTable() {
-    networkInterfacesTable = D.createTable('Network Interfaces Table', networkInterfacesProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType}
-        if (item.unit) {
-            tableDef.unit = item.unit
-        }
-        return tableDef
-    }))
-}
-
-/**
- * Sanitizes the output by removing reserved words and formatting it.
- * @param {string} output - The string to be sanitized.
- * @returns {string} The sanitized string.
+ * Sanitizes the output by removing reserved words and formatting it
+ * @param {string} output The string to be sanitized
+ * @returns {string} The sanitized string
  */
 function sanitize(output) {
     const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
     const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
     return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+}
+
+/**
+ * Generates the properties required for the network interface table
+ */
+function generateNetworkInterfaceProperties() {
+    networkInterfacesProperties = networkInterfaceInfoExtractors.filter(function (extractorInfo) {
+        return extractorInfo.key !== 'id'
+    }).map(function (extractorInfo) {
+        return {
+            'key': extractorInfo.key,
+            'label': extractorInfo.label,
+            'valueType': extractorInfo.valueType,
+            'unit': extractorInfo.unit ? extractorInfo.unit : null
+        }
+    }).concat(performanceMetrics)
+}
+
+/**
+ * Creates a table for displaying Azure network interface properties
+ */
+function createNetworkInterfaceTable() {
+    networkInterfacesTable = D.createTable('Network Interfaces Table', networkInterfacesProperties.map(function (item) {
+        const tableDef = {label: item.label, valueType: item.valueType}
+        if (item.unit) { tableDef.unit = item.unit }
+        return tableDef
+    }))
 }
 
 /**
@@ -324,12 +306,8 @@ function filterNetworkInterfaces(networkInterfaces) {
     return networkInterfaces.filter(function (networkInterface) {
         const associatedVM = networkInterface.associatedVirtualMachine
         const resourceGroupName = networkInterface.resourceGroupName
-        const vmFilter = (vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
-            return vmName.toLowerCase() === associatedVM.toLowerCase()
-        })
-        const rgFilter = (resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
-            return resourceGroup.toLowerCase() === resourceGroupName.toLowerCase()
-        })
+        const vmFilter = (vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {return vmName.toLowerCase() === associatedVM.toLowerCase()})
+        const rgFilter = (resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {return resourceGroup.toLowerCase() === resourceGroupName.toLowerCase()})
         return vmFilter && rgFilter
     })
 }
@@ -411,9 +389,9 @@ function extractNetworkInterfacesInfo(networkInterface) {
 }
 
 /**
- * Retrieves the first non-time series key from the data.
- * @param {Array} data - The array of data objects.
- * @returns {string|null} The first non-time series key, or null if not found.
+ * Retrieves the first non-time series key from the data
+ * @param {Array} data The array of data objects
+ * @returns {string|null} The first non-time series key, or null if not found
  */
 function getNonTimeSeriesKey(data) {
     if (!data || data.length === 0) {
@@ -429,9 +407,9 @@ function getNonTimeSeriesKey(data) {
 }
 
 /**
- * Extracts performance data and updates the disk information.
- * @param {Object} performanceInfo - The performance information object.
- * @param {Object} networkInterfaceInfo - The disk information to update.
+ * Extracts performance data and updates the disk information
+ * @param {Object} performanceInfo The performance information object
+ * @param {Object} networkInterfaceInfo The disk information to update
  */
 function extractMetricsInfo(performanceInfo, networkInterfaceInfo) {
     if (performanceInfo.name.value) {
@@ -442,23 +420,6 @@ function extractMetricsInfo(performanceInfo, networkInterfaceInfo) {
             networkInterfaceInfo[performanceInfo.name.value] = "N/A"
         }
     }
-}
-
-
-/**
- * Inserts a record into the networkInterfaces table.
- * @param {Object} networkInterfaces - The networkInterfaces information to insert into the table.
- * @returns {Promise} A promise that resolves when the record is inserted.
- */
-function insertRecord(networkInterfaces) {
-    const d = D.q.defer()
-    const recordValues = networkInterfacesProperties.map(function (item) {
-        const value = networkInterfaces[item.key] || "N/A"
-        return item.callback ? item.callback(value) : value
-    })
-    networkInterfacesTable.insertRecord(networkInterfaces.id, recordValues)
-    d.resolve()
-    return d.promise
 }
 
 /**
@@ -492,45 +453,50 @@ function retrieveNetworkInterfaces() {
  */
 function retrieveNIPerformanceMetrics(networkInterfaceList) {
     const performanceKeyGroups = []
+    const promises = []
     const maxGroupSize = 20
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
             return metric.key
         }).join(','))
     }
-    const promises = networkInterfaceList.map(function (networkInterface) {
-        const d = D.q.defer()
-        const groupPromises = performanceKeyGroups.map(function (group) {
-            return new Promise(function () {
-                const config = generateConfig("/resourceGroups/" + networkInterface.resourceGroupName + "/providers/Microsoft.Network/networkInterfaces/" + networkInterface.id + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M")
-                azureCloudManagementService.http.get(config, processNIPerformanceMetricsResponse(d, networkInterface))
-            })
+    networkInterfaceList.map(function (networkInterface) {
+        performanceKeyGroups.map(function (group) {
+            const d = D.q.defer()
+            const config = generateConfig("/resourceGroups/" + networkInterface.resourceGroupName + "/providers/Microsoft.Network/networkInterfaces/" + networkInterface.id + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M")
+            azureCloudManagementService.http.get(config, processNIPerformanceMetricsResponse(d, networkInterface))
+            promises.push(d.promise)
         })
-        D.q.all(groupPromises).then(function () {
-            d.resolve(networkInterface)
-        }).catch(d.reject)
-        return d.promise
     })
     return D.q.all(promises)
 }
 
 /**
- * Populates all disks into the output table by calling insertRecord for each Disk in the list.
- * @param {Array} networkInterfaceList - A list of Disk information objects to be inserted into the table.
- * @returns {Promise} A promise that resolves when all records have been inserted into the table.
+ * Inserts a record into the network interfaces table
+ * @param {Object} networkInterface The network interface object containing all the details
  */
-function populateTable(networkInterfaceList) {
-    const promises = networkInterfaceList.map(insertRecord)
-    return D.q.all(promises)
+function insertRecord(networkInterface) {
+    const recordValues = networkInterfacesProperties.map(function (item) {
+        const value = networkInterface[item.key] || 'N/A'
+        return item.callback ? item.callback(value) : value
+    })
+    networkInterfacesTable.insertRecord(networkInterface.id, recordValues)
 }
 
 /**
- * Publishes the Disks table.
+ * Populates the network interfaces table with multiple network interface records
+ * @param {Array} networkInterfaceList An array of network interface objects
+ */
+function populateTable(networkInterfaceList) {
+    networkInterfaceList.forEach(insertRecord)
+}
+
+/**
+ * Publishes the network interfaces table
  */
 function publishNetworkInterfacesTable() {
     D.success(networkInterfacesTable)
 }
-
 
 /**
  * @remote_procedure
