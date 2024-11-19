@@ -267,24 +267,20 @@ function retrieveStorageAccounts() {
  */
 function retrieveStorageAccountsMetrics(storageAccounts) {
   const performanceKeyGroups = []
+  const promises = []
   const maxGroupSize = 20
   for (let i = 0; i < metricList.length; i += maxGroupSize) {
     performanceKeyGroups.push(metricList.slice(i, i + maxGroupSize).map(function (metric) {
-      return metric.key
+        return metric.key
     }).join(','))
   }
-  const promises = storageAccounts.map(function (storageAccount) {
-    const d = D.q.defer()
-    const groupPromises = performanceKeyGroups.map(function (group) {
-      return new Promise(function () {
-        const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + group + "&timespan=PT1H")
-        azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(d, storageAccount))
-      })
+  storageAccounts.map(function (storageAccount) {
+    performanceKeyGroups.map(function (group) {
+      const d = D.q.defer()
+      const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + group + "&timespan=PT1H")
+      azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(d, storageAccount))
+      promises.push(d.promise)
     })
-    D.q.all(groupPromises).then(function () {
-      d.resolve(storageAccount)
-    }).catch(d.reject)
-    return d.promise
   })
   return D.q.all(promises)
 }
@@ -382,7 +378,7 @@ function insertRecord(storageAccount, metrics) {
   ]
   metricList.forEach(function (metric) {
     const metricValue = metrics[metric.key] || 'N/A'
-    recordValues.push(metric.callback ? formatToTwoDecimals(metric.callback(metricValue)) : formatToTwoDecimals(metricValue));
+    recordValues.push(metric.callback ? formatToTwoDecimals(metric.callback(metricValue)) : formatToTwoDecimals(metricValue))
   })
   storageAccountTable.insertRecord(sanitize(storageAccount.name), recordValues)
 }
