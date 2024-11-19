@@ -355,7 +355,6 @@ function validate() {
  * @documentation This procedure is used to extract Azure VMs.
  */
 function get_status() {
-    vmInfoExtractors
     login()
         .then(retrieveVMs)
         .then(function (virtualMachineScaleSetInfoList) {
