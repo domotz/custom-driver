@@ -274,8 +274,8 @@ function retrieveStorageAccountsMetrics(storageAccounts) {
         return metric.key
     }).join(','))
   }
-  storageAccounts.map(function (storageAccount) {
-    performanceKeyGroups.map(function (group) {
+  storageAccounts.forEach(function (storageAccount) {
+    performanceKeyGroups.forEach(function (group) {
       const d = D.q.defer()
       const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + group + "&timespan=PT1H")
       azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(d, storageAccount))
