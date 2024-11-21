@@ -477,8 +477,8 @@ function retrieveDisksPerformanceMetrics(diskInfoList) {
             return metric.key
         }).join(','));
     }
-   diskInfoList.map(function (diskInfo) {
-        performanceKeyGroups.map(function (group) {
+   diskInfoList.forEach(function (diskInfo) {
+        performanceKeyGroups.forEach(function (group) {
             const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
             azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
