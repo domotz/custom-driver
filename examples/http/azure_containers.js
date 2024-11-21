@@ -404,8 +404,8 @@ function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
             return metric.key
         }).join(','));
     }
-    containerGroupInfoList.map(function (containerGroupInfo) {
-        performanceKeyGroups.map(function (group) {
+    containerGroupInfoList.forEach(function (containerGroupInfo) {
+        performanceKeyGroups.forEach(function (group) {
             const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + containerGroupInfo.resourceGroup + "/providers/Microsoft.ContainerInstance/containerGroups/" + containerGroupInfo.resourceName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
             azureCloudManagementService.http.get(config, function (error, response, body) {
