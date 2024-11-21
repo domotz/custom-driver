@@ -46,7 +46,7 @@ const vmInfoExtractors = [{
         return sanitize(vm.properties.vmId)
     }
 }, {
-    label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function (vm) {
+    label: 'Name', valueType: D.valueType.NUMBER, key: 'name', extract: function (vm) {
         return vm.name || "N/A"
     }
 }, {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup}, {
