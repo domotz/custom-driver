@@ -493,8 +493,8 @@ function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSe
             return metric.key
         }).join(','));
     }
-    virtualMachineScaleSetInfoList.map(function (diskInfo) {
-        performanceKeyGroups.map(function (group) {
+    virtualMachineScaleSetInfoList.forEach(function (diskInfo) {
+        performanceKeyGroups.forEach(function (group) {
             const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
             azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
