@@ -1,0 +1,62 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Meeting Participants Quality of Service",
+    "description": "This script retrieves information about Zoom Meeting Participants Quality of Service",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "license: Business or a higher plan",
+            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "dashboard:read:list_meeting_participants_qos:admin"
+        ]
+    },
+    "tags": [
+        "zoom",
+        "quality-of-service"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[23]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Zoom API",
+            "version": "v2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "accountId",
+            "label": "Account Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "meetingId",
+            "label": "Meeting ID"
+        },
+        {
+            "value_type": "LIST",
+            "name": "participantIds",
+            "label": "Participant ID",
+            "value": ["All"]
+        }
+    ]
+}
