@@ -83,7 +83,10 @@ const networkInterfaceInfoExtractors = [
             return networkInterface.properties && networkInterface.properties.provisioningState || "N/A"
         }
     }, {
-        label: "Resource GUID", valueType: D.valueType.STRING, key: "resourceGuid", extract: function (networkInterface) {
+        label: "Resource GUID", 
+        valueType: D.valueType.STRING, 
+        key: "resourceGuid", 
+        extract: function (networkInterface) {
             return networkInterface.properties && networkInterface.properties.resourceGuid || "N/A"
         }
     }, {
@@ -208,15 +211,21 @@ const networkInterfaceInfoExtractors = [
             return "N/A"
         }
     }, {
-        label: "NIC Type", valueType: D.valueType.STRING, key: "nicType", extract: function (networkInterface) {
+        label: "NIC Type", 
+        valueType: D.valueType.STRING, 
+        key: "nicType", extract: function (networkInterface) {
             return networkInterface.properties && networkInterface.properties.nicType || "N/A"
         }
     }, {
-        label: "Location", valueType: D.valueType.STRING, key: "location", extract: function (networkInterface) {
+        label: "Location", 
+        valueType: D.valueType.STRING, 
+        key: "location", extract: function (networkInterface) {
             return networkInterface.location || "N/A"
         }
     }, {
-        label: "Kind", valueType: D.valueType.STRING, key: "kind", extract: function (networkInterface) {
+        label: "Kind", 
+        valueType: D.valueType.STRING, 
+        key: "kind", extract: function (networkInterface) {
             return networkInterface.kind || "N/A"
         }
     }
@@ -234,30 +243,18 @@ function sanitize(output) {
 }
 
 /**
- * Generates the properties required for the network interface table
+ * Generates network interface properties by extracting information from the defined networkInterfaceInfoExtractors.
+ * @returns {Array} return concatenation of networkInterfaceInfoExtractors and performanceMetrics.
  */
 function generateNetworkInterfaceProperties() {
-    networkInterfacesProperties = networkInterfaceInfoExtractors.filter(function (extractorInfo) {
-        return extractorInfo.key !== 'id'
-    }).map(function (extractorInfo) {
-        return {
-            'key': extractorInfo.key,
-            'label': extractorInfo.label,
-            'valueType': extractorInfo.valueType,
-            'unit': extractorInfo.unit ? extractorInfo.unit : null
-        }
-    }).concat(performanceMetrics)
+    return networkInterfaceInfoExtractors.concat(performanceMetrics).filter(function (result) {
+        return result.label
+    })
 }
 
-/**
- * Creates a table for displaying Azure network interface properties
- */
-function createNetworkInterfaceTable() {
-    networkInterfacesTable = D.createTable('Network Interfaces Table', networkInterfacesProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType}
-        if (item.unit) { tableDef.unit = item.unit }
-        return tableDef
-    }))
+//Creates a table for displaying Azure network interface properties.
+function createNetworkInterfaceTable(networkInterfaceProperties) {
+    networkInterfacesTable = D.createTable('Network Interfaces Table', networkInterfaceProperties)
 }
 
 /**
@@ -460,8 +457,8 @@ function retrieveNIPerformanceMetrics(networkInterfaceList) {
             return metric.key
         }).join(','))
     }
-    networkInterfaceList.map(function (networkInterface) {
-        performanceKeyGroups.map(function (group) {
+    networkInterfaceList.forEach(function (networkInterface) {
+        performanceKeyGroups.forEach(function (group) {
             const d = D.q.defer()
             const config = generateConfig("/resourceGroups/" + networkInterface.resourceGroupName + "/providers/Microsoft.Network/networkInterfaces/" + networkInterface.id + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M")
             azureCloudManagementService.http.get(config, processNIPerformanceMetricsResponse(d, networkInterface))
@@ -472,30 +469,27 @@ function retrieveNIPerformanceMetrics(networkInterfaceList) {
 }
 
 /**
- * Inserts a record into the network interfaces table
- * @param {Object} networkInterface The network interface object containing all the details
+ * Inserts a record into the network interfaces table using the specified properties
+ * @param {Object} networkInterface The network interface object containing all the details to insert
+ * @param {Array} networkInterfaceProperties An array of property objects that define the structure of the table
  */
-function insertRecord(networkInterface) {
-    const recordValues = networkInterfacesProperties.map(function (item) {
-        const value = networkInterface[item.key] || 'N/A'
-        return item.callback ? item.callback(value) : value
+function insertRecord(networkInterface, networkInterfaceProperties) {
+    const recordValues = networkInterfaceProperties.map(function (item) {
+        return networkInterface[item.key] || 'N/A'
     })
     networkInterfacesTable.insertRecord(networkInterface.id, recordValues)
 }
 
 /**
  * Populates the network interfaces table with multiple network interface records
- * @param {Array} networkInterfaceList An array of network interface objects
+ * This function iterates over the list of network interfaces and inserts each one into the table
+ * @param {Array} networkInterfaceList An array of network interface objects, each containing details to be inserted into the table
+ * @param {Array} networkInterfaceProperties An array of property objects that define the structure of the table
  */
-function populateTable(networkInterfaceList) {
-    networkInterfaceList.forEach(insertRecord)
-}
-
-/**
- * Publishes the network interfaces table
- */
-function publishNetworkInterfacesTable() {
-    D.success(networkInterfacesTable)
+function populateTable(networkInterfaceList, networkInterfaceProperties) {
+    networkInterfaceList.map(function (networkInterface) {
+        insertRecord(networkInterface, networkInterfaceProperties)
+    })
 }
 
 /**
@@ -524,12 +518,14 @@ function validate() {
  */
 function get_status() {
     login()
-        .then(generateNetworkInterfaceProperties)
-        .then(createNetworkInterfaceTable)
         .then(retrieveNetworkInterfaces)
         .then(retrieveNIPerformanceMetrics)
-        .then(populateTable)
-        .then(publishNetworkInterfacesTable)
+        .then(function (networkInterfaceList) {
+            const networkInterfaceProperties = generateNetworkInterfaceProperties()
+            createNetworkInterfaceTable(networkInterfaceProperties)
+            populateTable(networkInterfaceList, networkInterfaceProperties)
+            D.success(networkInterfacesTable)
+        })
         .catch(function (error) {
             console.error(error)
             D.failure(D.errorType.GENERIC_ERROR)
