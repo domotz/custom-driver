@@ -49,7 +49,6 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com')
 
 let accessToken
-let networkInterfacesProperties
 let networkInterfacesTable
 
 // Performance metrics to retrieve from Azure
