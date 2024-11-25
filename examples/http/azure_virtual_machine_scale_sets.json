@@ -1,0 +1,57 @@
+{
+    "logo": "azure.svg",
+    "version": "1.0.0",
+    "name": "Azure Virtual Machine Scale Sets",
+    "description": "Monitor Azure Compute Virtual Machine Scale Sets: this script retrieves information about Virtual Machine Scale Sets",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Azure Compute"
+        ]
+    },
+    "tags": [
+        "azure",
+        "compute",
+        "vm-scale-set"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[29]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantId",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "LIST",
+            "name": "resourceGroups",
+            "label": "Resource Group",
+            "value": ["All"]
+        },
+        {
+            "value_type": "LIST",
+            "name": "vmNames",
+            "label": "VM Name",
+            "value": ["All"]
+        }
+    ]
+}
