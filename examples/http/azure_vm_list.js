@@ -39,15 +39,14 @@ const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com
 const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
-let vmProperties;
 let vmTable;
 
 const vmInfoExtractors = [{
-    label: 'id', key: "id", extract: function (vm) {
+    key: "id", extract: function (vm) {
         return sanitize(vm.properties.vmId)
     }
 }, {
-    label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function (vm) {
+    label: 'Name', valueType: D.valueType.NUMBER, key: 'name', extract: function (vm) {
         return vm.name || "N/A"
     }
 }, {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup}, {
@@ -99,7 +98,10 @@ const vmInfoExtractors = [{
         return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A"
     }
 }, {
-    label: 'Network Interfaces', valueType: D.valueType.STRING, key: 'networkInterfaces', extract: extractNetworkInterfaces
+    label: 'Network Interfaces',
+    valueType: D.valueType.STRING,
+    key: 'networkInterfaces',
+    extract: extractNetworkInterfaces
 }, {
     label: 'Zone', valueType: D.valueType.STRING, key: 'zone', extract: function (vm) {
         return (vm.zones && vm.zones[0]) || "N/A"
@@ -108,34 +110,18 @@ const vmInfoExtractors = [{
 
 /**
  * Generates Virtual Machine properties by extracting information from the defined vmConfigExtractors.
- * @returns {Promise} A promise that resolves when Virtual Machine properties are generated.
- * It populates the global variable `vmProperties`.
+ * @returns {Array} return `vmProperties`.
  */
 function generateVirtualMachineProperties() {
-    return D.q.all(vmInfoExtractors.map(function (extractorInfo) {
-        return new Promise(function (resolve) {
-            if (extractorInfo.key !== 'id') {
-                resolve({
-                    'key': extractorInfo.key,
-                    'label': extractorInfo.label,
-                    'valueType': extractorInfo.valueType,
-                    'unit': extractorInfo.unit ? extractorInfo.unit : null
-                });
-            } else {
-                resolve(null);
-            }
-        });
-    })).then(function (results) {
-        vmProperties = results.filter(function (result) {
-            return result !== null
-        })
+    return vmInfoExtractors.filter(function (result) {
+        return result.label
     });
 }
 
 /**
  * Creates a table for displaying Azure Virtual Machine properties.
  */
-function createVirtualMachineTable() {
+function createVirtualMachineTable(vmProperties) {
     vmTable = vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function (item) {
         const tableDef = {label: item.label, valueType: item.valueType};
         if (item.unit) {
@@ -212,35 +198,18 @@ function processLoginResponse(d) {
 }
 
 /**
- * Filters the list of VM information by specified resource groups.
+ * Filters the list of VM information.
  * @param {Array} vmInfoList - A list of VM information objects.
- * @returns {Array} The filtered list of VM information based on resource groups.
+ * @returns {Array} The filtered list of VM information.
  */
-function filterVmInfoListByResourceGroups(vmInfoList) {
-    if (!(resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all')) {
-        return vmInfoList.filter(function (vm) {
-            return resourceGroups.some(function (group) {
-                return group.toLowerCase() === vm.resourceGroup.toLowerCase()
-            })
-        });
-    }
-    return vmInfoList;
-}
-
-/**
- * Filters the list of VM information by specified VM names.
- * @param {Array} vmInfoList - A list of VM information objects.
- * @returns {Array} The filtered list of VM information based on VM names.
- */
-function filterVmInfoListByVmNames(vmInfoList) {
-    if (!(vmNames.length === 1 && vmNames[0].toLowerCase() === 'all')) {
-        return vmInfoList.filter(function (vm) {
-            return vmNames.some(function (vmName) {
-                return vmName.toLowerCase() === vm.vmName.toLowerCase();
-            });
-        });
-    }
-    return vmInfoList;
+function filterVmInfoList(vmInfoList) {
+    return vmInfoList.filter(function (vmInfo) {
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === vmInfo.resourceGroup.toLowerCase()
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
+            return vmName.toLowerCase() === vmInfo.name.toLowerCase();
+        }))
+    });
 }
 
 /**
@@ -261,7 +230,7 @@ function processVMsResponse(d) {
         if (!vmInfoList.length) {
             console.info('There is no Virtual machine');
         } else {
-            vmInfoList = filterVmInfoListByResourceGroups(filterVmInfoListByVmNames(vmInfoList));
+            vmInfoList = filterVmInfoList(vmInfoList);
         }
         d.resolve(vmInfoList);
     }
@@ -317,20 +286,14 @@ function extractVmInfo(vm) {
 /**
  * Inserts a VM record into the VM table with the given VM information.
  * @param {Object} vm - The VM information object.
- * @returns {Promise} A promise that resolves when the record has been successfully inserted into the table.
+ * @param vmProperties
  */
-function insertRecord(vm) {
-    const d = D.q.defer();
-
+function insertRecord(vm, vmProperties) {
     const recordValues = vmProperties.map(function (item) {
         const value = vm[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
-
     vmTable.insertRecord(vm.id, recordValues);
-
-    d.resolve();
-    return d.promise;
 }
 
 /**
@@ -360,18 +323,13 @@ function retrieveVMs() {
 /**
  * Populates all VMs into the output table by calling insertRecord for each VM in the list.
  * @param {Array} vmInfoList - A list of VM information objects to be inserted into the table.
+ * @param vmProperties
  * @returns {Promise} A promise that resolves when all records have been inserted into the table.
  */
-function populateTable(vmInfoList) {
-    const promises = vmInfoList.map(insertRecord);
-    return D.q.all(promises);
-}
-
-/**
- * Publishes the VM table.
- */
-function publishVMTable() {
-    D.success(vmTable);
+function populateTable(vmInfoList, vmProperties) {
+    vmInfoList.map(function (vmInfo) {
+        insertRecord(vmInfo, vmProperties)
+    });
 }
 
 /**
@@ -381,7 +339,6 @@ function publishVMTable() {
  */
 function validate() {
     login()
-        .then(generateVirtualMachineProperties)
         .then(retrieveVMs)
         .then(function () {
             D.success();
@@ -399,11 +356,13 @@ function validate() {
  */
 function get_status() {
     login()
-        .then(generateVirtualMachineProperties)
-        .then(createVirtualMachineTable)
         .then(retrieveVMs)
-        .then(populateTable)
-        .then(publishVMTable)
+        .then(function (virtualMachineScaleSetInfoList) {
+            const vmProperties = generateVirtualMachineProperties()
+            createVirtualMachineTable(vmProperties)
+            populateTable(virtualMachineScaleSetInfoList, vmProperties)
+            D.success(vmTable);
+        })
         .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
