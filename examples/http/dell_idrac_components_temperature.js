@@ -42,11 +42,7 @@ function getComponentsTemperature() {
         protocol: "https",
         auth: "basic",
         jar: true,
-        rejectUnauthorized: false,
-        headers: {
-            Host: D.device.ip()
-        }
-
+        rejectUnauthorized: false
     }, function (error, response, body) {
         if (error) {
             console.error(error)
@@ -106,12 +102,12 @@ function sanitize(output) {
  */
 function populateTable (temperatureInfo) {
     table.insertRecord(sanitize(temperatureInfo.name), [
-      temperatureInfo.status,
-      temperatureInfo.reading,
-      temperatureInfo.warning_min,
-      temperatureInfo.warning_max,
-      temperatureInfo.critical_min,
-      temperatureInfo.critical_max
+        temperatureInfo.status,
+        temperatureInfo.reading,
+        temperatureInfo.warning_min,
+        temperatureInfo.warning_max,
+        temperatureInfo.critical_min,
+        temperatureInfo.critical_max
     ])
   }
 
