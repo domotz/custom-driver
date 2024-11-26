@@ -31,6 +31,15 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 // Variable to store access token for Azure API calls
 let accessToken
 
+const table =  D.createTable('Azure Cost Metrics', [
+  { label: 'Pre Tax Cost', unit: 'EUR', valueType: D.valueType.NUMBER },
+  { label: 'Usage Date', valueType: D.valueType.STRING },
+  { label: 'Meter', valueType: D.valueType.STRING },
+  { label: 'Meter Subcategory', valueType: D.valueType.STRING },
+  { label: 'Resource Group', valueType: D.valueType.STRING },
+  { label: 'Service Name', valueType: D.valueType.STRING },
+  { label: 'Resource Location', valueType: D.valueType.STRING }
+])
 
 const today = new Date()
 const startDate = new Date(today)
@@ -177,7 +186,7 @@ function extractMetricsInfo(metricsResponse) {
     const rowData = {}
     columns.forEach(function(column, i) {
       const value = column.type === "Number" ? row[i].toString() : row[i]
-      rowData[column.name] = value;
+      rowData[column.name] = value
       if (column.name === "PreTaxCost") {
         totalCost += parseFloat(value)
       }
@@ -194,26 +203,6 @@ function extractMetricsInfo(metricsResponse) {
 }
 
 /**
- * Creates dynamic columns for the metrics table based on the retrieved data
- * @param {Array} metrics The metrics data
- * @returns {Object} The created table or null if no metrics are provided
- */
-function createDynamicColumns(metrics) {
-	if (!metrics || metrics.length === 0) return null
-	const firstRow = metrics[0]
-	const tableColumns = Object.keys(firstRow)
-	.filter(function (key) { return key !== 'Currency' })
-	.map(function(key) {
-		return {
-			label: key,
-			unit: key === 'PreTaxCost' ? firstRow.Currency : '',
-			valueType: typeof firstRow[key] === 'string' ? D.valueType.STRING : D.valueType.NUMBER
-		}
-	})
-	return D.createTable('Azure Cost Metrics', tableColumns)
-}
-
-/**
  * Inserts records into the metrics table and creates a variable for total cost
  * @param {Object} data The data object containing metrics and total cost
  */
@@ -222,7 +211,6 @@ function insertRecords(data) {
 		console.error("No metrics data provided")
 		return
 	}
-	const table = createDynamicColumns(data.metrics)
 	data.metrics.forEach(function(row, index) {
     var recordId = index.toString()
     var values = Object.keys(row)
