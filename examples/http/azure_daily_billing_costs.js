@@ -1,18 +1,17 @@
 /**
  * Domotz Custom Driver
- * Name: Azure Billing Cost
- * Description: This script retrieves Azure billing metrics to monitor costs and usage, categorized by several key dimensions
+ * Name: Azure - Daily Billing Costs
+ * Description: This script retrieves Azure billing data for the previous day's costs and usage, categorized by several key dimensions
  *
  * Communication protocol is HTTPS
  * 
  * Create a custom driver table with the following columns:
- *    - PreTaxCost: The cost before tax for the specified usage
- *    - UsageDate: The date for which the usage data is reported
+ *    - Resource Group: The Azure resource group to which the resources belong
  *    - Meter: The meter associated with the usage
- *    - MeterSubcategory: The subcategory of the meter
- *    - ResourceGroup: The Azure resource group to which the resources belong
- *    - ServiceName: The name of the Azure service used
- *    - ResourceLocation: The location of the Azure resources
+ *    - Meter Subcategory: The subcategory of the meter
+ *    - Service Name: The name of the Azure service used
+ *    - Resource Location: The location of the Azure resources
+ *    - Pre Tax Cost: The cost before tax for the specified usage
  * 
  * create Custom Driver Variable to monitor and display the Total Cost
  * 
@@ -24,6 +23,8 @@ const clientId = D.getParameter('clientId')
 const clientSecret = D.getParameter('clientSecret')
 const subscriptionId = D.getParameter('subscriptionId')
 
+const resourceGroups = D.getParameter('resourceGroups')
+
 // Create external devices for Azure login and management services
 const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com')
 const azureCloudManagementService = D.createExternalDevice('management.azure.com')
@@ -31,6 +32,14 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 // Variable to store access token for Azure API calls
 let accessToken
 
+const table =  D.createTable('Azure Cost Metrics', [
+  { label: 'Resource Group', valueType: D.valueType.STRING },
+  { label: 'Meter', valueType: D.valueType.STRING },
+  { label: 'Meter Subcategory', valueType: D.valueType.STRING },
+  { label: 'Service Name', valueType: D.valueType.STRING },
+  { label: 'Resource Location', valueType: D.valueType.STRING },
+  { label: 'Pre Tax Cost', unit: 'EUR', valueType: D.valueType.NUMBER }
+])
 
 const today = new Date()
 const startDate = new Date(today)
@@ -144,6 +153,7 @@ function login() {
   return d.promise
 }
 
+
 /**
  * Queries the Azure Cost Management API for cost data
  * @returns {Promise} A promise that resolves with the cost data
@@ -166,6 +176,19 @@ function queryCostData() {
 }
 
 /**
+ * Filters the data by resource group to include only the relevant ones
+ * @param {Array} rows The rows of data to filter
+ * @param {Array} resourceGroups The list of resource groups to include
+ * @returns {Array} The filtered rows
+ */
+function filterByResourceGroup(rows, resourceGroups) {
+  return rows.filter(function (row) {
+    const resourceGroupName = row.ResourceGroup
+    return (resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {return resourceGroup.toLowerCase() === resourceGroupName.toLowerCase()})
+  })
+}
+
+/**
  * Extracts metrics information from the response
  * @param {Object} metricsResponse The response object from the cost data query
  * @returns {Object} An object containing the metrics and total cost
@@ -173,20 +196,23 @@ function queryCostData() {
 function extractMetricsInfo(metricsResponse) {
   const columns = metricsResponse.properties.columns
   let totalCost = 0
-  const data = metricsResponse.properties.rows.map(function(row) {
+  let data = metricsResponse.properties.rows.map(function(row) {
     const rowData = {}
     columns.forEach(function(column, i) {
       const value = column.type === "Number" ? row[i].toString() : row[i]
-      rowData[column.name] = value;
+      rowData[column.name] = value
       if (column.name === "PreTaxCost") {
-        totalCost += parseFloat(value)
+        let roundedPreTaxCost = parseFloat(value).toFixed(2)
+        roundedPreTaxCost = parseFloat(roundedPreTaxCost)
+        totalCost += roundedPreTaxCost
+        rowData[column.name] = roundedPreTaxCost
       }
     })
-    if (rowData.UsageDate) {
-      rowData.UsageDate = rowData.UsageDate.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
-    }
+    delete rowData.UsageDate
+    delete rowData.Currency
     return rowData
   })
+  data = filterByResourceGroup(data, resourceGroups)
   return {
     metrics: data,
     totalCost: totalCost 
@@ -194,23 +220,23 @@ function extractMetricsInfo(metricsResponse) {
 }
 
 /**
- * Creates dynamic columns for the metrics table based on the retrieved data
- * @param {Array} metrics The metrics data
- * @returns {Object} The created table or null if no metrics are provided
+ * Sanitizes the output by removing reserved words and formatting it.
+ * @param {string} output - The string to be sanitized.
+ * @returns {string} The sanitized string.
  */
-function createDynamicColumns(metrics) {
-	if (!metrics || metrics.length === 0) return null
-	const firstRow = metrics[0]
-	const tableColumns = Object.keys(firstRow)
-	.filter(function (key) { return key !== 'Currency' })
-	.map(function(key) {
-		return {
-			label: key,
-			unit: key === 'PreTaxCost' ? firstRow.Currency : '',
-			valueType: typeof firstRow[key] === 'string' ? D.valueType.STRING : D.valueType.NUMBER
-		}
-	})
-	return D.createTable('Azure Cost Metrics', tableColumns)
+function sanitize(output) {
+  const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
+  const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+}
+
+/**
+ * Generates a md5 hash of the provided value.
+ * @param {string} value - The input string to hash.
+ * @returns {string} The md5 hash of the input value in hexadecimal format.
+ */
+function md5(value) {
+  return D.crypto.hash(value, "md5", null, "hex")
 }
 
 /**
@@ -218,19 +244,22 @@ function createDynamicColumns(metrics) {
  * @param {Object} data The data object containing metrics and total cost
  */
 function insertRecords(data) {
-	if (!data || !data.metrics || data.metrics.length === 0) {
-		console.error("No metrics data provided")
-		return
-	}
-	const table = createDynamicColumns(data.metrics)
-	data.metrics.forEach(function(row, index) {
-    var recordId = index.toString()
-    var values = Object.keys(row)
-      .filter(function(key) { return key !== 'Currency' })
-      .map(function(key) { return row[key] })
-    table.insertRecord(recordId, values)
+  if (!data || !data.metrics || data.metrics.length === 0) {
+    console.error("No metrics data provided")
+    return
+  }
+  data.metrics.forEach(function(row) {
+    var recordId = sanitize(md5(row.ResourceGroup + '-' + row.Meter))
+    table.insertRecord(recordId, [
+      row.ResourceGroup,
+      row.Meter,
+      row.MeterSubcategory,
+      row.ServiceName,
+      row.ResourceLocation,
+      row.PreTaxCost
+    ])
   })
-	D.success([D.createVariable("total-cost", "Total Cost", data.totalCost, data.metrics[0].Currency, D.valueType.NUMBER)], table)
+  D.success([D.createVariable("total-cost", "Total Cost", data.totalCost, data.metrics[0].Currency, D.valueType.NUMBER)], table)
 }
 
 /**
@@ -253,7 +282,7 @@ function validate() {
 /**
  * @remote_procedure
  * @label Get Azure Billing Costs Data
- * @documentation This procedure retrieves Azure cost data and associated performance metrics
+ * @documentation This procedure retrieves Azure cost data for the previous day and associated performance metrics
  */
 function get_status() {
   login()
