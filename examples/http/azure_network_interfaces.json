@@ -1,0 +1,63 @@
+{
+    "logo": "azure.svg",
+    "version": "1.0.0",
+    "name": "Azure Network Interfaces",
+    "description": "Retrieves information about network interfaces and their associated performance metrics",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Azure Compute"        
+        ]
+    },
+    "tags": [
+        "azure",
+        "network",
+        "network-interface",
+        "virtual-machine"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[27]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantId",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "subscriptionId",
+            "label": "Subscription Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "resourceGroups",
+            "label": "Resource Group",
+            "value": ["All"]
+        },
+        {
+            "value_type": "LIST",
+            "name": "vmNames",
+            "label": "VM Name",
+            "value": ["All"]
+        }
+    ]
+}
