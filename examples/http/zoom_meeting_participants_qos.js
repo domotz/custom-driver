@@ -13,7 +13,7 @@
  * Creates Custom Driver table with the following columns:
  *    - User Name
  *    - Email
- *    - Type
+ *    - QoS Type
  *    - Minimum Bitrate
  *    - Average Bitrate
  *    - Maximum Bitrate
@@ -53,14 +53,14 @@ let meetingParticipantQos = []
 let pageSize = 30
 
 const meetingParticipantExtractors = [{
-    valueType: D.valueType.STRING, key: 'participant_id', extract: getParticipantByKey
+    valueType: D.valueType.STRING, key: 'participant_id'
 }, {
     label: 'User Name', valueType: D.valueType.STRING, key: 'user_name', extract: getParticipantByKey
 }, {
     label: 'Email', valueType: D.valueType.STRING, key: 'email', extract: getParticipantByKey
 }];
 
-const qosExtractors = [{label: 'Type', valueType: D.valueType.STRING, key: 'type', extract: getQosType}, {
+const qosExtractors = [{label: 'QoS Type', valueType: D.valueType.STRING, key: 'type', extract: getQosType}, {
     label: 'Minimum Bitrate', valueType: D.valueType.NUMBER, unit: 'kbps', key: 'min_bitrate', extract: getQosDetailByKey
 }, {
     label: 'Average Bitrate', valueType: D.valueType.NUMBER, unit: 'kbps', key: 'avg_bitrate', extract: getQosDetailByKey
@@ -119,12 +119,29 @@ function getParticipantByKey(row, key) {
 }
 
 /**
+ * GenerateId from an object concatenated by an index.
+ * @param participant
+ * @param index
+ */
+function generateId(participant, index) {
+    return participant['participant_id'] + "-" + (index+1)
+}
+
+/**
  * Retrieves the value of a specific key from the details property of an object.
  * @param {Object} row
  * @param {string} key
+ * @param valueType
  */
-function getQosDetailByKey(row, key) {
-    return row.details[key]
+function getQosDetailByKey(row, key, valueType) {
+    if(row.details[key]){
+        if( valueType === D.valueType.NUMBER) {
+            const match = row.details[key].match(/[\d.]+/)
+            return match ? parseFloat(match[0]) : "N/A";
+        }
+        return row.details[key] || "N/A"
+    }
+    return "N/A"
 }
 
 /**
@@ -132,7 +149,7 @@ function getQosDetailByKey(row, key) {
  * @param {Object} row
  */
 function getQosType(row) {
-    return row.type
+    return row.type.replace('_', ' ')
 }
 
 /**
@@ -243,19 +260,20 @@ function retrieveMeetingParticipantQos() {
 function extractMeetingParticipantQos(meetingParticipantQos) {
     return meetingParticipantQos.participants.reduce(function (participantsAcc, participant) {
         const participantDetail = meetingParticipantExtractors.reduce(function (acc, item) {
-            acc[item.key] = item.extract(participant, item.key);
+            if(item.extract) {
+                acc[item.key] = item.extract(participant, item.key);
+            }
             return acc;
         }, {});
 
-        const qosData = participant.qos.reduce(function (qosAcc, qos) {
-            const mergedData = qosExtractors.reduce(function (acc, item) {
-                acc[item.key] = item.extract(qos, item.key);
+        const qosData = participant.qos.map(function (qos, index) {
+            return participantAndQosDetails = qosExtractors.reduce(function (acc, item) {
+                if(item.extract) {
+                    acc[item.key] = item.extract(qos, item.key, item.valueType);
+                }
                 return acc;
-            }, Object.assign({}, participantDetail));
-
-            qosAcc.push(mergedData);
-            return qosAcc;
-        }, []);
+            }, Object.assign({}, participantDetail, {'participant_id': generateId(participant, index)}));
+        });
 
         return participantsAcc.concat(qosData);
     }, []);
