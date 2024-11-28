@@ -54,6 +54,7 @@ const azureCloudManagementService = D.createExternalDevice('management.azure.com
 
 let accessToken
 let vmTable
+let allMetricByVm = []
 
 // This is the list of all allowed performance metrics that can be retrieved from a running VM.
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
@@ -159,7 +160,7 @@ const vmConfigExtractors = [
 
 // Extract basic VM information
 const vmInfoExtractors = [
-    {label: 'id', key: "id", extract: function (vm) {return sanitize(vm.properties.vmId)}}, 
+    {key: "id", extract: function (vm) {return sanitize(vm.properties.vmId)}},
     {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function (vm) {return vm.name || "N/A"}}, 
     {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup}, 
     {label: 'OS Type', valueType: D.valueType.STRING, key: 'osType', extract: function (vm) {return vm.location || "N/A"}}
@@ -297,49 +298,75 @@ function processVMsResponse(d) {
  * @param {Object} vmInfo The VM information object to be updated with display status
  * @returns {Function} A function to process the HTTP response and update the VM display status
  */
-function processVmConfigResponse(d, vmInfo) {
-    return function process(error, response, body) {
-        checkHTTPError(error, response)
-        if (error || response.statusCode !== 200) {
-            return
-        }
-        try {
-            const bodyAsJSON = JSON.parse(body)
-            extractVmConfig(vmInfo, bodyAsJSON)
-            d.resolve(vmInfo)
-        } catch (parseError) {
-            console.error("Error parsing VM configuration:", parseError)
-            d.reject(parseError)
-        }
+function processVmConfigResponse(d, vmInfo, error, response, body) {
+    checkHTTPError(error, response)
+    if (error || response.statusCode !== 200) {
+        return
     }
+    try {
+        const bodyAsJSON = JSON.parse(body)
+        extractVmConfig(vmInfo, bodyAsJSON)
+        d.resolve(vmInfo)
+    } catch (parseError) {
+        console.error("Error parsing VM configuration:", parseError)
+        d.reject(parseError)
+    }
+}
+
+/**
+ * Inserts or updates metrics for a virtual machine in the `allMetricByVm` object.
+ * @param {string} vmName - The name of the virtual machine.
+ * @param {Object} vmMetrics - The metrics to insert or merge with existing metrics.
+ */
+function insertAllMetrics(vmName, vmMetrics) {
+    if (allMetricByVm[vmName]) {
+        allMetricByVm[vmName] = Object.assign(allMetricByVm[vmName], vmMetrics)
+    } else {
+        allMetricByVm[vmName] = vmMetrics
+    }
+}
+
+/**
+ * Extracts metrics from the response body and processes them into a performance object.
+ * @param {string} body - The HTTP response body in JSON string format.
+ * @returns {Object} An object containing the extracted performance metrics.
+ * @throws Will invoke `D.failure` with a generic error if the `value` property is missing in the parsed body.
+ */
+function extractMetricsFromBody(body) {
+    const bodyAsJSON = JSON.parse(body)
+    if (!bodyAsJSON.value) {
+        D.failure(D.errorType.GENERIC_ERROR)
+    }
+    return bodyAsJSON.value.reduce(function(acc, performanceInfo) {
+        const vmPerformance = extractVmPerformance(performanceInfo);
+        if (vmPerformance) {
+            Object.assign(acc, vmPerformance);
+        }
+        return acc;
+    }, {});
 }
 
 /**
  * Processes the response from the VMs API call and populates the table with VM data
  * @param {Object} d The deferred promise object
- * @param {Object} vmInfo The VM information object containing resource group and VM details
+ * @param vmInfo
+ * @param error
+ * @param response
+ * @param body
  * @returns {Function} A function to process the HTTP response
  */
-function processVmPerformanceResponse(d, vmInfo) {
-    return function process(error, response, body) {
-        checkHTTPError(error, response)
-        if (error || response.statusCode !== 200) {
-            return
-        }
-        try {
-            const bodyAsJSON = JSON.parse(body)
-            if (!bodyAsJSON.value) {
-                D.failure(D.errorType.GENERIC_ERROR)
-                return
-            }
-            bodyAsJSON.value.map(function (performanceInfo) {
-                extractVmPerformance(performanceInfo, vmInfo)
-            })
-            d.resolve(vmInfo)
-        } catch (parseError) {
-            console.error("Error parsing VM configuration:", parseError)
-            d.reject("Failed to parse response for " + vmInfo.vmName)
-        }
+function processVmPerformanceResponse(d, vmInfo, error, response, body) {
+    checkHTTPError(error, response)
+    if (error || response.statusCode !== 200) {
+        return
+    }
+    try {
+        const vmMetrics = extractMetricsFromBody(body);
+        insertAllMetrics(vmInfo.vmName, vmMetrics);
+        d.resolve(allMetricByVm)
+    } catch (parseError) {
+        console.error("Error parsing VM Performance:", parseError)
+        d.reject("Failed to parse response: " + parseError)
     }
 }
 
@@ -377,6 +404,13 @@ function extractVmInfo(vm) {
     return extractedInfo
 }
 
+/**
+ * Extracts configuration details for a virtual machine from a JSON response.
+ * @param {Object} vmInfo - An object to store the extracted virtual machine configuration.
+ * @param {Object} bodyAsJSON - The JSON response containing VM configuration data.
+ * @returns {Array<*>} An array of extracted values from `vmConfigExtractors`.
+ */
+
 function extractVmConfig(vmInfo, bodyAsJSON) {
     return vmConfigExtractors.map(function (item) {
         vmInfo[item.key] = item.extract(bodyAsJSON)
@@ -406,17 +440,27 @@ function getNonTimeStampKey(data) {
  * @param {Object} performanceInfo The performance metrics information for the VM
  * @param {Object} vmInfo The VM information object to populate with performance metrics
  */
-function extractVmPerformance(performanceInfo, vmInfo) {
+function extractVmPerformance(performanceInfo) {
     if (performanceInfo.name.value) {
         if (performanceInfo.timeseries && performanceInfo.timeseries[0] && performanceInfo.timeseries[0].data) {
             const key = getNonTimeStampKey(performanceInfo.timeseries[0].data)
-            vmInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A"
+            return {
+                [performanceInfo.name.value]: key
+                    ? performanceInfo.timeseries[0].data[0][key]
+                    : "N/A"
+            };
         } else {
-            vmInfo[performanceInfo.name.value] = "N/A"
+            return {[performanceInfo.name.value]: "N/A"}
         }
     }
+    return null
 }
 
+/**
+ * Generates a configuration object for making an HTTP request.
+ * @param {string} url - The endpoint URL to append to the subscription path.
+ * @returns {Object} The HTTP request configuration containing the full URL, protocol, headers with authorization, and additional options.
+ */
 function generateConfig(url) {
     return {
         url: "/subscriptions/" + subscriptionId + url, protocol: "https", headers: {
@@ -437,18 +481,47 @@ function retrieveVMs() {
 }
 
 /**
+ * Performs an HTTP GET request and processes the response with a callback.
+ * @param {Object} config - The HTTP request configuration.
+ * @param {Object} vmInfo - Virtual machine details for processing.
+ * @param {Function} callback - Handles the response with the signature: (deferred, vmInfo, error, response, body).
+ * @returns {Promise} Resolves or rejects based on the callback's logic.
+ */
+function callGetHttpRequest(config, vmInfo, callback) {
+    var d = D.q.defer();
+    azureCloudManagementService.http.get(config, function (error, response, body) {
+        callback(d, vmInfo, error, response, body)
+    })
+    return d.promise;
+}
+
+/**
  * Retrieves the configuration of Azure VMs for the configured or all resource groups
  * @param {Array} vmInfoList A list of VM information objects, each containing details like resource group and VM name
  * @returns {Promise} A promise that resolves when the configuration for all VMs has been retrieved
  */
 function retrieveVMsConfiguration(vmInfoList) {
     const promises = vmInfoList.map(function (vmInfo) {
-        const d = D.q.defer()
         const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/instanceView?api-version=2024-07-01")
-        azureCloudManagementService.http.get(config, processVmConfigResponse(d, vmInfo))
-        return d.promise
+        return callGetHttpRequest(config, vmInfo, processVmConfigResponse)
     })
     return D.q.all(promises)
+}
+
+/**
+ * Groups performance metric keys into batches of a defined maximum size.
+ * @returns {Array<string>} An array of grouped metric keys, each group containing a
+ *    maximum of `maxGroupSize` keys, joined by commas.
+ */
+function groupingRequestParams() {
+    const performanceKeyGroups = []
+    const maxGroupSize = 20
+    for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
+        performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
+            return metric.key
+        }).join(','))
+    }
+    return performanceKeyGroups;
 }
 
 /**
@@ -457,30 +530,15 @@ function retrieveVMsConfiguration(vmInfoList) {
  * @returns {Promise} A promise that resolves once all performance data has been retrieved
  */
 function retrieveVMsPerformanceMetrics(vmInfoList) {
-    const performanceKeyGroups = []
     const promises = []
-    const maxGroupSize = 20
-    for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
-        performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-            return metric.key
-        }).join(','))
-    }
+    const performanceKeyGroups = groupingRequestParams();
     vmInfoList.forEach(function (vmInfo) {
-        const d = D.q.defer()
         if (vmInfo.displayStatus === "VM running") {
-            const groupPromises = performanceKeyGroups.map(function (group) {
-                const groupD = D.q.defer()
+            performanceKeyGroups.forEach(function (group) {
                 const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M")
-                azureCloudManagementService.http.get(config, processVmPerformanceResponse(groupD, vmInfo))
-                return groupD.promise
+                promises.push(callGetHttpRequest(config, vmInfo, processVmPerformanceResponse))
             })
-            D.q.all(groupPromises).then(function () {
-                d.resolve(vmInfo)
-            }).catch(d.reject)
-        } else {
-            d.resolve(vmInfo)
         }
-        promises.push(d.promise)
     })
     return D.q.all(promises)
 }
@@ -529,8 +587,19 @@ function insertRecord(vm, vmProperties) {
  */
 function populateTable(vmInfoList, vmProperties) {
     vmInfoList.map(function (vmInfo) {
-        insertRecord(vmInfo, vmProperties)
+        insertRecord(Object.assign(vmInfo, allMetricByVm[vmInfo.vmName]), vmProperties)
     })
+}
+
+/**
+ * Displays the output by generating a table of virtual machines and their properties.
+ * @param {Array<Object>} virtualMachineList - A list of virtual machine objects to display.
+ */
+function displayOutput(virtualMachineList) {
+    const vmProperties = generateVirtualMachineProperties()
+    createVirtualMachineTable(vmProperties)
+    populateTable(virtualMachineList, vmProperties)
+    D.success(vmTable)
 }
 
 /**
@@ -540,7 +609,6 @@ function populateTable(vmInfoList, vmProperties) {
  */
 function validate() {
     login()
-        .then(retrieveVMs)
         .then(retrieveVMs)
         .then(retrieveVMsConfiguration)
         .then(retrieveVMsPerformanceMetrics)
@@ -562,12 +630,10 @@ function get_status() {
     login()
         .then(retrieveVMs)
         .then(retrieveVMsConfiguration)
-        .then(retrieveVMsPerformanceMetrics)
         .then(function (virtualMachineList) {
-            const vmProperties = generateVirtualMachineProperties()
-            createVirtualMachineTable(vmProperties)
-            populateTable(virtualMachineList, vmProperties)
-            D.success(vmTable)
+            retrieveVMsPerformanceMetrics(virtualMachineList).then(function () {
+                displayOutput(virtualMachineList);
+            })
         })
         .catch(function (error) {
             console.error(error)
