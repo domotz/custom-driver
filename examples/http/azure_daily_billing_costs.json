@@ -1,25 +1,27 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.1",
-    "name": "Azure VMs List Metrics",
-    "description": "Monitor Azure Compute Virtual Machines Metrics: this script retrieves information about Virtual Machine Performance Metrics",
+    "version": "1.0.0",
+    "name": "Azure Daily Billing Costs",
+    "description": "This script retrieves Azure billing data for the previous day costs and usage, categorized by several key dimensions",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Azure Compute"
+            "Azure",
+            "Cost Management"       
         ]
     },
     "tags": [
         "azure",
-        "compute",
-        "virtual-machine"
+        "billing",
+        "cost"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[31]"
+        "independent": "[1]",
+        "table": "[6]"
     },
     "protocols": [
         "HTTPS"
@@ -28,7 +30,7 @@
     "parameters": [
         {
             "value_type": "STRING",
-            "name": "tenantID",
+            "name": "tenantId",
             "label": "Tenant Id"
         },
         {
@@ -50,12 +52,6 @@
             "value_type": "LIST",
             "name": "resourceGroups",
             "label": "Resource Group",
-            "value": ["All"]
-        },
-        {
-            "value_type": "LIST",
-            "name": "vmNames",
-            "label": "VM Name",
             "value": ["All"]
         }
     ]

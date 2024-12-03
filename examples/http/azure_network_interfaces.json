@@ -1,25 +1,26 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.1",
-    "name": "Azure VMs List Metrics",
-    "description": "Monitor Azure Compute Virtual Machines Metrics: this script retrieves information about Virtual Machine Performance Metrics",
+    "version": "1.0.0",
+    "name": "Azure Network Interfaces",
+    "description": "Retrieves information about network interfaces and their associated performance metrics",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Azure Compute"
+            "Azure Compute"        
         ]
     },
     "tags": [
         "azure",
-        "compute",
+        "network",
+        "network-interface",
         "virtual-machine"
     ],
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[31]"
+        "table": "[27]"
     },
     "protocols": [
         "HTTPS"
@@ -28,7 +29,7 @@
     "parameters": [
         {
             "value_type": "STRING",
-            "name": "tenantID",
+            "name": "tenantId",
             "label": "Tenant Id"
         },
         {

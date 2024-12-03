@@ -1,6 +1,6 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Azure Virtual Machine Scale Sets Metrics",
     "description": "Monitor Azure Compute Virtual Machine Scale Sets Metrics: this script retrieves information about Virtual Machine Scale Sets Metrics",
     "category": "Software Integration",
@@ -36,6 +36,11 @@
             "name": "clientId",
             "label": "Client Id"
         },
+        {
+            "value_type": "STRING",
+            "name": "subscriptionId",
+            "label": "Subscription Id"
+        },        
         {
             "value_type": "SECRET_TEXT",
             "name": "clientSecret",
