@@ -50,7 +50,7 @@ let allMetricByVm = []
 // This is the list of all allowed performance metrics that can be retrieved.
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
 // const allowedPerformanceMetrics = [
-///     {label: 'Cached BW', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached Bandwidth Consumed Percentage'},
+//     {label: 'Cached BW', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached Bandwidth Consumed Percentage'},
 //     {label: 'Cached IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Cached IOPS Consumed Percentage'},
 //     {label: 'Uncached BW', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached Bandwidth Consumed Percentage'},
 //     {label: 'Uncached IOPS', valueType: D.valueType.NUMBER, unit: '%', key: 'VM Uncached IOPS Consumed Percentage'},
