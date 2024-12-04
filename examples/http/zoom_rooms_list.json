@@ -10,19 +10,20 @@
         "others": [
             "Zoom room license: Pro or higher",
             "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
-            "room:read:admin: Grants permission to read general Zoom room details",
-            "zoom_rooms:read:list_rooms:admin: Grants permission to list and retrieve detailed information about Zoom Rooms"
+            "zoom_rooms:read:list_rooms:admin: Grants permission to list and retrieve detailed information about Zoom Rooms",
+            "zoom_rooms:read:location:admin: Grants permission to retrieve detailed information about Zoom Room locations"
         ]
     },
     "tags": [
         "zoom",
         "room",
-        "status"
+        "status", 
+        "location"
     ],
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "table": "[3]"
+        "table": "[4]"
     },
     "protocols": [
         "HTTPS"
