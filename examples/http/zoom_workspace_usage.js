@@ -24,6 +24,8 @@ const accountId = D.getParameter("accountId")
 const clientId = D.getParameter("clientId")
 const clientSecret = D.getParameter("clientSecret")
 
+const locationId = D.getParameter("locationId")
+
 const zoomLogin = D.createExternalDevice("zoom.us")
 const zoomResources = D.createExternalDevice("api.zoom.us")
 
@@ -134,7 +136,7 @@ function processVisitorInvitation(error, response, d, body) {
  * @returns {Object} - The configuration object containing the API endpoint, headers, and options.
  */
 function generateConfig() {
-    const url = "/v2/visitor/invitation"
+    const url = "/v2/workspaces/usage?location_id=" + locationId
     return {
         url: url, protocol: "https", headers: {
             "Authorization": "Bearer " + accessToken
