@@ -189,7 +189,9 @@ function login() {
  * @returns {string} - The "in use" value if found, otherwise "N/A".
  */
 function getInUseByKey(key) {
-    return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["in_use"] ? workspaceUsage[key]["in_use"] : "N/A";
+    return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["in_use"] !== undefined
+        ? workspaceUsage[key]["in_use"]
+        : "N/A";
 }
 
 /**
@@ -198,7 +200,9 @@ function getInUseByKey(key) {
  * @returns {string} - The "not in use" value if found, otherwise "N/A".
  */
 function getNotInUseByKey(key) {
-    return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["not_in_use"] ? workspaceUsage[key]["not_in_use"] : "N/A";
+    return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["not_in_use"] !== undefined
+        ? workspaceUsage[key]["not_in_use"]
+        : "N/A";
 }
 
 /**
