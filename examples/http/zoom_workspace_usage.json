@@ -46,6 +46,11 @@
             "value_type": "STRING",
             "name": "accountId",
             "label": "Account Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "locationId",
+            "label": "Location Id"
         }
     ]
 }
