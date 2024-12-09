@@ -1,0 +1,56 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Zoom List meetings",
+    "description": "Retrieves information about Zoom scheduled meetings",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "meeting:read:list_meetings,meeting:read:list_meetings:admin"
+        ]
+    },
+    "tags": [
+        "zoom",
+        "meeting"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[9]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Zoom API",
+            "version": "v2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "accountId",
+            "label": "Account Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "meetingId",
+            "label": "Meeting ID",
+            "value": ["All"]
+        }
+    ]
+}
