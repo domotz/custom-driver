@@ -142,37 +142,39 @@ function generateConfig(url) {
  * @returns {Promise<Array>} A promise that resolves with all rooms
  */
 function retrieveZoomRooms() {
-  const d = D.q.defer()
-  const url = getPaginationUrl()
-  const config = generateConfig(url)
-  zoomResources.http.get(config, function(error, response, body) {
-    checkHTTPError(error, response)
-    if (error) {
-      d.reject(error)
-      return
-    }
-    const bodyAsJSON = JSON.parse(body)
-    if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
-      console.error("No rooms found.")
-      D.failure(D.errorType.GENERIC_ERROR)
-      return
-    }
-    allRooms = allRooms.concat(extractZoomRoomsInfo(bodyAsJSON))
-    if (bodyAsJSON.next_page_token) {
-      pageToken = bodyAsJSON.next_page_token
-      retrieveZoomRooms()
-      .then(function (rooms) {
-        d.resolve(rooms)
-      }).catch(function (err) {
-        console.error("Error fetching next page of rooms:", err)
-        d.reject(err)
-      })
-    } else {
-      console.log("All rooms retrieved successfully.")
-      d.resolve(allRooms)
-    }
-  })
-  return d.promise
+  const d = D.q.defer();
+  let allRooms = [];
+  let pageToken = null;
+
+  function fetchRooms() {
+    const url = getPaginationUrl(pageToken);
+    const config = generateConfig(url);
+
+    zoomResources.http.get(config, function(error, response, body) {
+      checkHTTPError(error, response);
+      if (error) {
+        d.reject(error);
+        return;
+      }
+      const bodyAsJSON = JSON.parse(body);
+      if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
+        console.error("No rooms found.");
+        D.failure(D.errorType.GENERIC_ERROR);
+        return;
+      }
+      allRooms = allRooms.concat(extractZoomRoomsInfo(bodyAsJSON));
+      pageToken = bodyAsJSON.next_page_token;
+      if (pageToken) {
+        fetchRooms(); // Continue fetching if there's a next page
+      } else {
+        console.log("All rooms retrieved successfully.");
+        d.resolve(allRooms);
+      }
+    });
+  }
+
+  fetchRooms();
+  return d.promise;
 }
 
 /**
