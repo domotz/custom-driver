@@ -1,20 +1,16 @@
 /**
  * Domotz Custom Driver
  * Name: Zoom - Devices List
- * Description: This script retrieves information about Zoom devices connected to a specific account
+ * Description: This script retrieves information about Zoom devices connected to a specific account including their current status.
  *
  * Communication protocol is HTTPS
  *
  * Tested on Zoom API v2
- *
- * requirements:
- *    - Granular Scopes: device:read:admin
  * 
  * Creates Custom Driver table with the following columns:
  *    - Device Name: The name of the Zoom device
  *    - Room ID: Unique identifier for the room to which the device is assigned
  *    - Room Name: The name of the room the device is located in
- *    - MAC Address: The MAC address of the Zoom device
  *    - Serial Number: The serial number of the device, which uniquely identifies the hardware
  *    - Vendor: The manufacturer or vendor of the Zoom device
  *    - Model: The model of the Zoom device
@@ -24,10 +20,8 @@
  *    - Enrolled in ZDM: Indicates whether the device is enrolled in Zoom Device Management (ZDM)
  *    - Connected to ZDM: Indicates whether the device is currently connected to Zoom Device Management (ZDM)
  *    - Device Type: The type of device
- *    - SDK Version: The version of the Zoom SDK installed on the device
  *    - Device Status: The current status of the device
  *    - Last Online: Timestamp representing the last time the device was online
- *    - User Email: The email of the user associated with the device
  *
  **/
 
@@ -46,12 +40,15 @@ let pageToken
 let devices = []
 let pageSize = 30
 
+// deviceStatus: Default value is 2, which retrieves all devices. 
+// Can be modified for specific statuses:-1 for unlinked devices, 0 for offline devices and 1 for online devices
+let deviceStatus = 2 
+
 const devicesExtractors = [
     {valueType: D.valueType.STRING, key: 'device_id', extract: getInfoByKey},
     {label: 'Device Name', valueType: D.valueType.STRING, key: 'device_name', extract: getInfoByKey},
     {label: 'Room ID', valueType: D.valueType.STRING, key: 'room_id', extract: getInfoByKey},
     {label: 'Room Name', valueType: D.valueType.STRING, key: 'room_name', extract: getInfoByKey},
-    {label: 'MAC Address', valueType: D.valueType.STRING, key: 'mac_address', extract: getInfoByKey},
     {label: 'Serial Number', valueType: D.valueType.DATETIME, key: 'serial_number', extract: getInfoByKey},
     {label: 'Vendor', valueType: D.valueType.DATETIME, key: 'vendor', extract: getInfoByKey},
     {label: 'Model', valueType: D.valueType.NUMBER, key: 'model', extract: getInfoByKey},
@@ -61,10 +58,8 @@ const devicesExtractors = [
     {label: 'Enrolled in ZDM', valueType: D.valueType.STRING, key: 'enrolled_in_zdm', extract: getInfoByKey},
     {label: 'Connected to ZDM', valueType: D.valueType.STRING, key: 'connected_to_zdm', extract: getInfoByKey},
     {label: 'Device Type', valueType: D.valueType.STRING, key: 'device_type', extract: function(row){return mapDeviceType(row.device_type)}},
-    {label: 'SDK Version', valueType: D.valueType.STRING, key: 'skd_version', extract: getInfoByKey},
     {label: 'Device Status', valueType: D.valueType.STRING, key: 'device_status', extract: function(row) {return mapDeviceStatus(row.device_status)}},
-    {label: 'Last Online', valueType: D.valueType.DATETIME, key: 'last_online', extract: function(row) {return formatLastOnlineDate(row.last_online) }},
-    {label: 'User Email', valueType: D.valueType.STRING, key: 'user_email', extract: getInfoByKey}
+    {label: 'Last Online', valueType: D.valueType.DATETIME, key: 'last_online', extract: function(row) {return formatLastOnlineDate(row.last_online)}}
 ]
 
 // Create the devices table with extracted properties
@@ -120,6 +115,9 @@ function mapDeviceStatus(deviceStatus) {
 function formatLastOnlineDate(dateString) {
     const date = new Date(dateString)
     const year = date.getUTCFullYear()
+    if (isNaN(date.getTime())) {
+        return 'N/A'
+    }
     const month = String(date.getUTCMonth() + 1).padStart(2, '0')
     const day = String(date.getUTCDate()).padStart(2, '0')
     const hours = String(date.getUTCHours()).padStart(2, '0')
@@ -230,53 +228,7 @@ function processdevicesResponse(error, response, d, body) {
         d.reject(error)
         return
     }
-    // const bodyAsJSON = JSON.parse(body)
-    const bodyAsJSON = {
-        'next_page_token': '',
-        'page_size': 30,
-        'devices': [
-            {
-                'device_id': 'F1C6E9DF-429E-4FA1-85DA-AC95464F3D18',
-                'device_name': 'My device',
-                'mac_address': '01-23-45-67-89-AB',
-                'serial_number': '6NRN2A0',
-                'vendor': 'Poly',
-                'model': 'StudioX30',
-                'platform_os': 'Epos expandvision5 1.2.22315.04',
-                'app_version': '5.13.0.5762',
-                'tag': 'personal rooms',
-                'enrolled_in_zdm': true,
-                'connected_to_zdm': true,
-                'room_id': '72afdc13-a289-40c3-b358-50c8b8de',
-                'room_name': 'My Personal Meeting Room',
-                'device_type': 0,
-                'skd_version': '2.0.11',
-                'device_status': 0,
-                'last_online': '2022-10-27T10:23:15Z',
-                'user_email': 'test-user@ya.us'
-            },
-            {
-                'device_id': 'F1C6E9DF-429E-4FA1-85DA-AC95464F3D18111',
-                'device_name': 'My device111',
-                'mac_address': '01-23-45-67-89-AB111',
-                'serial_number': '6NRN2A01111',
-                'vendor': 'Poly111',
-                'model': 'StudioX301111',
-                'platform_os': 'Epos expandvision5 1.2.22315.041111',
-                'app_version': '5.13.0.5762111',
-                'tag': 'personal rooms111',
-                'enrolled_in_zdm': true,
-                'connected_to_zdm': true,
-                'room_id': '72afdc13-a289-40c3-b358-50c8b8de11111',
-                'room_name': 'My Personal Meeting Room111111',
-                'device_type': 1,
-                'skd_version': '2.0.11111111',
-                'device_status': 1,
-                'last_online': '2022-12-27T12:00:00Z',
-                'user_email': 'test-user@ya.us111111'
-            }
-        ]
-    }
+    const bodyAsJSON = JSON.parse(body)
     if (!Array.isArray(bodyAsJSON.devices) || bodyAsJSON.devices.length === 0) {
         console.error('No devices found.')
         D.failure(D.errorType.GENERIC_ERROR)
@@ -300,8 +252,12 @@ function processdevicesResponse(error, response, d, body) {
     }
 }
 
+/**
+ * Generates the HTTP configuration for retrieving the list of devices from the Zoom API
+ * @returns {Object} The configuration object for the HTTP request
+ */
 function generateConfig() {
-    const url = '/v2/devices?page_size=' + pageSize
+    const url = '/v2/devices?device_status=' + deviceStatus + '&page_size=' + pageSize
     return {
         url: pageToken ? url + '&next_page_token=' + pageToken : url, 
         protocol: 'https', 

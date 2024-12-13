@@ -2,23 +2,25 @@
     "logo": "zoom.svg",
     "version": "1.0.0",
     "name": "Zoom Devices List",
-    "description": "Retrieves information about Zoom devices connected to a specific account",
+    "description": "Retrieves information about Zoom devices connected to a specific account including their current status",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration'device:read:admin'"
+            "Requires Zoom devices to be configured"
         ]
     },
     "tags": [
         "zoom",
-        "device"
+        "device",
+        "type",
+        "status"
     ],
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "table": "[17]"
+        "table": "[14]"
     },
     "protocols": [
         "HTTPS"
