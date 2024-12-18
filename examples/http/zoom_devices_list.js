@@ -34,6 +34,7 @@ const zoomResources = D.createExternalDevice('api.zoom.us')
 
 const deviceId = D.getParameter('deviceId')
 const deviceType = D.getParameter('deviceType') 
+const roomName = D.getParameter('roomName') 
 
 let accessToken
 let pageToken
@@ -139,6 +140,8 @@ function checkHTTPError(error, response) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE)
     } else if (response.statusCode === 401 || response.statusCode === 403) {
         D.failure(D.errorType.AUTHENTICATION_ERROR)
+    } else if (response.statusCode === 400) {
+        D.failure(response.body)
     } else if (response.statusCode !== 200) {
         D.failure(D.errorType.GENERIC_ERROR)
     }
@@ -204,13 +207,17 @@ function filterDevices(devices) {
     return devices.filter(function (device) {
         const associatedDevices = device.device_name
         const associatedDeviceType = mapDeviceType(device.device_type)
+        const associatedRooms = device.room_name
         const deviceIdFilter = (deviceId.length === 1 && deviceId[0].toLowerCase() === 'all') || deviceId.some(function (id) {
             return id.toLowerCase() === associatedDevices.toLowerCase()
         })
         const deviceTypeFilter = (deviceType.length === 1 && deviceType[0].toLowerCase() === 'all') || deviceType.some(function (type) {
             return type.toLowerCase() === associatedDeviceType.toLowerCase()
         })
-        return deviceIdFilter && deviceTypeFilter
+        const roomNameFilter = (roomName.length === 1 && roomName[0].toLowerCase() === 'all') || roomName.some(function (name) {
+            return name.toLowerCase() === associatedRooms.toLowerCase()
+        })
+        return deviceIdFilter && deviceTypeFilter && roomNameFilter
     })
 }
 
