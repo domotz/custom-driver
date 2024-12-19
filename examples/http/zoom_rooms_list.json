@@ -1,0 +1,60 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Zoom Rooms List",
+    "description": "Retrieves information about Zoom Rooms",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Zoom room license: Pro or higher",
+            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "zoom_rooms:read:list_rooms:admin: Grants permission to list and retrieve detailed information about Zoom Rooms",
+            "zoom_rooms:read:location:admin: Grants permission to retrieve detailed information about Zoom Room locations"
+        ]
+    },
+    "tags": [
+        "zoom",
+        "room",
+        "status", 
+        "location"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[4]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Zoom API",
+            "version": "v2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "accountId",
+            "label": "Account Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "roomId",
+            "label": "Room ID",
+            "value": ["All"]
+        }
+    ]
+}
