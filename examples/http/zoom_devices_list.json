@@ -1,0 +1,69 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Zoom Devices List",
+    "description": "Retrieves information about Zoom devices connected to a specific account including their current status",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Requires Zoom devices to be configured"
+        ]
+    },
+    "tags": [
+        "zoom",
+        "device",
+        "type",
+        "status"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[14]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Zoom API",
+            "version": "v2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "accountId",
+            "label": "Account Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "deviceId",
+            "label": "Device ID",
+            "value": ["All"]
+        },
+        {
+            "value_type": "LIST",
+            "name": "deviceType",
+            "label": "Device Type",
+            "value": ["All"]
+        },
+        {
+            "value_type": "LIST",
+            "name": "roomName",
+            "label": "Room Name",
+            "value": ["All"]
+        }
+    ]
+}
