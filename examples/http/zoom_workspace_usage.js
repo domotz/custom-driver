@@ -1,6 +1,6 @@
 /**
  * Domotz Custom Driver
- * Name: Workspace Usage
+ * Name: Zoom Workspace Usage
  * Description: This script retrieves information about Zoom Workspace Usage
  *
  * Communication protocol is HTTPS
@@ -8,7 +8,9 @@
  * Tested on Zoom API v2
  *
  * requirements:
- * Granular Scopes: workspace:read:usage,workspace:read:usage:admin
+ * Granular Scopes:
+ *      - workspace:read:usage,workspace:read:usage:admin
+ *      - zoom_rooms:read:list_locations:admin
  *
  * Creates a custom driver variable:
  *    - Workspace In Use
@@ -24,12 +26,13 @@ const accountId = D.getParameter("accountId")
 const clientId = D.getParameter("clientId")
 const clientSecret = D.getParameter("clientSecret")
 
-const locationId = D.getParameter("locationId")
+const locationName = D.getParameter("locationName")
 
 const zoomLogin = D.createExternalDevice("zoom.us")
 const zoomResources = D.createExternalDevice("api.zoom.us")
 
 let accessToken
+let locations = []
 let workspaceUsage = {}
 
 const variablesDetails = [{
@@ -68,7 +71,7 @@ const variablesDetails = [{
     valueType: D.valueType.NUMBER,
     unit: null,
     extract: function() {return getNotInUseByKey("room_usage")}
-},]
+}]
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -108,13 +111,13 @@ function processLoginResponse(d) {
 }
 
 /**
- * Processes the Webinars Remote Attendee data and handles pagination if necessary.
+ * Processes the Locations data and handles pagination if necessary.
  * @param {Error|null} error - The error object, if any, from the API response.
  * @param {Object} response - The HTTP response object.
  * @param {Object} d - A deferred object for resolving or rejecting the promise.
  * @param {string} body - The raw response body as a JSON string.
  */
-function processVisitorInvitation(error, response, d, body) {
+function processLocations(error, response, d, body) {
     checkHTTPError(error, response)
     if (error) {
         d.reject(error)
@@ -122,39 +125,104 @@ function processVisitorInvitation(error, response, d, body) {
     }
     const bodyAsJSON = JSON.parse(body)
 
-    if (!(bodyAsJSON.desk_usage && bodyAsJSON.desk_usage && bodyAsJSON.desk_usage)) {
-        console.error("No Metrics found.")
+    if (!(bodyAsJSON.locations && bodyAsJSON.locations.length > 0)) {
+        console.error("No Locations found.")
         D.failure(D.errorType.GENERIC_ERROR)
         return
     }
-    workspaceUsage = bodyAsJSON
+    locations = bodyAsJSON.locations
     d.resolve()
+}
+
+/**
+ * Processes the Workspaces Usage data and handles pagination if necessary.
+ * @param {Error|null} error - The error object, if any, from the API response.
+ * @param {Object} response - The HTTP response object.
+ * @param {Object} d - A deferred object for resolving or rejecting the promise.
+ * @param {string} body - The raw response body as a JSON string.
+ */
+function processWorkspacesUsage(d, error, response, body) {
+    checkHTTPError(error, response)
+    if (error) {
+        d.reject(error)
+        return
+    }
+    try {
+        const bodyAsJSON = JSON.parse(body)
+        if (!(bodyAsJSON.desk_usage && bodyAsJSON.room_usage && bodyAsJSON.total_usage)) {
+            console.error("No WorkspacesUsage found.")
+            D.failure(D.errorType.GENERIC_ERROR)
+            return
+        }
+        workspaceUsage = bodyAsJSON
+        d.resolve(workspaceUsage)
+    } catch (parseError) {
+        console.error("Error parsing Workspaces Usage:", parseError)
+        d.reject("Failed to parse response")
+    }
+}
+
+/**
+ * Retrieves the ID of a location by its name.
+ * @function getLocationIdByName
+ * @returns {string|null} The ID of the matching location if exactly one match is found; otherwise, `null`.
+ */
+function getLocationIdByName() {
+    const matchingLocation = locations.filter(function (location) {
+        return location.name === locationName
+    })
+    if (matchingLocation.length === 1) {
+        return matchingLocation[0].id
+    }
+    return null
 }
 
 /**
  * Generates the configuration object for the API request.
  * @returns {Object} - The configuration object containing the API endpoint, headers, and options.
  */
-function generateConfig() {
-    const url = "/v2/workspaces/usage?location_id=" + locationId
+function generateConfig(url) {
     return {
-        url: url, protocol: "https", headers: {
+        url: url,
+        protocol: "https",
+        headers: {
             "Authorization": "Bearer " + accessToken
-        }, rejectUnauthorized: false, jar: true
+        },
+        rejectUnauthorized: false,
+        jar: true
     }
 }
 
 /**
- * Retrieve Webinars Remote Attendee.
+ * Retrieve Locations.
  * @returns {promise}
  */
-function retrieveVisitorInvitation() {
+function retrieveLocations() {
     const d = D.q.defer()
-    const config = generateConfig();
+    const url = "/rooms/locations"
+    const config = generateConfig(url)
     zoomResources.http.get(config, function (error, response, body) {
-        processVisitorInvitation(error, response, d, body);
+        processLocations(error, response, d, body)
     })
     return d.promise
+}
+
+/**
+ * Retrieve Workspaces Usage
+ * @returns {promise}
+ */
+function retrieveWorkspacesUsage(locationId) {
+    var d = D.q.defer()
+    if (locationId){
+        const url = "/v2/workspaces/usage?location_id=" + locationId
+        const config = generateConfig(url)
+        zoomResources.http.get(config, function (error, response, body) {
+            processWorkspacesUsage(d, error, response, body)
+        })
+        return d.promise
+    }
+    console.error("No valid locationId found")
+    D.failure(D.errorType.GENERIC_ERROR)
 }
 
 /**
@@ -163,13 +231,17 @@ function retrieveVisitorInvitation() {
  */
 function generateLoginConf() {
     return {
-        url: "/oauth/token", protocol: "https", headers: {
+        url: "/oauth/token",
+        protocol: "https",
+        headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "Authorization": "Basic " + D._unsafe.buffer.from(clientId + ":" + clientSecret).toString("base64")
-        }, form: {
+        },
+        form: {
             "grant_type": "account_credentials", "account_id": accountId
-        }, rejectUnauthorized: false, jar: true
-    };
+        },
+        rejectUnauthorized: false, jar: true
+    }
 }
 
 /**
@@ -178,7 +250,7 @@ function generateLoginConf() {
  */
 function login() {
     const d = D.q.defer()
-    const config = generateLoginConf();
+    const config = generateLoginConf()
     zoomLogin.http.post(config, processLoginResponse(d))
     return d.promise
 }
@@ -191,7 +263,7 @@ function login() {
 function getInUseByKey(key) {
     return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["in_use"] !== undefined
         ? workspaceUsage[key]["in_use"]
-        : "N/A";
+        : "N/A"
 }
 
 /**
@@ -202,17 +274,16 @@ function getInUseByKey(key) {
 function getNotInUseByKey(key) {
     return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["not_in_use"] !== undefined
         ? workspaceUsage[key]["not_in_use"]
-        : "N/A";
+        : "N/A"
 }
 
 /**
  * Extracts variables from the variables details and creates them using `D.createVariable`.
  */
 function extractVariables() {
-    const variables = variablesDetails.map(function (detail) {
+    return variablesDetails.map(function (detail) {
         return D.createVariable(detail.uid, detail.name, detail.extract(), detail.unit, detail.valueType)
     })
-    D.success(variables);
 }
 
 /**
@@ -222,7 +293,9 @@ function extractVariables() {
  */
 function validate() {
     login()
-        .then(retrieveVisitorInvitation)
+        .then(retrieveLocations)
+        .then(getLocationIdByName)
+        .then(retrieveWorkspacesUsage)
         .then(D.success)
         .catch(function (error) {
             console.error(error)
@@ -232,13 +305,16 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get Zoom Webinars Remote Attendee
- * @documentation This procedure retrieves the list of Zoom Webinars Remote Attendee, filters based on roomId, and populates a table with room details
+ * @label Get Zoom Workspaces Usage
+ * @documentation This procedure retrieves the Zoom Workspaces Usage details.
  */
 function get_status() {
     login()
-        .then(retrieveVisitorInvitation)
+        .then(retrieveLocations)
+        .then(getLocationIdByName)
+        .then(retrieveWorkspacesUsage)
         .then(extractVariables)
+        .then(D.success)
         .catch(function (error) {
             console.error(error)
             D.failure(D.errorType.GENERIC_ERROR)

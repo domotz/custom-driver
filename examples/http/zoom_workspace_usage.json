@@ -1,7 +1,7 @@
 {
     "logo": "zoom.svg",
     "version": "1.0.0",
-    "name": "Workspace usage",
+    "name": "Zoom Workspace usage",
     "description": "This script retrieves information about Zoom Workspace Usage",
     "category": "Software Integration",
     "requirements": {
@@ -10,12 +10,14 @@
         "others": [
             "license: Business or a higher plan",
             "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "zoom_rooms:read:list_locations:admin",
             "workspace:read:usage,workspace:read:usage:admin"
         ]
     },
     "tags": [
         "zoom",
-        "invitations"
+        "workspace-usage",
+        "location"
     ],
     "sample_period_s": 900,
     "has_actions": false,
@@ -49,8 +51,8 @@
         },
         {
             "value_type": "STRING",
-            "name": "locationId",
-            "label": "Location Id"
+            "name": "locationName",
+            "label": "Location Name"
         }
     ]
 }
