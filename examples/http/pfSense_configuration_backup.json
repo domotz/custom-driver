@@ -1,0 +1,33 @@
+{
+  "logo": "pfsense.svg",
+  "version": "1.0",
+  "name": "pfSense Configuration Backup",
+  "description": " Extracts the pfSense configuration and backs it up",
+  "type": "CONFIGURATION_MANAGEMENT",
+  "category": "Configuration Management",
+  "requirements": {
+    "credentials": true,
+    "sandbox_version": "1.16",
+    "others": [
+      "pfSense"
+    ]
+  },
+  "tags": [
+    "pfsense",
+    "firewall",
+    "configuration",
+    "backup"
+  ],
+  "sample_period_s": 86400,
+  "execution_time_s": 60,
+  "has_actions": false,
+  "protocols": [
+    "HTTPS"
+  ],
+  "tested_on": [
+    {
+      "name": "pfSense",
+      "version": "2.7.2-RELEASE"
+    }
+  ]
+}
