@@ -4,7 +4,7 @@
  *
  * Communication protocol is SSH
  *
- * Tested on FS Switch Version 2.2.0D
+ * Tested on FS Switch version S3400-24T4FP and FS OS version 2.2.0D
  *
  * Automates configuration backup for FS switch using SSH commands.
  * Handles authentication, retrieves the running configuration, and creates a backup.

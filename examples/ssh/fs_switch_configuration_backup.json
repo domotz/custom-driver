@@ -26,6 +26,10 @@
     "tested_on": [
         {
             "name": "FS Switch",
+            "version": "S3400-24T4FP"
+        },
+        {
+            "name": "FS OS",
             "version": "2.2.0D"
         }
     ]
