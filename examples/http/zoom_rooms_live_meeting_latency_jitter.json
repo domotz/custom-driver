@@ -1,0 +1,63 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Zoom Rooms Live Meeting Latency and Jitter",
+    "description": "This script retrieves information about Zoom Rooms Live Meeting Latency and Jitter",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Zoom room license: Pro or higher",
+            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "zoom_rooms:read:list_rooms:admin - Grant permission to retrieve a list of Zoom Rooms",
+            "dashboard:read:zoomroom:admin - Grant permission to access dashboard-level metrics for Zoom Rooms",
+            "dashboard:read:meeting_participant_qos:admin - Grant permission to access Quality of Service (QoS) metrics for meeting participants"
+        ]
+    },
+    "tags": [
+        "zoom",
+        "room",
+        "live-meeting",
+        "quality-of-service",
+        "avg-latency",
+        "avg-jitter"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[25]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Zoom API",
+            "version": "v2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "accountId",
+            "label": "Account Id"
+        },
+        {
+            "value_type": "LIST",
+            "name": "roomIds",
+            "label": "Room IDs",
+            "value": ["All"]
+        }
+    ]
+}
