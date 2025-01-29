@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "fs.svg",
     "version": "1.0",
     "name": "FS Switch Configuration Backup",
     "description": "Extracts the FS Switch configuration and backs it up",
