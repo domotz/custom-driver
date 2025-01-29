@@ -1,0 +1,58 @@
+{
+    "logo": "zoom.svg",
+    "version": "1.0.0",
+    "name": "Zoom Workspace usage",
+    "description": "This script retrieves information about Zoom Workspace Usage",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "license: Business or a higher plan",
+            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "zoom_rooms:read:list_locations:admin",
+            "workspace:read:usage,workspace:read:usage:admin"
+        ]
+    },
+    "tags": [
+        "zoom",
+        "workspace-usage",
+        "location"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[6]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Zoom API",
+            "version": "v2"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "accountId",
+            "label": "Account Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "locationName",
+            "label": "Location Name"
+        }
+    ]
+}
