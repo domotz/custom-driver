@@ -6,7 +6,12 @@
  * Communication protocol is HTTPS
  *
  * Tested on Zoom API v2
- * 
+ *
+ * Requirements:
+ *    - Granular Scopes for Zoom Room devices: zoom_rooms:read:list_devices:admin
+ *    - Pro or a higher plan with Zoom Room license
+ *    - Account owner or admin permissions
+ *
  * Creates Custom Driver table with the following columns:
  *    - Device Name: The name of the Zoom device
  *    - Room ID: Unique identifier for the room to which the device is assigned
