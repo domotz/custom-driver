@@ -8,7 +8,11 @@
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Requires Zoom devices to be configured"
+            "Requires Zoom devices to be configured",
+            "Account owner or admin permissions",
+            "Zoom room license: Pro or higher",
+            "Define the Scopes: When you set up your OAuth app, you'll specify which scopes you need for your integration:",
+            "zoom_rooms:read:list_devices:admin: Grants permission to list and retrieve detailed information about devices associated with Zoom Rooms"
         ]
     },
     "tags": [
