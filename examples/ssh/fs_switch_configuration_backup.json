@@ -1,0 +1,36 @@
+{
+    "logo": "fs.svg",
+    "version": "1.0",
+    "name": "FS Switch Configuration Backup",
+    "description": "Extracts the FS Switch configuration and backs it up",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.16",
+        "others": [
+            "FS Switch"
+        ]
+    },
+    "tags": [
+        "fs-switch",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "FS Switch",
+            "version": "S3400-24T4FP"
+        },
+        {
+            "name": "FS OS",
+            "version": "2.2.0D"
+        }
+    ]
+}
