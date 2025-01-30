@@ -1,6 +1,6 @@
 {
     "logo": "zoom.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Zoom Workspace usage",
     "description": "This script retrieves information about Zoom Workspace Usage",
     "category": "Software Integration",
