@@ -199,7 +199,7 @@ function generateConfig(url) {
  */
 function retrieveLocations() {
     const d = D.q.defer()
-    const url = "/rooms/locations"
+    const url = "/v2/rooms/locations"
     const config = generateConfig(url)
     zoomResources.http.get(config, function (error, response, body) {
         processLocations(error, response, d, body)
