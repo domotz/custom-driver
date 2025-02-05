@@ -1,6 +1,6 @@
 {
     "logo": "microsoft-hyper-v.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Hyper-V VM Virtual Hard Drives",
     "description": "This script retrieves information about the Hyper-V VM Virtual Hard Drives",
     "category": "Software Integration",
@@ -42,6 +42,13 @@
         {
             "name": "Hyper-V",
             "version": "10.0.19041.1"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "vmId",
+            "label": "VM ID"
         }
     ]
 }
