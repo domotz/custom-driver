@@ -43,5 +43,12 @@
             "name": "Hyper-V",
             "version": "10.0.19041.1"
         }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "vmId",
+            "label": "VM ID"
+        }
     ]
 }
