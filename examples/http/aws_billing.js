@@ -188,8 +188,7 @@ function fillConfig() {
             //The normalized usage amount for a specific resource, factoring in any differences in resource usage across different instance sizes, regions, or other dimensions. 
             uid: "NormalizedUsageAmount",
             label: "NormalizedUsageAmount",
-            execute: getBilling("NormalizedUsageAmount"),
-            unit: "N/A"
+            execute: getBilling("NormalizedUsageAmount")
         },
         {
             //The total cost of your usage, without blending across usage types or operations. 
@@ -202,8 +201,7 @@ function fillConfig() {
             //The quantity of a specific resource that was used during a given time period.
             uid: "UsageQuantity",
             label: "UsageQuantity",
-            execute: getBilling("UsageQuantity"),
-            unit: "N/A"
+            execute: getBilling("UsageQuantity")
         },
     ];
 }
