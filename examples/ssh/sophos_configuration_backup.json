@@ -1,0 +1,33 @@
+{
+    "logo": "sophos.svg",
+    "version": "1.0",
+    "name": "Sophos Firewall Backup configuration",
+    "description": "Extracts the configuration of the Sophos Firewall and backs it up",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.16",
+        "others": [
+            "Sophos Firewall Firewall"
+        ]
+    },
+    "tags": [
+        "sophos",
+        "firewall",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 120,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Sophos Firewall",
+            "version": "20.0.2"
+        }
+    ]
+}
