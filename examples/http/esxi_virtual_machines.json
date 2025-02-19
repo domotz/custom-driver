@@ -34,7 +34,7 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "vmId",
+            "name": "vmID",
             "label": "VM ID",
             "value": ["ALL"]
         }
