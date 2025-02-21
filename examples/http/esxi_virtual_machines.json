@@ -1,6 +1,6 @@
 {
     "logo": "vmware-esxi.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "ESXi Virtual Machines",
     "description": "Retrieves detailed information about virtual machines from an ESXi server",
     "category": "Software Integration",
