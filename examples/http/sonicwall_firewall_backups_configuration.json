@@ -1,0 +1,34 @@
+{
+    "logo": "sonicwall.svg",
+    "version": "1.0",
+    "name": "SonicWall Firewall Backup configuration",
+    "description": "Extracts the SonicWall Firewall configuration and backs it up",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.16",
+        "others": [
+            "SonicWall",
+            "SonicOS"
+        ]
+    },
+    "tags": [
+        "sonicwall",
+        "firewall",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "SonicWall SonicOS",
+            "version": "7.1.1-7058"
+        }
+    ]
+}
