@@ -4,7 +4,7 @@
  *             
  * Communication protocol is SSH.
  * 
- * Tested under MikroTik RouterOS 7.13.3
+ * Tested under MikroTik RouterOS RB5009UG+S+
  * 
  * Creates a Custom Driver table with the following columns:
  *    - Name: Name of the DHCP pool
