@@ -126,6 +126,6 @@ function validate() {
  * @label Backup Huawei Switch Configuration
  * @documentation Retrieves and stores the configuration backup for the Huawei Switch.
  */
-function get_status() {
+function backup() {
     D.device.sendSSHCommands(sshOptions, getConfig);
 }

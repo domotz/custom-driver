@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "huawei.svg",
     "version": "1.0.0",
     "name": "Huawei Switch Configuration Backup",
     "description": "Extracts the Huawei Switch configuration and backs it up",
@@ -14,7 +14,7 @@
         ]
     },
     "tags": [
-        "Huawei-switch",
+        "huawei-switch",
         "configuration",
         "backup"
     ],
