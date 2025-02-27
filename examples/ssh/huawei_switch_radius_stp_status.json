@@ -1,6 +1,6 @@
 {
-    "logo": "",
-    "version": "1.0.1",
+    "logo": "huawei.svg",
+    "version": "1.0.0",
     "name": "Huawei Switch - Radius and STP status",
     "description": "This script retrieves the status of RADIUS authentication and Spanning Tree Protocol (STP) from a Huawei Switch",
     "category": "Hardware Integration",
@@ -13,7 +13,7 @@
         ]
     },
     "tags": [
-        "switch",
+        "huawei-switch",
         "radius",
         "stp",
         "status"
