@@ -1,0 +1,33 @@
+{
+    "logo": "huawei.svg",
+    "version": "1.0.0",
+    "name": "Huawei Switch Configuration Backup",
+    "description": "Extracts the Huawei Switch configuration and backs it up",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.16",
+        "others": [
+            "SSH Enabled",
+            "Huawei Switch"
+        ]
+    },
+    "tags": [
+        "huawei-switch",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Huawei Switch",
+            "version": "V200R022C00SPC500"
+        }
+    ]
+}
