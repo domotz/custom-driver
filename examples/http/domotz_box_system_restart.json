@@ -2,7 +2,7 @@
     "logo": "domotz.svg",
     "version": "1.0.0",
     "name": "Domotz Box System Restart",
-    "description": "This script allows to remotely restart the Domotz Box on demand",
+    "description": "This script provides remote control for restarting the Domotz Box as needed",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
@@ -18,8 +18,7 @@
         "restart",
         "reboot",
         "system",
-        "dhcp",
-        "static"
+        "configuration"
     ],
     "sample_period_s": 900,
     "has_actions": true,
