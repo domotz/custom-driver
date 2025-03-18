@@ -17,12 +17,21 @@
  *       - Restore Switch Port: Restores switch ports to their original VLAN if the isolated VLAN contains 0 or 1 device, indicating that the port is no longer misused
  **/
 
+// SSH command to retrieve MAC address table from the switch
 const cmdGetMACAddressTable = 'show mac address-table'
-const cmdGetARPTable = 'show arp'
+// SSH command to retrieve VLAN information from the switch
 const cmdShowVlans = 'show vlan brief'
 
+// The name of the isolated VLAN used to move misused ports, which can be modified by the user to any desired name.
 const isolatedVlanName = 'isolated-vlan'
 
+/**
+ * @description Excluded ports from the device parameters to avoid them being isolated
+ * @type LIST
+ */
+const excludedPorts = D.getParameter('excludedPorts')
+
+// SSH configuration parameters for connecting to the switch
 const sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
@@ -36,6 +45,7 @@ const sshConfig = {
     }
 }
 
+// Create a table to store data about reachable devices
 var table = D.createTable(
     'Reachable devices',
     [
@@ -81,13 +91,12 @@ function executeCommand(command) {
 }
 
 /**
- * Retrieves information.
+ * Executes the SSH commands to retrieve MAC address table and VLAN information
  * @returns {Promise} A promise that resolves when all SSH commands are executed
  */
 function executeSwitchCommands(){
     return D.q.all([
         executeCommand(cmdGetMACAddressTable),
-        executeCommand(cmdGetARPTable),
         executeCommand(cmdShowVlans)
     ])
 }
@@ -109,25 +118,6 @@ function parseMacTableLines(output) {
         }
     })
     return macEntries
-}
-
-/**
- * Parses the ARP table output into a structured format
- * @param {string} output Raw command output from the ARP table
- * @returns {Array} Array of parsed ARP table entries
- */
-function parseArpTable(output) {
-    const arpEntries = []
-    const lines = output.split('\n')
-    lines.forEach(function(line) {
-        const trim = line.trim()
-        if (trim === '' || trim.includes('Protocol') || trim.includes('show arp')) return
-        const parts = trim.split(/\s+/).filter(Boolean)
-        if (parts.length >= 6) {
-            arpEntries.push({ ip: parts[1], mac: parts[3] })
-        }
-    })
-    return arpEntries
 }
 
 /**
@@ -153,71 +143,61 @@ function parseVlanTable(output) {
 }
 
 /**
- * Excludes uplink ports based on ARP table information
- * @param {Array} macEntries Parsed MAC address table entries
- * @param {Array} arpEntries Parsed ARP table entries
- * @returns {Array} List of ports to be excluded
+ * Excludes uplink ports from the MAC address table to avoid them being isolated
+ * @param {Array} macEntries List of parsed MAC address table entries
+ * @returns {Array} Filtered list of MAC entries excluding uplink ports
  */
-function excludeUplinkPorts(macEntries, arpEntries) {
-    const excludedPorts = []
-    const arpMacs = arpEntries.map(function(entry) {
-        return entry.mac
+function excludeUplinkPorts(macEntries) {
+    return macEntries.filter(function(entry) {
+        return !excludedPorts.some(function(excludedPort) {
+            return entry.port.toLowerCase() === excludedPort.toLowerCase()
+        })
     })
-    macEntries.forEach(function(entry) {
-        if (arpMacs.includes(entry.mac)) {
-            excludedPorts.push(entry.port)
-        }
-    })
-    return excludedPorts
 }
 
 /**
- * Processes the command results and extracts MAC, ARP, and VLAN data
+ * Processes the command results and extracts MAC, and VLAN data
  * @param {Array} results Array containing command outputs
  * @returns {Object} Processed data including macEntries, arpEntries, vlanEntries, and excludedPorts
  */
 function processResults(results) {
     const macTableOutput = results[0]
-    const arpTableOutput = results[1]
-    const vlanTableOutput = results[2]
+    const vlanTableOutput = results[1]
 
-    if (!macTableOutput || !arpTableOutput || !vlanTableOutput) {
+    if (!macTableOutput || !vlanTableOutput) {
         console.error('Missing MAC, ARP, or VLAN table output')
         return D.failure(D.errorType.GENERIC_ERROR)
     }
 
     const macEntries = parseMacTableLines(macTableOutput)
-    const arpEntries = parseArpTable(arpTableOutput)
     const vlanEntries = parseVlanTable(vlanTableOutput)
 
-    const excludedPorts = excludeUplinkPorts(macEntries, arpEntries)
-    return { macEntries, arpEntries, vlanEntries, excludedPorts }
+    const filteredMacEntries = excludeUplinkPorts(macEntries)
+    return { filteredMacEntries, vlanEntries }
 }
 
 /**
  * Identifies reachable devices on switch ports, excluding uplink ports
- * @param {Array} macEntries Parsed MAC address table entries
- * @param {Array} excludedPorts List of ports to be excluded
+ * @param {Array} filteredMacEntries List of filtered MAC address table entries
  * @returns {Array} List of processed ports with VLAN, reachable MAC addresses, and status
  */
-function reachableDevices(macEntries, excludedPorts) {
+function reachableDevices(filteredMacEntries) {
     const processedPorts = []
-    return macEntries
-        .filter(function(entry) { return !excludedPorts.includes(entry.port)})
-        .reduce(function(acc, entry) {
-            if (processedPorts.indexOf(entry.port) === -1) {
-                processedPorts.push(entry.port)
-                const vlan = entry.vlan
-                const reachableMacs = macEntries.filter(function(macEntry) { return macEntry.port === entry.port }).map(function(macEntry) { return macEntry.mac })
-                acc.push({
-                    port: entry.port,
-                    vlan: 'VLAN' + vlan,
-                    reachableMacAddresses: reachableMacs.join(', '),
-                    status: reachableMacs.length > 1 ? 'Moved to ' + isolatedVlanName : 'Active with 1 device'
-                })
-            }
-            return acc
-        }, [])
+    return filteredMacEntries.reduce(function(acc, entry) {
+        if (processedPorts.indexOf(entry.port) === -1) {
+            processedPorts.push(entry.port)
+            const reachableMacs = filteredMacEntries
+                .filter(function(macEntry) { return macEntry.port === entry.port })
+                .map(function(macEntry) { return macEntry.mac })
+            acc.push({
+                port: entry.port,
+                vlan: 'VLAN' + entry.vlan,
+                reachableMacAddresses: reachableMacs.join(', '),
+                status: reachableMacs.length > 1 ? 'Moved to ' + isolatedVlanName : 'Active with 1 device'
+            })
+        }
+        return acc
+    }, [])
 }
 
 /**
@@ -228,8 +208,8 @@ function reachableDevices(macEntries, excludedPorts) {
  */
 function sanitize(output, maxLength){
     var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitisationRegex, '').slice(0, maxLength).replace(/\s+/g, '-').toLowerCase()
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+    return output.replace(recordIdSanitizationRegex, '').slice(0, maxLength).replace(/\s+/g, '-').toLowerCase()
 }
 
 /**
@@ -248,23 +228,20 @@ function insertDataIntoTable(ports) {
 
 /**
  * Counts the number of devices connected to each port
- * @param {Array} macEntries Parsed MAC address table entries
- * @param {Array} excludedPorts List of ports to exclude from counting
+ * @param {Array} filteredMacEntries List of filtered MAC address table entries
  * @returns {Object} A map of port numbers to device counts
  */
-function countPorts(macEntries, excludedPorts) {
+function countPorts(filteredMacEntries) {
     const portCount = {}
-    macEntries.forEach(function(portEntry) {
-        if (!excludedPorts.includes(portEntry.port)) {
-            portCount[portEntry.port] = (portCount[portEntry.port] || 0) + 1
-        }
+    filteredMacEntries.forEach(function(portEntry) {
+        portCount[portEntry.port] = (portCount[portEntry.port] || 0) + 1
     })
     console.log('Port Count:', portCount)
     return portCount
 }
 
 /**
- * Finds ports that have multiple devices connected
+ * Finds ports that have multiple devices connected that need isolation
  * @param {Object} portCount A map of port numbers to device counts
  * @returns {Array} List of ports with multiple connected devices
  */
@@ -274,26 +251,23 @@ function findPortsWithMultipleDevices(portCount) {
 
 /**
  * Identifies ports that have multiple reachable devices and need isolation
- * @param {Array} macEntries List of MAC address entries with port details
- * @param {Array} excludedPorts List of ports to be excluded from evaluation
- * @returns {Array} List of isolated ports
+ * @param {Array} filteredMacEntries List of filtered MAC address entries with port details
+ * @returns {Array} List of isolated ports that require VLAN isolation
  */
-function findIsolatedPorts(macEntries, excludedPorts) {
-    const portCount = countPorts(macEntries, excludedPorts)
+function findIsolatedPorts(filteredMacEntries) {
+    const portCount = countPorts(filteredMacEntries)
     return findPortsWithMultipleDevices(portCount)
 }
 
 /**
  * Checks if an isolated VLAN already exists
- * @param {Array} vlanEntries List of VLAN entries
- * @returns {Object|null} Returns VLAN details if found, otherwise null
+ * @param {Array} vlanEntries List of existing VLAN entries
+ * @returns {Object|null} Returns the isolated VLAN details if found, otherwise null
  */
 function checkExistingIsolatedVlan(vlanEntries) {
-    let existingIsolatedVlan = vlanEntries.find(function(vlan) {
+    return vlanEntries.find(function(vlan) {
         return vlan.name === isolatedVlanName
     })
-    console.log('Isolated VLAN:', existingIsolatedVlan || 'Not exist')
-    return existingIsolatedVlan
 }
 
 /**
@@ -314,6 +288,7 @@ function handleIsolation(isolatedPorts, vlanEntries) {
         console.log('An isolated VLAN already exists with ID', existingIsolatedVlan.vlan, 'and name', existingIsolatedVlan.name)
         return movePortsToEmptyVlan(isolatedPorts, existingIsolatedVlan.vlan)
     } else {
+        console.log('No isolated VLAN exists')
         return createNewVlanAndMovePorts(isolatedPorts, vlanEntries)
     }
 }
@@ -414,23 +389,23 @@ function createPortSwitchCommands(isolatedPorts, vlanId) {
 }
 
 /**
- * Counts the number of devices in isolated VLAN connected to a specific port
- * @param {string} port Port to check
- * @param {Array} macEntries List of MAC address entries
- * @returns {number} Count of connected devices
+ * Counts the number of devices connected to a specific port in the isolated VLAN
+ * @param {string} port The port to check for connected devices
+ * @param {Array} filteredMacEntries List of MAC address entries filtered for the isolated VLAN
+ * @returns {number} The count of devices connected to the specified port
  */
-function getDeviceCount(port, macEntries) {
-    return macEntries.filter(function(entry){ return entry.port === port}).length
+function getDeviceCount(port, filteredMacEntries) {
+    return filteredMacEntries.filter(function(entry){ return entry.port === port}).length
 }
 
 /**
  * Checks whether ports should be restored to their original VLAN based on device count
- * @param {Array} restoredPorts Ports under evaluation
- * @param {Array} macEntries MAC address entries
+ * @param {Array} restoredPorts List of ports to be evaluated for restoration
+ * @param {Array} filteredMacEntries List of filtered MAC address entries
  */
-function checkAndRestorePorts(restoredPorts, macEntries) {
+function checkAndRestorePorts(restoredPorts, filteredMacEntries) {
     restoredPorts.forEach(function(port) {
-        const deviceCount = getDeviceCount(port, macEntries)
+        const deviceCount = getDeviceCount(port, filteredMacEntries)
 
         if (deviceCount === 0 || deviceCount === 1) {
             console.log('Port', port, 'has', deviceCount, 'device(s), restoring to VLAN 1')
@@ -443,7 +418,7 @@ function checkAndRestorePorts(restoredPorts, macEntries) {
 
 /**
  * Retrieves a list of ports associated with the isolated VLAN
- * @param {Array} vlanEntries VLAN entries
+ * @param {Array} vlanEntries List of VLAN entries to search for the isolated VLAN
  * @returns {Array} List of ports assigned to the isolated VLAN
  */
 function getIsolatedVlanPorts(vlanEntries) {
@@ -456,7 +431,7 @@ function getIsolatedVlanPorts(vlanEntries) {
 }
 
 /**
- * Restores the specified ports back to the defaul VLAN 1
+ * Restores the specified ports back to the default VLAN 1
  * @param {Array} restoredPorts Ports to be restored
  * @returns {Promise} Resolves when restoration is complete
  */
@@ -495,7 +470,7 @@ function validate () {
     executeSwitchCommands()
         .then(function (result){
             const isolationData = processResults(result)
-            const isolatedPorts = findIsolatedPorts(isolationData.macEntries, isolationData.excludedPorts)
+            const isolatedPorts = findIsolatedPorts(isolationData.filteredMacEntries)
             if (isolatedPorts.length > 0) {
                 console.log('There is some Ports that need to be isolated:', isolatedPorts)
             }
@@ -508,19 +483,25 @@ function validate () {
 /**
  * @remote_procedure
  * Get Switch Port Status
- * @documentation This procedure retrieves switch port status, detects ports with multiple reachable devices and populates the results in a table.
+ * @documentation This procedure retrieves switch port status, detects ports with multiple reachable devices, isolates ports as needed, and restores ports when only zero or one device is connected. It also populates the results in a table.
  */
-function get_status () {
+function get_status() {
     executeSwitchCommands()
-        .then(function (result){
+        .then(function (result) {
             const isolationData = processResults(result)
-            const isolationTable = reachableDevices(isolationData.macEntries, isolationData.excludedPorts)
+
+            const isolationTable = reachableDevices(isolationData.filteredMacEntries)
             insertDataIntoTable(isolationTable)
+
+            const isolatedPorts = findIsolatedPorts(isolationData.filteredMacEntries)
+            handleIsolation(isolatedPorts, isolationData.vlanEntries)
+
+            const restoredPorts = getIsolatedVlanPorts(isolationData.vlanEntries)
+            checkAndRestorePorts(restoredPorts, isolationData.filteredMacEntries)
             D.success(table)
         })
         .catch(checkSshError)
 }
-
 
 /**
  * @remote_procedure
@@ -531,9 +512,8 @@ function custom_1(){
     executeSwitchCommands()
         .then(function (result) {
             const isolationData = processResults(result)
-            const isolatedPorts = findIsolatedPorts(isolationData.macEntries, isolationData.excludedPorts)
+            const isolatedPorts = findIsolatedPorts(isolationData.filteredMacEntries)
             handleIsolation(isolatedPorts, isolationData.vlanEntries)
-            D.success()
         })
         .catch(checkSshError)
 }
@@ -548,7 +528,8 @@ function custom_2(){
         .then(function (result) {
             const isolationData = processResults(result)
             const restoredPorts = getIsolatedVlanPorts(isolationData.vlanEntries)
-            checkAndRestorePorts(restoredPorts, isolationData.macEntries)
+            checkAndRestorePorts(restoredPorts, isolationData.filteredMacEntries)
+            D.success()
         })
         .catch(checkSshError)
 }
