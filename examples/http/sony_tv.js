@@ -1,7 +1,8 @@
 const TV_STATUS_OFF = "standby";
 const TV_STATUS_ON = "on";
+const DAYS_OF_THE_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-var videoSource;
+var videoSource = "N/A"
 var tvStatus;
 
 /**
@@ -11,7 +12,7 @@ var tvStatus;
 */function validate(){
     retrieveStatus()
     .then(function(){ D.success()})
-    .catch(function(){ D.failure(D.errorType.GENERIC_ERROR) });    
+    .catch(failure);    
 } 
 
 /**
@@ -19,12 +20,12 @@ var tvStatus;
 * @label Get Device Variables
 * @documentation This procedure is used for retrieving device * variables data
 */function get_status(){
-    retrieveStatus()
+     retrieveStatus()
     .then(applyScheduling)
     .then(retrieveStatus)
     .then(retrieveVideoSource)    
     .then(publishStatus)
-    .catch(function(){ D.failure(D.errorType.GENERIC_ERROR) });
+    .catch(failure);
 }
 
 
@@ -68,9 +69,7 @@ function retrieveVideoSource() {
         checkHttpError(err, response, body);
         var responseAsJSON = JSON.parse(body);
         
-        if (responseAsJSON.hasOwnProperty('error'))
-            videoSource = "N/A"
-        else
+        if (!responseAsJSON.hasOwnProperty('error'))
             videoSource = extractVideoSource(responseAsJSON)
 
         d.resolve();
@@ -93,35 +92,34 @@ function extractVideoSource(jsonData) {
     return videoSource;
 }
 
-function applyScheduling(status) {
+function applyScheduling() {
+    console.info(datesToExclude)
+    
+    validateDates(datesToExclude);
+    validateWeekDays(weekDays);
+
     const now = new Date();
     const currentTime = extractTimeInMinutesFromMidnight(now)
     const currentDay = extractDayOfTheWeek(now)
     const currentDate = extractDate(now)
     
-    console.info("Scheduled start-time: " + startTime)
-    console.info("Scheduled end-time: " + endTime)
-    console.info("Scheduled days: " + weekDays)    
-    console.info("Exluded days: " + weekDaysToExclude)    
+    const startTimeInMinutes = timeToMinutes(startTime);
+    const endTimeInMinutes = timeToMinutes(endTime)
 
-    console.info("Now: " + currentDate)
-    console.info("Day: " + currentDay)
-    console.info("Time: " + currentTime)
-
-    if (status == TV_STATUS_OFF)
-        return turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime)
-    else (status == TV_STATUS_ON)
-        return turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime)
+    if (tvStatus == TV_STATUS_OFF)
+        return turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes)
+    else (tvStatus == TV_STATUS_ON)
+        return turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes)
  
 }
 
-function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime) {
-    if (weekDays.includes(currentDay) && currentTime >= startTime && currentTime <= endTime && !weekDaysToExclude.includes(currentDate)) 
+function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
+    if (weekDays.includes(currentDay) && currentTime >= startTimeInMinutes && currentTime <= endTimeInMinutes && !datesToExclude.includes(currentDate)) 
         return turnOn();
 }
 
-function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime) {
-    if (!weekDays.includes(currentDay) || currentTime < startTime || currentTime > endTime || weekDaysToExclude.includes(currentDate)) 
+function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
+    if (!weekDays.includes(currentDay) || currentTime < startTimeInMinutes || currentTime > endTimeInMinutes || datesToExclude.includes(currentDate)) 
         return turnOff();
 }
 
@@ -209,7 +207,7 @@ function createBaseHTTPConfig() {
 function custom_1(){
     turnOn()
     .then(function(){ D.success() })
-    .catch(function(){ D.failure(D.errorType.GENERIC_ERROR) });
+    .catch(failure);
 }
 
 /**
@@ -220,12 +218,7 @@ function custom_1(){
 function custom_2(){
     turnOff()
     .then(function(){ D.success() })
-    .catch(function(){ D.failure(D.errorType.GENERIC_ERROR) });
-}
-
-function getDayName(dayIndex) {
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    return days[dayIndex];
+    .catch(failure);
 }
 
 function extractTimeInMinutesFromMidnight(now) {
@@ -233,7 +226,7 @@ function extractTimeInMinutesFromMidnight(now) {
 }
 
 function extractDayOfTheWeek(now) {
-    return getDayName(now.getDay())
+    return DAYS_OF_THE_WEEK[now.getDay()]
 }
 
 function extractDate(now) {
@@ -255,58 +248,26 @@ function timeToMinutes(time) {
     return hour * 60 + minute;
 }
 
-function validateDays(days) {
-    days.forEach(validateDateString)    
+function validateDates(dates) {
+    dates.forEach(validateDate)    
 }
 
-function validateDateString(dateString) {
+function validateDate(dateString) {
     const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(\d{4})$/;
 
-    if (!datePattern.test(dateString)) {
+    if (!datePattern.test(dateString))
         throw "Invalid date format: " + dateString + ". Expected format: MM/DD/YYYY";
-    }
-
-    const dateParts = dateString.split("/");
-    const month = dateParts[1];
-    const day = dateParts[1];
-    const year = dateParts[2];
-
-    const dateObject = new Date(year, month - 1, day);
-
-    if (
-        dateObject.getFullYear() !== year ||
-        dateObject.getMonth() !== month - 1 ||
-        dateObject.getDate() !== day
-    )        
-        throw "Invalid date value: " + dateString + ". Day does not exist for given month";
 }
 
-/**
- * @description SonyPreSharedKey
- * @type SECRET_TEXT 
- */
-var sonyPreSharedKey = "10051973" //D.getParameter('SonyPreSharedKey');
+function validateWeekDays(daysOfTheWeek)
+{
+    daysOfTheWeek.forEach(function(day) {
+        if (!DAYS_OF_THE_WEEK.includes(day))
+            throw "Invalid day: "+ day 
+    });
+}
 
-/**
- * @description startTime
- * @type STRING 
- */
-var startTime = timeToMinutes("08:00") // D.getParameter('startTime');
-
-/**
- * @description endTime
- * @type STRING 
- */
-var endTime = timeToMinutes("23:59") // D.getParameter('endTime');
-
-/**
- * @description weekDays
- * @type LIST 
- */
-var weekDays =  ["Monday", "Tuesday", "Wednesday", "Thursday","Friday", "Saturday","Sunday"] //D.getParameter('weekDays');
-
-/**
- * @description weekDaysToExclude
- * @type LIST 
- */
-var weekDaysToExclude = validateDays(["02/31/2025", "05/10/2025"]) // D.getParameter('weekDaysToExclude');
+function failure(err) {
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
+}
