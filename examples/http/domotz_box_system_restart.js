@@ -1,7 +1,7 @@
 /**
  * Domotz Custom Driver
  * Name: Domotz Box System Restart
- * Description: This script allows to remotely restart the Domotz Box on demand
+ * Description: This script provides remote control for restarting the Domotz Box as needed
  *
  * Communication protocol is HTTP
  *
