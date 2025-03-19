@@ -18,7 +18,9 @@
  * Create a Custom Driver table with a list of services, their status and their start type
  *
  * Privilege required: Local Administrator
- *
+ * requirements:
+ *      - WinRM Enabled: To run the script using WinRM
+ *      - SSH Enabled: To run the script using SSH
  **/
 
 // List of services you want to monitor, note that you can put the DisplayName or the ServiceName
