@@ -1,0 +1,68 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "Sony TV status",
+    "description": "This script monitors and controls the power status of a Sony TV. It supports scheduling based on specific days and time ranges, with the ability to exclude certain dates",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Sony TV"
+        ]
+    },
+    "tags": [
+        "sony",
+        "tv",
+        "power",
+        "status",
+        "video-source",
+        "on",
+        "off"
+    ],
+    "sample_period_s": 600,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[2]"
+    },
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Sony TV",
+            "version": "FW-50BU35J"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "sonyPreSharedKey",
+            "label": "Pre-Shared Key"
+        },
+        {
+            "value_type": "STRING",
+            "name": "startTime",
+            "label": "Start Time",
+            "value": "08:00"
+        },
+        {
+            "value_type": "STRING",
+            "name": "endTime",
+            "label": "End Time",
+            "value": "22:00"
+        },
+        {
+            "value_type": "LIST",
+            "name": "weekDays",
+            "label": "Week Days",
+            "value": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        },
+        {
+            "value_type": "LIST",
+            "name": "datesToExclude",
+            "label": "Dates To Exclude",
+            "value": ["03/22/2025"]
+        }
+    ]
+}
