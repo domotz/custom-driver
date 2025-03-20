@@ -1,0 +1,35 @@
+{
+    "logo": "domotz.svg",
+    "version": "1.0.0",
+    "name": "Domotz Box System Restart",
+    "description": "This script provides remote control for restarting the Domotz Box as needed",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Domotz Collector 6.8.5 or higher"
+        ]
+    },
+    "tags": [
+        "domotz",
+        "collector",
+        "box",
+        "restart",
+        "reboot",
+        "system",
+        "configuration"
+    ],
+    "sample_period_s": 900,
+    "has_actions": true,
+    "expected_variables": {},
+    "protocols": [
+        "HTTP"
+    ],
+    "tested_on": [
+        {
+            "name": "Domotz Collector",
+            "version": "6.8.5"
+        }
+    ]
+}
