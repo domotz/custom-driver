@@ -16,7 +16,11 @@ function getStatusApi () {
     }, function (error, response, body) {
         if (error) {
             console.error(error);
-            deferred.reject(error);
+            deferred.reject(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            deferred.reject(D.errorType.RESOURCE_UNAVAILABLE);
+        } else if (response.statusCode != 200) {
+            deferred.reject(D.errorType.GENERIC_ERROR);
         } else {
             var json = JSON.parse(body);
             deferred.resolve(json);
@@ -38,11 +42,11 @@ function validate () {
         } else {
             var platform = json && json.package && json.package.full_platform;
             console.error('Platform not supported: ' + platform);
-            D.failure('RESOURCE_UNAVAILABLE');
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
     })
-    .catch(function () {
-        D.failure(D.errorType.GENERIC_ERROR);
+    .catch(function (error) {
+        D.failure(error);
     });
 }
 
@@ -52,17 +56,7 @@ function validate () {
  * @documentation This procedure is used for retrieving device * variables data
  */
 function get_status () {
-    getStatusApi()
-    .then(function (json) {
-        if (json && json.uptime) {
-            D.success([D.device.createVariable('system-uptime', 'System Uptime', parseInt(json.uptime.system), 'second')]);
-        } else {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-    })
-    .catch(function () {
-        D.failure(D.errorType.GENERIC_ERROR);
-    });
+    D.success([]);
 }
 
 /**
