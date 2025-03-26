@@ -27,15 +27,13 @@ const hours = D.getParameter("hours");
 // Specify the communication protocol to be used (SSH or WinRM)
 const protocol = D.getParameter('protocol');
 
-const sshProtocolIsSelected = protocol.toLowerCase() === "ssh";
-
-const sendCommand = sshProtocolIsSelected ? D.device.sendSSHCommand : D.device.sendWinRMCommand;
+const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 // Command to retrieve failed login attempts
 const winrmCommand = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=4625;StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue;$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;TargetUserName = $_.properties[5].value;WorkstationName = $_.properties[13].value;IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;$GroupByUsers |select count,values |ConvertTo-Json';
 
-// Define winrm configuration
-const winrmConfig = {
+// configuration
+const config = {
     "username": D.device.username(),
     "password": D.device.password(),
     "timeout": 30000
@@ -48,46 +46,109 @@ const failedLogonTable = D.createTable(
     ]
 );
 
+
 /**
- * Checks for errors in the WinRM command response and handles them accordingly.
- * @param {Object} err - The error object returned by the command.
+ * Parses the output of a system command that lists failed logon attempts for the last specified number of hours.
+ * @param jsonOutput
  */
-function checkWinRmError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code === 401) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code === 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
+function parseOutput(jsonOutput) {
+    let totFailed = 0;
+
+    function processRow(row) {
+        const count = row.Count;
+        const values = row.Values[0];
+        failedLogonTable.insertRecord(values, [count]);
+        totFailed += count;
+    }
+
+    if(typeof jsonOutput === "object"){
+        processRow(jsonOutput)
+    }else{
+        for (let i = 0; i < jsonOutput.length; i++) {
+            processRow(jsonOutput[i]);
+        }
+    }
+
+    const totFailedLogon = [D.device.createVariable("FailedLogonAttempts", "Total failed attempts", totFailed, null, D.valueType.NUMBER)];
+    D.success(totFailedLogon, failedLogonTable);
+}
+
+
+function parseValidateOutput (isValidated) {
+    if (isValidated) {
+        console.info("Validation successful");
+        D.success();
+    } else {
+        console.error("Validation unsuccessful");
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 /**
- * Checks for errors in the SSH command response and handles them accordingly.
- * @param {Object} err - The error object returned by the command.
+ * @remote_procedure
+ * @label Validate WinRM is working on device
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function checkSshError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
+function validate() {
+    instance.executeCommand('Get-WinEvent -LogName "Security" -MaxEvents 1')
+        .then(instance.checkIfValidated)
+        .then(parseValidateOutput)
+        .catch(instance.checkError);
 }
 
 /**
- * Parses the output string to a JSON object.
- * @param {string|Object} output - The output to be parsed.
- * @returns {Object} The parsed JSON object.
+ * @remote_procedure
+ * @label Get Host failed logon for the last hours
+ * @documentation This procedure retrieves last hour failed logon attempts
  */
-function parseOutputToJson(output) {
-    return typeof (output) === "string" ? JSON.parse(output) : JSON.parse(JSON.stringify(output));
+function get_status() {
+    instance.executeCommand(winrmCommand)
+        .then(function (output){
+            const jsonOutput = instance.parseOutputToJson(output)
+            instance.logServiceErrors(jsonOutput)
+            return jsonOutput
+        })
+        .then(parseOutput)
+        .catch(instance.checkError);
 }
 
-/**
- * Extracts the result from the JSON output and processes any errors in the stderr.
- * @param {Object} jsonOutput - The JSON output from the command.
- * @returns {Object} The extracted result, or the original output if no result is found.
- */
-function extractResultFromOutput(jsonOutput) {
-    if (jsonOutput.outcome && jsonOutput.outcome.stdout) {
+// WinRM functions
+function WinRMHandler() {}
+
+// Check for Errors on the command response
+WinRMHandler.prototype.checkError = function (output) {
+    if (output.message) console.error(output.message);
+    if (output.code === 401) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (output.code === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(output);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+// Execute command
+WinRMHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    config.command = command;
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error) {
+            self.checkError(output);
+            d.reject(output.error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+WinRMHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output.outcome.stdout);
+}
+
+WinRMHandler.prototype.logServiceErrors = function (jsonOutput) {
+    if (jsonOutput.outcome && jsonOutput.outcome.stderr) {
         const stderr = jsonOutput.outcome.stderr;
         if (stderr !== null) {
             const errorList = stderr.split('Get-Service :');
@@ -97,100 +158,48 @@ function extractResultFromOutput(jsonOutput) {
                 }
             }
         }
-        return JSON.parse(jsonOutput.outcome.stdout)
-    }
-    return jsonOutput
-}
-
-/**
- * Converts the command to the appropriate protocol format based on the selected protocol.
- * @param {string} cmd - The command to be converted.
- * @returns {string} The command in the correct protocol format.
- */
-function convertCmdToTheRightProtocol(cmd) {
-    return sshProtocolIsSelected ? 'powershell -Command "' + cmd.replace(/"/g, '\\"') + '"' : cmd;
-}
-
-/**
- * Processes the output by extracting the result and parsing it.
- * @param {string} output - The raw output to be processed.
- */
-function processOutput(output) {
-    parseOutput(extractResultFromOutput(parseOutputToJson(output)));
-}
-
-/**
- * Checks for errors in the command and calls the appropriate error handler.
- * @param {Object} error - The error object returned by the command.
- * @param {Object} output - The output returned by the command.
- */
-function checkError(error, output) {
-    if (sshProtocolIsSelected) {
-        checkSshError(error);
-    } else {
-        checkWinRmError(output);
     }
 }
 
-/**
- * Validates the callback response by checking for errors or confirming success.
- * @param {Object} output - The output returned by the command.
- * @param {Object} error - The error object returned by the command (if any).
- */
-function validateCallback (output, error) {
+WinRMHandler.prototype.checkIfValidated = function (output) {
+    return output.outcome && output.outcome.stdout
+}
+
+// SSH functions
+function SSHHandler() {}
+
+// Check for Errors on the command response
+SSHHandler.prototype.checkError = function (output, error) {
     if (error) {
-        checkError(error, output);
-    } else {
-        console.info("Validation successful.");
-        D.success();
+        if (error.message) console.error(error.message);
+        if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+        if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
-/**
- * Callback function for handling the command execution.
- * @param {Object} output - The output returned by the command.
- * @param {Object} error - The error object returned by the command.
- * */
-function getStatusCallback (output, error) {
-    if (error) {
-        checkError(error, output);
-    } else {
-        processOutput(output);
-    }
+SSHHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    const self = this;
+    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+    D.device.sendSSHCommand(config, function (output, error) {
+        if (error) {
+            self.checkError(output, error);
+            d.reject(error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
 }
 
-/**
- * Parses the output of a system command that lists failed logon attempts for the last specified number of hours.
- * @param jsonOutput
- */
-function parseOutput(jsonOutput) {
-    let totFailed = 0;
-    for (let i = 0; i < jsonOutput.length; i++) {
-        const count = jsonOutput[i].Count;
-        const values = jsonOutput[i].Values[0];
-        failedLogonTable.insertRecord(values, [count]);
-        totFailed += count;
-    }
-    const totFailedLogon = [D.device.createVariable("FailedLogonAttempts", "Total failed attempts", totFailed, null, D.valueType.NUMBER)];
-    D.success(totFailedLogon, failedLogonTable);
+SSHHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output);
 }
 
-/**
- * @remote_procedure
- * @label Validate WinRM is working on device
- * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
- */
-function validate() {
-    winrmConfig.command = convertCmdToTheRightProtocol('Get-WinEvent -LogName "Security" -MaxEvents 1');
-    sendCommand(winrmConfig, validateCallback);
+SSHHandler.prototype.checkIfValidated = function (output) {
+    return output !== undefined
 }
 
-/**
- * @remote_procedure
- * @label Get Host failed logon for the last hours
- * @documentation This procedure retrieves last hour failed logon attempts
- */
-function get_status() {
-    winrmConfig.command = convertCmdToTheRightProtocol(winrmCommand);
-    sendCommand(winrmConfig, getStatusCallback);
-}
+SSHHandler.prototype.logServiceErrors = function (jsonOutput) {}
