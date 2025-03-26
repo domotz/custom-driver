@@ -30,7 +30,7 @@ const protocol = D.getParameter('protocol');
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 // Command to retrieve failed login attempts
-const winrmCommand = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=4625;StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue;$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;TargetUserName = $_.properties[5].value;WorkstationName = $_.properties[13].value;IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;$GroupByUsers |select count,values |ConvertTo-Json';
+const command = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=4625;StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue;$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;TargetUserName = $_.properties[5].value;WorkstationName = $_.properties[13].value;IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;$GroupByUsers |select count,values |ConvertTo-Json';
 
 // configuration
 const config = {
@@ -46,7 +46,6 @@ const failedLogonTable = D.createTable(
     ]
 );
 
-
 /**
  * Parses the output of a system command that lists failed logon attempts for the last specified number of hours.
  * @param jsonOutput
@@ -61,12 +60,12 @@ function parseOutput(jsonOutput) {
         totFailed += count;
     }
 
-    if(typeof jsonOutput === "object"){
-        processRow(jsonOutput)
-    }else{
+    if (Array.isArray(jsonOutput)) {
         for (let i = 0; i < jsonOutput.length; i++) {
             processRow(jsonOutput[i]);
         }
+    } else if (jsonOutput && typeof jsonOutput === "object") {
+        processRow(jsonOutput)
     }
 
     const totFailedLogon = [D.device.createVariable("FailedLogonAttempts", "Total failed attempts", totFailed, null, D.valueType.NUMBER)];
@@ -102,7 +101,7 @@ function validate() {
  * @documentation This procedure retrieves last hour failed logon attempts
  */
 function get_status() {
-    instance.executeCommand(winrmCommand)
+    instance.executeCommand(command)
         .then(function (output){
             const jsonOutput = instance.parseOutputToJson(output)
             instance.logServiceErrors(jsonOutput)
