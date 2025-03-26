@@ -1,31 +1,38 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Windows Audit Settings Monitoring
  * Description: Monitors the audit settings on Windows
- *   
- * Communication protocol is WinRM
- * 
+ *
+ * Communication protocol are:
+ *      - WinRM
+ *      - SSH
+ *
+ * The communication protocol can be chosen as either SSH or WinRM by specifying it through the "protocol" parameter.
+ *
  * Tested on Windows Versions:
  *      - Microsoft Windows Server 2019
- * Powershell Version:
+ * PowerShell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates a Custom Driver table with audit subcategories and their settings
- * 
- * Privilege required: 
+ *
+ * Privilege required:
  * - Read permissions on HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Security
- * - Membership of builtin group "Event Log Readers" 
- * 
- * 
+ * - Membership of builtin group "Event Log Readers"
+ *
+ * Requirements:
+ *    - WinRM Enabled: To run the script using WinRM
+ *    - SSH Enabled: To run the script using SSH
+ *
  * References : https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn452415(v=ws.11)
- * 
-**/
+ *
+ **/
 
 /** List of subcategories you want to monitor
- * 
+ *
  * To Monitor all settings:
- * 
- * var filter = ["Security System Extension",
+ *
+ * const filter = ["Security System Extension",
  * "System Integrity",
  * "IPsec Driver",
  * "Other System Events",
@@ -84,7 +91,7 @@
  * "Other Account Logon Events",
  * "Kerberos Authentication Service",
  * "Credential Validation"]
- * 
+ *
  * Suggested settings to monitor:
  *["Security System Extension",
  *   "Logon",
@@ -97,15 +104,20 @@
  *   "User Account Management",
  *   "Directory Service Changes",
  *   "Directory Service Replication"]
- * 
+ *
  */
 
-var winrmConfig = {
+// Specify the communication protocol to be used (SSH or WinRM)
+const protocol = D.getParameter('protocol');
+
+const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
+
+const config = {
     username: D.device.username(),
     password: D.device.password()
 };
 
-var filter = [
+let filter = [
     "Security System Extension",
     "Logon",
     "SAM",
@@ -121,83 +133,169 @@ var filter = [
 
 filter = '@("' + filter.join('","') + '")';
 
-var auditTable = D.createTable(
+const auditTable = D.createTable(
     "Audit Settings",
     [
-        { label: "Category" },
-        { label: "Subcategory" },
-        { label: "Setting" }
+        {label: "Category"},
+        {label: "Subcategory"},
+        {label: "Setting"}
     ]
 );
 
-// Check for Errors on the WinRM command response
-function checkWinRmError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code == 401) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
+function parseValidateOutput (isValidated) {
+    if (isValidated) {
+        console.info("Validation successful");
+        D.success();
+    } else {
+        console.error("Validation unsuccessful");
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 /**
-* @remote_procedure
-* @label Validate WinRM is working on device
-* @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
-*/
+ * @remote_procedure
+ * @label Validate is working on device
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ */
 function validate() {
-    winrmConfig.command = 'Get-WinEvent -LogName "Security" -MaxEvents 1';
-    D.device.sendWinRMCommand(winrmConfig, function (output) {
-        if (output.error === null) {
-            D.success();
-        } else {
-            checkWinRmError(output.error);
-        }
-    });
+    instance.executeCommand('Get-WinEvent -LogName "Security" -MaxEvents 1')
+        .then(instance.checkIfValidated)
+        .then(parseValidateOutput)
+        .catch(instance.checkError);
 }
 
 /**
-* @remote_procedure
-* @label Get Audit Settings
-* @documentation This procedure retrieves and filter the current audit settings
-*/
+ * @remote_procedure
+ * @label Get Audit Settings
+ * @documentation This procedure retrieves and filter the current audit settings
+ */
 function get_status() {
-    winrmConfig.command = "$output = auditpol /get /category:* | Where-Object { $_ -match '\\S' };$output = $output -replace '(?<=\\S)\\s{2,}(?=\\S)', ',';$aOutput = $output -split '\\r?\\n';$aOutput = $aOutput[2..($aOutput.Length - 1)];$CurrCategory = '';$RetObj = [System.Collections.ArrayList]::new();foreach ($item in $aOutput){if ($item -match '^\\s'){$tobj = @{category = $CurrCategory;subcat = (($item.split(','))[0]).Trim();setting = ($item.split(','))[1]};$RetObj += $tobj}elseif ($item -match '^(\\S)') {$CurrCategory = $item}};$RetObj |?{" + filter + " -contains $_.subcat}|ConvertTo-Json";
-    D.device.sendWinRMCommand(winrmConfig, parseOutput);
+    const command = "$output = auditpol /get /category:* | Where-Object { $_ -match '\\S' };$output = $output -replace '(?<=\\S)\\s{2,}(?=\\S)', ',';$aOutput = $output -split '\\r?\\n';$aOutput = $aOutput[2..($aOutput.Length - 1)];$CurrCategory = '';$RetObj = [System.Collections.ArrayList]::new();foreach ($item in $aOutput){if ($item -match '^\\s'){$tobj = @{category = $CurrCategory;subcat = (($item.split(','))[0]).Trim();setting = ($item.split(','))[1]};$RetObj += $tobj}elseif ($item -match '^(\\S)') {$CurrCategory = $item}};$RetObj |?{" + filter + " -contains $_.subcat}|ConvertTo-Json"
+    instance.executeCommand(command)
+        .then(instance.parseOutputToJson)
+        .then(parseOutput)
+        .catch(instance.checkError);
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+function sanitize(output) {
+    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    const recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
+
 /**
  * Parses the output of the audit tool and inserts the audit results into the audit table.
- * @param {Object} output The output of the audit tool.
+ * @param jsonOutput The output of the audit tool.
  */
-function parseOutput(output) {
-    if (output.error === null) {
-        var k = 0;
-        var category;
-        var subcategory;
-        var setting;
-        var recordId;
-        var jsonOutput = JSON.parse(output.outcome.stdout);
-        if (jsonOutput) {
-            while (k < jsonOutput.length) {
-                category = jsonOutput[k].category;
-                subcategory = jsonOutput[k].subcat;
-                setting = jsonOutput[k].setting;
-                recordId = sanitize(category + " " + subcategory);
-                auditTable.insertRecord(recordId, [category, subcategory, setting]);
-                k++;
-            }
-        } else {
-            console.error("No data was collected");
-            D.failure(D.errorType.PARSING_ERROR);
+function parseOutput(jsonOutput) {
+    let k = 0;
+    if (jsonOutput) {
+        while (k < jsonOutput.length) {
+            const category = jsonOutput[k].category;
+            const subcategory = jsonOutput[k].subcat;
+            const setting = jsonOutput[k].setting;
+            const recordId = sanitize(category + " " + subcategory);
+            auditTable.insertRecord(recordId, [category, subcategory, setting]);
+            k++;
         }
-        D.success(auditTable);
     } else {
-        console.error(output.error);
-        D.failure();
+        console.error("No data was collected");
+        D.failure(D.errorType.PARSING_ERROR);
     }
+    D.success(auditTable);
+}
+
+
+// WinRM functions
+function WinRMHandler() {}
+
+// Check for Errors on the command response
+WinRMHandler.prototype.checkError = function (output) {
+    if (output.message) console.error(output.message);
+    if (output.code === 401) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (output.code === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(output);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+// Execute command
+WinRMHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    config.command = command;
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error) {
+            self.checkError(output);
+            d.reject(output.error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+WinRMHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output.outcome.stdout);
+}
+
+WinRMHandler.prototype.logServiceErrors = function (jsonOutput) {
+    if (jsonOutput.outcome && jsonOutput.outcome.stderr) {
+        const stderr = jsonOutput.outcome.stderr;
+        if (stderr !== null) {
+            const errorList = stderr.split('Get-Service :');
+            for (let j = 0; j < errorList.length; j++) {
+                if (errorList[j] !== '') {
+                    console.error(errorList[j]);
+                }
+            }
+        }
+    }
+}
+
+WinRMHandler.prototype.checkIfValidated = function (output) {
+    return output.outcome && output.outcome.stdout
+}
+
+// SSH functions
+function SSHHandler() {
+}
+
+// Check for Errors on the command response
+SSHHandler.prototype.checkError = function (output, error) {
+    if (error) {
+        if (error.message) console.error(error.message);
+        if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+        if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+SSHHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    const self = this;
+    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+    D.device.sendSSHCommand(config, function (output, error) {
+        if (error) {
+            self.checkError(output, error);
+            d.reject(error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+SSHHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output);
+}
+
+SSHHandler.prototype.checkIfValidated = function (output) {
+    return output !== undefined
+}
+
+SSHHandler.prototype.logServiceErrors = function (jsonOutput) {
 }
