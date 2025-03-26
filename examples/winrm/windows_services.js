@@ -50,8 +50,7 @@ function generateGetServicesCmd() {
 const config = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 30000,
-    port: 48413
+    "timeout": 30000
 };
 
 const statusCodes = {
