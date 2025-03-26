@@ -32,10 +32,7 @@ const svcFilter = D.getParameter('servicesFilter');
 // Specify the communication protocol to be used (SSH or WinRM)
 const protocol = D.getParameter('protocol');
 
-const sshProtocolIsSelected = protocol.toLowerCase() === "ssh";
-
-const sendCommand = sshProtocolIsSelected ? D.device.sendSSHCommand : D.device.sendWinRMCommand;
-
+const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 /**
  * Generates a PowerShell command to retrieve service information based on the service filter.
@@ -50,10 +47,11 @@ function generateGetServicesCmd() {
 }
 
 // Define the WinRM options when running the commands
-const winrmConfig = {
+const config = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 30000
+    "timeout": 30000,
+    port: 48413
 };
 
 const statusCodes = {
@@ -82,129 +80,42 @@ const svcTable = D.createTable(
     ]
 );
 
-/**
- * Checks for errors in the WinRM command response and handles them accordingly.
- * @param {Object} err - The error object returned by the command.
- */
-function checkWinRmError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code === 401) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR);
-    } else if (err.code === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+function populateTable(service) {
+    const svcName = service.ServiceName
+    const status = statusCodes[service.Status.toString()]
+    const startType = startTypes[service.StartType.toString()]
+
+    const recordID = service.DisplayName.slice(0, 50);
+    svcTable.insertRecord(recordID, [svcName, status, startType]);
+}
+
+function parseOutput(listOfServices) {
+    for (let k = 0; k < listOfServices.length; k++) {
+        populateTable(listOfServices[k]);
+    }
+    D.success(svcTable);
+}
+
+function parseValidateOutput(isValidated) {
+    if (isValidated) {
+        console.info("Validation successful");
+        D.success();
     } else {
-        console.error(err);
+        console.error("Validation unsuccessful");
         D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
 /**
- * Checks for errors in the SSH command response and handles them accordingly.
- * @param {Object} err - The error object returned by the command.
- */
-function checkSshError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
-}
-
-/**
- * Parses the output string to a JSON object.
- * @param {string|Object} output - The output to be parsed.
- * @returns {Object} The parsed JSON object.
- */
-function parseOutputToJson(output) {
-    return typeof (output) === "string" ? JSON.parse(output) : JSON.parse(JSON.stringify(output));
-}
-
-/**
- * Extracts the result from the JSON output and processes any errors in the stderr.
- * @param {Object} jsonOutput - The JSON output from the command.
- * @returns {Object} The extracted result, or the original output if no result is found.
- */
-function extractResultFromOutput(jsonOutput) {
-    if (jsonOutput.outcome && jsonOutput.outcome.stdout) {
-        const stderr = jsonOutput.outcome.stderr;
-        if (stderr !== null) {
-            const errorList = stderr.split('Get-Service :');
-            for (let j = 0; j < errorList.length; j++) {
-                if (errorList[j] !== '') {
-                    console.error(errorList[j]);
-                }
-            }
-        }
-        return JSON.parse(jsonOutput.outcome.stdout)
-    }
-    return jsonOutput
-}
-
-/**
- * Converts the command to the appropriate protocol format based on the selected protocol.
- * @param {string} cmd - The command to be converted.
- * @returns {string} The command in the correct protocol format.
- */
-function convertCmdToTheRightProtocol(cmd) {
-    return sshProtocolIsSelected ? 'powershell -Command "' + cmd.replace(/"/g, '\\"') + '"' : cmd;
-}
-
-/**
- * Processes the output by extracting the result and parsing it.
- * @param {string} output - The raw output to be processed.
- */
-function processOutput(output) {
-    parseOutput(extractResultFromOutput(parseOutputToJson(output)));
-}
-
-/**
- * Checks for errors in the command and calls the appropriate error handler.
- * @param {Object} error - The error object returned by the command.
- * @param {Object} output - The output returned by the command.
- */
-function checkError(error, output) {
-    if (sshProtocolIsSelected) {
-        checkSshError(error);
-    } else {
-        checkWinRmError(output);
-    }
-}
-
-/**
- * Validates the callback response by checking for errors or confirming success.
- * @param {Object} output - The output returned by the command.
- * @param {Object} error - The error object returned by the command (if any).
- */
-function validateCallback (output, error) {
-    if (error) {
-        checkError(error, output);
-    } else {
-        console.info("Validation successful.");
-        D.success();
-    }
-}
-
-/**
- * Callback function for handling the command execution.
- * @param {Object} output - The output returned by the command.
- * @param {Object} error - The error object returned by the command.
- * */
-function getStatusCallback (output, error) {
-    if (error) {
-        checkError(error, output);
-    } else {
-        processOutput(output);
-    }
-}
-
-/**
  * @remote_procedure
- * @label Validate WinRM is working on device
+ * @label Validate is working on device
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials and privileges provided
  */
 function validate() {
-    winrmConfig.command = convertCmdToTheRightProtocol("Get-Service eventlog");
-    sendCommand(winrmConfig, validateCallback);
+    instance.executeCommand("Get-Service eventlog")
+        .then(instance.checkIfValidated)
+        .then(parseValidateOutput)
+        .catch(instance.checkError);
 }
 
 /**
@@ -213,25 +124,86 @@ function validate() {
  * @documentation This procedure retrieves data for the selected services
  */
 function get_status() {
-    winrmConfig.command = convertCmdToTheRightProtocol(generateGetServicesCmd());
-    sendCommand(winrmConfig, getStatusCallback);
+    instance.executeCommand(generateGetServicesCmd())
+        .then(instance.parseOutputToJson)
+        .then(parseOutput)
+        .catch(instance.checkError);
 }
 
-function populateTable(svcName, displayName, status, startType) {
-    const recordID = displayName.slice(0, 50);
-    status = statusCodes[status];
-    startType = startTypes[startType];
-    svcTable.insertRecord(recordID, [svcName, status, startType]);
+// WinRM functions
+function WinRMHandler() {
 }
 
-function parseOutput(listOfServices) {
-    for (let k = 0; k < listOfServices.length; k++) {
-        populateTable(
-            listOfServices[k].ServiceName,
-            listOfServices[k].DisplayName,
-            listOfServices[k].Status.toString(),
-            listOfServices[k].StartType.toString()
-        );
+// Check for Errors on the command response
+WinRMHandler.prototype.checkError = function (output) {
+    if (output.message) console.error(output.message);
+    if (output.code === 401) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (output.code === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(output);
+        D.failure(D.errorType.GENERIC_ERROR);
     }
-    D.success(svcTable);
+}
+
+// Execute command
+WinRMHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    config.command = command;
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error) {
+            self.checkError(output);
+            d.reject(output.error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+WinRMHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output.outcome.stdout);
+}
+
+WinRMHandler.prototype.checkIfValidated = function (output) {
+    return output.outcome && output.outcome.stdout
+}
+
+// SSH functions
+function SSHHandler() {
+}
+
+// Check for Errors on the command response
+SSHHandler.prototype.checkError = function (output, error) {
+    if (error) {
+        if (error.message) console.error(error.message);
+        if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+        if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+SSHHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    const self = this;
+    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+    D.device.sendSSHCommand(config, function (output, error) {
+        if (error) {
+            self.checkError(output, error);
+            d.reject(error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+SSHHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output);
+}
+
+SSHHandler.prototype.checkIfValidated = function (output) {
+    return output !== undefined
 }
