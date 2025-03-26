@@ -241,19 +241,6 @@ WinRMHandler.prototype.parseOutputToJson = function (output) {
     return JSON.parse(output.outcome.stdout);
 }
 
-WinRMHandler.prototype.logServiceErrors = function (jsonOutput) {
-    if (jsonOutput.outcome && jsonOutput.outcome.stderr) {
-        const stderr = jsonOutput.outcome.stderr;
-        if (stderr !== null) {
-            const errorList = stderr.split('Get-Service :');
-            for (let j = 0; j < errorList.length; j++) {
-                if (errorList[j] !== '') {
-                    console.error(errorList[j]);
-                }
-            }
-        }
-    }
-}
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
     return output.outcome && output.outcome.stdout
@@ -295,7 +282,4 @@ SSHHandler.prototype.parseOutputToJson = function (output) {
 
 SSHHandler.prototype.checkIfValidated = function (output) {
     return output !== undefined
-}
-
-SSHHandler.prototype.logServiceErrors = function (jsonOutput) {
 }
