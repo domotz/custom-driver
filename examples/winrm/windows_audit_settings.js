@@ -114,7 +114,8 @@ const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRM
 
 const config = {
     username: D.device.username(),
-    password: D.device.password()
+    password: D.device.password(),
+    timeout: 30000
 };
 
 let filter = [
