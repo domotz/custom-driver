@@ -44,12 +44,16 @@ const endTime = D.getParameter('endTime')
 
 /**
  * @description Days of the week when the TV should be active
+ * Should be provided as a list of strings, where each string represents a day of the week.
+ * Example: ["Monday", "Wednesday", "Friday"]
  * @type LIST
  */
 const weekDays = D.getParameter('weekDays')
 
 /**
  * @description Dates to exclude from the scheduling
+ * Should be provided as a list of strings in the MM/DD/YYYY format.
+ * Example: ["03/22/2025", "03/23/2025"]
  * @type LIST
  */
 const datesToExclude = D.getParameter('datesToExclude')

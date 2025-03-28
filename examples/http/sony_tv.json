@@ -56,13 +56,12 @@
             "value_type": "LIST",
             "name": "weekDays",
             "label": "Week Days",
-            "value": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+            "value": ["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
         },
         {
             "value_type": "LIST",
             "name": "datesToExclude",
-            "label": "Dates To Exclude",
-            "value": ["03/22/2025"]
+            "label": "Dates To Exclude"
         }
     ]
 }
