@@ -8,6 +8,9 @@
  *
  * Automates configuration backup for Huawei switch using SSH commands.
  * Handles authentication, retrieves the running configuration, and creates a backup.
+ *
+ * Required permissions: Level 2 user
+ *
  */
 
 

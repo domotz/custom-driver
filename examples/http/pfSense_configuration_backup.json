@@ -9,7 +9,8 @@
     "credentials": true,
     "sandbox_version": "1.16",
     "others": [
-      "pfSense"
+      "pfSense",
+      "Required permissions: User with the \"WebCfg - Diagnostics: Backup/Restore\" privilege"
     ]
   },
   "tags": [

@@ -9,6 +9,7 @@
         "credentials": true,
         "sandbox_version": "1.16",
         "others": [
+            "Ubiquiti EdgeOS Router device",
             "Use must be admin and be able to execute the 'show configuration' command over SSH"
         ]
     },

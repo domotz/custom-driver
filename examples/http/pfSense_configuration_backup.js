@@ -9,6 +9,8 @@
  * Notes:
  * - Non-default users are recommended unless the default admin user has the interactive menu disabled.
  * - Requires HTTPS communication, with the CSRF token fetched dynamically from the backup page.
+ *
+ * Required permissions: User with the "WebCfg - Diagnostics: Backup/Restore" privilege
  */
 
 /**

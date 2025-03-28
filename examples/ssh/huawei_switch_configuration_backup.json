@@ -10,7 +10,8 @@
         "sandbox_version": "1.16",
         "others": [
             "SSH Enabled",
-            "Huawei Switch"
+            "Huawei Switch",
+            "Required permissions: Level 2 user"
         ]
     },
     "tags": [
