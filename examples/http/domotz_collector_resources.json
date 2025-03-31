@@ -1,6 +1,6 @@
 {
     "logo": "domotz.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Domotz Collector Resources",
     "description": "Monitor Domotz agent resources",
     "category": "Software Integration",
