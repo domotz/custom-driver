@@ -13,12 +13,10 @@
     },
     "tags": [
         "sony",
-        "tv",
+        "television",
         "power",
         "status",
-        "video-source",
-        "on",
-        "off"
+        "video-source"
     ],
     "sample_period_s": 600,
     "has_actions": true,
