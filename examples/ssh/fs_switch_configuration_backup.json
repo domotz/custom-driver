@@ -1,6 +1,6 @@
 {
     "logo": "fs.svg",
-    "version": "1.0",
+    "version": "1.0.1",
     "name": "FS Switch Configuration Backup",
     "description": "Extracts the FS Switch configuration and backs it up",
     "type": "CONFIGURATION_MANAGEMENT",
