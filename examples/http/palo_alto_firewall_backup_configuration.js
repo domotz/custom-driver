@@ -7,6 +7,10 @@
  * Tested on Palo Alto Version 10.1.0
  *
  * Creates a configuration backup
+ *
+ * Required permissions:
+ *   - Admin role with XML API
+ *   - Export Configuration permissions to generate an API key
  * 
  **/
 

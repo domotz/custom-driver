@@ -9,7 +9,8 @@
         "credentials": true,
         "sandbox_version": "1.16",
         "others": [
-            "FS Switch"
+            "FS Switch",
+            "Required permissions: Level 15 user"
         ]
     },
     "tags": [

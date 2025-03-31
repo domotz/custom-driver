@@ -9,7 +9,8 @@
         "credentials": true,
         "sandbox_version": "1.16",
         "others": [
-            "Palo Alto"
+            "Palo Alto",
+            "Required permissions: Admin role with XML API and export Configuration permissions to generate an API key"
         ]
     },
     "tags": [
