@@ -2,6 +2,9 @@
  * This Configuration Management Script Extracts the device configuration for Ubiquiti EdgeOS Devices (such as routers).
  * Communication protocol is SSH.
  * Creates a configuration backup.
+ *
+ * Required permissions: Level 2 user
+ *
  */
 
 /**

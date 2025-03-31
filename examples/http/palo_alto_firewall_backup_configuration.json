@@ -1,6 +1,6 @@
 {
     "logo": "paloalto.svg",
-    "version": "1.0",
+    "version": "1.0.1",
     "name": "Palo Alto Firewall Backup configuration",
     "description": "Extracts the configuration of the Palo Alto Firewall and backs it up",
     "type": "CONFIGURATION_MANAGEMENT",
@@ -9,7 +9,8 @@
         "credentials": true,
         "sandbox_version": "1.16",
         "others": [
-            "Palo Alto"
+            "Palo Alto",
+            "Required permissions: Admin role with XML API and export Configuration permissions to generate an API key"
         ]
     },
     "tags": [
