@@ -3,12 +3,21 @@
  * Name: Windows Static IP Monitor
  * Description: This script retrieves and monitors static IP information for network interfaces on Windows machines.
  *
- * Communication protocol is WinRM
+ * Communication protocol are:
+ *      - WinRM
+ *      - SSH
+ *
+ * The communication protocol can be chosen as either SSH or WinRM by specifying it through the "protocol" parameter.
  *
  * Tested on:
  *    - Windows 10
  *    - Windows 11
- *    - Powershell version 5.1.19041.4412
+ *
+ * PowerShell version 5.1.19041.4412
+ *
+ * Requirements:
+ *    - WinRM Enabled: To run the script using WinRM
+ *    - SSH Enabled: To run the script using SSH
  *
  * Creates a Custom Driver Table with the following columns:
  *    - ID: Unique identifier for each network interface
@@ -23,30 +32,36 @@
 // interfaceAliases: ["Ethernet", "Wi-Fi"] to display network interfaces IPs by a list of aliases
 // or
 // interfaceAliases = ["All"] to display all network interfaces IPs.
-var interfaceAliases = D.getParameter("interfaceAliases");
+const interfaceAliases = D.getParameter("interfaceAliases");
 
 // WinRM command to retrieve network interfaces by their aliases
-var command = generateCmdByAliases(interfaceAliases);
+const command = generateCmdByAliases(interfaceAliases);
+
+// Specify the communication protocol to be used (SSH or WinRM)
+const protocol = D.getParameter('protocol');
+
+const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 // Define the WinRM options when running the commands
-var winRMConfig = {
-  username: D.device.username(),
-  password: D.device.password()
+const config = {
+    username: D.device.username(),
+    password: D.device.password(),
+    timeout: 30000
 }
 
 // mapping boolean values to human-readable strings.
-var booleanCodes = {
-  0: 'No',
-  1: 'Yes'
+const booleanCodes = {
+    0: 'No',
+    1: 'Yes'
 }
 
 // Creation of custom driver table
-var table = D.createTable(
+const table = D.createTable(
     "Network Interfaces",
     [
-      { label: 'Ip addresses', valueType: D.valueType.STRING },
-      { label: 'Static', valueType: D.valueType.STRING },
-      { label: 'Connection State', valueType: D.valueType.STRING }
+        {label: 'Ip addresses', valueType: D.valueType.STRING},
+        {label: 'Static', valueType: D.valueType.STRING},
+        {label: 'Connection State', valueType: D.valueType.STRING}
     ]
 );
 
@@ -56,8 +71,8 @@ var table = D.createTable(
  * @returns {string} A PowerShell command to retrieve network interface information.
  */
 function generateCmdByAliases(interfaceAliases) {
-  var filter = generateFilterByAliases(interfaceAliases);
-  return 'Get-NetIPInterface -AddressFamily IPv4 ' + filter + '| ForEach-Object { [PSCustomObject]@{ InterfaceAlias = $_.InterfaceAlias; DhcpEnabled = $_.Dhcp; ConnectionState = $_.ConnectionState; IPv4Addresses = (Get-NetIPAddress -InterfaceIndex $_.ifIndex -AddressFamily IPv4).IPAddress } } | ConvertTo-Json';
+    const filter = generateFilterByAliases(interfaceAliases);
+    return 'Get-NetIPInterface -AddressFamily IPv4 ' + filter + '| ForEach-Object { [PSCustomObject]@{ InterfaceAlias = $_.InterfaceAlias; DhcpEnabled = $_.Dhcp; ConnectionState = $_.ConnectionState; IPv4Addresses = (Get-NetIPAddress -InterfaceIndex $_.ifIndex -AddressFamily IPv4).IPAddress } } | ConvertTo-Json';
 }
 
 /**
@@ -66,41 +81,38 @@ function generateCmdByAliases(interfaceAliases) {
  * @returns {string} A PowerShell filter command to filter network interfaces based on the provided aliases.
  */
 function generateFilterByAliases(interfaceAliases) {
-  if (interfaceAliases.length === 1 && interfaceAliases[0].toLowerCase() === 'all') {
-    return ''
-  } else {
-    var stringAliases = interfaceAliases.map(function (alias) {
-      return '"' + alias + '"';
-    }).join(', ');
-    return '| Where-Object { (' + stringAliases + ') -contains $_.InterfaceAlias } '
-  }
+    if (interfaceAliases.length === 1 && interfaceAliases[0].toLowerCase() === 'all') {
+        return ''
+    } else {
+        const stringAliases = interfaceAliases.map(function (alias) {
+            return '"' + alias + '"';
+        }).join(', ');
+        return '| Where-Object { (' + stringAliases + ') -contains $_.InterfaceAlias } '
+    }
 }
 
-// Check for Errors on the WinRM command response
-function checkWinRmError(err) {
-  if (err.message) console.error(err.message);
-  if (err.code === 401){
-    D.failure(D.errorType.AUTHENTICATION_ERROR);
-  } else if (err.code === 404) {
-    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-  } else {
-    console.error(err);
-    D.failure(D.errorType.GENERIC_ERROR);
-  }
+function parseValidateOutput(isValidated) {
+    if (isValidated) {
+        console.info("Validation successful");
+        D.success();
+    } else {
+        console.error("Validation unsuccessful");
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 // Execute WinRM command
 function executeWinRMCommand(command) {
-  var d = D.q.defer();
-  winRMConfig.command = command;
-  D.device.sendWinRMCommand(winRMConfig, function (output) {
-    if (output.error === null) {
-      d.resolve(output);
-    } else {
-      d.reject(output.error);
-    }
-  });
-  return d.promise;
+    const d = D.q.defer();
+    config.command = command;
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error === null) {
+            d.resolve(output);
+        } else {
+            d.reject(output.error);
+        }
+    });
+    return d.promise;
 }
 
 /**
@@ -109,18 +121,10 @@ function executeWinRMCommand(command) {
  * @documentation This procedure is used to validate the driver and credentials provided during association.
  */
 function validate() {
-  executeWinRMCommand("Get-NetIPInterface")
-      .then(parseValidateOutput)
-      .then(D.success)
-      .catch(checkWinRmError);
-}
-
-function parseValidateOutput(output) {
-  if (output.outcome !== undefined && output.outcome.stdout.trim() !== "") {
-    console.info("Validation successful");
-  } else {
-    console.error("Validation unsuccessful");
-  }
+    instance.executeCommand("Get-NetIPInterface")
+        .then(instance.checkIfValidated)
+        .then(parseValidateOutput)
+        .catch(instance.checkError);
 }
 
 /**
@@ -129,15 +133,16 @@ function parseValidateOutput(output) {
  * @documentation Retrieves and monitors the static IP information for network interfaces on Windows machines.
  */
 function get_status() {
-  executeWinRMCommand(command)
-      .then(parseOutput)
-      .catch(checkWinRmError);
+    instance.executeCommand(command)
+        .then(instance.parseOutputToJson)
+        .then(parseOutput)
+        .catch(instance.checkError);
 }
 
-function sanitize(output){
-  var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-  var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
 /**
@@ -145,48 +150,107 @@ function sanitize(output){
  * The function sanitizes the ID, converts boolean indicators to codes, ips
  * and inserts the record into the table.
  */
-function populateTable (id, ips, isStatic, connectionState) {
-  var recordId = sanitize(id)
-  ips = Array.isArray(ips) ? ips.join(', ' ) : ips;
-  isStatic = booleanCodes[isStatic];
-  connectionState = booleanCodes[connectionState];
-  table.insertRecord(recordId, [ips, isStatic, connectionState])
+function populateTable(service) {
+    const id = service.InterfaceAlias
+    const ips = Array.isArray(service.IPv4Addresses) ? service.IPv4Addresses.join(', ') : service.IPv4Addresses;
+    const isStatic = booleanCodes[service.DhcpEnabled]
+    const connectionState = booleanCodes[service.ConnectionState]
+    const recordId = sanitize(id)
+    table.insertRecord(recordId, [ips, isStatic, connectionState])
 }
 
 /**
  * @description Parses the output of the WinRM command and fills the output table.
- * @param {object} output - The output object containing network interface information.
+ * @param listOfIntegrationServices
  */
-function parseOutput (output) {
-  if (output.error === null) {
-    var jsonOutput = JSON.parse(JSON.stringify(output))
-    let listOfIntegrationServices = []
-    if (!jsonOutput.outcome.stdout) {
-      console.log('There are no network interfaces related to this virtual machine.');
-    } else {
-      listOfIntegrationServices = JSON.parse(jsonOutput.outcome.stdout)
-      if (!Array.isArray(listOfIntegrationServices)) {
-        if (typeof (listOfIntegrationServices) === 'object') {
-          listOfIntegrationServices = [listOfIntegrationServices];
-        }
-      }
-      if (Array.isArray(listOfIntegrationServices)) {
-        if (!listOfIntegrationServices.length) {
-          console.log('There are no network interfaces related to this virtual machine.');
+function parseOutput(listOfIntegrationServices) {
+    if (listOfIntegrationServices) {
+        if (Array.isArray(listOfIntegrationServices)) {
+            for (let k = 0; k < listOfIntegrationServices.length; k++) {
+                populateTable(listOfIntegrationServices[k])
+            }
         } else {
-          for (let k = 0; k < listOfIntegrationServices.length; k++) {
-            populateTable(
-              listOfIntegrationServices[k].InterfaceAlias,
-              listOfIntegrationServices[k].IPv4Addresses,
-              listOfIntegrationServices[k].DhcpEnabled,
-              listOfIntegrationServices[k].ConnectionState
-            )
-          }
+            populateTable(listOfIntegrationServices)
         }
-      }
+    } else {
+        console.log('There are no network interfaces related to this virtual machine.');
     }
     D.success(table)
-  } else {
-    checkWinRmError(output.error)
-  }
+}
+
+// WinRM functions
+function WinRMHandler() {}
+
+// Check for Errors on the command response
+WinRMHandler.prototype.checkError = function (output) {
+    if (output.message) console.error(output.message);
+    if (output.code === 401) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (output.code === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(output);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+// Execute command
+WinRMHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    config.command = command;
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error) {
+            self.checkError(output);
+            d.reject(output.error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+WinRMHandler.prototype.parseOutputToJson = function (output) {
+    const jsonString = output.outcome.stdout
+    return jsonString ? JSON.parse(jsonString) : null;
+}
+
+WinRMHandler.prototype.checkIfValidated = function (output) {
+    return output.outcome && output.outcome.stdout
+}
+
+// SSH functions
+function SSHHandler() {}
+
+// Check for Errors on the command response
+SSHHandler.prototype.checkError = function (output, error) {
+    if (error) {
+        if (error.message) console.error(error.message);
+        if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+        if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+SSHHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    const self = this;
+    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+    D.device.sendSSHCommand(config, function (output, error) {
+        if (error) {
+            self.checkError(output, error);
+            d.reject(error);
+        } else {
+            d.resolve(output);
+        }
+    });
+    return d.promise;
+}
+
+SSHHandler.prototype.parseOutputToJson = function (output) {
+    return JSON.parse(output);
+}
+
+SSHHandler.prototype.checkIfValidated = function (output) {
+    return output !== undefined
 }
