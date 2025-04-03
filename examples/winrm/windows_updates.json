@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "name": "Windows Updates",
     "description": "Collect data on missing updates for a windows host",
     "category": "Software Integration",
@@ -10,7 +10,8 @@
         "others": [
             "Powershell Version 5.1.19041.2364",
             "Privileged User Required",
-            "WinRM Enabled"
+            "WinRM Enabled: To run the script using WinRM",
+            "SSH Enabled: To run the script using SSH"
         ]
     },
     "tags": [
@@ -25,12 +26,21 @@
         "table": "[0,999]"
     },
     "protocols": [
-        "WINRM"
+        "WINRM",
+        "SSH"
     ],
     "tested_on": [
         {
             "name": "Microsoft Windows",
             "version": "Server 2019"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "protocol",
+            "label": "Protocol",
+            "value": "WINRM"
         }
     ]
 }
