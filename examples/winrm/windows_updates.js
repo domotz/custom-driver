@@ -93,39 +93,40 @@ function parseOutput(jsonOutput) {
     let ModerateCount = 0;
     let UnspecifiedCount = 0;
     let SecurityCount = 0;
-
-    let k = 0;
-    while (k < jsonOutput.length) {
-        const recordId = "KB" + jsonOutput[k].KB;
-        const title = jsonOutput[k].Title;
-        const severity = jsonOutput[k].MsrcSeverity || "Unspecified";
-        const category = jsonOutput[k].Category;
-        const url = jsonOutput[k].URL;
-        if (category.indexOf("Security") >= 0) {
-            SecurityCount++;
+    if(jsonOutput){
+        let k = 0;
+        while (k < jsonOutput.length) {
+            const recordId = "KB" + jsonOutput[k].KB;
+            const title = jsonOutput[k].Title;
+            const severity = jsonOutput[k].MsrcSeverity || "Unspecified";
+            const category = jsonOutput[k].Category;
+            const url = jsonOutput[k].URL;
+            if (category.indexOf("Security") >= 0) {
+                SecurityCount++;
+            }
+            switch (severity) {
+                case "Critical":
+                    CriticalCount++;
+                    break;
+                case "Important":
+                    ImportantCount++;
+                    break;
+                case "Low":
+                    LowCount++;
+                    break;
+                case "Moderate":
+                    ModerateCount++;
+                    break;
+                case "Unspecified":
+                    UnspecifiedCount++;
+                    break;
+                default:
+            }
+            missingUpdatesTable.insertRecord(
+                recordId, [title, severity, category, url]
+            );
+            k++;
         }
-        switch (severity) {
-            case "Critical":
-                CriticalCount++;
-                break;
-            case "Important":
-                ImportantCount++;
-                break;
-            case "Low":
-                LowCount++;
-                break;
-            case "Moderate":
-                ModerateCount++;
-                break;
-            case "Unspecified":
-                UnspecifiedCount++;
-                break;
-            default:
-        }
-        missingUpdatesTable.insertRecord(
-            recordId, [title, severity, category, url]
-        );
-        k++;
     }
     const updateSeverityCounterVariables = [
         D.createVariable("0-severity-unspecified", "Severity - Unspecified", UnspecifiedCount, null, D.valueType.NUMBER),
@@ -207,8 +208,8 @@ SSHHandler.prototype.executeCommand = function (command) {
     return d.promise;
 }
 
-SSHHandler.prototype.parseOutputToJson = function (output) {
-    return JSON.parse(output);
+SSHHandler.prototype.parseOutputToJson = function (jsonString) {
+    return jsonString ? JSON.parse(jsonString) : null;
 }
 
 SSHHandler.prototype.checkIfValidated = function (output) {
