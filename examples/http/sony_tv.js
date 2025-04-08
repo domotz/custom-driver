@@ -54,9 +54,14 @@ const weekDays = D.getParameter('weekDays')
  * @description Dates to exclude from the scheduling
  * Should be provided as a list of strings in the MM/DD/YYYY format.
  * Example: ["03/22/2025", "03/23/2025"]
+ * The parameter is not mandatory. If you want to exclude specific dates, you must provide this parameter with the excluded dates.
+ * If you don't want to exclude any days, you don't need to provide this parameter, and the code will default to an empty array.
  * @type LIST
  */
 const datesToExclude = D.getParameter('datesToExclude')
+
+const excludedDates = (typeof datesToExclude !== 'undefined' && datesToExclude) || []
+
 
 /**
  * @remote_procedure
@@ -155,8 +160,8 @@ function extractVideoSource(jsonData) {
  * It checks the current date and time against the specified schedule, including start time, end time, and excluded dates.
  */
 function applyScheduling() {
-    console.info("dates To Exclude:", datesToExclude)
-    validateDates(datesToExclude)
+    console.info("dates To Exclude:", excludedDates)
+    validateDates(excludedDates)
     validateWeekDays(weekDays)
 
     const now = new Date()
@@ -184,7 +189,7 @@ function applyScheduling() {
  * @returns {Promise|undefined} A promise that resolves when the TV is turned on, or undefined if conditions are not met
  */
 function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
-    if (weekDays.includes(currentDay) && currentTime >= startTimeInMinutes && currentTime <= endTimeInMinutes && !datesToExclude.includes(currentDate))
+    if (weekDays.includes(currentDay) && currentTime >= startTimeInMinutes && currentTime <= endTimeInMinutes && !excludedDates.includes(currentDate))
         return turnOn()
 }
 
@@ -200,7 +205,7 @@ function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, start
  * @returns {Promise|undefined} A promise that resolves when the TV is turned off, or undefined if conditions are not met
  */
 function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
-    if (!weekDays.includes(currentDay) || currentTime < startTimeInMinutes || currentTime > endTimeInMinutes || datesToExclude.includes(currentDate))
+    if (!weekDays.includes(currentDay) || currentTime < startTimeInMinutes || currentTime > endTimeInMinutes || excludedDates.includes(currentDate))
         return turnOff()
 }
 
