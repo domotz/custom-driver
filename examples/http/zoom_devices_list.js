@@ -38,8 +38,8 @@ const zoomLogin = D.createExternalDevice('zoom.us')
 const zoomResources = D.createExternalDevice('api.zoom.us')
 
 const deviceId = D.getParameter('deviceId')
-const deviceType = D.getParameter('deviceType') 
-const roomName = D.getParameter('roomName') 
+const deviceType = D.getParameter('deviceType')
+const roomName = D.getParameter('roomName')
 
 let accessToken
 let pageToken
@@ -48,7 +48,7 @@ let pageSize = 30
 
 // deviceStatus: Default value is 2, which retrieves all devices. 
 // Can be modified for specific statuses:-1 for unlinked devices, 0 for offline devices and 1 for online devices
-let deviceStatus = 2 
+let deviceStatus = 2
 
 const devicesExtractors = [
     {valueType: D.valueType.STRING, key: 'device_id', extract: getInfoByKey},
@@ -177,17 +177,17 @@ function processLoginResponse(d) {
  */
 function generateLoginConf() {
     return {
-        url: '/oauth/token', 
-        protocol: 'https', 
+        url: '/oauth/token',
+        protocol: 'https',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Basic ' + D._unsafe.buffer.from(clientId + ':' + clientSecret).toString('base64')
-        }, 
+        },
         form: {
-            'grant_type': 'account_credentials', 
+            'grant_type': 'account_credentials',
             'account_id': accountId
-        }, 
-        rejectUnauthorized: false, 
+        },
+        rejectUnauthorized: false,
         jar: true
     }
 }
@@ -243,8 +243,8 @@ function processdevicesResponse(error, response, d, body) {
     const bodyAsJSON = JSON.parse(body)
     if (!Array.isArray(bodyAsJSON.devices) || bodyAsJSON.devices.length === 0) {
         console.error('No devices found.')
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
+        d.resolve(devicesTable)
+
     }
     let filteredDevices = filterDevices(bodyAsJSON.devices)
     devices = devices.concat(extractdevices(filteredDevices))
@@ -271,12 +271,12 @@ function processdevicesResponse(error, response, d, body) {
 function generateConfig() {
     const url = '/v2/devices?device_status=' + deviceStatus + '&page_size=' + pageSize
     return {
-        url: pageToken ? url + '&next_page_token=' + pageToken : url, 
-        protocol: 'https', 
+        url: pageToken ? url + '&next_page_token=' + pageToken : url,
+        protocol: 'https',
         headers: {
             'Authorization': 'Bearer ' + accessToken
-        }, 
-        rejectUnauthorized: false, 
+        },
+        rejectUnauthorized: false,
         jar: true
     }
 }
@@ -336,6 +336,9 @@ function insertRecord(zoomDevices) {
  * @param {Array} zoomDevices The list of devices to populate the table with
  */
 function populateTable(zoomDevices) {
+    if (!Array.isArray(zoomDevices)) {
+        zoomDevices = []
+    }
     zoomDevices.map(function (device) {
         insertRecord(device)
     })
