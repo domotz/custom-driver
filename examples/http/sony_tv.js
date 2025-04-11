@@ -19,6 +19,8 @@
 
 const TV_STATUS_OFF = "standby"
 const TV_STATUS_ON = "on"
+const TV_STATUS_ACTIVE = "active"
+
 const DAYS_OF_THE_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 let videoSource = "N/A"
@@ -172,9 +174,11 @@ function applyScheduling() {
     const startTimeInMinutes = timeToMinutes(startTime)
     const endTimeInMinutes = timeToMinutes(endTime)
 
+    console.info("TV Status: " + tvStatus)
+
     if (tvStatus === TV_STATUS_OFF)
         return turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes)
-    else if(tvStatus === TV_STATUS_ON)
+    else if(tvStatus === TV_STATUS_ON || tvStatus === TV_STATUS_ACTIVE)
         return turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes)
 }
 
@@ -214,6 +218,8 @@ function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, s
  * @returns {Promise} Resolves when the TV is successfully turned on
  */
 function turnOn() {
+    console.info("Turning TV on");
+
     const d = D.q.defer()
 
     const httpConfig = createBaseHTTPConfig()
@@ -236,6 +242,8 @@ function turnOn() {
  * @returns {Promise} Resolves when the TV is successfully turned off
  */
 function turnOff() {
+    console.info("Turning TV off");
+
     const d = D.q.defer()
 
     const httpConfig = createBaseHTTPConfig()
