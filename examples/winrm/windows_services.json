@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "name": "Windows Services Monitoring",
     "description": "Monitor the status of chosen services on a Windows machine",
     "category": "Software Integration",
@@ -10,7 +10,8 @@
         "others": [
             "Powershell Version 5.1.19041.2364",
             "Privilege required: Local Administrator",
-            "WinRM Enabled"
+            "WinRM Enabled: To run the script using WinRM",
+            "SSH Enabled: To run the script using SSH"
         ]
     },
     "tags": [
@@ -25,12 +26,17 @@
         "table": "[3]"
     },
     "protocols": [
-        "WINRM"
+        "WINRM",
+        "SSH"
     ],
     "tested_on": [
         {
             "name": "Microsoft Windows",
             "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
         }
     ],
     "parameters": [
@@ -39,6 +45,12 @@
             "name": "servicesFilter",
             "label": "Service Name",
             "value": ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
+        },
+        {
+            "value_type": "STRING",
+            "name": "protocol",
+            "label": "Protocol",
+            "value": "WINRM"
         }
     ]
 }
