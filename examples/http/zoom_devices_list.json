@@ -1,6 +1,6 @@
 {
     "logo": "zoom.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Zoom Devices List",
     "description": "Retrieves information about Zoom devices connected to a specific account including their current status",
     "category": "Software Integration",

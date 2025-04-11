@@ -1,6 +1,6 @@
 {
     "logo": "sony.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sony TV status",
     "description": "This script monitors and controls the power status of a Sony TV. It supports scheduling based on specific days and time ranges, with the ability to exclude certain dates",
     "category": "Hardware Integration",
