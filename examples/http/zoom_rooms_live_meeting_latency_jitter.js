@@ -80,42 +80,6 @@ const meetingParticipantQosExtractors = [
         valueType: D.valueType.STRING,
         outputKey: "roomName"
     },
-    // {
-    //     key: "video_device_from_crc",
-    //     label: "Video Input CRC Jitter Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "jitter",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "video_device_from_crc_jitter"
-    // },
-    // {
-    //     key: "video_device_from_crc",
-    //     label: "Video Input CRC Latency Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "latency",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "video_device_from_crc_latency"
-    // },
-    // {
-    //     key: "video_device_to_crc",
-    //     label: "Video Output CRC Jitter Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "jitter",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "video_device_to_crc_jitter"
-    // },
-    // {
-    //     key: "video_device_to_crc",
-    //     label: "Video Output CRC Latency Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "latency",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "video_device_to_crc_latency"
-    // },
     {
         key: "video_input",
         label: "Video Input Jitter Avg",
@@ -188,42 +152,6 @@ const meetingParticipantQosExtractors = [
         valueType: D.valueType.NUMBER,
         outputKey: "video_device_to_rwg_latency"
     },
-    // {
-    //     key: "as_device_from_crc",
-    //     label: "AS CRC In Jitter Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "jitter",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "as_device_from_crc_jitter"
-    // },
-    // {
-    //     key: "as_device_from_crc",
-    //     label: "AS CRC In Latency Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "latency",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "as_device_from_crc_latency"
-    // },
-    // {
-    //     key: "as_device_to_crc",
-    //     label: "AS CRC Out Jitter Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "jitter",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "as_device_to_crc_jitter"
-    // },
-    // {
-    //     key: "as_device_to_crc",
-    //     label: "AS CRC Out Latency Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "latency",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     outputKey: "as_device_to_crc_latency"
-    // },
     {
         key: "as_input",
         label: "AS In Jitter Avg",
@@ -296,42 +224,6 @@ const meetingParticipantQosExtractors = [
         valueType: D.valueType.NUMBER,
         outputKey: "as_device_to_rwg_latency"
     },
-    // {
-    //     "key": "audio_device_from_crc",
-    //     label: "Audio CRC In Jitter Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "jitter",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     "outputKey": "audio_device_from_crc_jitter"
-    // },
-    // {
-    //     "key": "audio_device_from_crc",
-    //     label: "Audio CRC In Latency Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "latency",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     "outputKey": "audio_device_from_crc_latency"
-    // },
-    // {
-    //     "key": "audio_device_to_crc",
-    //     label: "Audio CRC Out Jitter Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "jitter",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     "outputKey": "audio_device_to_crc_jitter"
-    // },
-    // {
-    //     "key": "audio_device_to_crc",
-    //     label: "Audio CRC Out Latency Avg",
-    //     extract: calculateAverageByMetricName,
-    //     metricName: "latency",
-    //     unit: "ms",
-    //     valueType: D.valueType.NUMBER,
-    //     "outputKey": "audio_device_to_crc_latency"
-    // },
     {
         "key": "audio_input",
         label: "Audio In Jitter Avg",
@@ -434,14 +326,22 @@ function extractNumericValue(value) {
  */
 function calculateAverageByMetricName(participants, qosType, metricName) {
     if (participants !== undefined && participants.length) {
-        const sum = participants.reduce(function (acc, participant) {
-            acc += extractNumericValue(participant.user_qos[0][qosType][metricName])
-            return acc
-        }, 0)
-        return sum === 0 ? 0 : (sum / participants.length)
+        const acc = participants.reduce(function (accumulator, participant) {
+            if (participant && participant.user_qos && participant.user_qos.length && participant.user_qos[0][qosType] && participant.user_qos[0][qosType][metricName] !== undefined) {
+                accumulator.sum += extractNumericValue(participant.user_qos[0][qosType][metricName])
+                accumulator.count += 1
+            }
+            return accumulator
+        }, { sum: 0, count: 0 })
+        if (acc.count === 0) {
+            return 'N/A'
+        }
+        return acc.count === 0 ? 0 : acc.sum / acc.count
     }
+
     return undefined
 }
+
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -610,7 +510,7 @@ function callGetHttpRequest(extractDetailsFromBody, checkBodyJsonIsNotEmpty, end
                 }
                 const bodyAsJSON = JSON.parse(body)
                 if (checkBodyJsonIsNotEmpty(bodyAsJSON)) {
-                    D.failure(D.errorType.GENERIC_ERROR)
+                     d.resolve([])
                 }
                 const extractedDetails = extractDetailsFromBody(bodyAsJSON)
                 pageToken = bodyAsJSON.next_page_token
@@ -690,7 +590,7 @@ function retrieveMeetingParticipantQos(room) {
         return callGetHttpRequest(extractMeetingParticipantQos, checkParticipantQosBodyJsonIsNotEmpty, url)
     } else {
         console.log("There is no live meeting related to this room " + room.roomName)
-        d.resolve()
+        d.resolve(meetingParticipantQosExtractors)
     }
     return d.promise
 }
@@ -775,7 +675,7 @@ function extractMetricsQos(roomQos) {
 function extractZoomRoomsId(bodyAsJSON) {
     let selectedRoomIds = []
     bodyAsJSON.rooms.forEach(function (zoomRoom) {
-        const id = zoomRoom.id
+        const id = zoomRoom.room_id
         if ((roomIds.length === 1 && roomIds[0].toLowerCase() === 'all') || roomIds.includes(id)) {
             selectedRoomIds.push(id)
         }
