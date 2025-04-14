@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "ms-teams.svg",
     "version": "1.0.0",
     "name": "Microsoft Teams Rooms - Device status",
     "description": "Monitor Teams Rooms Devices: this script retrieves information about Room's Devices",
