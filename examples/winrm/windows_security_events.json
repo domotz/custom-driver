@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "name": "Windows Security events monitoring",
     "description": "Monitor the occurrences of Windows security events. Some events are only raised if the related audit setting is enabled. More info on https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/advanced-security-auditing-faq",
     "category": "Software Integration",
@@ -9,7 +9,8 @@
         "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "WinRM Enabled",
+            "WinRM Enabled: To run the script using WinRM",
+            "SSH Enabled: To run the script using SSH",
             "Read permissions on HKLM\\System\\CurrentControlSet\\Services\\eventlog\\Security",
             "User must be a member of Built-in group 'Event Log Readers'"
         ]
@@ -26,12 +27,21 @@
         "table": "[20]"
     },
     "protocols": [
-        "WINRM"
+        "WINRM",
+        "SSH"
     ],
     "tested_on": [
         {
             "name": "Microsoft Windows",
             "version": "Server 2019"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "protocol",
+            "label": "Protocol",
+            "value": "WINRM"
         }
     ]
 }
