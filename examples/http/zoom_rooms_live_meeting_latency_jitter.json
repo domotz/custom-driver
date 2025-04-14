@@ -1,6 +1,6 @@
 {
     "logo": "zoom.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Zoom Rooms Live Meeting Latency and Jitter",
     "description": "This script retrieves information about Zoom Rooms Live Meeting Latency and Jitter",
     "category": "Software Integration",

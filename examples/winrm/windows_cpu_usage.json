@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "name": "Windows CPU Usage",
     "description": "Monitor the average CPU load average percentage of a Windows server.",
     "category": "Software Integration",
@@ -9,7 +9,8 @@
         "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "WinRM Enabled"
+            "WinRM Enabled: To run the script using WinRM",
+            "SSH Enabled: To run the script using SSH"
         ]
     },
     "tags": [
@@ -23,7 +24,8 @@
         "independent": "[1]"
     },
     "protocols": [
-        "WINRM"
+        "WINRM",
+        "SSH"
     ],
     "tested_on": [
         {
@@ -33,6 +35,14 @@
         {
             "name": "Microsoft Windows",
             "version": "10"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "protocol",
+            "label": "Protocol",
+            "value": "WINRM"
         }
     ]
 }
