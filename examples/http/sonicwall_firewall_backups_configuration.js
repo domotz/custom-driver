@@ -10,7 +10,11 @@
  * 
  **/
 
-var sonicWallPort = 443
+/**
+ * @description Port Number
+ * @type NUMBER 
+ */
+var portNumber = D.getParameter('portNumber');
 
 //Processes the HTTP response and handles errors
 function processResponse(d) {
@@ -41,7 +45,7 @@ function login() {
         password: D.device.password(),
         protocol: "https",
         auth: "basic",
-        port: sonicWallPort,
+        port: portNumber,
         jar: true,
         rejectUnauthorized: false
     }
@@ -58,7 +62,7 @@ function getConfigBackup() {
     var config = {
         url: "/api/sonicos/config/current",
         protocol: "https",
-        port: sonicWallPort,
+        port: portNumber,
         jar: true,
         rejectUnauthorized: false,
     }
@@ -104,14 +108,14 @@ function backup(){
                     label: "Device Configuration",
                     running: JSON.stringify(backup, null, 1),
                     ignoredLines: [
-                        "\n[\s]+\"(system_)?(up)?time\"\:[\s]\".*?\",??",
-                        "\n[\s]+\"([a-z]+_)?secret\"\:[\s]\".*?\",??",
-                        "\n[\s]+\"password\"\:[\s]\".*?\",??",
-                        "\n[\s]+\"date\"\:[\s]\".*?\",??",
-                        "\n[\s]+\"[a-z_]*_*password\"\:[\s]\".*?\",??",
+                        "^[\s]*\"(system_)?(up)?time\"\:[\s]\".*?\",??",
+                        "^[\s]*\"([a-z]+_)?secret\"\:[\s]\".*?\",??",
+                        "^[\s]*\"password\"\:[\s]\".*?\",??",
+                        "^[\s]*\"date\"\:[\s]\".*?\",??",
+                        "^[\s]*\"[a-z_]*_*password\"\:[\s]\".*?\",??",
                         "\"password\"\\s*:\\s*\\{\\s*\"default\"\\s*:\\s*\".*?\"\\s*\\}",
-                        "\n[\s]+\"[a-z]+_pass\"\:[\s]\".*?\",??",
-                        "\n[\s]+\"passphrase\"\:[\s]\".*?\",??",
+                        "^[\s]*\"[a-z]+_pass\"\:[\s]\".*?\",??",
+                        "^[\s]*\"passphrase\"\:[\s]\".*?\",??"
                     ] 
                 })
                 D.success(backupResult)
