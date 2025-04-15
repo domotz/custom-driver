@@ -108,14 +108,16 @@ function backup(){
                     label: "Device Configuration",
                     running: JSON.stringify(backup, null, 1),
                     ignoredLines: [
-                        "^[\s]*\"(system_)?(up)?time\"\:[\s]\".*?\",??",
-                        "^[\s]*\"([a-z]+_)?secret\"\:[\s]\".*?\",??",
-                        "^[\s]*\"password\"\:[\s]\".*?\",??",
-                        "^[\s]*\"date\"\:[\s]\".*?\",??",
-                        "^[\s]*\"[a-z_]*_*password\"\:[\s]\".*?\",??",
-                        "\"password\"\\s*:\\s*\\{\\s*\"default\"\\s*:\\s*\".*?\"\\s*\\}",
-                        "^[\s]*\"[a-z]+_pass\"\:[\s]\".*?\",??",
-                        "^[\s]*\"passphrase\"\:[\s]\".*?\",??"
+                        "^\\s*\"system_time\"\\s*:\\s*\".*\",?",
+                        "^\\s*\"system_uptime\"\\s*:\\s*\".*\",?",
+                        "^\\s*\"password\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"confirm_secret\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"shared_secret\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"secret\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"user_password\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"passphrase\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"smtp_pass\"\\s*:\\s*\"6,.*\",?",
+                        "^\\s*\"connection_profile\"\\s*:\\s*\\{.*\\},?"
                     ] 
                 })
                 D.success(backupResult)
