@@ -54,16 +54,12 @@ const weekDays = D.getParameter('weekDays')
 
 /**
  * @description Dates to exclude from the scheduling
- * Should be provided as a list of strings in the MM/DD/YYYY format.
+ * Provide the dates as an array of strings in MM/DD/YYYY format.
  * Example: ["03/22/2025", "03/23/2025"]
- * The parameter is not mandatory. If you want to exclude specific dates, you must provide this parameter with the excluded dates.
- * If you don't want to exclude any days, you don't need to provide this parameter, and the code will default to an empty array.
+ * Use ["None"] if you don't want to exclude any dates.
  * @type LIST
  */
 const datesToExclude = D.getParameter('datesToExclude')
-
-const excludedDates = (typeof datesToExclude !== 'undefined' && datesToExclude) || []
-
 
 /**
  * @remote_procedure
@@ -162,7 +158,12 @@ function extractVideoSource(jsonData) {
  * It checks the current date and time against the specified schedule, including start time, end time, and excluded dates.
  */
 function applyScheduling() {
-    console.info("dates To Exclude:", excludedDates)
+
+    let excludedDates = Array.isArray(datesToExclude) && datesToExclude.length &&  typeof datesToExclude[0] === "string" && datesToExclude[0].toLowerCase() !== "none"
+        ? datesToExclude
+        : []
+    console.info("dates To Exclude:", datesToExclude)
+
     validateDates(excludedDates)
     validateWeekDays(weekDays)
 
@@ -193,7 +194,7 @@ function applyScheduling() {
  * @returns {Promise|undefined} A promise that resolves when the TV is turned on, or undefined if conditions are not met
  */
 function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
-    if (weekDays.includes(currentDay) && currentTime >= startTimeInMinutes && currentTime <= endTimeInMinutes && !excludedDates.includes(currentDate))
+    if (weekDays.includes(currentDay) && currentTime >= startTimeInMinutes && currentTime <= endTimeInMinutes && !datesToExclude.includes(currentDate))
         return turnOn()
 }
 
@@ -209,7 +210,7 @@ function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, start
  * @returns {Promise|undefined} A promise that resolves when the TV is turned off, or undefined if conditions are not met
  */
 function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
-    if (!weekDays.includes(currentDay) || currentTime < startTimeInMinutes || currentTime > endTimeInMinutes || excludedDates.includes(currentDate))
+    if (!weekDays.includes(currentDay) || currentTime < startTimeInMinutes || currentTime > endTimeInMinutes || datesToExclude.includes(currentDate))
         return turnOff()
 }
 
@@ -218,7 +219,7 @@ function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, s
  * @returns {Promise} Resolves when the TV is successfully turned on
  */
 function turnOn() {
-    console.info("Turning TV on");
+    console.info("Turning TV on")
 
     const d = D.q.defer()
 
@@ -242,7 +243,7 @@ function turnOn() {
  * @returns {Promise} Resolves when the TV is successfully turned off
  */
 function turnOff() {
-    console.info("Turning TV off");
+    console.info("Turning TV off")
 
     const d = D.q.defer()
 
