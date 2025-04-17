@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "name": "Windows Static IP Monitor",
     "description": "This script retrieves and monitors static IP information for network interfaces on Windows machines.",
     "category": "Software Integration",
