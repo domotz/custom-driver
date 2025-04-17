@@ -201,7 +201,7 @@ SSHHandler.prototype.executeCommand = function (command) {
 }
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
-    return JSON.parse(output);
+    return output ? JSON.parse(output) : null;
 }
 
 SSHHandler.prototype.checkIfValidated = function (output) {
