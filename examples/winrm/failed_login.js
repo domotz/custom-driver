@@ -30,7 +30,16 @@ const protocol = D.getParameter('protocol');
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 // Command to retrieve failed login attempts
-const command = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";ID=4625;StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue;$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;TargetUserName = $_.properties[5].value;WorkstationName = $_.properties[13].value;IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;$GroupByUsers |select count,values |ConvertTo-Json';
+const command = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";' +
+    'ID=4625;' +
+    'StartTime=((Get-Date).AddHours(-($Hours)).Date);' +
+    'EndTime=(Get-Date)} -ErrorAction SilentlyContinue;' +
+    '$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;' +
+    'TargetUserName = $_.properties[5].value;' +
+    'WorkstationName = $_.properties[13].value;' +
+    'IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;' +
+    'if ($GroupByUsers) {Write-Output ($GroupByUsers | select count, values | ConvertTo-Json )' +
+    '} else {Write-Output "[]"}';
 
 // configuration
 const config = {
@@ -143,7 +152,8 @@ WinRMHandler.prototype.executeCommand = function (command) {
 }
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    return JSON.parse(output.outcome.stdout);
+    const jsonString = output.outcome.stdout
+    return jsonString ? JSON.parse(jsonString) : null;
 }
 
 WinRMHandler.prototype.logServiceErrors = function (jsonOutput) {

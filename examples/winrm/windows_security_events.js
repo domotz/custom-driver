@@ -113,7 +113,7 @@ function get_status() {
 }
 
 function setAuditedEventCount(event) {
-    auditedEvents[event.Name].count = event.Count
+    if(event.Name) auditedEvents[event.Name].count = event.Count
 }
 
 // Parses the output of the command and fills the eventTable with the retrieved events.
@@ -121,6 +121,7 @@ function parseOutput(jsonOutput) {
     let k = 0;
     if (Array.isArray(jsonOutput)) {
         while (k < jsonOutput.length) {
+            setAuditedEventCount(jsonOutput[k]);
             k++;
         }
     } else {
@@ -203,7 +204,7 @@ SSHHandler.prototype.executeCommand = function (command) {
 }
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
-    return JSON.parse(output);
+    return output ? JSON.parse(output) : null;
 }
 
 SSHHandler.prototype.checkIfValidated = function (output) {
