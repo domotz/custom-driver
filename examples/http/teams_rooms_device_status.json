@@ -8,7 +8,8 @@
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Microsoft Teams"
+            "Microsoft Teams",
+            "Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All"
         ]
     },
     "tags": [

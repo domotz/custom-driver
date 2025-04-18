@@ -7,6 +7,9 @@
  *
  * Communication protocol is HTTPS
  *
+ * requirements:
+ *    Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All
+ *
  * Creates a custom driver with the following columns:
  *    - Model: Represents the model or type of the device
  *    - Vendor: Denotes the manufacturer or vendor of the device
