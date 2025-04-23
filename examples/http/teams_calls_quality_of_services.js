@@ -32,7 +32,8 @@ const tenantId = D.getParameter('tenantId');
 const clientId = D.getParameter('clientId');
 const clientSecret = D.getParameter('clientSecret');
 
-const daysBack = D.getParameter('daysBack');
+// increasing it too much could lead to errors
+const maxRows = D.getParameter('maxRows');
 
 const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com');
 const teamsManagementService = D.createExternalDevice('graph.microsoft.com');
@@ -240,12 +241,11 @@ function extractPathAndQuery(url) {
 /**
  * Processes the response from the Calls API call and extracts call information.
  * @param {Object} d - The deferred promise object.
- * @param url
  * @param callback
  * @param callbackParams
  * @returns {Function} A function to process the HTTP response.
  */
-function processResponse(d, url, callback, callbackParams) {
+function processResponse(d, callback, callbackParams) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
@@ -255,14 +255,7 @@ function processResponse(d, url, callback, callbackParams) {
             return;
         }
         const output = callback(bodyAsJSON.value, callbackParams)
-        if (bodyAsJSON['@odata.nextLink']) {
-            const outputWithNextPage = callGetRequest(extractPathAndQuery(bodyAsJSON['@odata.nextLink']), callback, callbackParams).then(function (nextOutput) {
-                return output.concat(nextOutput)
-            })
-            d.resolve(outputWithNextPage)
-        } else {
-            d.resolve(output)
-        }
+        d.resolve(output)
     }
 }
 
@@ -302,7 +295,11 @@ function sanitize(output) {
  * @param calls
  */
 function extractAllCallsInfo(calls) {
-    return calls.map(extractCallInfo);
+    let callInfo = []
+    for (let i = 0; (i < calls.length && i < maxRows); i++) {
+        callInfo.push(extractCallInfo(calls[i]))
+    }
+    return callInfo
 }
 
 /**
@@ -376,24 +373,11 @@ function insertRecord(call) {
 }
 
 /**
- * Returns the filter string for startDateTime based on daysBack.
- * @param {number} daysBack - 1 = today, 2 = yesterday, etc.
- * @returns {string} Filter string
- */
-function getFilterString(daysBack) {
-    const date = new Date();
-    date.setDate(date.getDate() - (daysBack - 1));
-
-    const isoDate = date.toISOString().split('T')[0] + 'T00:00:00Z';
-    return '$filter=startDateTime ge ' + isoDate;
-}
-
-/**
  * Retrieves Teams calls for the subscription.
  * @returns {Promise} A promise that resolves with the call data.
  */
 function retrieveCalls() {
-    const url = "/v1.0/communications/callRecords?" + getFilterString(daysBack)
+    const url = "/v1.0/communications/callRecords"
     return callGetRequest(url, extractAllCallsInfo)
 }
 
@@ -411,7 +395,7 @@ function callGetRequest(url, callback, callbackParams = null) {
         rejectUnauthorized: false, jar: true
     }
 
-    teamsManagementService.http.get(config, processResponse(d, url, callback, callbackParams));
+    teamsManagementService.http.get(config, processResponse(d, callback, callbackParams));
     return d.promise;
 
 }
