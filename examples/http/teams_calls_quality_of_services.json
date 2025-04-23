@@ -39,9 +39,9 @@
         },
         {
             "value_type": "NUMBER",
-            "name": "daysBack",
-            "label": "Days Back",
-            "value": 2
+            "name": "maxRows",
+            "label": "Max Rows",
+            "value": 20
         }
     ]
 }
