@@ -1,0 +1,50 @@
+{
+  "logo": "ms-teams.svg",
+  "version": "1.0.0",
+  "name": "Microsoft Teams Rooms - Meeting Participants",
+  "description": "This script monitor the number of participants in ongoing Microsoft Teams meetings for each room",
+  "category": "Software Integration",
+  "requirements": {
+    "credentials": false,
+    "sandbox_version": "1.12",
+    "others": [
+      "Microsoft Teams",
+      "Grant permission to extract the list of room: Place.Read.All",
+      "Grant permission to extract to calendar data: Calendars.ReadBasic"
+    ]
+  },
+  "tags": [
+    "teams"
+  ],
+  "sample_period_s": 1800,
+  "has_actions": false,
+  "expected_variables": {
+    "table": "[9]"
+  },
+  "protocols": [
+    "HTTPS"
+  ],
+  "tested_on": [
+    {
+      "name": "Microsoft Graph API",
+      "version": "1.0"
+    }
+  ],
+  "parameters": [
+    {
+      "value_type": "STRING",
+      "name": "tenantID",
+      "label": "Tenant Id"
+    },
+    {
+      "value_type": "STRING",
+      "name": "clientId",
+      "label": "Client Id"
+    },
+    {
+      "value_type": "SECRET_TEXT",
+      "name": "clientSecret",
+      "label": "Client Secret"
+    }
+  ]
+}
