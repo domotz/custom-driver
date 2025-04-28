@@ -9,17 +9,20 @@
     "sandbox_version": "1.12",
     "others": [
       "Microsoft Teams",
+      "room",
       "Grant permission to extract the list of room: Place.Read.All",
       "Grant permission to extract to calendar data: Calendars.ReadBasic"
     ]
   },
   "tags": [
-    "teams"
+    "teams",
+    "room",
+    "ongoing-meeting"
   ],
   "sample_period_s": 1800,
   "has_actions": false,
   "expected_variables": {
-    "table": "[9]"
+    "table": "[10]"
   },
   "protocols": [
     "HTTPS"
