@@ -15,13 +15,14 @@
  * Creates a custom driver with the following columns:
  *    - Email Address: The unique email address associated with the Microsoft Teams Room
  *    - Room Name: The human-readable name of the Microsoft Teams Room
- *    - Total Of Attendees: The total number of attendees in the ongoing meeting
- *    - Required: The number of required attendees
- *    - Optional: The number of optional attendees
- *    - Resource: The number of resource attendees
- *    - Status Accepted: The number of attendees who accepted the invitation
- *    - Status Tentatively Accepted: The number of attendees who tentatively accepted the invitation
- *    - Status Absent: The number of attendees who have not responded or are absent
+ *    - Total Attendees: The total number of attendees in the ongoing meeting
+ *    - Required Attendees: The number of required attendees
+ *    - Optional Attendees: The number of optional attendees
+ *    - Resource Attendees: The number of resource attendees
+ *    - Accepted: The number of attendees who accepted the invitation
+ *    - Tentatively Accepted: The number of attendees who tentatively accepted the invitation
+ *    - Declined: The number of attendees who declined the invitation
+ *    - Absent: The number of attendees who have not responded or are absent
  **/
 
 const tenantId = D.getParameter('tenantId')
@@ -52,34 +53,35 @@ const roomInfoExtractors = [{
 
 // Extractors for ongoing meeting information
 const ongoingMeetingInfoExtractors = [{
-    label: 'Total Of Attendees', valueType: D.valueType.STRING, key: 'attendees', extract: function (meeting) {
+    label: 'Total Attendees', valueType: D.valueType.STRING, key: 'attendees', extract: function (meeting) {
         return countAttendees(meeting.attendees).total
     }
 }, {
-    label: 'Required', valueType: D.valueType.STRING, key: 'required', extract: function (meeting) {
+    label: 'Required Attendees', valueType: D.valueType.STRING, key: 'required', extract: function (meeting) {
         return countAttendees(meeting.attendees).required
     }
 }, {
-    label: 'Optional', valueType: D.valueType.STRING, key: 'optional', extract: function (meeting) {
+    label: 'Optional Attendees', valueType: D.valueType.STRING, key: 'optional', extract: function (meeting) {
         return countAttendees(meeting.attendees).optional
     }
 }, {
-    label: 'Resource', valueType: D.valueType.STRING, key: 'resource', extract: function (meeting) {
+    label: 'Resource Attendees', valueType: D.valueType.STRING, key: 'resource', extract: function (meeting) {
         return countAttendees(meeting.attendees).resource
     }
 }, {
-    label: 'Status Accepted', valueType: D.valueType.STRING, key: 'accepted', extract: function (meeting) {
+    label: 'Accepted', valueType: D.valueType.STRING, key: 'accepted', extract: function (meeting) {
         return countAttendees(meeting.attendees).accepted
     }
 }, {
-    label: 'Status Tentatively Accepted',
-    valueType: D.valueType.STRING,
-    key: 'tentativelyAccepted',
-    extract: function (meeting) {
+    label: 'Tentatively Accepted', valueType: D.valueType.STRING, key: 'tentativelyAccepted', extract: function (meeting) {
         return countAttendees(meeting.attendees).tentativelyAccepted
     }
 }, {
-    label: 'Status Absent', valueType: D.valueType.STRING, key: 'none', extract: function (meeting) {
+    label: 'Declined', valueType: D.valueType.STRING, key: 'declined', extract: function (meeting) {
+        return countAttendees(meeting.attendees).declined
+    }
+}, {
+    label: 'Absent', valueType: D.valueType.STRING, key: 'none', extract: function (meeting) {
         return countAttendees(meeting.attendees).none
     }
 }]
