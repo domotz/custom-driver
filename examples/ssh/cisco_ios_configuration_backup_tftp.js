@@ -1,5 +1,4 @@
-const TFTP_SERVER_IP = '192.168.1.10';  // Update this to your server's reachable IP
-const TFTP_FILENAME = 'the_backup.cfg';
+const TFTP_FILENAME = Date.now() + '_running_config_backup.cfg';
 const SSH_TIMEOUT = 10000;  // SSH timeout in milliseconds
 const TFTP_TIMEOUT = 20000; // TFTP server timeout in milliseconds
 
@@ -52,13 +51,12 @@ function sendTftpCommandCallback(output, error) {
     }
 }
 
-function sendTftpCopyCommand() {
-    
+function sendTftpCopyCommand(host) {
     const tftpCommands = [
-        'copy running-config tftp:\r' + TFTP_SERVER_IP + '\r' + TFTP_FILENAME,
+        'copy running-config tftp:\r' + host + '\r' + TFTP_FILENAME,
     ]
     sshOptions.commands = tftpCommands;
-    console.info("Sending command to copy running config to TFTP server:", 'copy running-config tftp' + TFTP_SERVER_IP + TFTP_FILENAME);
+    console.info("Sending command to copy running config to TFTP server:",tftpCommands );
     D.device.sendSSHCommands(sshOptions, sendTftpCommandCallback);
 }
 
@@ -76,7 +74,8 @@ function startTftpServerAndSync() {
             return;
         }
         console.info('TFTP server ready on %s:%s', host, port);
-        sendTftpCopyCommand();
+        
+        sendTftpCopyCommand(host);
     }
 
     function onUpload(error, content) {
