@@ -32,7 +32,7 @@
     "parameters": [
         {
             "value_type": "STRING",
-            "name": "tenantID",
+            "name": "tenantId",
             "label": "Tenant Id"
         },
         {
