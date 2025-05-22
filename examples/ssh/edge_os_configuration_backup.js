@@ -8,6 +8,14 @@
  */
 
 /**
+ * @param {number} portNumber
+ * @label Custom Port
+ * @description SSH port (e.g. 22)
+ * @type NUMBER
+ */
+var portNumber = D.getParameter("portNumber") || 22;
+
+/**
 * @remote_procedure
 * @label Validate Association for Backup
 * @documentation This procedure is used to validate if the device supports the needed commands for configuration backup
@@ -71,6 +79,7 @@ var sshOptions = {
     inter_command_timeout_ms: 1000,
     global_timeout_ms: 5000,
     prompt: "$",
+    port: portNumber
 };
 // Utility function that checks the type of error that has occured
 function checkSshError(err) {
