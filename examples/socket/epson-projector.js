@@ -1,3 +1,22 @@
+/**
+ * Domotz Custom Driver
+ * Name: Epson Projector - PJLink Monitoring
+ * Description: This script monitors and controls the power status and lamp hours of an Epson Projector.
+ *
+ * Communication protocol is "TCP/IP"
+ *
+ * Tested on EPSON L630U
+ *
+ * Creates a custom driver variables:
+ *       - Status: The current power state of the projector
+ *       - Lamp Hours: Cumulative hours of lamp usage
+ *
+ * Creates custom actions:
+ *       - On: Turns the projector on
+ *       - Off: Turns the projector off
+ *
+ **/
+
 const COMMAND_TIMEOUT = 20000;
 
 const AUTH = 'PJLINK';
