@@ -1,16 +1,13 @@
 {
     "logo": "ms-teams.svg",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "name": "Microsoft Teams Rooms - Device status",
-    "description": "This script retrieves information about Room Devices, including detailed health status for each device",
+    "description": "Monitor Teams Rooms Devices: this script retrieves information about Room's Devices",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
-        "others": [
-            "Microsoft Teams",
-            "Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All"
-        ]
+        "others": []
     },
     "tags": [
         "teams"
@@ -18,17 +15,12 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "table": "[24]"
+        "table": "[7]"
     },
     "protocols": [
         "HTTPS"
     ],
-    "tested_on": [
-        {
-            "name": "Microsoft Graph API",
-            "version": "beta"
-        }
-    ],
+    "tested_on": [],
     "parameters": [
         {
             "value_type": "STRING",

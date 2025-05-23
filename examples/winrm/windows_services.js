@@ -162,7 +162,8 @@ WinRMHandler.prototype.executeCommand = function (command) {
 }
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    return JSON.parse(output.outcome.stdout);
+    const jsonString = output.outcome.stdout
+    return jsonString ? JSON.parse(jsonString) : null;
 }
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
@@ -200,7 +201,7 @@ SSHHandler.prototype.executeCommand = function (command) {
 }
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
-    return JSON.parse(output);
+    return output ? JSON.parse(output) : null;
 }
 
 SSHHandler.prototype.checkIfValidated = function (output) {
