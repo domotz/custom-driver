@@ -67,7 +67,11 @@ function generateRoomProperties() {
  * @param {Array} roomProperties - The properties of the rooms to be displayed in the table.
  */
 function createRoomsTable(roomProperties) {
-    roomsTable = D.createTable('Microsoft Teams Rooms status', roomProperties)
+    tableHeaders = roomProperties.map(function(item) {return { label: item.label }});
+
+    roomsTable = D.createTable('Microsoft Teams Rooms status', tableHeaders)
+
+    
 }
 
 const roomProperties= generateRoomProperties()
