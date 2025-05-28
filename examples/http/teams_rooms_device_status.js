@@ -1,287 +1,105 @@
 /**
  * Domotz Custom Driver
- * Name: Microsoft Teams Rooms - Device status
- * Description: This script retrieves information about Room Devices, including detailed health status for each device.
+ * Name: Microsoft Teams Rooms status
+ * Description: This script monitor the current status of Microsoft Teams Rooms, determining if the rooms are busy or free.
  *
- * Tested on Microsoft Graph API beta
+ * Tested on Microsoft Graph API version 1.0
  *
  * Communication protocol is HTTPS
  *
  * requirements:
- *    Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All
+ *    Grant permission to extract the list of room: Place.Read.All
+ *    Grant permission to extract to calendar data: Calendars.ReadBasic
  *
  * Creates a custom driver with the following columns:
- *    - Model: Represents the model or type of the device
- *    - Vendor: Denotes the manufacturer or vendor of the device
- *    - Type: The category or kind of the device
- *    - Used by: The user or department that is assigned or utilizing the device
- *    - Serial Number: The unique serial number assigned to the device for identification
- *    - Health Status: Provides the current health or status of the device, indicating whether it is operating normally or has issues
- *    - Activity: The current activity state of the device
- *    - Connection Status: Indicates the status of the device’s network connection
- *    - Exchange Login Status: Reflects the login status with Exchange, which may affect email functionality
- *    - Teams Login Status: Shows the device's login status within Microsoft Teams, impacting its ability to participate in meetings
- *    - Room Camera: Health status of the camera used in the room
- *    - Content Camera: Similar to the Room Camera, it reflects the status of the content camera
- *    - Speaker: The health of the speaker device, which can impact audio during meetings
- *    - Communication Speaker: A specific speaker used for communication, indicating its health
- *    - Microphone: Represents the status of the microphone device
- *    - OS Update Status: Displays the status of the operating system’s software update
- *    - Admin Agent Update Status: Indicates whether the admin agent software is up-to-date
- *    - Company Portal Update Status: The status of the update for the company portal application
- *    - Teams Client Update Status: Displays if the Teams client is up-to-date
- *    - Firmware Update Status: Reflects the status of any firmware updates
- *    - Partner Agent Update Status: Status of the partner agent software update
- *    - Compute Health: Represents the health of the device’s computing components
- *    - HDMI Ingest: Indicates the health of HDMI video inputs, relevant for content sharing during meetings
+ *    - Email Address: The unique email address associated with the Microsoft Teams Room
+ *    - Room Name: The human-readable name of the Microsoft Teams Room
+ *    - Status: The current status of the Microsoft Teams Room
  *
- * Dynamically creates columns for each external display connected to the room system.
- * These come from the displayHealthCollection data, and for each display, a column will appear showing its connection status like:
- *      - Display 1 Status: Connection status of the first display.
- *      - Display 2 Status: Connection status of the second display.
- *      - ...
- * The number of these columns changes automatically depending on how many displays are reported by the system.
  **/
 
-/**
- * @description Teams Rooms Tenant Id
- * @type STRING 
- */
-var tenantId = D.getParameter('tenantId');
-
-/**
- * @description Teams Rooms Client Id
- * @type STRING 
- */
-var clientId = D.getParameter('clientId');
-
-/**
- * @description Teams Rooms Client Secret
- * @type SECRET_TEXT 
- */
-var clientSecret = D.getParameter('clientSecret');
+const tenantId = D.getParameter('tenantId')
+const clientId = D.getParameter('clientId')
+const clientSecret = D.getParameter('clientSecret')
 
 const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com')
 const teamsManagementService = D.createExternalDevice('graph.microsoft.com')
 
 let accessToken
-let deviceTable
-let deviceProperties
+let roomsTable
 
-const deviceInfoExtractors = [{
-    key: "id", extract: function (device) {
-        return sanitize(device.id)
+// Extractors for Room Information
+const roomInfoExtractors = [{
+    key: 'id', extract: function (room) {
+        return sanitize(room.id)
     }
 }, {
-    label: 'Model', valueType: D.valueType.STRING, key: 'model', extract: function (device) {
-        return extractFromHardwareDetailByKey(device, "model")
+    label: 'Email Address', valueType: D.valueType.STRING, key: 'emailAddress', extract: function (room) {
+        return extractByKey(room, 'emailAddress')
     }
 }, {
-    label: 'Vendor', valueType: D.valueType.STRING, key: 'manufacturer', extract: function (device) {
-        return extractFromHardwareDetailByKey(device, "manufacturer")
-    }
-}, {
-    label: 'Type', valueType: D.valueType.STRING, key: 'deviceType', extract: function (device) {
-        return extractByKey(device, "deviceType")
-    }
-}, {
-    label: 'Used by', valueType: D.valueType.STRING, key: 'displayName', extract: function (device) {
-        return extractCurrentUserByKey(device, "displayName")
-    }
-}, {
-    label: 'Serial Number', valueType: D.valueType.STRING, key: 'serialNumber', extract: function (device) {
-        return extractFromHardwareDetailByKey(device, "serialNumber")
-    }
-}, {
-    label: 'Health Status', valueType: D.valueType.STRING, key: 'healthStatus', extract: function (device) {
-        return extractByKey(device, "healthStatus")
-    }
-}, {
-    label: 'Activity', valueType: D.valueType.STRING, key: 'activityState', extract: function (device) {
-        return extractByKey(device, "activityState")
+    label: 'Room Name', valueType: D.valueType.STRING, key: 'displayName', extract: function (room) {
+        return extractByKey(room, 'displayName')
     }
 }]
 
-const deviceHealthExtractors = [{
-    label: 'Connection Status',
-    valueType: D.valueType.STRING,
-    key: 'connectionStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['connection', 'connectionStatus'])
+// Extractors for Room Availability Information
+const availabilityRoomInfoExtractors = [
+    {
+        label: 'Status', valueType: D.valueType.STRING, key: 'availabilityView', extract: function (room) {
+            return mapRoomStatus(extractByKey(room, 'availabilityView'))
+        }
     }
-}, {
-    label: 'Exchange Login Status',
-    valueType: D.valueType.STRING,
-    key: 'exchangeLoginStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['loginStatus', 'exchangeConnection', 'connectionStatus'])
-    }
-}, {
-    label: 'Teams Login Status',
-    valueType: D.valueType.STRING,
-    key: 'teamsLoginStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['loginStatus', 'teamsConnection', 'connectionStatus'])
-    }
-}, {
-    label: 'Room Camera',
-    valueType: D.valueType.STRING,
-    key: 'roomCameraHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'roomCameraHealth', 'connection', 'connectionStatus'])
-    }
-}, {
-    label: 'Content Camera',
-    valueType: D.valueType.STRING,
-    key: 'contentCameraHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'contentCameraHealth', 'connection', 'connectionStatus'])
-    }
-}, {
-    label: 'Speaker',
-    valueType: D.valueType.STRING,
-    key: 'speakerHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'speakerHealth', 'connection', 'connectionStatus'])
-    }
-}, {
-    label: 'Communication Speaker',
-    valueType: D.valueType.STRING,
-    key: 'communicationSpeakerHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'communicationSpeakerHealth', 'connection', 'connectionStatus'])
-    }
-}, {
-    label: 'Microphone',
-    valueType: D.valueType.STRING,
-    key: 'microphoneHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'microphoneHealth', 'connection', 'connectionStatus'])
-    }
-}, {
-    label: 'OS Update Status',
-    valueType: D.valueType.STRING,
-    key: 'operatingSystemSoftwareUpdateStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'operatingSystemSoftwareUpdateStatus'])
-    }
-}, {
-    label: 'Admin Agent Update Status',
-    valueType: D.valueType.STRING,
-    key: 'adminAgentSoftwareUpdateStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'adminAgentSoftwareUpdateStatus', 'softwareFreshness'])
-    }
-}, {
-    label: 'Company Portal Update Status',
-    valueType: D.valueType.STRING,
-    key: 'companyPortalSoftwareUpdateStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'companyPortalSoftwareUpdateStatus', 'softwareFreshness'])
-    }
-}, {
-    label: 'Teams Client Update Status',
-    valueType: D.valueType.STRING,
-    key: 'teamsClientSoftwareUpdateStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'teamsClientSoftwareUpdateStatus', 'softwareFreshness'])
-    }
-}, {
-    label: 'Firmware Update Status',
-    valueType: D.valueType.STRING,
-    key: 'firmwareSoftwareUpdateStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'firmwareSoftwareUpdateStatus', 'softwareFreshness'])
-    }
-}, {
-    label: 'Partner Agent Update Status',
-    valueType: D.valueType.STRING,
-    key: 'partnerAgentSoftwareUpdateStatus',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'partnerAgentSoftwareUpdateStatus', 'softwareFreshness'])
-    }
-}, {
-    label: 'Compute Health',
-    valueType: D.valueType.STRING,
-    key: 'computeHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['hardwareHealth', 'computeHealth', 'connection', 'connectionStatus'])
-    }
-}, {
-    label: 'HDMI Ingest',
-    valueType: D.valueType.STRING,
-    key: 'hdmiIngestHealth',
-    extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['hardwareHealth', 'hdmiIngestHealth', 'connection', 'connectionStatus'])
-    }
-}]
+]
 
 /**
- * Combines device and health extractors to generate a complete list of device properties.
- * @returns {Array} - Combined list of device properties.
+ * Combines room and availability extractors into a single list.
+ * @returns {Array} The combined list of room properties and availability properties.
  */
-function generateDeviceProperties() {
-    return deviceInfoExtractors.concat(deviceHealthExtractors).filter(function (result) {
+function generateRoomProperties() {
+    return roomInfoExtractors.concat(availabilityRoomInfoExtractors).filter(function (result) {
         return result.label
     })
 }
 
 /**
- * Creates a table for displaying the status of Microsoft Teams Devices.
- * @param {Array} deviceProperties - List of device properties to include in the table.
+ * Creates a table in Domotz to display the room's status.
+ * @param {Array} roomProperties - The properties of the rooms to be displayed in the table.
  */
-function createDeviceTable(deviceProperties) {
-    tableHeaders = deviceProperties.map(function(item) {return { label: item.label }});
+function createRoomsTable(roomProperties) {
+    tableHeaders = roomProperties.map(function(item) {return { label: item.label }});
 
-    deviceTable = D.createTable('Microsoft Teams Devices status', tableHeaders)
+    roomsTable = D.createTable('Microsoft Teams Rooms status', tableHeaders)
+
+    
+}
+
+const roomProperties= generateRoomProperties()
+createRoomsTable(roomProperties)
+
+/**
+ * Extracts a specific property from the room object by key.
+ * @param {Object} room - The room object.
+ * @param {string} key - The key whose value is to be extracted.
+ * @returns {string} The value of the extracted key, or 'N/A' if not found.
+ */
+function extractByKey(room, key) {
+    return room && room[key] ? room[key] : 'N/A'
 }
 
 /**
- * Extracts a property directly from the device using the provided key.
- * @param {Object} device - The device object.
- * @param {string} key - The key to extract.
- * @returns {string} - The extracted value or "N/A".
+ * Maps the room status code to a human-readable format.
+ * @param {string} roomStatus - The raw status code from Microsoft Graph API.
+ * @returns {string} The human-readable room status.
  */
-function extractByKey(device, key) {
-    return device && device[key] ? device[key] : 'N/A'
-}
-
-/**
- * Extracts a value from the currentUser sub-object using the provided key.
- * @param {Object} device - The device object.
- * @param {string} key - The key to extract from currentUser.
- * @returns {string} - The extracted value or "N/A".
- */
-function extractCurrentUserByKey(device, key) {
-    return device && device.currentUser && device.currentUser[key] ? device.currentUser[key] : 'N/A'
-}
-
-/**
- * Extracts a value from the hardwareDetail sub-object using the provided key.
- * @param {Object} device - The device object.
- * @param {string} key - The key to extract from hardwareDetail.
- * @returns {string} - The extracted value or "N/A".
- */
-function extractFromHardwareDetailByKey(device, key) {
-    return device && device.hardwareDetail && device.hardwareDetail[key] ? device.hardwareDetail[key] : 'N/A'
-}
-
-/**
- * Extracts a nested value from a health object based on a key path array.
- * @param {Object} deviceHealth - The device health object.
- * @param {Array} key - Array of keys representing the path to the value.
- * @returns {string} - The extracted value or "N/A".
- */
-function extractFromHealthByPath(deviceHealth, key) {
-    let value = deviceHealth;
-    for (let i = 0; i < key.length; i++) {
-        if (value && value[key[i]] !== undefined) {
-            value = value[key[i]]
-        } else {
-            return "N/A"
-        }
+function mapRoomStatus(roomStatus) {
+    const roomStatusMap = {
+        '0': 'Free',
+        '1': 'Tentative',
+        '2': 'Busy',
+        '3': 'Out of office',
     }
-    return (value === "unknown") ? "N/A" : value
+    return roomStatusMap[roomStatus]
 }
 
 /**
@@ -326,77 +144,51 @@ function processLoginResponse(d) {
             accessToken = bodyAsJSON.access_token
             d.resolve()
         } else {
-            console.error("Access token not found in response body")
+            console.error('Access token not found in response body')
             D.failure(D.errorType.AUTHENTICATION_ERROR)
         }
     }
 }
 
 /**
- * Processes the response from the Devices API call and extracts device information.
+ * Processes the response from the request to retrieve rooms from Microsoft Graph.
  * @param {Object} d - The deferred promise object.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDevicesResponse(d) {
+function processRoomsResponse(d) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (!bodyAsJSON.value) {
-            console.error("No Devices found in the response")
+            console.error('No Rooms found in the response')
             D.failure(D.errorType.GENERIC_ERROR)
         }
-        let deviceInfoList = bodyAsJSON.value.map(extractDevicesInfo)
-        if (!deviceInfoList.length) {
-            console.info('There is no Devices')
+        let listRooms = bodyAsJSON.value.map(extractRoomsInfo)
+        if (!listRooms.length) {
+            console.info('There is no Rooms')
         }
-        d.resolve(deviceInfoList)
+        d.resolve(listRooms)
     }
 }
 
 /**
- * Extends device health extractors to include display health statuses.
- * @param {Object} deviceHealth - The health data for a device.
- */
-function extendDisplayExtractors(deviceHealth) {
-    const displays = (deviceHealth && deviceHealth.peripheralsHealth && deviceHealth.peripheralsHealth.displayHealthCollection) || []
-    displays.forEach(function (display, index) {
-        const displayKey = 'display_' + (index + 1) + '_status'
-        if (!deviceHealthExtractors.some(function(extractor){ return extractor.key === displayKey })) {
-            deviceHealthExtractors.push({
-                label: 'Display ' + (index + 1) + ' Status',
-                valueType: D.valueType.STRING,
-                key: displayKey,
-                extract: function (health) {
-                    return (
-                        health && health.peripheralsHealth &&
-                        health.peripheralsHealth.displayHealthCollection &&
-                        health.peripheralsHealth.displayHealthCollection[index] &&
-                        health.peripheralsHealth.displayHealthCollection[index].connection &&
-                        health.peripheralsHealth.displayHealthCollection[index].connection.connectionStatus
-                    ) || "N/A"
-                }
-            })
-        }
-    })
-}
-
-/**
- * Processes the response from the health API and extracts relevant device health info.
+ * Processes the response from the request to retrieve room availability from Microsoft Graph.
  * @param {Object} d - The deferred promise object.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDeviceHelthResponse(d) {
+function processRoomAvailabilityResponse(d) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
-        if (!bodyAsJSON) {
-            console.error('No health status found in the response')
+        if (!bodyAsJSON.value) {
+            console.error('No Schedule data found in the response')
+            D.failure(D.errorType.GENERIC_ERROR)
         }
-        extendDisplayExtractors(bodyAsJSON)
-        deviceProperties = generateDeviceProperties()
-        createDeviceTable(deviceProperties)
-        const deviceHealthInfo = extractDeviceHealthInfo(bodyAsJSON)
-        d.resolve(deviceHealthInfo)
+        let availabilityRooms = bodyAsJSON.value.map(extractAvailabilityRoomsInfo)
+        if (!availabilityRooms.length) {
+            console.info('There is no schedule info')
+        }
+        d.resolve(availabilityRooms)
     }
 }
 
@@ -407,13 +199,13 @@ function processDeviceHelthResponse(d) {
 function login() {
     const d = D.q.defer()
     const config = {
-        url: "/" + tenantId + "/oauth2/v2.0/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+        url: '/' + tenantId + '/oauth2/v2.0/token', protocol: 'https', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
         }, form: {
-            grant_type: "client_credentials",
+            grant_type: 'client_credentials',
             client_id: clientId,
             client_secret: clientSecret,
-            scope: "https://graph.microsoft.com/.default"
+            scope: 'https://graph.microsoft.com/.default'
         }, rejectUnauthorized: false, jar: true
     }
     microsoftLoginService.http.post(config, processLoginResponse(d))
@@ -421,141 +213,131 @@ function login() {
 }
 
 /**
- * Generalized extraction function for device and health info
- * @param {Object} source - The data source (device or health data)
- * @param {Array} extractors - The array of extractors to process
- * @returns {Object} - Extracted values
+ * Extracts the specified room information based on the provided extractors.
+ * @param {Object} room - The room object.
+ * @param {string} idKey - The key to identify the room (e.g., 'id').
+ * @param {Array} extractors - The list of extractors to apply to the room.
+ * @returns {Object} The extracted room information.
  */
-function extractInfo(source, extractors) {
-    const result = {}
+function extractInfo(room, idKey, extractors) {
+    if (!room || !room[idKey]) return null
+    const extractedInfo = {}
     extractors.forEach(function (row) {
-        result[row.key] = row.extract(source)
+        extractedInfo[row.key] = row.extract(room)
     })
-    return result
+    return extractedInfo
 }
 
 /**
- * Extracts device information from the source device data using the defined extractors.
- * @param {Object} device - The device object containing various properties.
- * @returns {Object} - Extracted device information.
+ * Extracts the basic information from a room object.
+ * @param {Object} room - The room object.
+ * @returns {Object} The extracted room information.
  */
-function extractDevicesInfo(device) {
-    if (!device || !device.id) return null
-    return extractInfo(device, deviceInfoExtractors)
+function extractRoomsInfo(room) {
+    return extractInfo(room, 'id', roomInfoExtractors)
 }
 
 /**
- * Extracts device health information from the source health data using the defined extractors.
- * @param {Object} deviceHealth - The health data of the device.
- * @returns {Object} - Extracted device health information.
+ * Extracts the availability information from a room object.
+ * @param {Object} room - The room object.
+ * @returns {Object} The extracted availability information.
  */
-function extractDeviceHealthInfo(deviceHealth) {
-    const info = extractInfo(deviceHealth, deviceHealthExtractors)
-    info.id = deviceHealth.id
-    return info
+function extractAvailabilityRoomsInfo(room) {
+    return extractInfo(room, 'scheduleId', availabilityRoomInfoExtractors)
 }
 
 /**
- * Retrieves Teams devices for the subscription.
- * @returns {Promise} A promise that resolves with the device data.
+ * Retrieves a list of all rooms from the Microsoft Graph API.
+ * @returns {Promise} A promise that resolves with the list of rooms.
  */
-function retrieveDevices() {
+function retrieveListRooms() {
     const d = D.q.defer()
     const config = {
-        url:  "/beta/teamwork/devices",
-        protocol: "https",
+        url:  '/v1.0/places/microsoft.graph.room',
+        protocol: 'https',
         headers: {
-            "Authorization": "Bearer " + accessToken,
+            'Authorization': 'Bearer ' + accessToken,
         },
         rejectUnauthorized: false,
         jar: true
     }
-    teamsManagementService.http.get(config, processDevicesResponse(d))
+    teamsManagementService.http.get(config, processRoomsResponse(d))
     return d.promise
 }
 
 /**
- * Inserts a record into the device table.
- * @param {Object} device - The device information to insert into the table.
+ * Converts a date to an ISO string format without milliseconds.
+ * @param {Date} date - The date to be converted.
+ * @returns {string} The ISO string representation of the date.
  */
-function insertRecord(device) {
-    const recordValues = deviceProperties.map(function (item) {
-        return device[item.key] || 'N/A'
-    })
-    deviceTable.insertRecord(device.id, recordValues)
+function toISOStringNoMs(date) {
+    return date.toISOString().split('.')[0]
 }
 
 /**
- * Retrieves the health information for each device.
- * @param {Array} device - Array of devices to fetch health information for.
- * @returns {Promise} - A promise that resolves with the health data for all devices.
+ * Checks the availability of rooms using the Microsoft Graph API.
+ * @param {Array} rooms - List of room objects containing email addresses.
+ * @returns {Promise} A promise that resolves with the availability data of the rooms.
  */
-function retrieveDeviceHealthInfo(device) {
-    const promises = device.map(function (item) {
-        const d = D.q.defer()
-        const config = {
-            url: "/beta/teamwork/devices/" + item.id + "/health", protocol: "https", headers: {
-                "Authorization": "Bearer " + accessToken,
-            }, rejectUnauthorized: false, jar: true
-        }
-        teamsManagementService.http.get(config, processDeviceHelthResponse(d))
-        return d.promise
+function checkRoomAvailability(rooms) {
+    const d = D.q.defer()
+    const schedules = rooms.map(function (room) {
+        return room.emailAddress
     })
-    return D.q.all(promises)
-}
-
-
-/**
- * Merges device information with its corresponding health information.
- * @param {Array} devices - List of devices to merge health info into.
- * @param {Array} healthList - List of health data corresponding to the devices.
- * @returns {Array} - List of devices with merged health information.
- */
-function mergeDevicesWithHealth(devices, healthList) {
-    if (!devices || devices.length === 0) return []
-    return devices.map(function (device) {
-        var health = null
-        for (var i = 0; i < healthList.length; i++) {
-            if (healthList[i] && healthList[i].id === device.id) {
-                health = healthList[i]
-                break
-            }
+    const now = new Date()
+    const end = new Date(now.getTime() + 30 * 60000)
+    const postData = {
+        schedules: schedules, startTime: {
+            dateTime: toISOStringNoMs(now), timeZone: 'UTC'
+        }, endTime: {
+            dateTime: toISOStringNoMs(end), timeZone: 'UTC'
         }
-        if (health) {
-            var merged = {}
-            for (var key in device) {
-                merged[key] = device[key]
-            }
-            for (var helthKey in health) {
-                if (helthKey !== 'id') {
-                    merged[helthKey] = health[helthKey]
-                }
-            }
-            return merged
-        }
-        return device
-    })
+    }
+    const config = {
+        url: '/v1.0/users/' + schedules[0] + '/calendar/getSchedule',
+        protocol: 'https',
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData),
+        rejectUnauthorized: false,
+        jar: true
+    }
+    teamsManagementService.http.post(config, processRoomAvailabilityResponse(d))
+    return d.promise
 }
 
 /**
- * Populates all devices into the output table by calling insertRecord for each Device in the list.
- * @param {Array} deviceInfoList - A list of Device information objects to be inserted into the table.
+ * Inserts a single room record into the table.
+ * @param {Object} room - Room object containing various properties.
  */
-function populateTable(deviceInfoList) {
-    deviceInfoList.map(insertRecord)
+function insertRecord(room) {
+    const recordValues = roomProperties.map(function (item) {
+        return room[item.key] || 'N/A'
+    })
+    roomsTable.insertRecord(room.id, recordValues)
+}
+
+/**
+ * Populates the table with a list of room data.
+ * @param {Array} roomsInfoList - List of room objects.
+ */
+function populateTable(roomsInfoList) {
+    roomsInfoList.map(insertRecord)
 }
 
 /**
  * @remote_procedure
  * @label Validate Teams connection
- * @documentation This procedure is used to validate connectivity and permission by ensuring Teams Devices data and health details are accessible via the Microsoft Graph API.
+ * @documentation This procedure is used to validate connectivity and permission by ensuring Teams Rooms data are accessible via the Microsoft Graph API.
  */
 function validate() {
     login()
-        .then(retrieveDevices)
-        .then(function (devices) {
-            return retrieveDeviceHealthInfo(devices)
-                .then(function () {D.success()})
+        .then(retrieveListRooms)
+        .then(function(rooms) {
+            return checkRoomAvailability(rooms)
+                .then(function() { D.success() })
         })
         .catch(function (error) {
             console.error(error)
@@ -565,19 +347,20 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get Teams devices
- * @documentation This procedure is used to extract Microsoft Teams Rooms Devices, including general information and detailed health status for each device
+ * @label Get Teams Rooms Status
+ * @documentation This procedure is used to retrieve and display the availability status of Microsoft Teams Rooms.
  */
 function get_status() {
     login()
-        .then(retrieveDevices)
-        .then(function (devices) {
-            return retrieveDeviceHealthInfo(devices)
-                .then(function (healthList) {
-                    const mergedDevices = mergeDevicesWithHealth(devices, healthList)
-                    console.log(mergedDevices)
-                    populateTable(mergedDevices)
-                    D.success(deviceTable)
+        .then(retrieveListRooms)
+        .then(function(rooms) {
+            return checkRoomAvailability(rooms)
+                .then(function(availability) {
+                    const mergedRooms = rooms.map(function (room, index) {
+                        return Object.assign({}, room, availability[index])
+                    })
+                    populateTable(mergedRooms)
+                    D.success(roomsTable)
                 })
         })
         .catch(function (error) {
