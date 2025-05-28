@@ -43,9 +43,23 @@
  * The number of these columns changes automatically depending on how many displays are reported by the system.
  **/
 
-const tenantId = D.getParameter('tenantId')
-const clientId = D.getParameter('clientId')
-const clientSecret = D.getParameter('clientSecret')
+/**
+ * @description Teams Rooms Tenant Id
+ * @type STRING 
+ */
+var tenantId = D.getParameter('tenantId');
+
+/**
+ * @description Teams Rooms Client Id
+ * @type STRING 
+ */
+var clientId = D.getParameter('clientId');
+
+/**
+ * @description Teams Rooms Client Secret
+ * @type SECRET_TEXT 
+ */
+var clientSecret = D.getParameter('clientSecret');
 
 const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com')
 const teamsManagementService = D.createExternalDevice('graph.microsoft.com')
@@ -217,7 +231,9 @@ function generateDeviceProperties() {
  * @param {Array} deviceProperties - List of device properties to include in the table.
  */
 function createDeviceTable(deviceProperties) {
-    deviceTable = D.createTable('Microsoft Teams Devices status', deviceProperties)
+    tableHeaders = deviceProperties.map(function(item) {return { label: item.label }});
+
+    deviceTable = D.createTable('Microsoft Teams Devices status', tableHeaders)
 }
 
 /**
