@@ -1,6 +1,6 @@
 /**
  * Domotz Custom Driver
- * Name: Microsoft Teams Rooms - Meeting Participants
+ * Name: Microsoft Teams Rooms - Ongoing Meeting Participants
  * Description: This script monitor the number of participants in ongoing Microsoft Teams meetings for each room.
  * It extracts detailed information about the attendees, including the count of required and optional participants, as well as their statuses (Accepted, Tentatively Accepted, and No Status)
  *
@@ -103,7 +103,7 @@ function generateRoomProperties() {
 function createRoomsTable(roomProperties) {
     tableHeaders = roomProperties.map(function(item) {return { label: item.label }});
 
-    roomsTable = D.createTable('Microsoft Teams Rooms Meeting Participants', roomProperties)
+    roomsTable = D.createTable('Microsoft Teams Rooms Meeting Participants', tableHeaders)
 }
 
 const roomProperties= generateRoomProperties() // Generate the list of properties to display
