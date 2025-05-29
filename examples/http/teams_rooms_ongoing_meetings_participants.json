@@ -1,12 +1,12 @@
 {
   "logo": "ms-teams.svg",
   "version": "1.0.1",
-  "name": "Microsoft Teams Rooms - Meeting Participants",
+  "name": "Microsoft Teams Rooms - Ongoing Meeting Participants",
   "description": "This script monitor the number of participants in ongoing Microsoft Teams meetings for each room",
   "category": "Software Integration",
   "requirements": {
     "credentials": false,
-    "sandbox_version": "1.12",
+    "sandbox_version": "2.1",
     "others": [
       "Microsoft Teams",
       "room",
