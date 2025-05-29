@@ -1,6 +1,6 @@
 {
   "logo": "ms-teams.svg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Microsoft Teams Rooms - Meeting Participants",
   "description": "This script monitor the number of participants in ongoing Microsoft Teams meetings for each room",
   "category": "Software Integration",
@@ -36,7 +36,7 @@
   "parameters": [
     {
       "value_type": "STRING",
-      "name": "tenantID",
+      "name": "tenantId",
       "label": "Tenant Id"
     },
     {
