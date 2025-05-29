@@ -1,0 +1,34 @@
+{
+    "logo": "cisco.svg",
+    "version": "1.0.0",
+    "name": "Cisco IOS Configuration Backup",
+    "description": "Monitors the configuration of Cisco IOS device and backs it up using TFTP.",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "2.1",
+        "others": [
+            "Cisco IOS device",
+            "Required permissions: Level 15 user"
+        ]
+    },
+    "tags": [
+        "cisco",
+        "ios",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Cisco Catalyst",
+            "version": "9000"
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "logo": "vyos.svg",
+    "version": "1.0.0",
+    "name": "Vyatta Vyos Configuration Backup",
+    "description": "Monitors the configuration of Vyatta Vyos device and backs it up.",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "2.1",
+        "others": [
+            "Vyatta Vyos device",
+            "User must be able to execute the 'show configuration' command over SSH"
+        ]
+    },
+    "tags": [
+        "Vyatta",
+        "Vyos",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Vyos",
+            "version": "1.5-stream-2025-Q1"
+        },
+        {
+            "name": "Vyos",
+            "version": "1.4"
+        },
+        {
+            "name": "Vyos",
+            "version": "1.3"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "portNumber",
+            "label": "Port Number",
+            "value": 22
+        }
+    ]    
+}

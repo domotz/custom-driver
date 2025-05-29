@@ -1,22 +1,22 @@
 {
     "logo": "ubiquiti.svg",
     "version": "1.0.2",
-    "name": "Edge OS Router Configuration Backup",
-    "description": "Monitors the configuration of an Edge OS router and backs it up.",
+    "name": "EdgeSwitch Configuration Backup",
+    "description": "Monitors the configuration of an EdgeSwitch and backs it up.",
     "type": "CONFIGURATION_MANAGEMENT",
     "category": "Configuration Management",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.16",
+        "sandbox_version": "2.1",
         "others": [
-            "Ubiquiti EdgeOS Router device",
-            "Use must be admin and be able to execute the 'show configuration' command over SSH"
+            "Ubiquiti EdgeSwitch device",
+            "Use must be admin and be able to execute the 'show running-config' command over SSH"
         ]
     },
     "tags": [
         "ubiquiti",
-        "edge-os",
-        "router",
+        "edgeswitch",
+        "switch",
         "configuration",
         "backup"
     ],
@@ -28,8 +28,8 @@
     ],
     "tested_on": [
         {
-            "name": "EdgeOS",
-            "version": "EdgeRouter 4.14.54"
+            "name": "EdgeSwitch",
+            "version": "EdgeSwitch 8 150W"
         }
     ],
     "parameters": [

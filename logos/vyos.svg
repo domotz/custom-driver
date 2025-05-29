@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Livello_2" data-name="Livello 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: url(#Sfumatura_senza_nome_6);
+      }
+
+      .cls-3 {
+        fill: url(#Sfumatura_senza_nome_6-4);
+      }
+
+      .cls-4 {
+        fill: url(#Sfumatura_senza_nome_6-3);
+      }
+
+      .cls-5 {
+        fill: url(#Sfumatura_senza_nome_6-6);
+      }
+
+      .cls-6 {
+        fill: url(#Sfumatura_senza_nome_6-5);
+      }
+
+      .cls-7 {
+        fill: url(#Sfumatura_senza_nome_6-2);
+      }
+    </style>
+    <linearGradient id="Sfumatura_senza_nome_6" data-name="Sfumatura senza nome 6" x1="315" y1="1317" x2="1315" y2="317" gradientTransform="translate(0 1002) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffbf12"/>
+      <stop offset="1" stop-color="#ff9000"/>
+    </linearGradient>
+    <linearGradient id="Sfumatura_senza_nome_6-2" data-name="Sfumatura senza nome 6" x1="87.5" y1="1089.5" x2="1087.5" y2="89.5" xlink:href="#Sfumatura_senza_nome_6"/>
+    <linearGradient id="Sfumatura_senza_nome_6-3" data-name="Sfumatura senza nome 6" x1="-315" y1="687" x2="685" y2="-313" xlink:href="#Sfumatura_senza_nome_6"/>
+    <linearGradient id="Sfumatura_senza_nome_6-4" data-name="Sfumatura senza nome 6" x1="-87.5" y1="914.5" x2="912.5" y2="-85.5" xlink:href="#Sfumatura_senza_nome_6"/>
+    <linearGradient id="Sfumatura_senza_nome_6-5" data-name="Sfumatura senza nome 6" x1="-55" y1="947" x2="945" y2="-53" xlink:href="#Sfumatura_senza_nome_6"/>
+    <linearGradient id="Sfumatura_senza_nome_6-6" data-name="Sfumatura senza nome 6" x1="55" y1="1057" x2="1055" y2="57" xlink:href="#Sfumatura_senza_nome_6"/>
+  </defs>
+  <g id="Livello_1-2" data-name="Livello 1">
+    <g>
+      <path class="cls-2" d="M730,120h150v500h120V0h-270v120Z"/>
+      <path class="cls-7" d="M620,0H0v270h120V120h500V0Z"/>
+      <path class="cls-4" d="M120,380H0v620h270v-120H120v-500Z"/>
+      <path class="cls-3" d="M380,880v120h620v-270h-120v150h-500Z"/>
+      <path class="cls-6" d="M220,220h120l220,560h-120L220,220Z"/>
+      <path class="cls-5" d="M780,220h-120l-220,560h120l220-560Z"/>
+    </g>
+    <rect class="cls-1" width="1000" height="1000"/>
+  </g>
+</svg>
