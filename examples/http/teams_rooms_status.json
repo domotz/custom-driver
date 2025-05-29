@@ -1,8 +1,8 @@
 {
     "logo": "ms-teams.svg",
     "version": "1.0.1",
-    "name": "Microsoft Teams Rooms - Device status",
-    "description": "Monitor Teams Rooms Devices: this script retrieves information about Room status",
+    "name": "Microsoft Teams Rooms - Room status",
+    "description": "Monitor Teams Rooms: this script retrieves information about Room status",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
