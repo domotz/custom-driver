@@ -8,12 +8,12 @@
  */
 
 /**
- * @param {number} portNumber
- * @label Custom Port
- * @description SSH port (e.g. 22)
+ * @param {number} customPort
+ * @label Custom SSH port
+ * @description SSH port to connect to the EdgeOS Router (default: 22)
  * @type NUMBER
  */
-var portNumber = D.getParameter("portNumber") || 22;
+var customPort = D.getParameter("customPort") || 22;
 
 /**
 * @remote_procedure
@@ -79,7 +79,7 @@ var sshOptions = {
     inter_command_timeout_ms: 1000,
     global_timeout_ms: 5000,
     prompt: "$",
-    port: portNumber
+    port: customPort
 };
 // Utility function that checks the type of error that has occured
 function checkSshError(err) {
