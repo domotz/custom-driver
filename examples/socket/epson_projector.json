@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "epson.svg",
     "version": "1.0.0",
     "name": "Epson Projector - PJLink Monitoring",
     "description": "This script will generate actions for powering on and off the projector and variables for Power Status and Lamp Hour, showing the current status of the projector and the number of hours the lamp has been used.The script uses the PJLink protocol Version 1.04 to communicate with the projector. The PJLink protocol is a standard protocol for controlling and monitoring projectors over a network. It allows users to check the status of the projector, control its power state, and retrieve information about the lamp usage.(https://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf)PJLink is a unified standard for operating and controlling data projectors.\n\nPJLink enables central control of projectors manufactured by different vendors and projectors can be operated by a controller.\n\nPJLink compliant equipment can be managed and controlled at any time and in any place, regardless of manufacturer.",
