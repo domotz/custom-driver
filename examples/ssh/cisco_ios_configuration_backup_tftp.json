@@ -1,15 +1,15 @@
 {
-    "logo": "fs.svg",
-    "version": "1.0.1",
-    "name": "FS Switch Configuration Backup",
-    "description": "Extracts the FS Switch configuration and backs it up",
+    "logo": "cisco.svg",
+    "version": "1.0.0",
+    "name": "Cisco IOS Configuration Backup",
+    "description": "Monitors the configuration of Cisco IOS device and backs it up using TFTP.",
     "type": "CONFIGURATION_MANAGEMENT",
     "category": "Configuration Management",
     "requirements": {
         "credentials": true,
-        "sandbox_version": "1.16",
+        "sandbox_version": "2.1",
         "others": [
-            "FS Switch",
+            "Cisco IOS device",
             "Required permissions: Level 15 user"
         ]
     },
@@ -27,12 +27,8 @@
     ],
     "tested_on": [
         {
-            "name": "FS Switch",
-            "version": "S3400-24T4FP"
-        },
-        {
-            "name": "FS OS",
-            "version": "2.2.0D"
+            "name": "Cisco Catalyst",
+            "version": "9000"
         }
     ]
 }
