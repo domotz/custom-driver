@@ -34,8 +34,8 @@
     "parameters": [
         {
             "value_type": "NUMBER",
-            "name": "portNumber",
-            "label": "Port Number",
+            "name": "customPort",
+            "label": "Custom Port",
             "value": 443
         },
         {
