@@ -155,6 +155,33 @@ function get_status() {
     .catch(failure);
 }
 
+/**
+ * @remote_procedure
+ * @label Turn On
+ * @documentation Turns the TV on
+ */
+function custom_1(){
+    _createConnection()
+    .then(turnOn)
+    .then(getStatus)
+    .then(getInputSource)
+    .then(publishStatus)
+    .catch(failure);
+
+}
+/**
+ * @remote_procedure
+ * @label Turn Off
+ * @documentation Turns the TV off
+ */
+function custom_2(){
+    _createConnection()
+    .then(turnOn)
+    .then(getStatus)
+    .then(getInputSource)
+    .then(publishStatus)
+    .catch(failure);
+}
 
 function _createConnection() {
     const d = D.q.defer();
