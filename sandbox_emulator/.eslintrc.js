@@ -7,7 +7,7 @@ module.exports = {
     "plugins": [
         "es5"
     ],
-    "ignorePatterns": ["dist/**", "lib/**"],
+    "ignorePatterns": ["dist/**", "lib/**", "examples/**/**", "script.js"],
     "extends": [
         "eslint:recommended",
         "plugin:es5/no-es2015",
