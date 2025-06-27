@@ -1,0 +1,70 @@
+{
+    "logo": "samsung.svg",
+    "version": "1.0.0",
+    "name": "Samsung TV - Status and Scheduling",
+    "description": "This script monitors and controls the power status of a Samsung TV. It supports scheduling based on specific days and time ranges, with the ability to exclude certain dates",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "2.1",
+        "others": [
+            "Samsung TV"
+        ]
+    },
+    "tags": [
+        "Samsung MDC",
+        "socket",
+        "power",
+        "status",
+        "video-source"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[2]"
+    },
+    "protocols": [
+        "Samsung MDC",
+        "TCP/IP"
+    ],
+    "tested_on": [
+        {
+            "name": "Samsung",
+            "version": "QB43R"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "LIST",
+            "value": null,
+            "name": "weekDays",
+            "label": "Days of the week when the TV should be active Should be provided as a list of strings, where each string represents a day of the week. Example: [\"Monday\", \"Wednesday\", \"Friday\"]"
+        },
+        {
+            "value_type": "LIST",
+            "value": [
+                "None"
+            ],
+            "name": "datesToExclude",
+            "label": "Dates to exclude from the scheduling Provide the dates as an array of strings in MM/DD/YYYY format. Example: [\"03/22/2025\", \"03/23/2025\"] Use [\"None\"] if you don't want to exclude any dates."
+        },
+        {
+            "value_type": "STRING",
+            "value": "1515",
+            "name": "port",
+            "label": "The host of the TV device defaults to 1515"
+        },
+        {
+            "value_type": "STRING",
+            "value": null,
+            "name": "startTime",
+            "label": "Start time for TV operation (HH:MM format)"
+        },
+        {
+            "value_type": "STRING",
+            "value": null,
+            "name": "endTime",
+            "label": "End time for TV operation (HH:MM format)"
+        }
+    ]
+}
