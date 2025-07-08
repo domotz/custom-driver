@@ -989,7 +989,7 @@ const locationsMap = {
 function getRoomLocationDetails(roomName) {
     const chunks = roomName.split(/(?<=\w)-/g);
     if (chunks.length < 5) {
-        console.error('Invalid room name format:', roomName);
+        console.warn('Invalid room name format:', roomName);
         return {
             country: 'N/A', city: 'N/A', building: 'N/A', floor: 'N/A', room: 'N/A',
         };
