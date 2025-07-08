@@ -9,7 +9,8 @@
         "sandbox_version": "1.12",
         "others": [
             "Microsoft Teams",
-            "Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All"
+            "Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All",
+            "Poly or Neat device with cloud controller enabled"
         ]
     },
     "tags": [
@@ -22,7 +23,7 @@
     "sample_period_s": 60,
     "has_actions": false,
     "expected_variables": {
-        "table": "[24]"
+        "independent": "[4]"
     },
     "protocols": [
         "HTTPS"
@@ -36,18 +37,43 @@
     "parameters": [
         {
             "value_type": "STRING",
-            "name": "tenantId",
-            "label": "Tenant Id"
+            "name": "teamsTenantId",
+            "label": "Teams Rooms Tenant Id"
         },
         {
             "value_type": "STRING",
-            "name": "clientId",
-            "label": "Client Id"
+            "name": "teamsClientId",
+            "label": "Teams Rooms Client Id"
         },
         {
             "value_type": "SECRET_TEXT",
-            "name": "clientSecret",
-            "label": "Client Secret"
+            "name": "teamsClientSecret",
+            "label": "Teams Rooms Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "monitoringClient",
+            "label": "Monitoring Client(Neat or Poly)"
+        },
+        {
+            "value_type": "STRING",
+            "name": "monitoringClientId",
+            "label": "Monitoring Client ID (neatOrgID or poly client_id)"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "monitoringClientSecret",
+            "label": "Monitoring Client secret (neatAPIKey or poly client_secret)"
+        },
+        {
+            "value_type": "STRING",
+            "name": "cloudControllerDeviceID",
+            "label": "Cloud Controller Device Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "roomName",
+            "label": "RoomName"
         }
     ]
 }

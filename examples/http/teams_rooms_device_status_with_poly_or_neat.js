@@ -36,13 +36,13 @@ const monitoringClientSecret = D.getParameter('monitoringClientSecret');
  * @description Cloud Controller Device Id
  * @type STRING
  */
-var cloudControllerDeviceID = D.getParameter('cloudControllerDeviceID');
+const cloudControllerDeviceID = D.getParameter('cloudControllerDeviceID');
 
 /**
  * @description Room Name
  * @type STRING
  */
-var roomName = D.getParameter('roomName');
+const roomName = D.getParameter('roomName');
 
 const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com');
 const teamsManagementService = D.createExternalDevice('graph.microsoft.com');
@@ -50,9 +50,10 @@ const teamsManagementService = D.createExternalDevice('graph.microsoft.com');
 let teamsAccessToken;
 let polyAccessToken;
 
-var teamsVariables = [];
-var monitoringClientVariables = [];
+const teamsVariables = [];
+const monitoringClientVariables = [];
 const isPoly = monitoringClient.toLowerCase() === 'poly';
+const isNeat = monitoringClient.toLowerCase() === 'neat';
 
 
 const polyLensAPI = D.createExternalDevice('login.lens.poly.com');
@@ -65,16 +66,12 @@ const polyLensGraphQLAPI = D.createExternalDevice('api.silica-prod01.io.lens.pol
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        console.error('teamsLoginError', response);
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        console.error('teamsLoginError', response);
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200) {
-        console.error('teamsLoginError', response);
         D.failure(D.errorType.GENERIC_ERROR);
     }
 }
@@ -162,211 +159,6 @@ function login() {
 function getNeatActions() {
     const neatPulseAPI = D.createExternalDevice('api.pulse.neat.no');
 
-    function pushNotAvailableVariable(id, name) {
-        monitoringClientVariables.push(D.device.createVariable(id, name, 'N/A', null, D.valueType.STRING));
-    }
-
-    const deviceInfoVars = [
-        {
-            key: 'serial',
-            label: 'Serial',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'model',
-            label: 'Model',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'connected',
-            label: 'Connected',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.BOOLEAN,
-        }, {
-            key: 'upgradeStatus',
-            label: 'Upgrade Status',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'firmwareVersion',
-            label: 'Firmware Version',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'latestVersion',
-            label: 'Latest Version',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'roomName',
-            label: 'Room Name',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'pairingSerial',
-            label: 'Pairing Serial',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'localIpAddress',
-            label: 'Local IP Address',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'inCallStatus',
-            label: 'In Call Status',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'hasScheduledFirmwareUpdate',
-            label: 'Scheduled Firmware Update',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.BOOLEAN,
-        }, {
-            key: 'otaChannel',
-            label: 'OTA Channel',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'primaryMode',
-            label: 'Primary Mode',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'totalSystemStorage',
-            label: 'Total System Storage',
-            mapping: function (deviceData, key) {return convertToGB(deviceData[key]);},
-            unit: 'GB',
-            type: D.valueType.NUMBER,
-        }, {
-            key: 'freeSystemStorage',
-            label: 'Free System Storage',
-            mapping: function (deviceData, key) {return convertToGB(deviceData[key]);},
-            unit: 'GB',
-            type: D.valueType.NUMBER,
-        }, {
-            key: 'usedSystemStorage', label: 'Used System Storage', mapping: function (deviceData) {
-                return (100 * (deviceData.totalSystemStorage - deviceData.freeSystemStorage) / deviceData.totalSystemStorage);
-            }, unit: '%', type: D.valueType.NUMBER,
-        }, {
-            key: 'totalInternalStorage',
-            label: 'Total Internal Storage',
-            mapping: function (deviceData) {return convertToGB(deviceData.totalInternalStorage);},
-            unit: 'GB',
-            type: D.valueType.NUMBER,
-        }, {
-            key: 'freeInternalStorage',
-            label: 'Free Internal Storage',
-            mapping: function (deviceData) {return convertToGB(deviceData.freeInternalStorage);},
-            unit: 'GB',
-            type: D.valueType.NUMBER,
-        }, {
-            key: 'usedInternalStorage', label: 'Used Internal Storage', mapping: function (deviceData) {
-                return (100 * (deviceData.totalInternalStorage - deviceData.freeInternalStorage) / deviceData.totalInternalStorage).toFixed(
-                    2);
-            }, unit: '%', type: D.valueType.NUMBER,
-        }, {
-            key: 'totalExternalStorage',
-            label: 'Total External Storage',
-            mapping: function (deviceData) {return convertToGB(deviceData.totalExternalStorage);},
-            unit: 'GB',
-            type: D.valueType.NUMBER,
-        }, {
-            key: 'freeExternalStorage',
-            label: 'Free External Storage',
-            mapping: function (deviceData) {return convertToGB(deviceData.freeExternalStorage);},
-            unit: 'GB',
-            type: D.valueType.NUMBER,
-        }, {
-            key: 'usedExternalStorage', label: 'Used External Storage', mapping: function (deviceData) {
-                return (100 * (deviceData.totalExternalStorage - deviceData.freeExternalStorage) / deviceData.totalExternalStorage).toFixed(
-                    2);
-            }, unit: '%', type: D.valueType.NUMBER,
-        }, {
-            key: 'automaticUpdates',
-            label: 'Automatic Updates',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.BOOLEAN,
-        }, {
-            key: 'firmwareVersionReleaseName',
-            label: 'Firmware Version Release Name',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'latestVersionReleaseName',
-            label: 'Latest Version Release Name',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        }, {
-            key: 'isLatestVersionScheduledForNow',
-            label: 'Latest Version Scheduled For Now',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.BOOLEAN,
-        }, {
-            key: 'timezone',
-            label: 'Timezone',
-            mapping: function (deviceData, key) {return deviceData[key];},
-            unit: null,
-            type: D.valueType.STRING,
-        },
-    ];
-    const sensorVars = [
-        {
-            key: 'temperature',
-            label: 'Temperature',
-            mapper: function (data, key) {return data.data[0][key];},
-            unit: '°C',
-            type: D.valueType.NUMBER,
-        },
-        {
-            key: 'humidity',
-            label: 'Humidity',
-            mapper: function (data, key) {return data.data[0][key];},
-            unit: '%',
-            type: D.valueType.NUMBER,
-        },
-        { key: 'co2', label: 'CO2', mapper: function (data, key) {return data.data[0][key];}, unit: 'ppm', type: D.valueType.NUMBER },
-        { key: 'voc', label: 'VOC', mapper: function (data, key) {return data.data[0][key];}, unit: 'ppb', type: D.valueType.NUMBER },
-        {
-            key: 'vocIndex',
-            label: 'VOC Index',
-            mapper: function (data, key) {return data.data[0][key];},
-            unit: null,
-            type: D.valueType.NUMBER,
-        },
-        {
-            key: 'illumination',
-            label: 'Illumination',
-            mapper: function (data, key) {return data.data[0][key];},
-            unit: 'lux',
-            type: D.valueType.NUMBER,
-        },
-        {
-            key: 'people',
-            label: 'People Count',
-            mapper: function (data, key) {return data.data[0][key];},
-            unit: null,
-            type: D.valueType.NUMBER,
-        },
-    ];
-
     function mapping(deviceData, key) {
         if (deviceData === undefined || deviceData === null) {
             return 'N/A';
@@ -376,97 +168,36 @@ function getNeatActions() {
 
     const monitoringClientVars = [
         {
-            uid: 'monitoring-client-name',
-            key: 'roomName',
-            label: 'Room Name',
-            mapping,
-            unit: null,
-            type: D.valueType.STRING,
-        },
-        {
-            uid: 'monitoring-client-serial',
-            key: 'serial',
-            label: 'Serial Number',
-            mapping,
-            unit: null,
-            type: D.valueType.STRING,
-        },
-        {
-            uid: 'monitoring-client-connected',
+            uid: 'monitoring-client-name', key: 'roomName', label: 'Room Name', mapping, unit: null, type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-serial', key: 'serial', label: 'Serial Number', mapping, unit: null, type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-vendor-status',
             key: 'connected',
-            label: 'Connected',
+            label: 'Vendor Status',
             mapping,
             unit: null,
             type: D.valueType.BOOLEAN,
-        },
-        {
-            uid: 'monitoring-client-call-status',
-            key: 'inCallStatus',
-            label: 'Upgrade Status',
-            mapping,
-            unit: null,
-            type: D.valueType.STRING,
-        },
-        {
+        }, {
+            uid: 'monitoring-client-call-status', key: 'inCallStatus', label: 'In Call', mapping, unit: null, type: D.valueType.STRING,
+        }, {
             uid: 'monitoring-client-firmware-version',
             key: 'firmwareVersion',
             label: 'Firmware Version',
             mapping,
             unit: null,
             type: D.valueType.STRING,
-        },
-        {
-            uid: 'monitoring-client-model',
-            key: 'model',
-            label: 'Model',
-            mapping,
-            unit: null,
-            type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-model', key: 'model', label: 'Model', mapping, unit: null, type: D.valueType.STRING,
         },
     ];
 
     function createDeviceInfoVariables(deviceData) {
-        console.log('Creating device info variables', deviceData);
-
         monitoringClientVars.forEach(function (variable) {
-            if (monitoringClientVars[variable.key] !== undefined) {
-                monitoringClientVariables.push(
-                    D.device.createVariable(
-                        variable.uid,
-                        variable.label,
-                        variable.mapping(deviceData, variable.key),
-                        variable.unit,
-                        variable.label)
-                );
-            } else {
-                pushNotAvailableVariable(variable.uid, variable.label);
-            }
+            monitoringClientVariables.push(
+                D.device.createVariable(variable.uid, variable.label, variable.mapping(deviceData, variable.key), variable.unit,
+                    variable.type));
         });
-    }
-
-    function createDeviceSensorsVariables(deviceSensors) {
-        console.log('Creating device sensors variables', deviceSensors);
-        if (deviceSensors && deviceSensors.endpointData && deviceSensors.endpointData.data && deviceSensors.endpointData.data[0]) {
-            const sensorData = deviceSensors.endpointData;
-            const shutterClosed = deviceSensors.endpointData.shutterClosed;
-            sensorVars.forEach(function (variable) {
-                if (sensorData[variable.key] !== undefined) {
-                    monitoringClientVariables.push(
-                        D.device.createVariable(variable.key, variable.label, variable.mapper(sensorData, variable.key), variable.unit,
-                            variable.label));
-                } else {
-                    pushNotAvailableVariable(variable.key, variable.label);
-                }
-            });
-            if (shutterClosed !== undefined) {
-                monitoringClientVariables.push(
-                    D.device.createVariable('shutter-closed', 'Shutter Closed', shutterClosed, null, D.valueType.BOOLEAN));
-            } else {
-                pushNotAvailableVariable('shutter-closed', 'Shutter Closed');
-            }
-        } else {
-            console.error('Sensor data not present');
-        }
     }
 
     /**
@@ -482,8 +213,6 @@ function getNeatActions() {
         }
         if (response.statusCode === 429) { //Too many requests to Neat Pulse API, retry later
             createDeviceInfoVariables({});
-            createDeviceSensorsVariables({});
-            // publishVariables();
         }
         if (response.statusCode === 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -518,7 +247,6 @@ function getNeatActions() {
     }
 
     function retrieveEndpointBasicInfo(deviceID) {
-
         console.log('retrieveEndpointBasicInfo');
         const d = D.q.defer();
         const url = '/v1/orgs/' + monitoringClientId + '/endpoints/' + deviceID;
@@ -529,19 +257,6 @@ function getNeatActions() {
 
         return d.promise;
     }
-
-    // function retrieveEndpointSensors(deviceID) {
-    //     const d = D.q.defer();
-    //
-    //     const url = '/v1/orgs/' + monitoringClientId + '/endpoints/' + deviceID + '/sensor';
-    //
-    //     callNeatPulseAPI(url, function (bodyAsJSON) {
-    //         createDeviceSensorsVariables(bodyAsJSON);
-    //         d.resolve();
-    //     });
-    //
-    //     return d.promise;
-    // }
 
     return {
         findDevice: function (endpoints) {
@@ -555,9 +270,7 @@ function getNeatActions() {
                 }
             }
 
-            if (!device)
-                //todo: fix this by adding empty list of variables
-            {
+            if (!device) {
                 D.success([
                     D.createVariable('msg', 'Message', 'Serial ' + D.device.serial() + ' not found in Neat inventory', null,
                         D.valueType.STRING),
@@ -578,8 +291,7 @@ function getNeatActions() {
 
             return d.promise;
         }, getDeviceProperties: function (deviceId) {
-            return retrieveEndpointBasicInfo(deviceId)
-            .then(retrieveEndpointSensors);
+            return retrieveEndpointBasicInfo(deviceId);
         },
     };
 }
@@ -603,8 +315,53 @@ function getPolyActions() {
         }
     }
 
+    function mapping(deviceData, key) {
+        if (deviceData === undefined || deviceData === null) {
+            return 'N/A';
+        }
+        if (Array.isArray(key)) {
+            return key.map(function (entry) {
+                return deviceData[entry];
+            })
+            .filter(Boolean)
+            .join(' / ') || 'N/A';
+        }
+        return deviceData[key] || 'N/A';
+    }
+
+    const monitoringClientVars = [
+        {
+            uid: 'monitoring-client-name', key: 'displayName', label: 'Room Name', mapping, unit: null, type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-serial', key: 'serialNumber', label: 'Serial Number', mapping, unit: null, type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-vendor-status',
+            key: 'connected',
+            label: 'Vendor Status',
+            mapping,
+            unit: null,
+            type: D.valueType.BOOLEAN,
+        }, {
+            uid: 'monitoring-client-call-status', key: 'callStatus', label: 'In Call', mapping, unit: null, type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-firmware-version',
+            key: ['softwareVersion', 'softwareBuild'],
+            label: 'Firmware/Software Version',
+            mapping,
+            unit: null,
+            type: D.valueType.STRING,
+        }, {
+            uid: 'monitoring-client-model', key: 'model', label: 'Model', mapping, unit: null, type: D.valueType.STRING,
+        },
+    ];
+
     function createDeviceInfoVariables(deviceData) {
-        data.polyDeviceInfoVariables = deviceData;
+        monitoringClientVars.forEach(function (variable) {
+            monitoringClientVariables.push(
+                D.device.createVariable(variable.uid, variable.label, variable.mapping(deviceData, variable.key), variable.unit,
+                    variable.type));
+        });
+
     }
 
     return {
@@ -638,9 +395,8 @@ function getPolyActions() {
             polyLensGraphQLAPI.http.post(config, function (err, response, body) {
                 checkHttpError(err, response, body);
                 const bodyAsJSON = JSON.parse(body);
-
                 createDeviceInfoVariables(bodyAsJSON.data.device);
-                d.resolve(data);
+                d.resolve();
             });
 
             return d.promise;
@@ -781,11 +537,11 @@ function processDevicesResponse(d) {
             console.error('No Devices found in the response');
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        let deviceInfoList = bodyAsJSON.value; //.map(extractDevicesInfo);
+        let deviceInfoList = bodyAsJSON.value;
         if (!deviceInfoList.length) {
             console.info('There is no Devices');
         }
-        console.log('Found: ' + JSON.stringify(deviceInfoList));
+
         d.resolve(deviceInfoList);
     };
 }
@@ -805,11 +561,15 @@ function retrieveDevices() {
     return d.promise;
 }
 
+/**
+ *
+ * @param {[{hardwareDetail:{serialNumber: string}}]} devices
+ * @returns {{hardwareDetail:{serialNumber: string}}|null}
+ */
 function filterDevices(devices) {
     const filtered = devices.filter(function (device) {
-        console.info('Teams Serial: ' + device.serialNumber, device.serialNumber === '8l22276c9288fd');
-
-        return device.hardwareDetail.serialNumber === 'nh12351000271'; //'8l22276c9288fd';///// device.serialNumber && D.device.serial() && device.serialNumber.toLowerCase() === D.device.serial().toLowerCase();
+        return device.hardwareDetail && device.hardwareDetail.serialNumber && D.device.serial() &&
+            device.hardwareDetail.serialNumber.toLowerCase() === D.device.serial().toLowerCase();
     });
 
     if (filtered && filtered.length > 0) {
@@ -1032,76 +792,69 @@ function processRoomAvailabilityResponse(d) {
     };
 }
 
-function fetchDataInParallel() {
-    function deviceTeamsDataPromise() {
-        const d = D.q.defer();
-        retrieveDevices()
-        .then(filterDevices)
-        .then(retrieveDeviceHealthInfo)
-        .then(d.resolve);
-        return d.promise;
-    }
+function deviceTeamsDataPromise() {
+    const d = D.q.defer();
+    retrieveDevices()
+    .then(filterDevices)
+    .then(retrieveDeviceHealthInfo)
+    .then(d.resolve);
+    return d.promise;
+}
 
-    function roomAvailabilityPromise() {
-        const d = D.q.defer();
-        const schedules = [roomName];
-        const now = new Date();
-        const end = new Date(now.getTime() + 30 * 60000);
-        const postData = {
-            schedules: schedules, startTime: {
-                dateTime: toISOStringNoMs(now), timeZone: 'UTC',
-            }, endTime: {
-                dateTime: toISOStringNoMs(end), timeZone: 'UTC',
-            },
-        };
-        const config = {
-            url: '/v1.0/users/' + schedules[0] + '/calendar/getSchedule',
-            protocol: 'https',
-            headers: {
-                'Authorization': 'Bearer ' + teamsAccessToken,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(postData),
-            rejectUnauthorized: false,
-            jar: true,
-        };
-        teamsManagementService.http.post(config, processRoomAvailabilityResponse(d));
-        return d.promise;
-    }
+function roomAvailabilityPromise() {
+    const d = D.q.defer();
+    const schedules = [roomName];
+    const now = new Date();
+    const end = new Date(now.getTime() + 30 * 60000);
+    const postData = {
+        schedules: schedules, startTime: {
+            dateTime: toISOStringNoMs(now), timeZone: 'UTC',
+        }, endTime: {
+            dateTime: toISOStringNoMs(end), timeZone: 'UTC',
+        },
+    };
+    const config = {
+        url: '/v1.0/users/' + schedules[0] + '/calendar/getSchedule', protocol: 'https', headers: {
+            'Authorization': 'Bearer ' + teamsAccessToken, 'Content-Type': 'application/json',
+        }, body: JSON.stringify(postData), rejectUnauthorized: false, jar: true,
+    };
+    teamsManagementService.http.post(config, processRoomAvailabilityResponse(d));
+    return d.promise;
+}
 
+function monitoringClientPromise() {
+    const d = D.q.defer();
+    const actions = monitoringClientsActions();
 
-    function monitoringClientPromise() {
-        const d = D.q.defer();
-        const actions = monitoringClientsActions();
-
-        try {
-            if (cloudControllerDeviceID && cloudControllerDeviceID.trim() !== '') {
-                actions.getDeviceProperties(cloudControllerDeviceID)
-                .then(d.resolve)
-                .catch(function (error) {
-                    console.error(error);
-                    D.failure(D.errorType.GENERIC_ERROR);
-                });
-            } else {
-                actions.getInventory()
-                .then(actions.findDevice)
-                .then(actions.getDeviceProperties)
-                .then(d.resolve)
-                .catch(function (error) {
-                    console.error(error);
-                    D.failure(D.errorType.GENERIC_ERROR);
-                });
-            }
-        } catch (err) {
-            console.error('Error executing get_status() function ' + err);
-            D.failure(D.errorType.GENERIC_ERROR);
+    try {
+        if (cloudControllerDeviceID && cloudControllerDeviceID.trim() !== '') {
+            actions.getDeviceProperties(cloudControllerDeviceID)
+            .then(d.resolve)
+            .catch(function (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            });
+        } else {
+            actions.getInventory()
+            .then(actions.findDevice)
+            .then(actions.getDeviceProperties)
+            .then(d.resolve)
+            .catch(function (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            });
         }
-        return d.promise;
+    } catch (err) {
+        console.error('Error executing get_status() function ' + err);
+        D.failure(D.errorType.GENERIC_ERROR);
     }
+    return d.promise;
+}
 
+function fetchDataInParallel() {
     return D.q.all([
         deviceTeamsDataPromise(),
-        retrieveOngoingMeetings({ 'emailAddress': 'gb_floor_blah_pmctestroom27@wpptst.com' }),
+        retrieveOngoingMeetings({ 'emailAddress': roomName }),
         roomAvailabilityPromise(),
         monitoringClientPromise(),
     ]);
@@ -1111,7 +864,7 @@ function extractor(path, data, modifier) {
     const keys = path.split('.');
     let value = data;
     for (let i = 0; i < keys.length; i++) {
-        if (value && value[keys[i]] !== undefined) {
+        if (value && (value[keys[i]] !== undefined || value[keys[i]] !== null)) {
             value = value[keys[i]];
         } else {
             return 'N/A';
@@ -1141,45 +894,67 @@ function buildVariables(results) {
     teamsVariables.push(
         D.createVariable('deviceModel&Brand', 'Device Brand/model', manufacturer + ' / ' + model, null, D.valueType.STRING));
 
-    teamsVariables.push(D.createVariable('teamsStatus', 'Teams Status', extractor('connection.connectionStatus', deviceHealthInfo), null,
+    teamsVariables.push(D.createVariable(
+        'teamsStatus',
+        'Teams Status',
+        extractor('connection.connectionStatus', deviceHealthInfo),
+        null,
         D.valueType.STRING));
 
     teamsVariables.push(
-        D.createVariable('teamsHealthStatus', 'Teams Health Status', extractor('deviceDetails.healthStatus', deviceDetails), null,
+        D.createVariable('teamsHealthStatus',
+            'Teams Health Status',
+            extractor('healthStatus',
+                deviceDetails),
+            null,
             D.valueType.STRING));
 
-    teamsVariables.push(D.createVariable('teamsFirmwareUpdateStatus', 'Teams Firmware Update Status',
-        extractor('softwareUpdateHealth.firmwareSoftwareUpdateStatus.firmwareSoftwareUpdateStatus', deviceHealthInfo), null,
-        D.valueType.STRING));
+    teamsVariables.push(D.createVariable('teamsFirmwareUpdateStatus',
+        'Teams Firmware Update Status',
 
-    teamsVariables.push(D.createVariable('teamsDeviceType', 'Teams Device Type', extractor('deviceDetails.deviceType', deviceDetails), null,
+        extractor('softwareUpdateHealth.firmwareSoftwareUpdateStatus.softwareFreshness',
+            deviceHealthInfo),
+        null,
+
         D.valueType.STRING));
 
     teamsVariables.push(
-        D.createVariable('teamsUsedBy', 'Teams Used By', extractor('deviceDetails.currentUser.displayName', deviceDetails), null,
+        D.createVariable('teamsDeviceType',
+            'Teams Device Type',
+            extractor('deviceType',
+                deviceDetails),
+            null,
             D.valueType.STRING));
 
-    teamsVariables.push(D.createVariable('teamsLoginStatus', 'Teams Login Status',
-        extractor('loginStatus.teamsConnection.connectionStatus', deviceHealthInfo),
-        null, D.valueType.STRING));
+    teamsVariables.push(
+        D.createVariable('teamsUsedBy',
+            'Teams Used By',
+            extractor('currentUser.displayName',
+                deviceDetails),
+            null,
+            D.valueType.STRING));
 
-    teamsVariables.push(D.createVariable('confCallInProgress', 'Conf call in progress',
-        extractor('value.0.availabilityView', roomAvailability, function (roomStatus) {
+    teamsVariables.push(D.createVariable('teamsLoginStatus',
+        'Teams Login Status',
+
+        extractor('loginStatus.teamsConnection.connectionStatus',
+            deviceHealthInfo),
+        null,
+        D.valueType.STRING));
+
+    teamsVariables.push(D.createVariable('confCallInProgress',
+        'Conf call in progress',
+        extractor('value.0.availabilityView',
+            roomAvailability,
+            function (roomStatus) {
             const roomStatusMap = {
-                '0': 'Free',
-                '1': 'Tentative',
-                '2': 'Busy',
-                '3': 'Out of office',
+                '0': 'Free', '1': 'Tentative', '2': 'Busy', '3': 'Out of office',
             };
             return roomStatusMap[roomStatus] || 'N/A';
         }), null, D.valueType.STRING));
 
     teamsVariables.push(D.createVariable('serialNumber', 'Serial Number', extractor('hardwareDetail.serialNumber', deviceDetails), null,
         D.valueType.STRING));
-
-    return {
-        deviceDetails, deviceHealthInfo, roomStatus, monitoringClient, roomLocationDetails, roomAvailability,
-    };
 
 }
 
@@ -1188,9 +963,6 @@ function publishVariables() {
     const allVars = teamsVariables.concat(monitoringClientVariables);
     allVars.concat(teamsVariables);
     allVars.concat(monitoringClientVariables);
-    console.log('Publishing variables:', teamsVariables);
-    console.log('monitoringClientVariables:', monitoringClientVariables);
-    console.log('allVars', allVars);
     D.success(allVars);
 }
 
@@ -1216,7 +988,6 @@ const locationsMap = {
 
 function getRoomLocationDetails(roomName) {
     const chunks = roomName.split(/(?<=\w)-/g);
-
     if (chunks.length < 5) {
         console.error('Invalid room name format:', roomName);
         return {
@@ -1243,6 +1014,19 @@ function getRoomLocationDetails(roomName) {
         }
 
     }
-    return { ...details };
+    return details;
 }
 
+/**
+ * @remote_procedure
+ * @label Validate Teams connection
+ * @documentation This procedure is used to validate connectivity and permission by ensuring Teams Rooms data are accessible via the Microsoft Graph API.
+ */
+function validate() {
+    login()
+    .then(function () { D.success(); })
+    .catch(function (error) {
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    });
+}
