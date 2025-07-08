@@ -351,7 +351,7 @@ function getPolyActions() {
             unit: null,
             type: D.valueType.STRING,
         }, {
-            uid: 'monitoring-client-model', key: 'model', label: 'Model', mapping, unit: null, type: D.valueType.STRING,
+            uid: 'monitoring-client-model', key: 'hardwareModel', label: 'Model', mapping, unit: null, type: D.valueType.STRING,
         },
     ];
 
