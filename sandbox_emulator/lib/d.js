@@ -223,7 +223,7 @@ global.D = { /**
     */
     crypto: cryptoLibrary.cryptoLibrary(console),
     /**
-     * Wrapper for unsafe functions which can lead to crashing the agent or other potential problems if not used properly
+     * Wrapper for unsafe functions which can lead to crashing the Collector or other potential problems if not used properly
      * @example  D._unsafe
      * @memberof D
      * @namespace D._unsafe

@@ -1,14 +1,14 @@
 /**
  * Domotz Custom Driver 
  * Name: Domotz Collector Diagnostic
- * Description: This script is designed to monitor and troubleshoot the diagnostic data of an agent 
+ * Description: This script is designed to monitor and troubleshoot the diagnostic data of a Collector 
  * 
  * Communication protocol is HTTP
  * 
- * Tested on Domotz Agent version: 6.1.0-b001
+ * Tested on Domotz Collector version: 6.1.0-b001
  * 
  * Creates Custom Driver variables:
- *    - Actual Discovery Counter: Represents the actual count of discovery events processed by the agent
+ *    - Actual Discovery Counter: Represents the actual count of discovery events processed by the Collector
  *    - Missed Discovery Counter: Represents the count of discovery events that were missed
  * 
  * Creates Custom Driver table to display error counts with their corresponding error codes
@@ -24,7 +24,7 @@ var table = D.createTable(
 )
 
 /**
- * Retrieves diagnostic data from the agent via HTTP GET request.
+ * Retrieves diagnostic data from the Collector via HTTP GET request.
  * @returns {Promise} A promise that resolves with the parsed diagnostic data.
  */
 function getDiagnostic() {
@@ -103,7 +103,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Agent Diagnostic Data
+ * @label Get Collector Diagnostic Data
  * @documentation This procedure is used to retrieve and process the diagnostic data
  */
 function get_status() {
