@@ -7,6 +7,7 @@
  *
  */
 
+const DEFAULT_PROMPT = '#'; // EdgeOS devices typically use '#' for root and '$' for non-root users
 /**
  * @param {number} customPort
  * @label Custom SSH port
@@ -73,12 +74,21 @@ function backup() {
         .catch(checkSshError);
 }
 
+var extractPromptSshOptions = {
+    username: D.device.username(),
+    password: D.device.password(),
+    inter_command_timeout_ms: 1000,
+    global_timeout_ms: 2000,
+    prompt: DEFAULT_PROMPT,
+    port: customPort,
+};
+
 var sshOptions = {
     username: D.device.username(),
     password: D.device.password(),
     inter_command_timeout_ms: 1000,
     global_timeout_ms: 5000,
-    prompt: "$",
+    prompt: DEFAULT_PROMPT,
     port: customPort
 };
 // Utility function that checks the type of error that has occured
@@ -88,17 +98,44 @@ function checkSshError(err) {
     if (err.code == 255 || err.code == 1) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     D.failure(D.errorType.GENERIC_ERROR);
 }
-// Utility function that changes the bash terminal and executes the command on the EdgeOS device
-function executeCommand(command) {
+
+function extractFullPrompt() {
     var d = D.q.defer();
-    sshOptions.commands = ["exec /bin/vbash", command];
-    D.device.sendSSHCommands(sshOptions, function (out, err) {
+    extractPromptSshOptions.commands = ['exec /bin/vbash'];
+    D.device.sendSSHCommands(extractPromptSshOptions, function (out, err) {
         if (err) {
             checkSshError(err);
             d.reject(err);
         } else {
+            if (out && out.length > 0) {
+                // Extract the prompt from the output
+                const fullPrompt = out[0].split('\n')[1].trim();
+                console.info('Full prompt extracted: ' + fullPrompt);
+                sshOptions.prompt = fullPrompt;
+            } else {
+                console.error('No output received to extract prompt.');
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
             d.resolve(out);
         }
     });
     return d.promise;
+}
+
+// Utility function that changes the bash terminal and executes the command on the EdgeOS device
+function executeCommand(command) {
+    return extractFullPrompt()
+    .then(function () {
+        var d = D.q.defer();
+        sshOptions.commands = ["exec /bin/vbash", command];
+        D.device.sendSSHCommands(sshOptions, function (out, err) {
+            if (err) {
+                checkSshError(err);
+                d.reject(err);
+            } else {
+                d.resolve(out);
+            }
+        });
+        return d.promise;
+    })
 }
