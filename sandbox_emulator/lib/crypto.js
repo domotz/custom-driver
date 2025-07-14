@@ -1,19 +1,19 @@
 /**
- * This file is part of Domotz Agent.
+ * This file is part of Domotz Collector.
  *
  * @license
- * Domotz Agent is free software: you can redistribute it and/or modify
+ * Domotz Collector is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Domotz Agent is distributed in the hope that it will be useful,
+ * Domotz Collector is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Domotz Agent.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Domotz Collector.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @copyright Copyright (C) Domotz Inc
  */
@@ -215,7 +215,7 @@ function cryptoLibrary(myConsole) {
          * D.crypto.hash('my data', 'sha256', 'utf8', 'hex')
          * @memberof D.crypto
          * @param {string|Buffer}       data               - The data object.<br>If data is a Buffer then inputEncoding is ignored.
-         * @param {string}              algorithm          - The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform.<p>Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
+         * @param {string}              algorithm          - The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the Collector's host platform.<p>Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
          * @param {binary|ascii|utf8}   [inputEncoding]    - The encoding of the data string.
          * @param {binary|base64|hex}   [outputEncoding]   - The encoding of the return value.<br>If no encoding is provided, then a buffer is returned.
          * @readonly
@@ -236,7 +236,7 @@ function cryptoLibrary(myConsole) {
          * @memberof D.crypto
          * @param {string}              data               - The data string
          * @param {string}              key                - The HMAC key to be used.
-         * @param {string}              algorithm          - The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform.<p>Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
+         * @param {string}              algorithm          - The cipher algorithm is dependent on the available algorithms supported by the version of OpenSSL on the Collector's host platform.<p>Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
          * @param {binary|base64|hex}   [outputEncoding]   - The output encoding.<br>If no encoding is provided, then a buffer is returned.
          * @readonly
          * @function
@@ -258,7 +258,7 @@ function cryptoLibrary(myConsole) {
          * // returns the Cipher object
          * D.crypto.createCipher('aes-128-ecb', 'the key', 'the initialization vector')
          * @memberof D.crypto
-         * @param {string}              algorithm             - The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
+         * @param {string}              algorithm             - The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the Collector's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
          * @param {string|Buffer}       key                   - The key to be used. Must be 'binary' encoded strings or buffers.
          * @param {string|Buffer}       initializationVector  - The initialization vector. Must be 'binary' encoded strings or buffers.
          * @readonly
@@ -279,7 +279,7 @@ function cryptoLibrary(myConsole) {
          * // returns the Decipher object
          * D.crypto.createDecipher('aes-128-ecb', 'the key', 'the initialization vector')
          * @memberof D.crypto
-         * @param {string}              algorithm             - The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the agent's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
+         * @param {string}              algorithm             - The algorithm is dependent on the available algorithms supported by the version of OpenSSL on the Collector's host platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', 'aes192', etc
          * @param {string|Buffer}       key                   - The key to be used. Must be 'binary' encoded strings or buffers.
          * @param {string|Buffer}       initializationVector  - The initialization vector. Must be 'binary' encoded strings or buffers.
          * @readonly

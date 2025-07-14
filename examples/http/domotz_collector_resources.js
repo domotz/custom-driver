@@ -1,19 +1,19 @@
 /**
  * Domotz Custom Driver 
  * Name: Domotz Collector Resources
- * Description: This script is designed to monitor Domotz agent resources
+ * Description: This script is designed to monitor Domotz Collector resources
  * 
  * Communication protocol is HTTP
  * 
- * Tested on Domotz Agent version: 6.1.0-b001
+ * Tested on Domotz Collector version: 6.1.0-b001
  * 
  * Creates Custom Driver variables:
- *   - Status: Current status of the agent
- *   - Mode: Operating mode of the agent
- *   - Platform: Full platform name of the agent
- *   - Architecture: Architecture of the agent package
- *   - Agent Version: Version of the agent
- *   - Node Version: Node.js version used by the agent
+ *   - Status: Current status of the Collector
+ *   - Mode: Operating mode of the Collector
+ *   - Platform: Full platform name of the Collector
+ *   - Architecture: Architecture of the Collector package
+ *   - Collector Version: Version of the Collector
+ *   - Node Version: Node.js version used by the Collector
  *   - System Uptime: Uptime of the system in seconds
  *   - Process Uptime: Uptime of the process in seconds
  *   - Load Average 1min: System load average over the last 1 minute
@@ -24,7 +24,7 @@
  **/
   
 /**
- * Retrieves resources info from the agent via HTTP GET request
+ * Retrieves resources info from the Collector via HTTP GET request
  * @returns {Promise} A promise that resolves with the parsed data
  */
 function getResources() {
@@ -63,7 +63,7 @@ function extractData(data) {
       D.createVariable('mode', 'Mode', getDisplayValue(data.mode), null, D.valueType.STRING),
       D.createVariable('platform', 'Platform', getDisplayValue(data.package && data.package.full_platform), null, D.valueType.STRING),
       D.createVariable('architecture', 'Architecture', getDisplayValue(data.package && data.package.pkg_architecture), null, D.valueType.STRING),
-      D.createVariable('agent-version', 'Agent Version', getDisplayValue(data.package && data.package.agent_version), null, D.valueType.STRING),
+      D.createVariable('agent-version', 'Collector Version', getDisplayValue(data.package && data.package.agent_version), null, D.valueType.STRING),
       D.createVariable('node-version', 'Node Version', getDisplayValue(data.package && data.package.node_version), null, D.valueType.STRING),
       D.createVariable('system-uptime', 'System Uptime', getDisplayValue(data.uptime && data.uptime.system), "second", D.valueType.NUMBER),
       D.createVariable('process-uptime', 'Process Uptime', getDisplayValue(data.uptime && data.uptime.process), "second", D.valueType.NUMBER),
@@ -102,8 +102,8 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Agent Resource
- * @documentation This procedure is used to retrieve and process the resource data from the agent
+ * @label Get Collector Resource
+ * @documentation This procedure is used to retrieve and process the resource data from the Collector
  */
 function get_status() {
   getResources()

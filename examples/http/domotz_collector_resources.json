@@ -2,23 +2,23 @@
     "logo": "domotz.svg",
     "version": "1.0.1",
     "name": "Domotz Collector Resources",
-    "description": "Monitor Domotz agent resources",
+    "description": "Monitor Domotz Collector resources",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Domotz Agent installed and running on the network"
+            "Domotz Collector installed and running on the network"
         ]
     },
     "tags": [
-        "domotz-agent",
+        "domotz-collector",
         "resource", 
         "status",
         "mode",
         "platform",
         "architecture",
-        "agent-version",
+        "collector-version",
         "node-version",
         "system-uptime",
         "process-uptime",
@@ -35,7 +35,7 @@
     ],
     "tested_on": [
         {
-            "name": "Domotz Agent",
+            "name": "Domotz Collector",
             "version": "6.1.0-b001"
         }
     ]
