@@ -315,8 +315,10 @@ function createBaseHTTPConfig() {
  */
 function custom_1(){
     turnOn()
-        .then(function(){ D.success() })
-        .catch(failure)
+    .then(retrieveStatus)
+    .then(retrieveVideoSource)
+    .then(publishStatus)
+    .catch(failure)
 }
 
 /**
@@ -326,8 +328,10 @@ function custom_1(){
  */
 function custom_2(){
     turnOff()
-        .then(function(){ D.success() })
-        .catch(failure)
+    .then(retrieveStatus)
+    .then(retrieveVideoSource)
+    .then(publishStatus)
+    .catch(failure)
 }
 
 /**
