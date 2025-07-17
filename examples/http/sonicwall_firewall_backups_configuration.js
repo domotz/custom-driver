@@ -199,8 +199,7 @@ function getCliConfig(authMode) {
 
         try {
             var bodyText = body.toString("utf8");
-            var clean = JSON.stringify(JSON.parse(bodyText), null, 2);
-            d.resolve(clean);
+            d.resolve(prettifyJSON(bodyText));
         } catch (e) {
             console.error("JSON parse failed: " + e);
             d.reject(D.errorType.GENERIC_ERROR);
@@ -253,4 +252,13 @@ function backup() {
         .catch(function (err) {
             D.failure(err || D.errorType.GENERIC_ERROR, "Backup failed");
         });
+}
+
+function prettifyJSON(json) {
+    const normalized = json.replaceAll(/(?<!")(\b0x(\d|[a-f])+\b)(?!")/gi, function (res) {
+        return '"' + res + '"';
+    });
+    return JSON.stringify(JSON.parse(normalized), null, 2).replaceAll(/"0x[0-9a-fA-F]+"/gi, function(res){
+        return res.replaceAll('"', '');
+    })
 }
