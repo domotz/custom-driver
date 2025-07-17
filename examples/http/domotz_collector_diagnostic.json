@@ -1,6 +1,6 @@
 {
     "logo": "domotz.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Domotz Collector Diagnostic",
     "description": "Monitor and troubleshoot the diagnostic data of a Collector",
     "category": "Software Integration",
