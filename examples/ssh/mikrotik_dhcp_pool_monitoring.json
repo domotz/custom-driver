@@ -28,7 +28,7 @@
     "tested_on": [
         {
             "name": "MikroTik RouterOS",
-            "version": "7.13.3"
+            "version": "RB5009UG+S+"
         }
     ]
 }
