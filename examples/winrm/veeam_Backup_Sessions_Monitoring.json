@@ -5,7 +5,7 @@
   "description": "This script provides the status of replication job or the last n replication jobs of a single VM replicated by Veeam",
   "category": "Software Integration",
   "requirements": {
-    "credentials": true,
+    "credentials": false,
     "sandbox_version": "1.12",
     "others": [
       "PowerShell Version 5.1.20348.3932",
@@ -37,6 +37,38 @@
     {
       "name": "Veeam Backup & Replication",
       "version": "12 v12.3.2.3617 Community Edition"
+    }
+  ],
+  "parameters": [
+    {
+      "value_type": "STRING",
+      "name": "vmName",
+      "label": "VM name"
+    },
+    {
+      "value_type": "STRING",
+      "name": "numberOfResults",
+      "label": "Number of results"
+    },
+    {
+      "value_type": "STRING",
+      "name": "protocol",
+      "label": "Protocol (WINRM or SSH)"
+    },
+    {
+      "value_type": "STRING",
+      "name": "veeamServerIP",
+      "label": "Veeam server IP"
+    },
+    {
+      "value_type": "STRING",
+      "name": "veeamServerUsername",
+      "label": "Veeam server username"
+    },
+    {
+      "value_type": "SECRET_TEXT",
+      "name": "veeamServerPassword",
+      "label": "Veeam server password"
     }
   ]
 }

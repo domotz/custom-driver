@@ -67,11 +67,7 @@ const veeamServerUsername = D.getParameter('veeamServerUsername');
 const veeamServerPassword = D.getParameter('veeamServerPassword');
 
 // Create external device connection
-const veeamDevice = D.createExternalDevice(veeamServerIP
-/**    
-, {"username": veeamServerUsername,"password": veeamServerPassword}
- */
-);
+const veeamDevice = D.createExternalDevice(veeamServerIP);
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
@@ -108,7 +104,7 @@ const veeamTable = D.createTable(
         {label: "Start Time"},
         {label: "End Time"},
         {label: "Job Duration (min)"},
-        {label: "Previous Backup Taken (hours)"}
+        {label: "Time from last backup (hours)"}
     ]
 );
 
