@@ -2,7 +2,7 @@
   "logo": "veeam.svg",
   "version": "1.0.0",
   "name": "Veeam Backup Sessions Monitoring (External Device)",
-  "description": "This script provides the status of replication job or the last n replication jobs of a single VM replicated by Veeam",
+  "description": "Experimental script - This script provides the status of replication job or the last n replication jobs of a single VM replicated by Veeam",
   "category": "Software Integration",
   "requirements": {
     "credentials": false,
@@ -16,6 +16,7 @@
     ]
   },
   "tags": [
+    "Experimental",
     "windows",
     "software",
     "veeam",
@@ -26,7 +27,7 @@
   "sample_period_s": 600,
   "has_actions": false,
   "expected_variables": {
-    "table": "[100]"
+    "table": "[7]"
   },
   "protocols": ["WINRM", "SSH"],
   "tested_on": [
