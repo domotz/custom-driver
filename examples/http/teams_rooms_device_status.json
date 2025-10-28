@@ -44,7 +44,7 @@
     {
       "value_type": "STRING",
       "name": "filterByDeviceSerialNumber",
-      "label": "Set to true to filter Tems device inventory by Domotz device serial",
+      "label": "Set to true to filter Teams device inventory by Domotz device serial",
       "value": "true"
     }
   ]
