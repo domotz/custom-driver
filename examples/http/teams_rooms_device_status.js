@@ -10,6 +10,15 @@
  * requirements:
  *    Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All
  *
+ * Input Parameters:
+ *    - tenantId: The Azure Active Directory Tenant ID for your Microsoft Teams organization
+ *    - clientId: The Application (client) ID of the registered Azure AD application
+ *    - clientSecret: The client secret credential used for authentication with the Azure AD application
+ *    - filterByDeviceSerialNumber: A boolean flag (true/false) that controls device filtering behavior
+ *        * If set to "true": The script will extract and display only the device with a serial number matching
+ *          the Domotz monitored device's serial number from all devices retrieved from Microsoft Teams
+ *        * If set to "false" or any other value: The script will extract and display all devices from Microsoft Teams
+ *
  * Creates a custom driver with the following columns:
  *    - Model: Represents the model or type of the device
  *    - Vendor: Denotes the manufacturer or vendor of the device
@@ -18,7 +27,7 @@
  *    - Serial Number: The unique serial number assigned to the device for identification
  *    - Health Status: Provides the current health or status of the device, indicating whether it is operating normally or has issues
  *    - Activity: The current activity state of the device
- *    - Connection Status: Indicates the status of the device’s network connection
+ *    - Connection Status: Indicates the status of the device's network connection
  *    - Exchange Login Status: Reflects the login status with Exchange, which may affect email functionality
  *    - Teams Login Status: Shows the device's login status within Microsoft Teams, impacting its ability to participate in meetings
  *    - Room Camera: Health status of the camera used in the room
@@ -26,13 +35,13 @@
  *    - Speaker: The health of the speaker device, which can impact audio during meetings
  *    - Communication Speaker: A specific speaker used for communication, indicating its health
  *    - Microphone: Represents the status of the microphone device
- *    - OS Update Status: Displays the status of the operating system’s software update
+ *    - OS Update Status: Displays the status of the operating system's software update
  *    - Admin Agent Update Status: Indicates whether the admin agent software is up-to-date
  *    - Company Portal Update Status: The status of the update for the company portal application
  *    - Teams Client Update Status: Displays if the Teams client is up-to-date
  *    - Firmware Update Status: Reflects the status of any firmware updates
  *    - Partner Agent Update Status: Status of the partner agent software update
- *    - Compute Health: Represents the health of the device’s computing components
+ *    - Compute Health: Represents the health of the device's computing components
  *    - HDMI Ingest: Indicates the health of HDMI video inputs, relevant for content sharing during meetings
  *
  * Dynamically creates columns for each external display connected to the room system.
@@ -60,6 +69,13 @@ var clientId = D.getParameter('clientId');
  * @type SECRET_TEXT 
  */
 var clientSecret = D.getParameter('clientSecret');
+
+/**
+ * @description Flag to filter by device serial number
+ * @type STRING 
+ */
+var filterByDeviceSerialNumber = D.getParameter('filterByDeviceSerialNumber');
+
 
 const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com')
 const teamsManagementService = D.createExternalDevice('graph.microsoft.com')
@@ -237,6 +253,49 @@ function createDeviceTable(deviceProperties) {
 }
 
 /**
+ * Creates variables for displaying device information when filtering by serial number.
+ * @param {Object} device - The device information to create variables for.
+ * @returns {Array} - Array of D.createVariable objects.
+ */
+function createVariables(device) {
+    var variables = [];
+    
+    // Add device ID as the first variable
+    variables.push(D.createVariable(
+        "id", 
+        "Device ID", 
+        device.id || 'N/A', 
+        null, 
+        D.valueType.STRING
+    ));
+    
+    deviceProperties.forEach(function(property) {
+        if (property.label) {
+            var value = device[property.key] || 'N/A';
+            variables.push(D.createVariable(
+                property.key, 
+                property.label, 
+                value, 
+                null, 
+                D.valueType.STRING
+            ));
+        }
+    });
+
+    const mstRoomsUrl = 'https://admin.teams.microsoft.com/devices/collaborationbars/' + device.id;
+
+    variables.push(D.createMetric({
+        uid: 'MST-Rooms-url-link',
+        name: 'MST Rooms URL link',
+        value: mstRoomsUrl,
+                    metadata: {'url': mstRoomsUrl},
+        valueType: D.valueType.NUMBER,
+        unit: "%"}));
+
+    return variables;
+}
+
+/**
  * Extracts a property directly from the device using the provided key.
  * @param {Object} device - The device object.
  * @param {string} key - The key to extract.
@@ -394,7 +453,12 @@ function processDeviceHelthResponse(d) {
         }
         extendDisplayExtractors(bodyAsJSON)
         deviceProperties = generateDeviceProperties()
-        createDeviceTable(deviceProperties)
+        
+        // Only create device table if not filtering by serial number
+        if (filterByDeviceSerialNumber.trim().toLowerCase() !== "true") {
+            createDeviceTable(deviceProperties)
+        }
+        
         const deviceHealthInfo = extractDeviceHealthInfo(bodyAsJSON)
         d.resolve(deviceHealthInfo)
     }
@@ -563,6 +627,20 @@ function validate() {
         })
 }
 
+function filterDevices(devices)
+{
+    let filteredDevices = devices
+    if (filterByDeviceSerialNumber.trim().toLowerCase() === "true") {
+        console.info("Device Serial" + D.device.serial())
+
+        filteredDevices = devices.filter(function(device) {
+            console.info("Teams Serial" + device.serialNumber)        
+            return device.serialNumber && D.device.serial() && device.serialNumber.toLowerCase() === D.device.serial().toLowerCase()
+        })
+    }
+    return filteredDevices
+}
+
 /**
  * @remote_procedure
  * @label Get Teams devices
@@ -571,13 +649,27 @@ function validate() {
 function get_status() {
     login()
         .then(retrieveDevices)
+        .then(filterDevices)
         .then(function (devices) {
             return retrieveDeviceHealthInfo(devices)
                 .then(function (healthList) {
                     const mergedDevices = mergeDevicesWithHealth(devices, healthList)
                     console.log(mergedDevices)
-                    populateTable(mergedDevices)
-                    D.success(deviceTable)
+                    
+                    if (filterByDeviceSerialNumber.trim().toLowerCase() === "true") {
+                        // When filtering by serial number, use variables instead of table
+                        if (mergedDevices.length > 0) {
+                            const variables = createVariables(mergedDevices[0])
+                            D.success(variables)
+                        } else {
+                            console.info('No matching device found for the serial number')
+                            D.success([])
+                        }
+                    } else {
+                        // Use table for multiple devices
+                        populateTable(mergedDevices)
+                        D.success(deviceTable)
+                    }
                 })
         })
         .catch(function (error) {
@@ -585,4 +677,3 @@ function get_status() {
             D.failure(D.errorType.GENERIC_ERROR)
         })
 }
-
