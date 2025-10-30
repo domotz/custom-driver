@@ -1,0 +1,79 @@
+{
+    "logo": "ms-teams.svg",
+    "version": "1.0.0",
+    "name": "Teams Rooms Device Status with Poly or Neat",
+    "description": "This script retrieves the status of Microsoft Teams Rooms devices, specifically those from Poly or Neat. It provides details such as device name, serial number, connection status, call status, software version, and model.",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Microsoft Teams",
+            "Grant permission to extract the list of room devices and  health details: TeamworkDevice.Read.All",
+            "Poly or Neat device with cloud controller enabled"
+        ]
+    },
+    "tags": [
+        "teams",
+        "microsoft",
+        "rooms",
+        "poly",
+        "neat"
+    ],
+    "sample_period_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[20]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Microsoft Graph API",
+            "version": "beta"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "teamsTenantId",
+            "label": "Teams Rooms Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "teamsClientId",
+            "label": "Teams Rooms Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "teamsClientSecret",
+            "label": "Teams Rooms Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "monitoringClient",
+            "label": "Monitoring Client(Neat or Poly)"
+        },
+        {
+            "value_type": "STRING",
+            "name": "monitoringClientId",
+            "label": "Monitoring Client ID (neatOrgID or poly client_id)"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "monitoringClientSecret",
+            "label": "Monitoring Client secret (neatAPIKey or poly client_secret)"
+        },
+        {
+            "value_type": "STRING",
+            "name": "cloudControllerDeviceID",
+            "label": "Cloud Controller Device Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "roomName",
+            "label": "RoomName"
+        }
+    ]
+}
