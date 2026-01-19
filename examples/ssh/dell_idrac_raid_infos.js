@@ -20,13 +20,13 @@
  *      - Security Status
  */
 
-var command = "racadm hwinventory";
+var command = "racadm hwinventory"; 
 
 // SSH options when running the commands
 var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 30000,
+    "timeout": 60000,
     "keyboard_interactive": true
 };
 

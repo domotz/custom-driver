@@ -28,7 +28,7 @@ var command = "racadm hwinventory";
 var sshConfig = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 30000,
+    "timeout": 60000,
     "keyboard_interactive": true
 };
 
