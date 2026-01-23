@@ -31,7 +31,7 @@ const apiKey = D.getParameter('apiKey')
  * @description Organization ID for the organization to monitor
  * @type STRING
  */
-const organizationId = D.getParameter('organizationId')
+const organizationId = D.getParameter('organizationID')
 
 // External Device representing the Meraki API endpoint
 const externalDevice = D.createExternalDevice('api.meraki.com')
