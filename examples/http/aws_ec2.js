@@ -135,8 +135,8 @@ function httpGet(params) {
     var method = "GET";
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
         date = amzdate.replace(/T\d+Z/, ""),
-        host = service + "." + region + ".amazonaws.com:443",
-        device = D.createExternalDevice(service + "." + region + ".amazonaws.com"),
+        host = service + "." + region + ".amazonaws.com",
+        device = D.createExternalDevice(host),
         canonicalUri = "/",
         canonicalHeaders = "content-encoding:amz-1.0\n" + "host:" + host + "\n" + "x-amz-date:" + amzdate + "\n",
         signedHeaders = "content-encoding;host;x-amz-date",
