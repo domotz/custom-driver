@@ -179,7 +179,7 @@ function fillConfig() {
             //The component version.
             uid: "Version",
             label: "Version",
-            execute: extractValue(systemVersions.Device.SystemVersions, "Version")
+            execute: extractValue(deviceInfo.Device.DeviceInfo, "DeviceVersion")
         },
         {
             //The device operational mode.
