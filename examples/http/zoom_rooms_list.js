@@ -110,7 +110,7 @@ function login() {
  * Constructs the pagination URL for fetching Zoom Rooms with page token and page size
  * @returns {string} The pagination URL for Zoom API request
  */
-function getPaginationUrl() {
+function getPaginationUrl(pageToken) {
   let url = "/v2/rooms?page_size=" + pageSize
   if (pageToken) {
     url += "&next_page_token=" + pageToken
