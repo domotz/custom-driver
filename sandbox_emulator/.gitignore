@@ -6,4 +6,4 @@
 /.parameters.json
 /package-lock.json
 /data.db
-/script.js
+/script.**.js
