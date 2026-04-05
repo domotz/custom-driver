@@ -9,6 +9,9 @@ var httpOptions = {
     rejectUnauthorized: false,
     url: "/"
 };
+
+var zoomStatus = D.createExternalDevice(zoomStatusURL);
+
 /**
 * @remote_procedure
 * @label Validate Association
@@ -24,7 +27,7 @@ function validate(){
             D.success();
         }
     }
-    D.device.http.get(httpOptions, verifyCanAccessResource);
+    zoomStatus.http.get(httpOptions, verifyCanAccessResource);
 } 
 
 /**
@@ -60,9 +63,7 @@ function get_status(){
         serivceRows.each(serviceParserCb);
         D.success(variables);
     }    
-    var zoomStatus = D.createExternalDevice(zoomStatusURL);
     zoomStatus.http.get(httpOptions, callbackParser);
-
 }
 
 

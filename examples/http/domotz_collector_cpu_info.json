@@ -1,18 +1,18 @@
 {
     "logo": "domotz.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Domotz Collector CPU Info",
-    "description": "This script is designed to monitor CPU information of an agent",
+    "description": "This script is designed to monitor CPU information of a Collector",
     "category": "Software Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "Domotz Agent installed and running on the network"
+            "Domotz Collector installed and running on the network"
         ]
     },
     "tags": [
-        "domotz-agent",
+        "domotz-collector",
         "cpu",
         "speed",
         "time",
@@ -31,7 +31,7 @@
     ],
     "tested_on": [
         {
-            "name": "Domotz Agent",
+            "name": "Domotz Collector",
             "version": "6.1.0-b001"
         }
     ]

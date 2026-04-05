@@ -1,6 +1,6 @@
 {
     "logo": "zoom.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Monitor Zoom services",
     "description": "Monitor Zoom.us services via externalHostname",
     "category": "Software Integration",

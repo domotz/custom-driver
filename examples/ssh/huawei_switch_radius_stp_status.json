@@ -1,0 +1,35 @@
+{
+    "logo": "huawei.svg",
+    "version": "1.0.0",
+    "name": "Huawei Switch - Radius and STP status",
+    "description": "This script retrieves the status of RADIUS authentication and Spanning Tree Protocol (STP) from a Huawei Switch",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "SSH Enabled",
+            "Huawei Switch"
+        ]
+    },
+    "tags": [
+        "huawei-switch",
+        "radius",
+        "stp",
+        "status"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[2]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Huawei S5731",
+            "version": "V200R022C00SPC500"
+        }
+    ]
+}

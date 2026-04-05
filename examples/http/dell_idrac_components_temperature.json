@@ -1,0 +1,35 @@
+{
+    "logo": "dell.svg",
+    "version": "1.0.3",
+    "name": "Dell iDrac - Components Temperature",
+    "description": "Monitors component temperature of a DELL iDRAC device using the Redfish API",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Dell iDRAC",
+            "Redfish enabled"
+        ]
+    },
+    "tags": [
+        "idrac",
+        "dell",
+        "component",
+        "temperature"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[6]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "iDRAC",
+            "version": "2.86.86.86"
+        }
+    ]
+}

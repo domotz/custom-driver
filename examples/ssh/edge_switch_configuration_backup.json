@@ -1,0 +1,43 @@
+{
+    "logo": "ubiquiti.svg",
+    "version": "1.0.2",
+    "name": "EdgeSwitch Configuration Backup",
+    "description": "Monitors the configuration of an EdgeSwitch and backs it up.",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "2.1",
+        "others": [
+            "Ubiquiti EdgeSwitch device",
+            "Use must be admin and be able to execute the 'show running-config' command over SSH"
+        ]
+    },
+    "tags": [
+        "ubiquiti",
+        "edgeswitch",
+        "switch",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "EdgeSwitch",
+            "version": "EdgeSwitch 8 150W"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "customPort",
+            "label": "Custom SSH port",
+            "value": 22
+        }
+    ]    
+}

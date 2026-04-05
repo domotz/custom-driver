@@ -1,11 +1,11 @@
 /**
  * Domotz Custom Driver 
  * Name: Domotz Collector CPU Info
- * Description: This script is designed to monitor CPU information of an agent 
+ * Description: This script is designed to monitor CPU information of a Collector 
  * 
  * Communication protocol is HTTP
  * 
- * Tested on Domotz Agent version: 6.1.0-b001
+ * Tested on Domotz Collector version: 6.1.0-b001
  * 
  * Creates Custom Driver table with the following columns:
  *    - Model:The model of the CPU
@@ -33,7 +33,7 @@ var table = D.createTable(
 )
 
 /**
- * Retrieves CPU info from the agent via HTTP GET request.
+ * Retrieves CPU info from the Collector via HTTP GET request.
  * @returns {Promise} A promise that resolves with the parsed CPU Info.
  */
 function getCPUInfo() {
@@ -122,8 +122,8 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Agent CPU Info
- * @documentation This procedure is used to retrieve and process the CPU Info data from the agent
+ * @label Get Collector CPU Info
+ * @documentation This procedure is used to retrieve and process the CPU Info data from the Collector
  */
 function get_status() {
   getCPUInfo()

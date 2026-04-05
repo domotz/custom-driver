@@ -1,1 +1,1 @@
-# custom-driver
+# Domotz custom scripts examples

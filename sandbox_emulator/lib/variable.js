@@ -1,19 +1,19 @@
 /**
- * This file is part of Domotz Agent.
+ * This file is part of Domotz Collector.
  *
  * @license
- * Domotz Agent is free software: you can redistribute it and/or modify
+ * Domotz Collector is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Domotz Agent is distributed in the hope that it will be useful,
+ * Domotz Collector is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Domotz Agent.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Domotz Collector.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @copyright Copyright (C) Domotz Inc
  */
@@ -35,7 +35,7 @@
 * @param {string} value - The Value of the variable. Max 500 characters
 * @param {string} unit  - The Unit of measurement of the variable (eg %). Max 10 characters
 * @param {ValueType} valueType  - The value type of the variable (used for display purposes)
-* @param {object} agentDriverSettings - The agent driver configuration that holds various settings 
+* @param {object} agentDriverSettings - The Collector driver configuration that holds various settings 
 * @return {Variable}
 */
 
