@@ -12,6 +12,7 @@
  *
  * Tested on Windows Version
  *  - Windows 11
+ *  - Windows Server (multi-socket)
  *
  * PowerShell Version:
  *  - 5.1.21996.1
@@ -97,11 +98,12 @@ function parseOutput(cpuMemoryInfo) {
     const totalMemory = cpuMemoryInfo.TotalMemory / (Math.pow(1024, 3));
     const availableMemory = cpuMemoryInfo.AvailableMemory / 1024 / 1024;
     const memoryUsage = ((totalMemory - availableMemory) / totalMemory) * 100;
-    const cpuName = cpuMemoryInfo.CPUInfo.name;
-    const maxClockSpeed = cpuMemoryInfo.CPUInfo.MaxClockSpeed / 1000;
-    const logicalProcessorsNumber = cpuMemoryInfo.CPUInfo.NumberOfLogicalProcessors;
-    const coresNumber = cpuMemoryInfo.CPUInfo.NumberOfCores;
-    const cpuStatus = cpuMemoryInfo.CPUInfo.Status;
+    const cpuData = Array.isArray(cpuMemoryInfo.CPUInfo) ? cpuMemoryInfo.CPUInfo[0] : cpuMemoryInfo.CPUInfo;
+    const cpuName = cpuData.name;
+    const maxClockSpeed = cpuData.MaxClockSpeed / 1000;
+    const logicalProcessorsNumber = cpuData.NumberOfLogicalProcessors;
+    const coresNumber = cpuData.NumberOfCores;
+    const cpuStatus = cpuData.Status;
     const cpuAverage = cpuMemoryInfo.Average ? cpuMemoryInfo.Average.toFixed(2) : "N/A"
 
     const variables = [
