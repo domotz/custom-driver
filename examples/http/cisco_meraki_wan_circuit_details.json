@@ -18,7 +18,7 @@
       "uplink",
       "appliance"
    ],
-   "sample_period_s":"120",
+   "sample_period_s":"900",
    "has_actions":false,
    "expected_variables":{
       "table":"[15]"
