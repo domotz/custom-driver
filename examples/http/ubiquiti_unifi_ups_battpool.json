@@ -1,0 +1,47 @@
+{
+    "logo": "ubiquiti.svg",
+    "version": "1.0.0",
+    "name": "Ubiquiti UniFi - UPS Tower Battpool Variables",
+    "description": "Retrieves battery pool metrics from a Ubiquiti UPS Tower via the UniFi controller API, including battery level, charging status, output voltage/current/power, and remaining time",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "Ubiquiti UniFi Controller with Local API access enabled"
+        ]
+    },
+    "tags": [
+        "ubiquiti",
+        "unifi",
+        "ups",
+        "battery",
+        "power"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[11]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubiquiti UPS Tower",
+            "version": "N/A"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "udmIp",
+            "label": "UniFi Controller IP"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "apiKey",
+            "label": "API Key"
+        }
+    ]
+}
