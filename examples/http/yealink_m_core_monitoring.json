@@ -1,0 +1,47 @@
+{
+    "logo": "yealink.svg",
+    "version": "1.0.0",
+    "name": "Yealink M Core Series - Device Monitoring",
+    "description": "Monitors Yealink M Core series meeting room controllers via HTTPS with token-based authentication. Retrieves the list of connected peripherals, audio mute status, system status, and camera PTZ position. Includes a Reboot action that reboots all devices connected to the M Core hub.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Yealink M Core REST API accessible over HTTPS",
+            "HTTPS port number (port parameter, default 443)"
+        ]
+    },
+    "tags": [
+        "yealink",
+        "mcore",
+        "conference",
+        "room",
+        "collaboration",
+        "av",
+        "teams"
+    ],
+    "sample_period_s": 900,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[5]",
+        "table": "variable (Connected Devices)"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Yealink M Core REST API",
+            "version": "v1"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "port",
+            "label": "HTTPS Port",
+            "value": "443"
+        }
+    ]
+}
