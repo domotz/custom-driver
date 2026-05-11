@@ -1,0 +1,55 @@
+{
+    "logo": "neat.svg",
+    "version": "1.0.0",
+    "name": "Neat Pulse Endpoint Monitoring",
+    "description": "Monitors Neat Pulse room devices via the Neat Pulse cloud API. Retrieves device info (firmware, connectivity, storage, room name) and sensor data (temperature, humidity, CO2, VOC, illumination, people count). Supports direct device ID lookup or automatic discovery by serial number. Includes a Reboot action.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "A valid Neat Pulse API Bearer token (neatAPIKey)",
+            "The Neat organization ID (neatOrgID)",
+            "Optionally, the Neat endpoint ID (cloudControllerDeviceID) for direct lookup; if omitted, the device is identified by its serial number in the Neat inventory"
+        ]
+    },
+    "tags": [
+        "neat",
+        "neat-pulse",
+        "room",
+        "sensor",
+        "conference",
+        "firmware"
+    ],
+    "sample_period_s": 900,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[35]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Neat Pulse API",
+            "version": "v1"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "neatAPIKey",
+            "label": "Neat API Key"
+        },
+        {
+            "value_type": "STRING",
+            "name": "neatOrgID",
+            "label": "Neat Org ID"
+        },
+        {
+            "value_type": "STRING",
+            "name": "cloudControllerDeviceID",
+            "label": "Cloud Controller Device ID (optional)"
+        }
+    ]
+}
