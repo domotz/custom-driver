@@ -1,0 +1,56 @@
+{
+    "logo": "poly.svg",
+    "version": "1.0.0",
+    "name": "HP Poly Lens - Device Monitoring",
+    "description": "Monitors HP Poly devices via the Poly Lens cloud GraphQL API. Retrieves device identity, connectivity, firmware, call status, room assignment, and integration health (Zoom, Teams). Supports direct lookup by Poly Object ID, automatic discovery by MAC or IP, full-inventory table mode ('all'), and API diagnostics mode ('error'). Includes a Reboot action.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "A valid Poly Lens OAuth2 Client ID (client_id)",
+            "A valid Poly Lens OAuth2 Client Secret (client_secret)",
+            "Optionally, the Poly Lens device Object ID (cloudControllerDeviceID) for direct lookup. Use 'null' for automatic discovery by MAC or IP address, 'all' to display all tenant devices in a table, or 'error' to expose GraphQL API errors for troubleshooting"
+        ]
+    },
+    "tags": [
+        "poly",
+        "hp-poly",
+        "poly-lens",
+        "conference",
+        "room",
+        "audio",
+        "video"
+    ],
+    "sample_period_s": 120,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[24]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Poly Lens GraphQL API",
+            "version": "v1"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "client_id",
+            "label": "Poly Lens Client ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "client_secret",
+            "label": "Poly Lens Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "cloudControllerDeviceID",
+            "label": "Cloud Controller Device ID (Poly Object ID, 'null', 'all', or 'error')"
+        }
+    ]
+}
