@@ -19,7 +19,7 @@
         "recorder",
         "streaming",
         "video",
-        "av"
+        "audio-video"
     ],
     "sample_period_s": 900,
     "has_actions": true,
