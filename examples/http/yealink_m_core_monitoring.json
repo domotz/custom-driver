@@ -18,14 +18,14 @@
         "conference",
         "room",
         "collaboration",
-        "av",
+        "audio-video",
         "teams"
     ],
     "sample_period_s": 900,
     "has_actions": true,
     "expected_variables": {
         "independent": "[5]",
-        "table": "variable (Connected Devices)"
+        "table": "[6]"
     },
     "protocols": [
         "HTTPS"
