@@ -238,14 +238,18 @@ function backup() {
                 label: "SonicWall CLI Configuration (Hybrid)",
                 running: configJson,
                 ignoredLines: [
-                    "^\\s*\"system_time\"\\s*:\\s*\".*\",?",
-                    "^\\s*\"system_uptime\"\\s*:\\s*\".*\",?",
-                    "^\\s*\"password\"\\s*:\\s*\"6,.*\",?",
-                    "^\\s*\"confirm_secret\"\\s*:\\s*\"6,.*\",?",
-                    "^\\s*\"shared_secret\"\\s*:\\s*\"6,.*\",?",
-                    "^\\s*\"secret\"\\s*:\\s*\"6,.*\",?",
-                    "^\\s*\"user_password\"\\s*:\\s*\"6,.*\",?",
-                    "^\\s*\"passphrase\"\\s*:\\s*\"6,.*\",?"
+                    "\\n\\s*\"system_time\"\\s*:\\s*\".*\",?",
+                    "\\n\\s*\"system_uptime\"\\s*:\\s*\".*\",?",
+                    "\\n\\s*\"time\"\\s*:\\s*\".*\",?",
+                    "\\n\\s*\"date\"\\s*:\\s*\".*\",?",
+                    "\\n\\s*\"password\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"confirm_secret\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"shared_secret\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"secret\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"user_password\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"passphrase\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"client_password\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"identity_dn_password\"\\s*:\\s*\"6,.*\",?"
                 ]
             }));
         })
