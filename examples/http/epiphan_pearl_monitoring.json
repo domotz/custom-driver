@@ -1,0 +1,45 @@
+{
+    "logo": "epiphan.svg",
+    "version": "1.0.0",
+    "name": "Epiphan Pearl - Basic System Monitoring",
+    "description": "Monitors basic system information of an Epiphan Pearl encoder/recorder via its REST API with HTTPS basic authentication. Retrieves system identification, firmware version, CPU load and temperature, uptime, network connectivity, and storage status. Exposes seven actions to control recorders, publishers, touch control, presets, and device reboot.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Epiphan Pearl REST API v2.0 accessible over HTTPS",
+            "HTTPS port number (httpsPort parameter)"
+        ]
+    },
+    "tags": [
+        "epiphan",
+        "epiphan-pearl",
+        "encoder",
+        "recorder",
+        "streaming",
+        "video",
+        "audio-video"
+    ],
+    "sample_period_s": 900,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[19]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Epiphan Pearl REST API",
+            "version": "v2.0"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "httpsPort",
+            "label": "HTTPS Port"
+        }
+    ]
+}

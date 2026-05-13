@@ -1,0 +1,35 @@
+{
+    "logo": "ruckus.svg",
+    "version": "1.0.0",
+    "name": "Ruckus ICX Configuration Backup",
+    "description": "Extracts the running configuration of a Ruckus ICX switch and backs it up via SSH or TFTP.",
+    "type": "CONFIGURATION_MANAGEMENT",
+    "category": "Configuration Management",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "2.1",
+        "others": [
+            "Ruckus ICX switch with SSH enabled",
+            "Required permissions: Privilege Level 15 user"
+        ]
+    },
+    "tags": [
+        "ruckus",
+        "icx",
+        "switch",
+        "configuration",
+        "backup"
+    ],
+    "sample_period_s": 86400,
+    "execution_time_s": 60,
+    "has_actions": false,
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ruckus ICX",
+            "version": "ICX7150-C12"
+        }
+    ]
+}
