@@ -28,7 +28,13 @@ var counters = [
 var winrmConfig = {
     "command": 'Get-Counter -Counter ' + counters.map(function(counter){return '"' + counter + '"';}).join(',') + ' | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue } | ConvertTo-Json',
     "username": D.device.username(),
-    "password": D.device.password()
+    "password": D.device.password(),
+    // WinRM transport options:
+    port: 5985,                // 5985 = HTTP, 5986 = HTTPS
+    scheme: "http",            // "http" | "https"
+    skipVerify: true,          // when scheme="https", skip TLS cert verification
+    auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
+    timeoutSec: 30,            // per-command timeout in seconds (replaces legacy 'timeout' which was silently ignored)
 };
 
 var table = D.createTable(
