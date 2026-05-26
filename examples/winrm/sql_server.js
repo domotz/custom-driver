@@ -47,7 +47,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeoutSec: 30,            // per-command timeout in seconds (replaces legacy 'timeout' which was silently ignored)
+    timeout: 30000,               // per-command timeout in milliseconds
 };
 
 // Function to handle WinRM errors

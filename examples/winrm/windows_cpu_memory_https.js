@@ -62,8 +62,7 @@ const config = {
     scheme: "https",           // "http" | "https"
     skipVerify: true,          // set to false to enforce TLS certificate verification
     // auth: "auto",           // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,             // SSH per-command timeout (ms); ignored by WinRM
-    timeoutSec: 30,            // per-command timeout in seconds
+    timeout: 30000,            // per-command timeout in milliseconds
 };
 
 function parseValidateOutput(isValidated) {

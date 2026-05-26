@@ -58,8 +58,7 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,             // SSH per-command timeout (ms); ignored by WinRM
-    timeoutSec: 30,            // per-command timeout in seconds (replaces legacy 'timeout' which was silently ignored)
+    timeout: 30000,            // per-command timeout in milliseconds
 }
 
 // Mapping of drive types
