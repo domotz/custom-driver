@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows AD GPOs versions",
     "description": "Monitor the versions of selected GPOs. You can set the initial value as baseeline and get alerted if it changes",
     "category": "Software Integration",
