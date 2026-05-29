@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "name": "Windows Firewall Rules",
     "description": "Show Firewall Rules on a Windows machine",
     "category": "Software Integration",
@@ -39,7 +39,10 @@
             "value_type": "LIST",
             "name": "firewallFilter",
             "label": "Firewall Rule Name",
-            "value": ["skype", "AnyDesk"]
+            "value": [
+                "skype",
+                "AnyDesk"
+            ]
         },
         {
             "value_type": "STRING",

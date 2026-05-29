@@ -248,8 +248,12 @@ function backup() {
                     "\\n\\s*\"secret\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"user_password\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"passphrase\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"junk_store_password\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"smtp_pass\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"pop_pass\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"client_password\"\\s*:\\s*\"6,.*\",?",
-                    "\\n\\s*\"identity_dn_password\"\\s*:\\s*\"6,.*\",?"
+                    "\\n\\s*\"identity_dn_password\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"admin_user_password\"\\s*:\\s*\"6,.*\",?",
                 ]
             }));
         })
