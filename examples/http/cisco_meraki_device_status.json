@@ -1,6 +1,6 @@
 {
     "logo": "cisco-meraki.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Cisco Meraki - Device Status for an Organization",
     "description": "This script retrieves device availability data from Cisco Meraki and displays it in Domotz",
     "category": "Hardware Integration",
