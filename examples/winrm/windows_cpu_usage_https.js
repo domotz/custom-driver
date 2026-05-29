@@ -1,14 +1,15 @@
 /**
  * Domotz Custom Driver
- * Name: Windows Host Users Monitoring
- * Description: Monitors the status of all the existing users on a Windows machine
+ * Name: Windows CPU usage (HTTPS)
+ * Description: This driver retrieves the average CPU load average percentage of a Windows server.
+ * Uses WinRM over HTTPS (port 5986). Requires the WinRM listener configured for HTTPS on the target.
+ *
  *
  * Communication protocol are:
  *      - WinRM
  *      - SSH
  *
  * The communication protocol can be chosen as either SSH or WinRM by specifying it through the "protocol" parameter.
- *
  *
  * Tested on Windows Versions:
  *      - Windows 10
@@ -20,46 +21,27 @@
  *    - WinRM Enabled: To run the script using WinRM
  *    - SSH Enabled: To run the script using SSH
  *
+ * Creates a Custom Driver Variable with CPU load average percentage
  *
- * Creates a Custom Driver Table with the following columns:
- *  - Name
- *  - Status
- *  - Description
- *
- **/
+ */
 
 // Specify the communication protocol to be used (SSH or WinRM)
 const protocol = D.getParameter('protocol');
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
-// Define the WinRM options when running the commands
+const command = "Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average | Select Average"
+
 const config = {
     "username": D.device.username(),
     "password": D.device.password(),
-    // WinRM transport options:
-    port: 5985,                // 5985 = HTTP, 5986 = HTTPS
-    scheme: "http",            // "http" | "https"
-    skipVerify: true,          // when scheme="https", skip TLS cert verification
-    auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
+    // WinRM transport options for HTTPS (port 5986). Adjust as needed:
+    port: 5986,                // 5986 = HTTPS (5985 for HTTP)
+    scheme: "https",           // "http" | "https"
+    skipVerify: true,          // set to false to enforce TLS certificate verification
+    // auth: "auto",           // "basic" | "ntlm" | "auto" (inferred from username)
     timeout: 30000,            // per-command timeout in milliseconds
 };
-
-const hostUsersTable = D.createTable(
-    "Host Users",
-    [
-        {label: "Name"},
-        {label: "Status"},
-        {label: "Description"}
-    ]
-);
-const userDetailsRegexp = /([\w\d]+)\s+([\w]+)\s+(.*)/;
-
-/**
- * @remote_procedure
- * @label Validate WinRM is working on device
- * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
- */
 
 function parseValidateOutput(isValidated) {
     if (isValidated) {
@@ -71,8 +53,12 @@ function parseValidateOutput(isValidated) {
     }
 }
 
+/**
+ * @remote_procedure
+ * @label Validate WinRM connectivity with the device
+ * @documentation This procedure is used to validate the driver and credentials provided during association.
+ */
 function validate() {
-    const command = "Test-WSMan";
     instance.executeCommand(command)
         .then(instance.checkIfValidated)
         .then(parseValidateOutput)
@@ -81,38 +67,29 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get Host Device Users
- * @documentation This procedure retrieves the users on the host device and outputs if they are enabled or not
+ * @label Get CPU usage percentage
+ * @documentation This procedure retrieves the average CPU load percentage of the device.
  */
 function get_status() {
-    instance.executeCommand("Get-LocalUser")
+    instance.executeCommand(command)
         .then(instance.parseOutputToArray)
         .then(parseOutput)
         .catch(instance.checkError);
 }
 
-
-function parseOutput(outputLines) {
-    if (outputLines.length >= 2 ){
-        for (let i = 2; i < outputLines.length; i++) {
-            const line = outputLines[i];
-            if (line !== "") {
-                const match = line.match(userDetailsRegexp);
-                if (match) {
-                    const name = match[1];
-                    const recordId = name.toLowerCase().substring(0, 50);
-                    const status = match[2];
-                    const description = match[3];
-                    hostUsersTable.insertRecord(recordId, [name, status, description]);
-                }
-            }
-        }
-    }
-    D.success(hostUsersTable);
+/**
+ * Parses the output of the WinRM command and extracts the CPU load percentage.
+ * @param {object} output - The output of the WinRM command.
+ */
+function parseOutput(output) {
+    const cpuValue = output[2].replace(/\s+/g, ""); // To remove all spaces
+    const cpuLoadAverage = D.device.createVariable("cpu-load-average", "CPU Load Average", cpuValue, "%", D.valueType.NUMBER);
+    D.success([cpuLoadAverage]);
 }
 
 // WinRM functions
-function WinRMHandler() {}
+function WinRMHandler() {
+}
 
 // Check for Errors on the command response
 WinRMHandler.prototype.checkError = function (output) {

@@ -1,7 +1,9 @@
 /**
  * Domotz Custom Driver
- * Name: Windows CPU and Memory
+ * Name: Windows CPU and Memory (HTTPS)
  * Description: Monitors CPU and memory usage of a Windows machine.
+ * Uses WinRM over HTTPS (port 5986). Requires the WinRM listener configured for HTTPS on the target.
+ *
  * Please note that to retrieve CPU load metric it is necessary to add the WinRM user to the security group "Performance Monitor Users"
  *
  * Communication protocol are:
@@ -55,11 +57,11 @@ const command = '@{ TotalMemory = ' + totalMemory + '; AvailableMemory = ' + ava
 const config = {
     "username": D.device.username(),
     "password": D.device.password(),
-    // WinRM transport options:
-    port: 5985,                // 5985 = HTTP, 5986 = HTTPS
-    scheme: "http",            // "http" | "https"
-    skipVerify: true,          // when scheme="https", skip TLS cert verification
-    auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
+    // WinRM transport options for HTTPS (port 5986). Adjust as needed:
+    port: 5986,                // 5986 = HTTPS (5985 for HTTP)
+    scheme: "https",           // "http" | "https"
+    skipVerify: true,          // set to false to enforce TLS certificate verification
+    // auth: "auto",           // "basic" | "ntlm" | "auto" (inferred from username)
     timeout: 30000,            // per-command timeout in milliseconds
 };
 

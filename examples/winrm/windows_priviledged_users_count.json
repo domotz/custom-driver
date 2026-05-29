@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Monitor the count of Windows Active Directory privileged users",
     "description": "Monitors the number of members of AD privileged groups",
     "category": "Software Integration",

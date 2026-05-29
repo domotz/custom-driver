@@ -1,8 +1,8 @@
 {
     "logo": "windows.svg",
     "version": "1.1.2",
-    "name": "Windows OS General Monitoring",
-    "description": "Monitors the general information for Windows Operating System",
+    "name": "Windows Physical Disks (HTTPS)",
+    "description": "Monitors the status of physical disks within a Windows machine (over WinRM HTTPS on port 5986).",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -11,31 +11,36 @@
             "Powershell Version 5.1.21996.1",
             "Privilege required: AD User",
             "WinRM Enabled: To run the script using WinRM",
-            "SSH Enabled: To run the script using SSH"
+            "SSH Enabled: To run the script using SSH",
+            "WinRM HTTPS listener enabled on the target (default port 5986)"
         ]
     },
     "tags": [
         "windows",
-        "operating-system",
-        "bios",
-        "name",
-        "version",
-        "build-number",
-        "architecture",
+        "physical-disk",
+        "model",
+        "status",
+        "size",
+        "free-space",
+        "usage",
+        "media-type",
         "serial-number",
-        "vendor",
-        "product-id"
+        "partition"
     ],
-    "sample_period_s": 86400,
+    "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[7]"
+        "table": "[8]"
     },
     "protocols": [
         "WINRM",
         "SSH"
     ],
     "tested_on": [
+        {
+            "name": "Windows",
+            "version": "10"
+        },
         {
             "name": "Windows",
             "version": "11"

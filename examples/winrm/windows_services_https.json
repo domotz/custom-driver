@@ -1,8 +1,8 @@
 {
     "logo": "windows.svg",
     "version": "1.1.2",
-    "name": "Windows Firewall Rules",
-    "description": "Show Firewall Rules on a Windows machine",
+    "name": "Windows Services Monitoring (HTTPS)",
+    "description": "Monitor the status of chosen services on a Windows machine (over WinRM HTTPS on port 5986).",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
@@ -11,18 +11,20 @@
             "Powershell Version 5.1.19041.2364",
             "Privilege required: Local Administrator",
             "WinRM Enabled: To run the script using WinRM",
-            "SSH Enabled: To run the script using SSH"
+            "SSH Enabled: To run the script using SSH",
+            "WinRM HTTPS listener enabled on the target (default port 5986)"
         ]
     },
     "tags": [
         "windows",
-        "firewall",
+        "services",
         "software"
     ],
-    "sample_period_s": 1800,
+    "sample_period_s": 3600,
+    "execution_time_s": 60,
     "has_actions": false,
     "expected_variables": {
-        "table": "[5]"
+        "table": "[3]"
     },
     "protocols": [
         "WINRM",
@@ -31,17 +33,26 @@
     "tested_on": [
         {
             "name": "Microsoft Windows",
-            "version": "Windows 10"
+            "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
         }
     ],
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "firewallFilter",
-            "label": "Firewall Rule Name",
+            "name": "servicesFilter",
+            "label": "Service Name",
             "value": [
-                "skype",
-                "AnyDesk"
+                "dhcp",
+                "dnscache",
+                "LanmanServer",
+                "MpsSvc",
+                "RpcEptMapper",
+                "schedule",
+                "Windows Time"
             ]
         },
         {

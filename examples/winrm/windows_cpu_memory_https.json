@@ -1,29 +1,30 @@
 {
     "logo": "windows.svg",
-    "version": "1.1.1",
-    "name": "Windows Updates",
-    "description": "Collect data on missing updates for a windows host",
+    "version": "1.1.2",
+    "name": "Windows CPU and Memory (HTTPS)",
+    "description": "Monitors CPU and memory usage of a Windows machine (over WinRM HTTPS on port 5986).",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "Powershell Version 5.1.19041.2364",
-            "Privileged User Required",
+            "Powershell Version 5.1.21996.1",
+            "Privilege required: Administrator",
             "WinRM Enabled: To run the script using WinRM",
-            "SSH Enabled: To run the script using SSH"
+            "SSH Enabled: To run the script using SSH",
+            "WinRM HTTPS listener enabled on the target (default port 5986)"
         ]
     },
     "tags": [
         "windows",
-        "update",
-        "software"
+        "cpu",
+        "memory",
+        "status"
     ],
-    "sample_period_s": 86400,
+    "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[6]",
-        "table": "[0,999]"
+        "independent": "[9]"
     },
     "protocols": [
         "WINRM",
@@ -31,8 +32,8 @@
     ],
     "tested_on": [
         {
-            "name": "Microsoft Windows",
-            "version": "Server 2019"
+            "name": "Windows",
+            "version": "11"
         }
     ],
     "parameters": [

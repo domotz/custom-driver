@@ -1,29 +1,28 @@
 {
     "logo": "windows.svg",
     "version": "1.1.1",
-    "name": "Windows Updates",
-    "description": "Collect data on missing updates for a windows host",
+    "name": "Windows CPU Usage (HTTPS)",
+    "description": "Monitor the average CPU load average percentage of a Windows server (over WinRM HTTPS on port 5986).",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
             "Powershell Version 5.1.19041.2364",
-            "Privileged User Required",
             "WinRM Enabled: To run the script using WinRM",
-            "SSH Enabled: To run the script using SSH"
+            "SSH Enabled: To run the script using SSH",
+            "WinRM HTTPS listener enabled on the target (default port 5986)"
         ]
     },
     "tags": [
         "windows",
-        "update",
-        "software"
+        "software",
+        "cpu"
     ],
-    "sample_period_s": 86400,
+    "sample_period_s": 300,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[6]",
-        "table": "[0,999]"
+        "independent": "[1]"
     },
     "protocols": [
         "WINRM",
@@ -33,6 +32,10 @@
         {
             "name": "Microsoft Windows",
             "version": "Server 2019"
+        },
+        {
+            "name": "Microsoft Windows",
+            "version": "10"
         }
     ],
     "parameters": [
