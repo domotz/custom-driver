@@ -1,6 +1,6 @@
 {
    "logo":"cisco-meraki.svg",
-   "version":"1.0.0",
+   "version":"1.0.1",
    "name":"Cisco Meraki - WAN Circuit Details",
    "description":"Retrieves WAN uplink status (WAN1, WAN2, cellular) for Meraki MX/Z appliances in an organization, enriched with device alias, tags, and per-interface description. The macAddresses parameter accepts a comma-separated list of device management MAC addresses (as shown in the Meraki Dashboard under Devices) to filter results to specific appliances — it does not refer to a WAN interface MAC. If left empty, all MX/Z appliances in the organization are returned.",
    "category":"Hardware Integration",
