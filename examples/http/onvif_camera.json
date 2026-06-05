@@ -8,7 +8,7 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "ONVIF"      
+            "ONVIF"
         ]
     },
     "tags": [
@@ -37,7 +37,9 @@
             "value_type": "LIST",
             "name": "profileName",
             "label": "Profile Name",
-            "value": ["ALL"]
+            "value": [
+                "ALL"
+            ]
         },
         {
             "value_type": "NUMBER",
@@ -45,5 +47,39 @@
             "label": "ONVIF port",
             "value": 80
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Lilin"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                554
+            ],
+            "qualifier": "preferred"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

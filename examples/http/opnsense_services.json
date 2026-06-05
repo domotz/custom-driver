@@ -35,7 +35,9 @@
             "value_type": "LIST",
             "name": "serviceName",
             "label": "Service Name",
-            "value": ["ALL"]
+            "value": [
+                "ALL"
+            ]
         },
         {
             "value_type": "NUMBER",
@@ -43,5 +45,35 @@
             "label": "Port Number",
             "value": 443
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

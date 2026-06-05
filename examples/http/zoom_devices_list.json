@@ -55,19 +55,55 @@
             "value_type": "LIST",
             "name": "deviceId",
             "label": "Device ID",
-            "value": ["All"]
+            "value": [
+                "All"
+            ]
         },
         {
             "value_type": "LIST",
             "name": "deviceType",
             "label": "Device Type",
-            "value": ["All"]
+            "value": [
+                "All"
+            ]
         },
         {
             "value_type": "LIST",
             "name": "roomName",
             "label": "Room Name",
-            "value": ["All"]
+            "value": [
+                "All"
+            ]
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

@@ -54,12 +54,52 @@
             "value_type": "LIST",
             "name": "weekDays",
             "label": "Week Days",
-            "value": ["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+            "value": [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ]
         },
         {
             "value_type": "LIST",
             "name": "datesToExclude",
             "label": "Dates To Exclude"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Sony"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

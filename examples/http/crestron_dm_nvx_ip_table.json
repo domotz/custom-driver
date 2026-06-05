@@ -18,8 +18,7 @@
     ],
     "sample_period_s": 1800,
     "has_actions": true,
-    "expected_variables": {
-    },
+    "expected_variables": {},
     "protocols": [
         "HTTPS"
     ],
@@ -28,5 +27,39 @@
             "name": "Crestron DM-NVX-363",
             "version": "2.0.0"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Crestron"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [
+                "DM-NVX"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

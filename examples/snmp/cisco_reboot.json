@@ -11,7 +11,8 @@
             "Cisco device",
             "SNMP enabled",
             "CISCO-MIB support",
-            "RFC2982-MIB support"       ]
+            "RFC2982-MIB support"
+        ]
     },
     "tags": [
         "cisco",
@@ -22,5 +23,49 @@
     "has_actions": true,
     "expected_variables": {},
     "protocols": [],
-    "tested_on": []
+    "tested_on": [],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Cisco",
+                "Cisco Systems Inc"
+            ],
+            "qualifier": "preferred"
+        },
+        "models": {
+            "values": [
+                "Catalyst 2960X-24TD-L",
+                "C2960X",
+                "Catalyst 2960S-24TD-L",
+                "C3750E",
+                "C3560CX",
+                "Catalyst 2960G-24TC-L",
+                "C2960S"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [
+                "RFC1158-MIB",
+                "OLD-CISCO-TS-MIB"
+            ],
+            "qualifier": "required"
+        }
+    }
 }

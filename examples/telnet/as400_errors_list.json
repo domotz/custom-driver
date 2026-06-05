@@ -30,5 +30,39 @@
             "name": "OS/400",
             "version": "5050 QSYS V6R1M1 L00"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "IBM"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                23
+            ],
+            "qualifier": "required"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }
