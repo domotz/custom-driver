@@ -52,7 +52,12 @@ if (firewallFilter.length === 1 && firewallFilter[0].toLowerCase() === 'all') {
 const config = {
     "username": D.device.username(),
     "password": D.device.password(),
-    "timeout": 30000
+    // WinRM transport options:
+    port: 5985,                // 5985 = HTTP, 5986 = HTTPS
+    scheme: "http",            // "http" | "https"
+    skipVerify: true,          // when scheme="https", skip TLS cert verification
+    auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
+    timeout: 30000,            // per-command timeout in milliseconds
 };
 
 const directionCodes = {

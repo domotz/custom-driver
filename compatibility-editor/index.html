@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>custom-driver · compatibility editor</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#161c24; --panel-2:#1c2530; --line:#293241;
+    --text:#e6edf3; --muted:#8b96a8; --accent:#5eb1ff; --good:#56d364;
+    --warn:#ffb86b; --danger:#ff7b72; --info:#79c0ff;
+    --chip:#22303f; --chip-on:#2f4866; --hover:#1f2a36; --selected:#26354a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  code,pre,.mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  button{font:inherit;color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+  button:hover{background:var(--hover)}
+  button.primary{background:var(--accent);color:#0a0f14;border-color:var(--accent);font-weight:600}
+  button.primary:hover{filter:brightness(1.05)}
+  button.danger{background:transparent;color:var(--muted);border-color:var(--line)}
+  button.danger:hover{color:#ffb4ad;border-color:var(--danger)}
+  input[type=search],input[type=text],select,textarea{font:inherit;color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;outline:none}
+  input[type=search]:focus,input[type=text]:focus,select:focus,textarea:focus{border-color:var(--accent)}
+
+  .app{display:grid;grid-template-columns:380px 1fr;height:100vh;overflow:hidden}
+  aside.sidebar{display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line);min-width:0;min-height:0;height:100%;overflow:hidden}
+  .toolbar{padding:12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
+  .toolbar .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .toolbar input[type=search]{flex:1;min-width:0}
+  .stats{font-size:11px;color:var(--muted)}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:var(--chip);font-size:11px;color:var(--muted);border:1px solid transparent;cursor:pointer;user-select:none;white-space:nowrap}
+  .chip:hover{background:var(--hover)}
+  .chip.on{background:var(--chip-on);color:var(--text);border-color:var(--line)}
+  .chip .count{opacity:.7;font-variant-numeric:tabular-nums}
+
+  .list{overflow:auto;flex:1}
+  .group-header{padding:8px 12px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel);position:sticky;top:0}
+  .item{display:grid;grid-template-columns:1fr auto;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:start}
+  .item:hover{background:var(--hover)}
+  .item.selected{background:var(--selected)}
+  .item .name{font-weight:600;line-height:1.25;word-break:break-word}
+  .item .meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .badge{padding:2px 6px;border-radius:4px;font-size:10px;background:var(--chip);color:var(--muted)}
+  .badge.has{background:rgba(86,211,100,.2);color:var(--good)}
+  .badge.dirty{background:rgba(255,184,107,.22);color:var(--warn)}
+
+  main.detail{overflow:auto;padding:20px 28px 60px;min-width:0;min-height:0;height:100%}
+  .empty{color:var(--muted);text-align:center;margin-top:30vh}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  .title{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .title .basename{color:var(--muted);font-weight:500;margin-right:8px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+  .subtitle{color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:4px}
+  .pill{background:var(--panel-2);padding:2px 8px;border-radius:4px;border:1px solid var(--line)}
+  .actions{display:flex;gap:8px;align-items:center}
+
+  .section{margin-top:20px}
+  .section h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;font-weight:600}
+
+  .desc{color:var(--muted);font-size:12.5px;line-height:1.55;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;max-height:160px;overflow:auto;white-space:pre-wrap}
+
+  .attr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px}
+  .attr{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+  .attr .head{display:flex;align-items:center;justify-content:space-between}
+  .attr .name{font-weight:600;text-transform:capitalize}
+  .attr label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .attr input[type=text]{width:100%}
+  .attr select{width:auto}
+  .attr.dirty{border-color:var(--warn);box-shadow:inset 0 0 0 1px rgba(255,184,107,.25)}
+  .os-family-select{width:100%;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:4px;font:inherit}
+
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--line);padding:10px 14px;border-radius:8px;font-size:12px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transition:opacity .2s}
+  .toast.show{opacity:1}
+  .toast.ok{border-left:3px solid var(--good)}
+  .toast.err{border-left:3px solid var(--danger);color:#ffb4ad}
+
+  details.collapse{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-top:8px}
+  details.collapse > summary{cursor:pointer;font-weight:600;list-style:none;color:var(--muted)}
+  details.collapse > summary::before{content:"▸ ";display:inline-block}
+  details.collapse[open] > summary::before{content:"▾ "}
+  pre.raw{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;max-height:380px;font-size:11.5px;line-height:1.5;color:#cdd9e5;margin-top:8px}
+
+  .kbd{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;background:var(--panel-2);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="toolbar">
+      <div class="row">
+        <input id="q" type="search" placeholder="Search name, basename, category…" autocomplete="off">
+      </div>
+      <div class="row" id="filter-chips"></div>
+      <div class="row stats" id="list-stats"></div>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
+  <main class="detail" id="detail">
+    <div class="empty">
+      <h2 style="font-weight:600;color:var(--text)">Compatibility editor</h2>
+      <p>Pick a companion on the left to edit its <code>compatibility</code> block.<br>
+      <span class="kbd">j</span>/<span class="kbd">k</span> or <span class="kbd">↑</span>/<span class="kbd">↓</span> to move,
+      <span class="kbd">/</span> to focus search.</p>
+    </div>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "custom_driver_editor_drafts_v8";
+const REQUIRED_ATTRS = ["vendor","models","name","os_family","firmware_version","open_ports","required_mibs"];
+const INT_ATTRS = new Set(["open_ports"]);
+const STRING_ATTRS = new Set(["vendor","models","name","os_family","firmware_version","required_mibs"]);
+// os_family is constrained to Domotz's canonical vocabulary. Rendered as a
+// checkbox group so off-vocabulary values cannot be entered.
+const OS_FAMILY_OPTIONS = ["windows","linux","macos","esxi","idrac","hp_ilo"];
+const QUALIFIERS = ["required","preferred"];
+const DEFAULT_QUALIFIER = "preferred";
+const UNSET_QUALIFIER_LABEL = "— (unset)";
+
+const state = {
+  index: null,
+  entries: [],
+  filtered: [],
+  selectedPath: null,
+  companions: new Map(),
+  drafts: loadDrafts(),
+  filters: {q:"", hasCompat:"any", protocolDir:"", category:""}
+};
+
+function loadDrafts(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveDrafts(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.drafts));
+}
+function isDirty(path){ return !!state.drafts[path]; }
+
+async function loadIndex(){
+  const res = await fetch("/index.json", {cache:"no-store"});
+  if (!res.ok) throw new Error(`/index.json → ${res.status}`);
+  state.index = await res.json();
+  state.entries = state.index.entries;
+  renderChips();
+  applyFilters();
+}
+
+async function loadCompanion(path, {force=false}={}){
+  if (!force && state.companions.has(path)) return state.companions.get(path);
+  const res = await fetch(`/companion?path=${encodeURIComponent(path)}`, {cache:"no-store"});
+  if (!res.ok) throw new Error(`/companion → ${res.status}`);
+  const data = await res.json();
+  state.companions.set(path, data);
+  return data;
+}
+
+function applyFilters(){
+  const f = state.filters;
+  const q = f.q.trim().toLowerCase();
+  state.filtered = state.entries.filter(e => {
+    if (q){
+      const hay = [e.basename, e.name, e.category, e.protocol_dir, (e.protocols||[]).join(" ")].join(" ").toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (f.hasCompat === "yes" && !e.has_compatibility) return false;
+    if (f.hasCompat === "no" && e.has_compatibility) return false;
+    if (f.protocolDir && e.protocol_dir !== f.protocolDir) return false;
+    if (f.category && e.category !== f.category) return false;
+    return true;
+  });
+  renderList();
+  renderStats();
+}
+
+function renderChips(){
+  const host = document.getElementById("filter-chips");
+  const counts = {
+    yes: state.entries.filter(e => e.has_compatibility).length,
+    no:  state.entries.filter(e => !e.has_compatibility).length,
+  };
+  const compatChip = (key, label, count) =>
+    `<span class="chip ${state.filters.hasCompat===key?"on":""}" data-compat="${key}">${label}<span class="count">${count}</span></span>`;
+  let html = compatChip("any", "All", state.entries.length)
+           + compatChip("yes", "Has compatibility", counts.yes)
+           + compatChip("no",  "Missing",           counts.no);
+  html += `<select id="proto-select"><option value="">All protocols</option>${state.index.protocol_dirs.map(p=>`<option ${state.filters.protocolDir===p?"selected":""}>${p}</option>`).join("")}</select>`;
+  html += `<select id="cat-select"><option value="">All categories</option>${state.index.categories.map(c=>`<option ${state.filters.category===c?"selected":""}>${c}</option>`).join("")}</select>`;
+  host.innerHTML = html;
+  host.querySelectorAll("[data-compat]").forEach(el => {
+    el.addEventListener("click", () => { state.filters.hasCompat = el.dataset.compat; renderChips(); applyFilters(); });
+  });
+  document.getElementById("proto-select").addEventListener("change", e => { state.filters.protocolDir = e.target.value; applyFilters(); });
+  document.getElementById("cat-select").addEventListener("change", e => { state.filters.category = e.target.value; applyFilters(); });
+}
+
+function renderStats(){
+  const dirty = Object.keys(state.drafts).length;
+  document.getElementById("list-stats").textContent =
+    `${state.filtered.length} of ${state.entries.length}${dirty?` · ${dirty} pending`:""}`;
+}
+
+function renderList(){
+  const host = document.getElementById("list");
+  // Group by protocol_dir
+  const byProto = new Map();
+  for (const e of state.filtered){
+    if (!byProto.has(e.protocol_dir)) byProto.set(e.protocol_dir, []);
+    byProto.get(e.protocol_dir).push(e);
+  }
+  const parts = [];
+  for (const [proto, list] of [...byProto.entries()].sort()){
+    parts.push(`<div class="group-header">${escapeHtml(proto)} · ${list.length}</div>`);
+    for (const e of list){
+      const sel = state.selectedPath === e.path ? " selected" : "";
+      const badges = [];
+      if (e.has_compatibility) badges.push(`<span class="badge has">set</span>`);
+      if (isDirty(e.path)) badges.push(`<span class="badge dirty">edited</span>`);
+      parts.push(`<div class="item${sel}" data-path="${escapeHtml(e.path)}">
+        <div>
+          <div class="name">${escapeHtml(e.name)}</div>
+          <div class="meta">${escapeHtml(e.basename)} · ${escapeHtml(e.category || "—")}</div>
+        </div>
+        <div class="badges">${badges.join(" ")}</div>
+      </div>`);
+    }
+  }
+  host.innerHTML = parts.join("") || `<div class="empty" style="margin-top:40px">no matches</div>`;
+  host.querySelectorAll(".item").forEach(el => {
+    el.addEventListener("click", () => selectByPath(el.dataset.path));
+  });
+  const sel = host.querySelector(".item.selected");
+  if (sel) sel.scrollIntoView({block:"nearest"});
+}
+
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+
+async function selectByPath(path){
+  state.selectedPath = path;
+  renderList();
+  try {
+    const data = await loadCompanion(path);
+    renderDetail(path, data);
+  } catch (e) {
+    document.getElementById("detail").innerHTML = `<div class="empty"><h2 style="color:var(--danger)">load error</h2><p>${escapeHtml(e.message)}</p></div>`;
+  }
+}
+
+function move(delta){
+  if (!state.filtered.length) return;
+  let idx = state.filtered.findIndex(e => e.path === state.selectedPath);
+  if (idx < 0) idx = 0;
+  else idx = Math.max(0, Math.min(state.filtered.length-1, idx+delta));
+  selectByPath(state.filtered[idx].path);
+}
+
+function emptyAttr(attr){
+  // Editor-side scaffold for an empty attribute. Empty values stays as [];
+  // qualifier becomes null when nothing's there to qualify.
+  return {values:[], qualifier:null};
+}
+
+function emptyCompatibility(){
+  const c = {};
+  for (const a of REQUIRED_ATTRS) c[a] = emptyAttr(a);
+  return c;
+}
+
+function currentEditorValues(path, companion){
+  // Pending draft wins; else what's on disk; else empty scaffold.
+  if (state.drafts[path]) return JSON.parse(JSON.stringify(state.drafts[path]));
+  const out = emptyCompatibility();
+  const src = (companion && companion.compatibility) || {};
+  for (const a of REQUIRED_ATTRS){
+    const entry = src[a];
+    if (!entry) continue;
+    out[a].values = Array.isArray(entry.values) ? [...entry.values] : [];
+    out[a].qualifier = QUALIFIERS.includes(entry.qualifier) ? entry.qualifier : null;
+  }
+  return out;
+}
+
+function serializeForApply(edit){
+  // Convert editor state → wire shape. Always emits an object per attr;
+  // empty values stays []; qualifier → null when no values.
+  const out = {};
+  for (const a of REQUIRED_ATTRS){
+    const v = edit[a] || {};
+    const values = Array.isArray(v.values) ? v.values.filter(x => x !== "" && x !== null && x !== undefined) : [];
+    const attrOut = {values};
+    if (values.length === 0){
+      attrOut.qualifier = null;
+    } else {
+      attrOut.qualifier = QUALIFIERS.includes(v.qualifier) ? v.qualifier : DEFAULT_QUALIFIER;
+    }
+    out[a] = attrOut;
+  }
+  return out;
+}
+
+function renderDetail(path, companion){
+  const edit = currentEditorValues(path, companion);
+  const ent = state.entries.find(e => e.path === path);
+  const testedOn = (companion.tested_on || []).map(t => `${t.name||"?"}${t.version?` ${t.version}`:""}`);
+  const subtitle = [
+    companion.category ? `<span class="pill">${escapeHtml(companion.category)}</span>` : "",
+    (companion.protocols||[]).length ? `<span class="pill">${escapeHtml(companion.protocols.join(" / "))}</span>` : "",
+    testedOn.length ? `<span class="pill" title="tested on">tested on: ${escapeHtml(testedOn.join(", "))}</span>` : "",
+    `<span class="pill mono">${escapeHtml(path)}</span>`,
+  ].filter(Boolean).join("");
+
+  document.getElementById("detail").innerHTML = `
+    <div class="header">
+      <div>
+        <div class="title"><span class="basename">${escapeHtml(ent?.basename || "")}</span>${escapeHtml(companion.name || "")}</div>
+        <div class="subtitle">${subtitle}</div>
+      </div>
+      <div class="actions">
+        <button id="btn-revert" class="danger">Revert</button>
+        <button id="btn-apply" class="primary">Apply</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Description</h2>
+      <div class="desc">${escapeHtml(companion.description || "(none)")}</div>
+    </div>
+
+    <div class="section">
+      <h2>Compatibility</h2>
+      <div class="attr-grid" id="attr-grid"></div>
+    </div>
+
+    <div class="section">
+      <details class="collapse"><summary>Raw companion JSON (on disk)</summary>
+        <pre class="raw">${escapeHtml(JSON.stringify(companion, null, 2))}</pre>
+      </details>
+    </div>
+  `;
+
+  const grid = document.getElementById("attr-grid");
+  for (const attr of REQUIRED_ATTRS){
+    grid.appendChild(renderAttrCard(path, attr, edit[attr]));
+  }
+  document.getElementById("btn-revert").addEventListener("click", () => revert(path));
+  document.getElementById("btn-apply").addEventListener("click", () => apply(path));
+  refreshDirtyMarkers(path);
+}
+
+function renderAttrCard(path, attr, value){
+  const wrap = document.createElement("div");
+  wrap.className = "attr";
+  wrap.dataset.attr = attr;
+
+  const head = document.createElement("div");
+  head.className = "head";
+  const badge = attr === "os_family" ? "enum" : (INT_ATTRS.has(attr) ? "integers" : "strings");
+  head.innerHTML = `<span class="name">${attr.replace(/_/g," ")}</span><span class="badge">${badge}</span>`;
+  wrap.appendChild(head);
+
+  if (attr === "os_family"){
+    // Single-value canonical-vocabulary enum. Stored on disk as `values: []`
+    // or `values: ["<one canonical token>"]` to keep the matcher schema
+    // uniform with the other attrs.
+    const valuesLabel = document.createElement("label");
+    valuesLabel.textContent = "Value";
+    wrap.appendChild(valuesLabel);
+    const sel = document.createElement("select");
+    sel.className = "os-family-select";
+    const current = (Array.isArray(value.values) && value.values.length) ? value.values[0] : "";
+    const unsetOpt = document.createElement("option");
+    unsetOpt.value = "";
+    unsetOpt.textContent = "— (unset)";
+    if (!current) unsetOpt.selected = true;
+    sel.appendChild(unsetOpt);
+    for (const opt of OS_FAMILY_OPTIONS){
+      const o = document.createElement("option");
+      o.value = opt;
+      o.textContent = opt;
+      if (opt === current) o.selected = true;
+      sel.appendChild(o);
+    }
+    sel.addEventListener("change", () => {
+      const v = sel.value;
+      onAttrChange(path, attr, "values", v ? [v] : []);
+    });
+    wrap.appendChild(sel);
+  } else {
+    const valuesLabel = document.createElement("label");
+    valuesLabel.textContent = "Values (comma-separated)";
+    wrap.appendChild(valuesLabel);
+    const valuesInput = document.createElement("input");
+    valuesInput.type = "text";
+    valuesInput.value = (value.values || []).join(", ");
+    valuesInput.placeholder = INT_ATTRS.has(attr) ? "e.g. 80, 443" : "e.g. SonicWALL";
+    valuesInput.addEventListener("input", () => onAttrChange(path, attr, "values", parseValues(attr, valuesInput.value)));
+    wrap.appendChild(valuesInput);
+  }
+
+  const qLabel = document.createElement("label");
+  qLabel.textContent = "Qualifier";
+  wrap.appendChild(qLabel);
+  const qSel = document.createElement("select");
+  const unsetOpt = document.createElement("option");
+  unsetOpt.value = "__null__";
+  unsetOpt.textContent = UNSET_QUALIFIER_LABEL;
+  if (value.qualifier == null) unsetOpt.selected = true;
+  qSel.appendChild(unsetOpt);
+  for (const q of QUALIFIERS){
+    const opt = document.createElement("option");
+    opt.value = q; opt.textContent = q;
+    if (q === value.qualifier) opt.selected = true;
+    qSel.appendChild(opt);
+  }
+  qSel.addEventListener("change", () => {
+    const raw = qSel.value;
+    onAttrChange(path, attr, "qualifier", raw === "__null__" ? null : raw);
+  });
+  wrap.appendChild(qSel);
+
+  return wrap;
+}
+
+function parseValues(attr, raw){
+  const parts = String(raw).split(",").map(s => s.trim()).filter(Boolean);
+  if (INT_ATTRS.has(attr)){
+    const out = [];
+    for (const p of parts){
+      const n = Number(p);
+      if (Number.isInteger(n)) out.push(n);
+    }
+    return out;
+  }
+  return parts;
+}
+
+function onAttrChange(path, attr, field, val){
+  const companion = state.companions.get(path);
+  const base = currentEditorValues(path, companion);
+  base[attr][field] = val;
+  state.drafts[path] = base;
+  saveDrafts();
+  refreshDirtyMarkers(path);
+  renderStats();
+  const item = document.querySelector(`.list .item[data-path="${cssEscape(path)}"] .badges`);
+  if (item && !item.querySelector(".badge.dirty")){
+    const b = document.createElement("span"); b.className = "badge dirty"; b.textContent = "edited";
+    item.appendChild(b);
+  }
+}
+
+function refreshDirtyMarkers(path){
+  const draft = state.drafts[path];
+  if (!draft) return;
+  const companion = state.companions.get(path);
+  const onDisk = (companion && companion.compatibility) || {};
+  const grid = document.getElementById("attr-grid");
+  if (!grid) return;
+  for (const attr of REQUIRED_ATTRS){
+    const card = grid.querySelector(`.attr[data-attr="${attr}"]`);
+    if (!card) continue;
+    // Compare normalized (wire) shapes so empty editor state matches null on disk.
+    const draftWire = serializeForApply(draft)[attr];
+    const diskAttr = onDisk[attr] ?? null;
+    const diff = JSON.stringify(draftWire) !== JSON.stringify(diskAttr);
+    card.classList.toggle("dirty", diff);
+  }
+}
+
+function cssEscape(s){
+  return s.replace(/[\"\\\n]/g, c => "\\" + c);
+}
+
+function revert(path){
+  delete state.drafts[path];
+  saveDrafts();
+  state.companions.delete(path);
+  selectByPath(path);
+}
+
+async function apply(path){
+  const companion = state.companions.get(path);
+  const edit = state.drafts[path] || currentEditorValues(path, companion);
+  const payload = serializeForApply(edit);
+  try {
+    const res = await fetch("/apply", {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({path, compatibility: payload}),
+    });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.error || `HTTP ${res.status}`);
+    delete state.drafts[path];
+    saveDrafts();
+    state.companions.delete(path);
+    // Update sidebar entry
+    const ent = state.entries.find(e => e.path === path);
+    if (ent) ent.has_compatibility = true;
+    toast("ok", `wrote ${path}`);
+    selectByPath(path);
+  } catch (e) {
+    toast("err", `apply failed: ${e.message}`);
+  }
+}
+
+function toast(kind, msg){
+  const el = document.getElementById("toast");
+  el.className = `toast show ${kind}`;
+  el.textContent = msg;
+  setTimeout(() => { el.classList.remove("show"); }, 3000);
+}
+
+document.addEventListener("keydown", e => {
+  const tag = (document.activeElement && document.activeElement.tagName) || "";
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT"){
+    if (e.key === "Escape") document.activeElement.blur();
+    return;
+  }
+  if (e.key === "j" || e.key === "ArrowDown") { e.preventDefault(); move(1); }
+  else if (e.key === "k" || e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+  else if (e.key === "/") { e.preventDefault(); document.getElementById("q").focus(); }
+});
+document.getElementById("q").addEventListener("input", e => { state.filters.q = e.target.value; applyFilters(); });
+
+loadIndex().catch(err => {
+  document.getElementById("detail").innerHTML = `<div class="empty"><h2 style="color:var(--danger)">failed to load index.json</h2><p>${escapeHtml(err.message)}</p><p>Run <code>python3 build_index.py</code> first.</p></div>`;
+});
+</script>
+</body>
+</html>

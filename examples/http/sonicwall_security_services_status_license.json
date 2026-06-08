@@ -1,4 +1,3 @@
-
 {
     "logo": "sonicwall.svg",
     "version": "1.0.0",
@@ -38,7 +37,41 @@
             "value_type": "LIST",
             "name": "servicesToMonitor",
             "label": "Services To Monitor (gav, spyw, ips, geoip, botnet, appctrl, dpissl, dpissh, cfs, cass, cees, capture)",
-            "value": ["ALL"]
+            "value": [
+                "ALL"
+            ]
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "SonicWALL"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

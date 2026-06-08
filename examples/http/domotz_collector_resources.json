@@ -13,7 +13,7 @@
     },
     "tags": [
         "domotz-collector",
-        "resource", 
+        "resource",
         "status",
         "mode",
         "platform",
@@ -38,5 +38,38 @@
             "name": "Domotz Collector",
             "version": "6.1.0-b001"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Domotz",
+                "TRENDnet"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

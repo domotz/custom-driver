@@ -1,6 +1,6 @@
 {
     "logo": "microsoft-hyper-v.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Hyper-V Show all VMs",
     "description": "This script retrieves information about the Hyper-V Virtual machines",
     "category": "Software Integration",
@@ -41,5 +41,40 @@
             "name": "Hyper-V",
             "version": "10.0.19041.1"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [
+                "windows"
+            ],
+            "qualifier": "required"
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                5985,
+                5986
+            ],
+            "qualifier": "required"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

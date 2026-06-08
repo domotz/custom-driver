@@ -50,13 +50,47 @@
             "value_type": "LIST",
             "name": "resourceGroups",
             "label": "Resource Group",
-            "value": ["All"]
+            "value": [
+                "All"
+            ]
         },
         {
             "value_type": "LIST",
             "name": "vmNames",
             "label": "VM Name",
-            "value": ["All"]
+            "value": [
+                "All"
+            ]
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

@@ -33,5 +33,39 @@
             "name": "FS OS",
             "version": "2.2.0D"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "FS COM"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                22
+            ],
+            "qualifier": "preferred"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

@@ -36,5 +36,37 @@
             "name": "VMWare vCenter",
             "version": "8.0.2"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "VMware"
+            ],
+            "qualifier": "preferred"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

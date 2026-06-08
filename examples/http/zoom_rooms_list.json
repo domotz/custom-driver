@@ -17,7 +17,7 @@
     "tags": [
         "zoom",
         "room",
-        "status", 
+        "status",
         "location"
     ],
     "sample_period_s": 900,
@@ -54,7 +54,39 @@
             "value_type": "LIST",
             "name": "roomId",
             "label": "Room ID",
-            "value": ["All"]
+            "value": [
+                "All"
+            ]
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

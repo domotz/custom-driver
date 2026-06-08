@@ -63,7 +63,13 @@ var counterTypeMappings = {
 var winrmConfig = {
     "command": 'Get-Counter -Counter ' + counters.map(function(counter){return '"' + counter + '"';}).join(',') + ' | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue, CounterType  } | ConvertTo-Json',
     "username": D.device.username(),
-    "password": D.device.password()
+    "password": D.device.password(),
+    // WinRM transport options:
+    port: 5985,                // 5985 = HTTP, 5986 = HTTPS
+    scheme: "http",            // "http" | "https"
+    skipVerify: true,          // when scheme="https", skip TLS cert verification
+    auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
+    timeout: 30000,               // per-command timeout in milliseconds
 };
 
 // Check for Errors on the WinRM command response

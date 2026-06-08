@@ -1,6 +1,6 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "name": "Dell iDRAC PSU Monitoring",
     "description": "Monitors the operational status of Power Supply Units (PSUs) on a Dell server with iDRAC",
     "category": "Hardware Integration",
@@ -18,8 +18,8 @@
         "psu",
         "description",
         "primary-status",
-        "total-output-power",    
-        "input-voltage",      
+        "total-output-power",
+        "input-voltage",
         "redundancy-status",
         "part-number",
         "model",
@@ -39,5 +39,41 @@
             "name": "DELL iDRAC",
             "version": "7.0.3 21053776"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Dell"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [
+                "iDRAC"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                22
+            ],
+            "qualifier": "preferred"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

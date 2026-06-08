@@ -1,13 +1,13 @@
 {
     "logo": "ms-exchange.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Microsoft Exchange Server (on-prem) - Current Connections",
     "description": "This script is used to monitor the number of current connections to a Microsoft Exchange Server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
-        "others": [ 
+        "others": [
             "Powershell Version 5.1.19041.2364",
             "WinRM Enabled"
         ]
@@ -33,5 +33,42 @@
             "name": "Microsoft Exchange",
             "version": "Server 2019 CU12"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Microsoft"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [
+                "windows"
+            ],
+            "qualifier": "required"
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                5985,
+                5986
+            ],
+            "qualifier": "required"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

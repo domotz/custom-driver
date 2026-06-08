@@ -8,7 +8,8 @@
         "credentials": true,
         "sandbox_version": "1.12",
         "others": [
-            "AWS RDS"        ]
+            "AWS RDS"
+        ]
     },
     "tags": [
         "aws",
@@ -21,5 +22,35 @@
     "protocols": [
         "HTTPS"
     ],
-    "tested_on": []
+    "tested_on": [],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

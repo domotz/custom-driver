@@ -1,28 +1,28 @@
 {
     "logo": "ms-exchange.svg",
-    "version": "1.0.0",
-    "name": "Microsoft Exchange Server (on-prem) - Statistics",
-    "description": "This script is used to monitor general statistics on a Microsoft Exchange Server",
+    "version": "1.0.1",
+    "name": "Microsoft Exchange Server (on-prem) - General Stats",
+    "description": "This script is used to monitor various general statistics on a Microsoft Exchange Server",
     "category": "Software Integration",
     "requirements": {
         "credentials": true,
         "sandbox_version": "1.12",
-        "others": [ 
+        "others": [
             "Powershell Version 5.1.19041.2364",
             "WinRM Enabled"
         ]
     },
     "tags": [
         "windows",
+        "instance-name",
         "microsoft",
         "exchange",
         "email-server"
     ],
     "sample_period_s": 900,
-    "execution_time_s": 60,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[4,999]"
+        "independent": "[1,999]"
     },
     "protocols": [
         "WINRM"
@@ -32,5 +32,40 @@
             "name": "Microsoft Exchange",
             "version": "Server 2019 CU12"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [
+                "windows"
+            ],
+            "qualifier": "required"
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                5985,
+                5986
+            ],
+            "qualifier": "required"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

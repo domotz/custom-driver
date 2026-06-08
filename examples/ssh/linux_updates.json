@@ -21,7 +21,7 @@
         "apt"
     ],
     "sample_period_s": 3600,
-    "execution_time_s": 60,    
+    "execution_time_s": 60,
     "has_actions": false,
     "expected_variables": {
         "table": "[2,999]"
@@ -41,5 +41,39 @@
             "name": "packagesFilter",
             "label": "Package Name"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [
+                "linux"
+            ],
+            "qualifier": "required"
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                22
+            ],
+            "qualifier": "preferred"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }
