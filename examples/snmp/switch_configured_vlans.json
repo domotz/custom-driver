@@ -8,7 +8,7 @@
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-           "SNMP enabled"
+            "SNMP enabled"
         ]
     },
     "tags": [
@@ -36,5 +36,56 @@
             "name": "HP Aruba ProCurve",
             "version": "2530-24G"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "HP",
+                "Hewlett Packard Enterprise",
+                "Cisco Systems Inc",
+                "Ubiquiti Networks",
+                "Aruba",
+                "Ubiquiti Inc.",
+                "HPE",
+                "Netgear",
+                "Ruckus Wireless"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [
+                "28-Port",
+                "Edge Switch",
+                "USW-24-G1",
+                "50-Port",
+                "J9772A 2530-48G-PoEP Switch",
+                "OfficeConnect 1820 24G PoE+ 185W",
+                "Aruba",
+                "ProSAFE 8-port Gigabit Smart Managed Switch"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [
+                "Q-BRIDGE-MIB"
+            ],
+            "qualifier": "required"
+        }
+    }
 }

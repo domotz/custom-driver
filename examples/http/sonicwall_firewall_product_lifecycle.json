@@ -21,7 +21,6 @@
         "one-year-support-last-order-day",
         "limited-retirement-mode",
         "end-ofs-upport"
-
     ],
     "sample_period_s": 600,
     "has_actions": false,
@@ -36,5 +35,37 @@
             "name": "SonicWall SonicOS",
             "version": "7.0.1-5145"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "SonicWALL"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

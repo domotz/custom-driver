@@ -32,5 +32,44 @@
             "name": "HPE iLO",
             "version": "5"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Hewlett Packard Enterprise",
+                "HPE"
+            ],
+            "qualifier": "preferred"
+        },
+        "models": {
+            "values": [
+                "ProLiant DL380 Gen9",
+                "iLO-P89",
+                "ProLiant Series",
+                "ProLiant DL360 Gen9",
+                "ProLiant ML110 G10"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

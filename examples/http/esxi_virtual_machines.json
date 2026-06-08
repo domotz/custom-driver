@@ -5,38 +5,77 @@
     "description": "Retrieves detailed information about virtual machines from an ESXi server",
     "category": "Software Integration",
     "requirements": {
-      "credentials": true,
-      "sandbox_version": "1.12",
-      "others": [
-        "VMware ESXi",
-        "VM"
-      ]
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "VMware ESXi",
+            "VM"
+        ]
     },
     "tags": [
-      "esxi",
-      "vmware",
-      "virtual-machine"
+        "esxi",
+        "vmware",
+        "virtual-machine"
     ],
     "sample_period_s": 900,
     "has_actions": false,
     "expected_variables": {
-      "table": "[22]"
+        "table": "[22]"
     },
     "protocols": [
-      "HTTPS"
+        "HTTPS"
     ],
     "tested_on": [
-      {
-        "name": "ESXi",
-        "version": "8.0.0"
-      }
+        {
+            "name": "ESXi",
+            "version": "8.0.0"
+        }
     ],
     "parameters": [
         {
             "value_type": "LIST",
             "name": "vmID",
             "label": "VM ID",
-            "value": ["ALL"]
+            "value": [
+                "ALL"
+            ]
         }
-    ]
-  }
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Dell"
+            ],
+            "qualifier": "preferred"
+        },
+        "models": {
+            "values": [
+                "ESX",
+                "iDRAC"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [
+                "esxi"
+            ],
+            "qualifier": "preferred"
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}
