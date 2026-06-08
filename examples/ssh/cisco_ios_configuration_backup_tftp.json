@@ -30,5 +30,45 @@
             "name": "Cisco Catalyst",
             "version": "9000"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Cisco"
+            ],
+            "qualifier": "preferred"
+        },
+        "models": {
+            "values": [
+                "Catalyst 2960X-24TD-L",
+                "C2960X",
+                "C2960CX",
+                "Catalyst",
+                "Catalyst 2960G-24TC-L"
+            ],
+            "qualifier": "preferred"
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                22
+            ],
+            "qualifier": "preferred"
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

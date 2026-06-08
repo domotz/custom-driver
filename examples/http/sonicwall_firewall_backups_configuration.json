@@ -42,6 +42,38 @@
             "value_type": "SECRET_TEXT",
             "name": "totpSeed",
             "label": "TOTP Seed"
-        }        
-    ]
+        }
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "SonicWALL"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }

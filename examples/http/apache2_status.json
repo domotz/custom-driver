@@ -9,7 +9,8 @@
         "sandbox_version": "1.12",
         "others": [
             "Apache2 Installed",
-            "apache mod_status enabled"        ]
+            "apache mod_status enabled"
+        ]
     },
     "tags": [
         "webserver",
@@ -27,5 +28,35 @@
             "name": "Apache",
             "version": "2.4.41"
         }
-    ]
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
 }
