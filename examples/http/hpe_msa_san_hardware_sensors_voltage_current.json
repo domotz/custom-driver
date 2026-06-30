@@ -34,14 +34,15 @@
     "compatibility": {
         "vendor": {
             "values": [
-                "Hewlett Packard Enterprise",
-                "HPE"
+                "seagate cloud systems"
             ],
             "qualifier": "required"
         },
         "models": {
-            "values": [],
-            "qualifier": null
+            "values": [
+                "msa"
+            ],
+            "qualifier": "required"
         },
         "name": {
             "values": [],
