@@ -17,6 +17,7 @@ var secretKey = D.device.password(); //secretKey == password
 var region = "ADD_REGION";
 var dbInstanceId = "ADD_DB_INSTANCE_ID";
 var monitoringList, instanceInfo;
+var vars;
 
 function sign(key, message) {
     var hex = hmac("sha256", key, message);

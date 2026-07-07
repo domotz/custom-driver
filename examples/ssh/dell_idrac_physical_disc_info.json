@@ -43,16 +43,15 @@
     "compatibility": {
         "vendor": {
             "values": [
-                "Dell"
+                "dell"
             ],
             "qualifier": "required"
         },
         "models": {
             "values": [
-                "iDRAC",
-                "PowerEdge T430"
+                "idrac"
             ],
-            "qualifier": "preferred"
+            "qualifier": "required"
         },
         "name": {
             "values": [],

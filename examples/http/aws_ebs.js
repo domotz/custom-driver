@@ -22,6 +22,7 @@ var accessKey = D.device.username(); //accessKey == username
 var secretKey = D.device.password(); //secretKey == password
 var requestPeriod = 600;
 var volumes;
+var monitoringList;
 var vars = [];
 
 function sign(key, message) {

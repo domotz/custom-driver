@@ -1,6 +1,7 @@
 var userUID = "user-";
 var userLabel = "User - ";
 var userUnit = " ";
+var variables;
 
 /**
  * The SSH Command Options

@@ -134,7 +134,7 @@ function extractData(data) {
         }   
     });
 
-    for (id in sensorData) {
+    for (var id in sensorData) {
         var output = sensorData[id];
         var recordId = sanitize(id);
         var voltage = output.voltage !== undefined ? output.voltage : "";

@@ -154,7 +154,7 @@ var Kube = {
     getEndpointIPs: function () {
         return Kube.request("v1/endpoints")
             .then(function (result) {
-                epIPs = {};
+                var epIPs = {};
 
                 if (typeof result.response !== "object"
                     || typeof result.response.items === "undefined"
@@ -180,7 +180,7 @@ var Kube = {
     }
 };
 
-Fmt = {
+var Fmt = {
     factors: {
         Ki: 1024, K: 1000,
         Mi: Math.pow(1024, 2), M: Math.pow(1000, 2),
@@ -237,7 +237,7 @@ function parse() {
             pods = results[1],
             epIPs = results[2];
 
-        for (idx = 0; idx < nodes.items.length; idx++) {
+        for (var idx = 0; idx < nodes.items.length; idx++) {
             var internalIP,
                 nodePodsCount = 0,
                 nodePods = [],
@@ -325,10 +325,10 @@ function parse() {
  * @param {object} _default default value to return if the filter function doesn't return any thing
  * @returns object after the filter applied the the array
  */
-Array.prototype._find = function (filterFn, _default) {
-    var filtered = this.filter(filterFn);
+function _find(arr, filterFn, _default) {
+    var filtered = arr.filter(filterFn);
     return filtered.length ? filtered[0] : _default;
-};
+}
 
 /**
  * 
@@ -338,14 +338,14 @@ function fillTable(data) {
     data.items.forEach(function (item) {
         var metadataName = item.metadata.name;
 
-        var internalIp = item.status.addresses._find(function (a) { return a.type == "InternalIP"; }, {}).address;
-        var externalIp = item.status.addresses._find(function (a) { return a.type == "ExternalIP"; }, {}).address;
+        var internalIp = _find(item.status.addresses, function (a) { return a.type == "InternalIP"; }, {}).address;
+        var externalIp = _find(item.status.addresses, function (a) { return a.type == "ExternalIP"; }, {}).address;
         var allocableCpu = item.status.allocatable.cpu;
-        var memoryPressure = item.status.conditions._find(function (a) { return a.type == "MemoryPressure"; }, {}).status;
-        var networkUnavailable = item.status.conditions._find(function (a) { return a.type == "NetworkUnavailable"; }, {}).status;
-        var pidPressure = item.status.conditions._find(function (a) { return a.type == "PIDPressure"; }, {}).status;
-        var nodeReady = item.status.conditions._find(function (a) { return a.type == "Ready"; }, {}).status;
-        var diskPressure = item.status.conditions._find(function (a) { return a.type == "DiskPressure"; }, {}).status;
+        var memoryPressure = _find(item.status.conditions, function (a) { return a.type == "MemoryPressure"; }, {}).status;
+        var networkUnavailable = _find(item.status.conditions, function (a) { return a.type == "NetworkUnavailable"; }, {}).status;
+        var pidPressure = _find(item.status.conditions, function (a) { return a.type == "PIDPressure"; }, {}).status;
+        var nodeReady = _find(item.status.conditions, function (a) { return a.type == "Ready"; }, {}).status;
+        var diskPressure = _find(item.status.conditions, function (a) { return a.type == "DiskPressure"; }, {}).status;
         var allocatableMem = item.status.allocatable.memory;
         var allocatablePods = item.status.allocatable.pods;
         var capacityCpu = item.status.capacity.cpu;
@@ -365,10 +365,10 @@ function fillTable(data) {
         var uptime = item.metadata.creationTimestamp;
         var podsCount = item.status.podsCount;
         item.pods.forEach(function (pod) {
-            var containerReady = pod.conditions._find(function (c) { return c.type == "ContainersReady"; }, {}).status;
-            var initialized = pod.conditions._find(function (c) { return c.type == "Initialized"; }, {}).status;
-            var ready = pod.conditions._find(function (c) { return c.type == "Ready"; }, {}).status;
-            var scheduled = pod.conditions._find(function (c) { return c.type == "PodScheduled"; }, {}).status;
+            var containerReady = _find(pod.conditions, function (c) { return c.type == "ContainersReady"; }, {}).status;
+            var initialized = _find(pod.conditions, function (c) { return c.type == "Initialized"; }, {}).status;
+            var ready = _find(pod.conditions, function (c) { return c.type == "Ready"; }, {}).status;
+            var scheduled = _find(pod.conditions, function (c) { return c.type == "PodScheduled"; }, {}).status;
             var podIP = pod.podIP;
             var podName = pod.name.slice(0, 50); // Slice to comply with record ID limit of 50 characters
             nodeTable.upsertRecord(podName, [

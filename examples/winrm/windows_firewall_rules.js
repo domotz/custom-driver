@@ -39,6 +39,7 @@ const protocol = D.getParameter('protocol');
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
+var getFirewallRules;
 if (firewallFilter.length === 1 && firewallFilter[0].toLowerCase() === 'all') {
     getFirewallRules = 'Get-NetFirewallRule | Select-Object Name, DisplayName, Group, Direction, Action, Enabled | ConvertTo-Json -Compress';
 }else{
