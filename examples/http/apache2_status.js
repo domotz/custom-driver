@@ -346,24 +346,6 @@ function extractDataVariables(json) {
     });
 }
 
-function buildTable(body) {
-    var $ = D.htmlParse(body);
-    var processTable = $("table tbody")[0];
-    processTable.children.filter(function (node, index) {
-        return index > 0 && node.name == "tr";
-    }).forEach(function (node, index) {
-        var row = node.children.map(function (td, index) {
-            var text = $(td).text().trim();
-            if (index == 3) {
-                return scoreboardKey[text];
-            }
-            return text;
-        });
-        table.insertRecord("" + index, row);
-    });
-    return table;
-}
-
 function failure(err) {
 
     console.error(err);
