@@ -133,7 +133,7 @@ function parseOutput(jsonOutput) {
         setAuditedEventCount(jsonOutput);
     }
     // events with no occurrences will appear in the table with a 0 value
-    for (eventId in auditedEvents) {
+    for (var eventId in auditedEvents) {
         eventTable.insertRecord(eventId, [auditedEvents[eventId].description, auditedEvents[eventId].count]);
     }
     D.success(eventTable);

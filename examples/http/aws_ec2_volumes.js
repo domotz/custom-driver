@@ -151,7 +151,7 @@ function getVolumesData(nextToken) {
  */
 function extractVolumes(property) {
     return function () {
-        return filteredData = volumesList.map(function (volume) { return volume[0][property]; });
+        return volumesList.map(function (volume) { return volume[0][property]; });
     };
 }
 
@@ -169,7 +169,7 @@ function fillConfig() {
             uid: "device",
             label: "Device",
             execute: function () {
-                return statusList = volumesList.map(function (volume) {
+                return volumesList.map(function (volume) {
                     return volume[0].attachmentset[0].device;
                 });
             }
@@ -185,7 +185,7 @@ function fillConfig() {
             uid: "attachment_time",
             label: "Attachment time",
             execute: function () {
-                return statusList = volumesList.map(function (volume) {
+                return volumesList.map(function (volume) {
                     return volume[0].attachmentset[0].attachtime;
                 });
             }
@@ -195,7 +195,7 @@ function fillConfig() {
             uid: "attachment_status",
             label: "Attachment state",
             execute: function () {
-                return statusList = volumesList.map(function (volume) {
+                return volumesList.map(function (volume) {
                     return volume[0].attachmentset[0].status;
                 });
 

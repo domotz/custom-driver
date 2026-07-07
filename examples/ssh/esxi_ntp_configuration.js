@@ -7,6 +7,7 @@
 var ntpUID = "ntp-";
 var ntpLabel = "NTP Configuration - ";
 var ntpUnit = "line";
+var variables;
 
 /**
  * The SSH Command Options

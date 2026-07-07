@@ -59,7 +59,7 @@ function validate(){
 function get_status(){
     function parseNodesCallback(output, error){
         responseIsOk(output, error);
-        lines = output.split(/\r?\n/);
+        var lines = output.split(/\r?\n/);
 
         var zigbeeNodesRegexp = /([\w\d]+)\s+([\w\d]+)\s+(\w+)\s+([\d\.]+)\s+([\w\d\_\:\-]+)\s+(\w{3}\s\w{3}\s[0-9]+\s[0-9\:]+)\s+(\d+)\s+([\w\s]+)\s+(0x[\w\d]+)/;
         var matchOffset = 2;

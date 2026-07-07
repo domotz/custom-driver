@@ -101,7 +101,7 @@ function generateRoomProperties() {
  * @param {Array} roomProperties - The properties to define the structure of the table.
  */
 function createRoomsTable(roomProperties) {
-    tableHeaders = roomProperties.map(function(item) {return { label: item.label }});
+    var tableHeaders = roomProperties.map(function(item) {return { label: item.label }});
 
     roomsTable = D.createTable('Microsoft Teams Rooms Meeting Participants', tableHeaders)
 }

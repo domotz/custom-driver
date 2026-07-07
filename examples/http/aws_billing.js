@@ -18,6 +18,8 @@ var region = "ADD_REGION";
 var accessKey = D.device.username(); //accessKey == username
 var secretKey = D.device.password(); //secretKey == password
 var billing;
+var monitoringList;
+var vars;
 
 function sign(key, message) {
     var hex = hmac("sha256", key, message);

@@ -19,6 +19,7 @@ var dbInstanceId = "ADD_DB_INSTANCE_ID";
 var requestPeriod = 600;
 var monitoringList;
 var vars = [];
+var metrics;
 
 function sign(key, message) {
     var hex = hmac("sha256", key, message);

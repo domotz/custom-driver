@@ -75,18 +75,18 @@ function sanitize(output){
 
 // Function to extract and insert Interfaces Stats data into the custom driver table for IPv6
 function extractData(data) {
-    for (var interface in data.interfaces) {
-        if (interface !== "all"){
+    for (var iface in data.interfaces) {
+        if (iface !== "all"){
             if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(name) {
-                return (interface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
-            })) { 
-                var recordId = sanitize(interface);
-                var references = data.interfaces[interface].references;
-                var in6BlockBytes = data.interfaces[interface].in6_block_bytes;
-                var in6PassBytes = data.interfaces[interface].in6_pass_bytes;
-                var out6BlockBytes = data.interfaces[interface].out6_block_bytes;
-                var out6PassBytes = data.interfaces[interface].out6_pass_bytes;
-                var cleared = data.interfaces[interface].cleared;
+                return (iface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+            })) {
+                var recordId = sanitize(iface);
+                var references = data.interfaces[iface].references;
+                var in6BlockBytes = data.interfaces[iface].in6_block_bytes;
+                var in6PassBytes = data.interfaces[iface].in6_pass_bytes;
+                var out6BlockBytes = data.interfaces[iface].out6_block_bytes;
+                var out6PassBytes = data.interfaces[iface].out6_pass_bytes;
+                var cleared = data.interfaces[iface].cleared;
                 table.insertRecord(recordId, [
                     references,
                     in6BlockBytes,

@@ -42,6 +42,7 @@ function get_status(){
             console.error("Received an error during the SNMP Get ", error || output[latitudeOid].error || output[longitudeOid].error || output[antennaStatusOid].error || output[headingOid].error);
             D.failure(D.errorType.PARSING_ERROR);
         } else {
+            var antennaStatus;
             // Getting unformatted values
             var antennaStatusRaw =  output[antennaStatusOid];
             var headingRaw= output[headingOid];

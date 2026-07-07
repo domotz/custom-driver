@@ -16,14 +16,13 @@ var port = 80;
 var vars = [];
 var metrics, componentStatuses, readyz, livez;
 
-Array.prototype._first = function () {
-    return this.length ? this[0] : null;
-};
+function _first(arr) {
+    return arr.length ? arr[0] : null;
+}
 
-Array.prototype._find = function (filterFn) {
-    return this.filter(filterFn)._first();
-
-};
+function _find(arr, filterFn) {
+    return _first(arr.filter(filterFn));
+}
 
 
 function httpGet(url) {
@@ -187,7 +186,7 @@ function fillComponentsStatuses(){
             uid: "component_" + cs.metadata.name,
             label: "Component " + cs.metadata.name + " Healthy",
             execute: function(){
-                var healthy = cs.conditions._find(function(c) { return c.type == "Healthy";});
+                var healthy = _find(cs.conditions, function(c) { return c.type == "Healthy";});
                 if(healthy) return healthy.status;
                 return null;
             }

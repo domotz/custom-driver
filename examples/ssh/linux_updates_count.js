@@ -77,7 +77,7 @@ function parseValidateOutput(output) {
 }
 
 function parseData(executionResult) {
-    variables = [];
+    var variables = [];
     for (var j = 0; j < packagesFilter.length; j++) {
         var packageName = packagesFilter[j];
         var count = executionResult.split("\n").filter(function (update) {
