@@ -45,15 +45,15 @@
     "compatibility": {
         "vendor": {
             "values": [
-                "Dell"
+                "dell"
             ],
             "qualifier": "required"
         },
         "models": {
             "values": [
-                "iDRAC"
+                "idrac"
             ],
-            "qualifier": "preferred"
+            "qualifier": "required"
         },
         "name": {
             "values": [],

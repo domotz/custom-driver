@@ -40,14 +40,16 @@
     "compatibility": {
         "vendor": {
             "values": [
-                "Dell",
-                "Dell Inc"
+                "dell",
+                "seagate cloud systems"
             ],
             "qualifier": "required"
         },
         "models": {
-            "values": [],
-            "qualifier": null
+            "values": [
+                "powervault"
+            ],
+            "qualifier": "required"
         },
         "name": {
             "values": [],
@@ -62,8 +64,10 @@
             "qualifier": null
         },
         "open_ports": {
-            "values": [],
-            "qualifier": null
+            "values": [
+                443
+            ],
+            "qualifier": "preferred"
         },
         "required_mibs": {
             "values": [],

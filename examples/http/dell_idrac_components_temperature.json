@@ -35,16 +35,15 @@
     "compatibility": {
         "vendor": {
             "values": [
-                "Dell",
-                "Dell Inc"
+                "dell"
             ],
             "qualifier": "required"
         },
         "models": {
             "values": [
-                "iDRAC"
+                "idrac"
             ],
-            "qualifier": "preferred"
+            "qualifier": "required"
         },
         "name": {
             "values": [],
@@ -59,8 +58,10 @@
             "qualifier": null
         },
         "open_ports": {
-            "values": [],
-            "qualifier": null
+            "values": [
+                443
+            ],
+            "qualifier": "preferred"
         },
         "required_mibs": {
             "values": [],
