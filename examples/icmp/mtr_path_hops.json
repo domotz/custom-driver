@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "name": "MTR Path (Hop-by-Hop) to Device",
     "description": "Runs MTR from the collector to the monitored device and reports the full network path as a table, one row per hop (TTL, host, loss, sent, average RTT, jitter).",
-    "category": "Hardware Integration",
+    "category": "Network Diagnostics",
     "requirements": {
         "credentials": false,
         "sandbox_version": "2.4",
