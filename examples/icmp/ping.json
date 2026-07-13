@@ -1,0 +1,60 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "ICMP Ping to Device",
+    "description": "Pings the monitored device over ICMP and publishes round-trip time and loss statistics (jitter, average, min, max, standard deviation and packet loss) as variables.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "icmp",
+        "ping",
+        "latency",
+        "packet-loss",
+        "jitter",
+        "rtt",
+        "network"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[6]"
+    },
+    "protocols": [
+        "ICMP"
+    ],
+    "tested_on": [],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}

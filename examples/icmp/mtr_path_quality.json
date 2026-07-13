@@ -1,0 +1,60 @@
+{
+    "logo": "",
+    "version": "1.0.0",
+    "name": "MTR Path Quality to Device",
+    "description": "Measures network path quality (packet loss, latency, jitter) from the collector to the monitored device using MTR, and publishes destination loss, average RTT, jitter and hop count as variables.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "2.4",
+        "others": []
+    },
+    "tags": [
+        "mtr",
+        "trippy",
+        "latency",
+        "packet-loss",
+        "jitter",
+        "network",
+        "path"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[4]"
+    },
+    "protocols": [
+        "ICMP"
+    ],
+    "tested_on": [],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}
