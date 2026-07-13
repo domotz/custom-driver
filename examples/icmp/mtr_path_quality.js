@@ -17,9 +17,18 @@
  * device credentials are required.
  */
 
-// Number of measurement cycles (probes per hop). More cycles give more stable
-// loss/jitter figures at the cost of a slightly longer run.
-var MTR_OPTIONS = { cycles: 10 };
+// All D.device.mtr options, preset to the tool's defaults. Every field is
+// optional — remove any you don't need, or tune it within the range shown.
+var MTR_OPTIONS = {
+    cycles: 10,        // measurement cycles (probes per hop). Integer 1-100.
+    max_hops: 64,      // maximum hops to probe (TTL ceiling). Integer 1-255.
+    first_hop: 1,      // first hop (TTL) to probe from. Integer 1-255.
+    interval: 1,       // minimum duration of each probe round, in seconds. 0.1-60.
+    packet_size: 84,   // probe packet size, in bytes. Integer 28-1500.
+    protocol: "ICMP",  // probe protocol: "ICMP", "UDP" or "TCP".
+    port: 80,          // target port (UDP/TCP only). Integer 1-65535.
+    tos: 0             // IP Type-of-Service / DSCP byte (IPv4 only). Integer 0-255.
+};
 
 /**
  * @remote_procedure
