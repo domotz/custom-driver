@@ -1,16 +1,16 @@
 /**
  * Domotz Custom Driver — MTR Path (Hop-by-Hop) to Device
  *
- * Runs MTR to the monitored device (D.device), backed by the bundled trippy
- * binary, and reports the full network path as a table, one row per hop:
+ * Runs MTR to the monitored device (D.device) and reports the full network
+ * path as a table, one row per hop:
  *      - TTL, Host, Loss (%), Sent, Avg RTT (ms), Jitter (ms)
  *
  * The path target is the managed device itself (taken from D.device) — there
  * is no host parameter. Unresponsive ("blind") hops show "*" as the host and
  * null RTT/jitter.
  *
- * Requires sandbox version 2.4+ (the release that ships D.device.mtr and the
- * trippy binary). No device credentials are required.
+ * Requires sandbox version 2.4+ (the release that ships D.device.mtr). No
+ * device credentials are required.
  */
 
 // Number of measurement cycles (probes per hop). More cycles give more stable
@@ -20,7 +20,7 @@ var MTR_OPTIONS = { cycles: 10 };
 /**
  * @remote_procedure
  * @label Validate Association
- * @documentation Verifies that MTR to the device works (sandbox 2.4+ with the trippy binary).
+ * @documentation Verifies that MTR to the device works (sandbox 2.4+).
  */
 function validate() {
     D.device.mtr({ cycles: 2 }, function (result, error) {

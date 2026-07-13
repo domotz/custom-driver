@@ -2,8 +2,8 @@
  * Domotz Custom Driver — MTR Path Quality to Device
  *
  * Measures the network path quality from the collector to the monitored
- * device (D.device) using MTR, backed by the bundled trippy binary, and
- * publishes the destination-side metrics as custom driver variables:
+ * device (D.device) using MTR, and publishes the destination-side metrics
+ * as custom driver variables:
  *      - Destination packet loss (%)
  *      - Destination average round-trip time (ms)
  *      - Destination jitter (ms)
@@ -13,8 +13,8 @@
  * is no host parameter. A blind destination (no replies) reports null RTT and
  * jitter, so a real 0 ms is distinguishable from "no measurement".
  *
- * Requires sandbox version 2.4+ (the release that ships D.device.mtr and the
- * trippy binary). No device credentials are required.
+ * Requires sandbox version 2.4+ (the release that ships D.device.mtr). No
+ * device credentials are required.
  */
 
 // Number of measurement cycles (probes per hop). More cycles give more stable
@@ -24,7 +24,7 @@ var MTR_OPTIONS = { cycles: 10 };
 /**
  * @remote_procedure
  * @label Validate Association
- * @documentation Verifies that MTR to the device works (sandbox 2.4+ with the trippy binary).
+ * @documentation Verifies that MTR to the device works (sandbox 2.4+).
  */
 function validate() {
     D.device.mtr({ cycles: 2 }, function (result, error) {
