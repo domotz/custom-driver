@@ -1,5 +1,5 @@
 {
-    "logo": "",
+    "logo": "network-diagnostics.svg",
     "version": "1.0.0",
     "name": "MTR Path Quality to Device",
     "description": "Measures network path quality (packet loss, latency, jitter) from the collector to the monitored device using MTR, and publishes destination loss, average RTT, jitter and hop count as variables.",
