@@ -1,0 +1,60 @@
+{
+    "logo": "network-diagnostics.svg",
+    "version": "1.0.0",
+    "name": "MTR Path (Hop-by-Hop) to Device",
+    "description": "Runs MTR from the collector to the monitored device and reports the full network path as a table, one row per hop (TTL, host, loss, sent, average RTT, jitter).",
+    "category": "Network Diagnostics",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "2.4",
+        "others": []
+    },
+    "tags": [
+        "mtr",
+        "traceroute",
+        "latency",
+        "packet-loss",
+        "jitter",
+        "network",
+        "path"
+    ],
+    "sample_period_s": 300,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[6]"
+    },
+    "protocols": [
+        "ICMP"
+    ],
+    "tested_on": [],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}
