@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
   <title>Network Diagnostics</title>
   <rect width="1000" height="1000" fill="#ffffff"/>
-  <g transform="translate(95,-60)">
+  <g transform="translate(500,500) scale(1.2) translate(-405,-560)">
     <!-- ping round-trip rings -->
     <g fill="none" stroke="#182a49">
       <circle cx="380" cy="560" r="120" stroke-width="24" opacity="0.95"/>
