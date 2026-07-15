@@ -296,108 +296,108 @@ function get_status() {
 
 // WinRM functions
 function WinRMHandler() {
-}
-
-// Check for Errors on the command response
-WinRMHandler.prototype.checkError = function (output) {
-    // Check if the error message contains CSV data (PowerShell output in error message)
-    if (output.message && output.message.includes(',Success,') && output.message.includes(',Backup Job')) {
-        console.info("PowerShell command succeeded but WinRM returned error - extracting data from error message");
-        // Extract the CSV data from the error message
-        const lines = output.message.split('\n');
-        let csvData = '';
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line.includes(',Success,') || line.includes(',Warning,') || line.includes(',Failed,')) {
-                csvData += line + '\n';
-            }
-        }
-        if (csvData) {
-            parseOutput(csvData);
-            return;
-        }
-    }
-    
-    if (output.message) console.error(output.message);
-    if (output.code === 401) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR);
-    } else if (output.code === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-    } else {
-        console.error(output);
-        D.failure(D.errorType.GENERIC_ERROR);
-    }
-}
-
-// Execute command
-WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
-    config.command = command;
 
-    console.info("my console info command" + command);
-
-    console.info("my console info config" + config);
-
-    veeamDevice.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            // Check if error contains valid data before treating as failure
-            if (output.error.message && output.error.message.includes(',Success,') && output.error.message.includes(',Backup Job')) {
-                self.checkError(output.error);
-                // Don't reject, as checkError will handle the data extraction
-            } else {
-                self.checkError(output.error);
-                d.reject(output.error);
+    // Check for Errors on the command response
+    this.checkError = function (output) {
+        // Check if the error message contains CSV data (PowerShell output in error message)
+        if (output.message && output.message.includes(',Success,') && output.message.includes(',Backup Job')) {
+            console.info("PowerShell command succeeded but WinRM returned error - extracting data from error message");
+            // Extract the CSV data from the error message
+            const lines = output.message.split('\n');
+            let csvData = '';
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.includes(',Success,') || line.includes(',Warning,') || line.includes(',Failed,')) {
+                    csvData += line + '\n';
+                }
             }
-        } else {
-            d.resolve(output);
+            if (csvData) {
+                parseOutput(csvData);
+                return;
+            }
         }
-    });
-    return d.promise;
-}
+    
+        if (output.message) console.error(output.message);
+        if (output.code === 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        } else if (output.code === 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        } else {
+            console.error(output);
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+    };
 
-WinRMHandler.prototype.parseOutputToString = function (output) {
-    return output.outcome && output.outcome.stdout ? output.outcome.stdout : '';
-}
+    // Execute command
+    this.executeCommand = function (command) {
+        const d = D.q.defer();
+        config.command = command;
 
-WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
+        console.info("my console info command" + command);
+
+        console.info("my console info config" + config);
+
+        veeamDevice.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                // Check if error contains valid data before treating as failure
+                if (output.error.message && output.error.message.includes(',Success,') && output.error.message.includes(',Backup Job')) {
+                    self.checkError(output.error);
+                    // Don't reject, as checkError will handle the data extraction
+                } else {
+                    self.checkError(output.error);
+                    d.reject(output.error);
+                }
+            } else {
+                d.resolve(output);
+            }
+        });
+        return d.promise;
+    };
+
+    this.parseOutputToString = function (output) {
+        return output.outcome && output.outcome.stdout ? output.outcome.stdout : '';
+    };
+
+    this.checkIfValidated = function (output) {
+        return output.outcome && output.outcome.stdout
+    };
 }
 
 // SSH functions
 function SSHHandler() {
-}
-
-// Check for Errors on the command response
-SSHHandler.prototype.checkError = function (output, error) {
-    if (error) {
-        if (error.message) console.error(error.message);
-        if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-        if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        console.error(error);
-        D.failure(D.errorType.GENERIC_ERROR);
-    }
-}
-
-SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
-    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
-    veeamDevice.sendSSHCommand(config, function (output, error) {
+
+    // Check for Errors on the command response
+    this.checkError = function (output, error) {
         if (error) {
-            self.checkError(output, error);
-            d.reject(error);
-        } else {
-            d.resolve(output);
+            if (error.message) console.error(error.message);
+            if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+            if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
         }
-    });
-    return d.promise;
-}
+    };
 
-SSHHandler.prototype.parseOutputToString = function (output) {
-    return output ? output : '';
-}
+    this.executeCommand = function (command) {
+        const d = D.q.defer();
+        config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+        veeamDevice.sendSSHCommand(config, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                d.reject(error);
+            } else {
+                d.resolve(output);
+            }
+        });
+        return d.promise;
+    };
 
-SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-} 
+    this.parseOutputToString = function (output) {
+        return output ? output : '';
+    };
+
+    this.checkIfValidated = function (output) {
+        return output !== undefined
+    };
+}
