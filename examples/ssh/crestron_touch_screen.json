@@ -1,6 +1,6 @@
 {
     "logo": "crestron.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Crestron Touch Screen",
     "description": "Monitor all info sensors and temperature sensors and reboot the screen if needed",
     "category": "Hardware Integration",
