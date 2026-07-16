@@ -184,81 +184,78 @@ function parseOutput(listOfIntegrationServices) {
 }
 
 // WinRM functions
-function WinRMHandler() {
-    const self = this;
+function WinRMHandler() {}
 
-    // Check for Errors on the command response
-    this.checkError = function (output) {
-        if (output.message) console.error(output.message);
-        if (output.code === 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (output.code === 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+// Check for Errors on the command response
+WinRMHandler.prototype.checkError = function (output) {
+    if (output.message) console.error(output.message);
+    if (output.code === 401) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (output.code === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else {
+        console.error(output);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+// Execute command
+WinRMHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
+    config.command = command;
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error) {
+            self.checkError(output);
+            d.reject(output.error);
         } else {
-            console.error(output);
-            D.failure(D.errorType.GENERIC_ERROR);
+            d.resolve(output);
         }
-    };
+    });
+    return d.promise;
+}
 
-    // Execute command
-    this.executeCommand = function (command) {
-        const d = D.q.defer();
-        config.command = command;
-        D.device.sendWinRMCommand(config, function (output) {
-            if (output.error) {
-                self.checkError(output);
-                d.reject(output.error);
-            } else {
-                d.resolve(output);
-            }
-        });
-        return d.promise;
-    };
+WinRMHandler.prototype.parseOutputToJson = function (output) {
+    const jsonString = output.outcome.stdout
+    return jsonString ? JSON.parse(jsonString) : null;
+}
 
-    this.parseOutputToJson = function (output) {
-        const jsonString = output.outcome.stdout
-        return jsonString ? JSON.parse(jsonString) : null;
-    };
-
-    this.checkIfValidated = function (output) {
-        return output.outcome && output.outcome.stdout
-    };
+WinRMHandler.prototype.checkIfValidated = function (output) {
+    return output.outcome && output.outcome.stdout
 }
 
 // SSH functions
-function SSHHandler() {
+function SSHHandler() {}
+
+// Check for Errors on the command response
+SSHHandler.prototype.checkError = function (output, error) {
+    if (error) {
+        if (error.message) console.error(error.message);
+        if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+        if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
+}
+
+SSHHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
     const self = this;
-
-    // Check for Errors on the command response
-    this.checkError = function (output, error) {
+    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+    D.device.sendSSHCommand(config, function (output, error) {
         if (error) {
-            if (error.message) console.error(error.message);
-            if (error.code === 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-            if (error.code === 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            self.checkError(output, error);
+            d.reject(error);
+        } else {
+            d.resolve(output);
         }
-    };
+    });
+    return d.promise;
+}
 
-    this.executeCommand = function (command) {
-        const d = D.q.defer();
-        config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
-        D.device.sendSSHCommand(config, function (output, error) {
-            if (error) {
-                self.checkError(output, error);
-                d.reject(error);
-            } else {
-                d.resolve(output);
-            }
-        });
-        return d.promise;
-    };
+SSHHandler.prototype.parseOutputToJson = function (output) {
+    return output ? JSON.parse(output) : null;
+}
 
-    this.parseOutputToJson = function (output) {
-        return output ? JSON.parse(output) : null;
-    };
-
-    this.checkIfValidated = function (output) {
-        return output !== undefined
-    };
+SSHHandler.prototype.checkIfValidated = function (output) {
+    return output !== undefined
 }
