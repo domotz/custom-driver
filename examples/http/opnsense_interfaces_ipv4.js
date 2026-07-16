@@ -76,18 +76,18 @@ function sanitize(output){
 
 // Function to extract and insert Interfaces Stats data into the custom driver table for IPv4
 function extractData(data) {
-    for (var interface in data.interfaces) {
+    for (var iface in data.interfaces) {
         if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(name) {
-            return (interface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+            return (iface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
         })) {
-            if (interface !== "all"){
-                var recordId = sanitize(interface);             
-                var references = data.interfaces[interface].references;
-                var in4BlockBytes = data.interfaces[interface].in4_block_bytes;
-                var in4PassBytes = data.interfaces[interface].in4_pass_bytes;
-                var out4BlockBytes = data.interfaces[interface].out4_block_bytes;
-                var out4PassBytes = data.interfaces[interface].out4_pass_bytes;
-                var cleared = data.interfaces[interface].cleared;
+            if (iface !== "all"){
+                var recordId = sanitize(iface);
+                var references = data.interfaces[iface].references;
+                var in4BlockBytes = data.interfaces[iface].in4_block_bytes;
+                var in4PassBytes = data.interfaces[iface].in4_pass_bytes;
+                var out4BlockBytes = data.interfaces[iface].out4_block_bytes;
+                var out4PassBytes = data.interfaces[iface].out4_pass_bytes;
+                var cleared = data.interfaces[iface].cleared;
     
                 table.insertRecord(recordId, [
                     references,

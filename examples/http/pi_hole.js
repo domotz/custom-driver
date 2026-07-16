@@ -33,7 +33,7 @@ function createVariables(data) {
         _var("status", "Status", data.status)
     );
     variables.push(
-        _var("blocked_daily_perc", "Blocked Daily %", parseFloat(data.ads_percentage_today) + "", unit = "%")
+        _var("blocked_daily_perc", "Blocked Daily %", parseFloat(data.ads_percentage_today) + "", "%")
     );
     variables.push(
         _var("blocked_daily", "Blocked Daily", parseInt(data.ads_blocked_today.replace(/,/g, "")) + "")
