@@ -1,6 +1,6 @@
 {
     "logo": "ms-exchange.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Microsoft Exchange Server - RPC (Remote Procedure Call) Average Latency",
     "description": "This script is used to monitor the RPC (Remote Procedure Call) Average Latency on a Microsoft Exchange Server",
     "category": "Software Integration",

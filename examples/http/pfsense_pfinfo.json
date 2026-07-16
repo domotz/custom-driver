@@ -1,6 +1,6 @@
 {
     "logo": "pfsense.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Monitor pfSense with pfInfo",
     "description": "Check pfInfo using the pfSense web application",
     "category": "Software Integration",

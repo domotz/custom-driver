@@ -1,6 +1,6 @@
 {
     "logo": "raspberry-pi-hole.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Monitor Pi-hole",
     "description": "Monitor the status and daily statistics information for pi-hole https://pi-hole.net/",
     "category": "Software Integration",

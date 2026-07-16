@@ -1,6 +1,6 @@
 {
     "logo": "vmware-esxi.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMware ESXi NTP",
     "description": "Get the NTP configuration on a VMware ESXi host",
     "category": "Software Integration",

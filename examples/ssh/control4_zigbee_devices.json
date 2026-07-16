@@ -1,6 +1,6 @@
 {
     "logo": "control4.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Control4 Zigbee",
     "description": "Collect data for Control4 Zigbee devices such as status, zap information etc ",
     "category": "Hardware Integration",

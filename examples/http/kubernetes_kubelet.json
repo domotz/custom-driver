@@ -1,6 +1,6 @@
 {
     "logo": "kubernetes.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Kubernetes Kubelet metrics",
     "description": "This script extracts Kubernetes kubelet metrics by HTTP agent from Prometheus metrics endpoint.",
     "category": "Software Integration",
