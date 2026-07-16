@@ -1,6 +1,6 @@
 {
     "logo": "kubernetes.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Kubernetes Nodes and Pods",
     "description": "This script extracts detailed information about Kubernetes nodes and pods",
     "category": "Software Integration",

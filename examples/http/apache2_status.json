@@ -1,6 +1,6 @@
 {
     "logo": "apache.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Apache2 Status",
     "description": "Monitor Apache2 server: this script will show the Apache2 service status",
     "category": "Software Integration",

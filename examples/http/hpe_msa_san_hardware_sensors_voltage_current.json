@@ -1,6 +1,6 @@
 {
     "logo": "hpe.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "HPE MSA SAN HW Sensors Voltage and Current",
     "description": "This script retrieves voltage and current sensor data from an HPE MSA SAN device",
     "category": "Hardware Integration",
