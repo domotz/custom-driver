@@ -79,7 +79,7 @@ function parseData(executionResult){
     // cmdTemperature output is result[0]
     // cmdInfo output is result[1]
     // concatenating the results into one output
-    output = executionResult[0]+executionResult[1];
+    var output = executionResult[0]+executionResult[1];
     // processing the output
     var outputArray = output.split(/\r?\n/);
     if (outputArray == null) {

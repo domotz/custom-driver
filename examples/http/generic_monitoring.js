@@ -56,14 +56,13 @@ var nodeValueLocation = Object.freeze({
  *                - text: will extract html node text
  *                - value: will extract html node value
  *                - attr:node_attribute_name: node_attribute_name is the name of the attribute to extract from the node
- *    - if response type is json: 
- *       - string: contains the path to the field starting by value which contain the json response (example: "value.field1.field2")
- *       - function: user defined function where the value is passed as an argument and return the value desired
- *    - if response type is text: 
+ *    - if response type is json:
+ *       - string: a safe property path to the field, rooted at "value" (examples: "value.field1.field2", "value[3].version", "value['weird key'].x"). Only property access is supported - arbitrary expressions and function calls are not evaluated.
+ *       - function: user defined function where the value is passed as an argument and return the value desired (use this for filtering/computation)
+ *    - if response type is text:
  *       - Regular Expression: regular expression containing the token to extract (example: /<input name="input_name" value="(.*)" \/>/)
- * * valueValidation: validate the value extracted, it can have 2 possible types (default "value")
- *    - string: expression return expected result depending from the value extracted (example: "value == 'valid' ? true : false")
- *    - function: user defined function where the value is passed as an argument and return the expected result (example: function(value) { return value > 10 ? 'working' : 'not working';})
+ * * valueValidation: a function that validates the extracted value (default: function (value) { return !!value; })
+ *    - function: user defined function where the value is passed as an argument and returns the expected result (example: function(value) { return value > 10 ? 'working' : 'not working';})
  */
 var httpMonitoringConfig = [
     // example using Regular expression to find the value in html response
@@ -92,15 +91,14 @@ var httpMonitoringConfig = [
     // link: "/assets/domotz-packages.json",
     // protocol: "https",
     // ***************************************
-    // valueExtractor: "value.filter(function(e){return e.model == 'debian' && e.arch =='x64'})[0].version"
-    // or
+    // // a safe property path:
+    // valueExtractor: "value[3].version",
+    // // or, for filtering/computation, a function:
     // valueExtractor: function(value){
     //     return value.filter(function(e){return e.model == "debian" && e.arch =="x64";})[0].version;
     // },
-    // or
-    // valueExtractor: "value[3].version",
     // *****************************************
-    // valueValidation: "value == '1.0-2.9.6-4.3.2-b001-0050'"
+    // valueValidation: function(value){ return value == "1.0-2.9.6-4.3.2-b001-0050"; }
     // }
 ];
 
@@ -181,9 +179,9 @@ function configValidation(config, index) {
         failValidation("this field 'valueExtractor' in the parameter with index " + index + " is invalid, please check the parameter documentation");
     else if (config.responseType == responseType.json && !(typeof (config.valueExtractor) == "string" || typeof (config.valueExtractor) == "function"))
         failValidation("this field 'valueExtractor' in the parameter with index " + index + " is invalid, please check the parameter documentation");
-    if (!config.valueValidation) config.valueValidation = "!!value";
-    else if (typeof (config.valueValidation) != "string" && typeof (config.valueValidation) != "function") {
-        failValidation("this field 'valueValidation' in the parameter with index " + index + " should be string or function");
+    if (!config.valueValidation) config.valueValidation = defaultValidation;
+    else if (typeof (config.valueValidation) != "function") {
+        failValidation("this field 'valueValidation' in the parameter with index " + index + " should be a function");
     }
     return config;
 }
@@ -212,6 +210,7 @@ function findResource(config) {
     }
     var d = D.q.defer();
     var start = new Date();
+    var call;
     switch(config.method){
     case "get": call = device.http.get; break;
     case "post": call = device.http.post; break;
@@ -251,8 +250,35 @@ function findResource(config) {
 }
 
 /**
+ * Resolves a property path string against a root object without using eval.
+ * Supports dotted access, bracketed numeric indexes and bracket-quoted keys,
+ * e.g. "value.field1.field2", "value[3].version", "value['weird key'].x".
+ * Returns undefined for any segment that cannot be resolved, and never
+ * executes function calls or other code embedded in the string.
+ * @param {object} root the object the path is rooted in (keyed by the path's first token)
+ * @param {string} path the property path expression
+ */
+function resolvePath(root, path) {
+    if (typeof path !== "string") return undefined;
+    return path
+        .replace(/\[\s*(['"])(.*?)\1\s*\]/g, ".$2")  // ['k'] or ["k"] -> .k
+        .replace(/\[\s*(\d+)\s*\]/g, ".$1")          // [3] -> .3
+        .split(".")
+        .reduce(function (o, k) { return o == null ? undefined : o[k]; }, root);
+}
+
+/**
+ * Default value validation: truthiness check. Used when a config does not
+ * provide its own valueValidation function.
+ * @param {*} value the extracted value
+ */
+function defaultValidation(value) {
+    return !!value;
+}
+
+/**
  * extract the result from response body based on the config passed in parameter
- * @param {*} config 
+ * @param {*} config
  * @returns config filled with the result
  */
 function parse(config) {
@@ -284,7 +310,10 @@ function parse(config) {
     } else if (config.responseType == responseType.json) {
         var value = JSON.parse(config.responseBody);
         if (typeof (config.valueExtractor) == "string") {
-            result = eval(config.valueExtractor);
+            // valueExtractor strings are treated as safe property paths only
+            // (e.g. "value.field1.field2", "value[3].version"). For anything
+            // more complex, supply valueExtractor as a function.
+            result = resolvePath({ value: value }, config.valueExtractor);
         } else {
             result = config.valueExtractor(value);
         }
@@ -301,11 +330,7 @@ function parse(config) {
  */
 function valueValidation(config) {
     var value = config.result;
-    if (typeof (config.valueValidation) == "string") {
-        config.validation = eval(config.valueValidation);
-    } else {
-        config.validation = config.valueValidation(value);
-    }
+    config.validation = config.valueValidation(value);
     return config;
 }
 

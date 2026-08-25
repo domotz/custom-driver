@@ -247,7 +247,7 @@ function generateDeviceProperties() {
  * @param {Array} deviceProperties - List of device properties to include in the table.
  */
 function createDeviceTable(deviceProperties) {
-    tableHeaders = deviceProperties.map(function(item) {return { label: item.label }});
+    var tableHeaders = deviceProperties.map(function(item) {return { label: item.label }});
 
     deviceTable = D.createTable('Microsoft Teams Devices status', tableHeaders)
 }

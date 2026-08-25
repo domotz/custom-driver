@@ -1,26 +1,30 @@
 {
-    "logo": "aws.svg",
-    "version": "1.0.2",
-    "name": "Aws RDS Metrics",
-    "description": "Monitor AWS Relational Database Service: this script retrieves general information such as CPU, disk operations, and network properties",
-    "category": "Software Integration",
+    "logo": "network-diagnostics.svg",
+    "version": "1.0.0",
+    "name": "ICMP Ping to Device",
+    "description": "Pings the monitored device over ICMP and publishes round-trip time and loss statistics (jitter, average, min, max, standard deviation and packet loss) as variables.",
+    "category": "Network Diagnostics",
     "requirements": {
-        "credentials": true,
+        "credentials": false,
         "sandbox_version": "1.12",
-        "others": [
-            "AWS RDS"
-        ]
+        "others": []
     },
     "tags": [
-        "aws",
-        "rds",
-        "cloud"
+        "icmp",
+        "ping",
+        "latency",
+        "packet-loss",
+        "jitter",
+        "rtt",
+        "network"
     ],
-    "sample_period_s": 1800,
+    "sample_period_s": 300,
     "has_actions": false,
-    "expected_variables": {},
+    "expected_variables": {
+        "independent": "[6]"
+    },
     "protocols": [
-        "HTTPS"
+        "ICMP"
     ],
     "tested_on": [],
     "compatibility": {

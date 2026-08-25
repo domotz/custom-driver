@@ -1,26 +1,30 @@
 {
-    "logo": "aws.svg",
-    "version": "1.0.2",
-    "name": "Aws RDS Metrics",
-    "description": "Monitor AWS Relational Database Service: this script retrieves general information such as CPU, disk operations, and network properties",
-    "category": "Software Integration",
+    "logo": "network-diagnostics.svg",
+    "version": "1.0.0",
+    "name": "MTR Path (Hop-by-Hop) to Device",
+    "description": "Runs MTR from the collector to the monitored device and reports the full network path as a table, one row per hop (TTL, host, loss, sent, average RTT, jitter).",
+    "category": "Network Diagnostics",
     "requirements": {
-        "credentials": true,
-        "sandbox_version": "1.12",
-        "others": [
-            "AWS RDS"
-        ]
+        "credentials": false,
+        "sandbox_version": "2.4",
+        "others": []
     },
     "tags": [
-        "aws",
-        "rds",
-        "cloud"
+        "mtr",
+        "traceroute",
+        "latency",
+        "packet-loss",
+        "jitter",
+        "network",
+        "path"
     ],
-    "sample_period_s": 1800,
+    "sample_period_s": 300,
     "has_actions": false,
-    "expected_variables": {},
+    "expected_variables": {
+        "table": "[6]"
+    },
     "protocols": [
-        "HTTPS"
+        "ICMP"
     ],
     "tested_on": [],
     "compatibility": {

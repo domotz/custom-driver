@@ -1,6 +1,6 @@
 {
     "logo": "ms-exchange.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Microsoft Exchange Server (on-prem) - Current Connections",
     "description": "This script is used to monitor the number of current connections to a Microsoft Exchange Server",
     "category": "Software Integration",

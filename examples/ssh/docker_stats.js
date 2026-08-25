@@ -34,7 +34,7 @@ function successCallback(output) {
     }
     var values = lines.slice(1);
     for (var index in values) {
-        data = values[index].split(/(\s+)/);
+        var data = values[index].split(/(\s+)/);
         var uid = data[0];
         var name = data[2];
         var cpu = data[4].split("%")[0];

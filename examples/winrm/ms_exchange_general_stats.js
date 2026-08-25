@@ -128,7 +128,7 @@ function parseOutput(output) {
             var label = instanceName ? instanceName + " " + msExchangeItem : msExchangeItem;
             var value = jsonOutput[k].CookedValue;
             var unit = counterTypeMappings[counterType];     
-            variable = D.device.createVariable(uid, label , value, unit, D.valueType.NUMBER);
+            var variable = D.device.createVariable(uid, label , value, unit, D.valueType.NUMBER);
             variables.push(variable);
             k++;
         }

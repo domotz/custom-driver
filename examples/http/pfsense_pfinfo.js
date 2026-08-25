@@ -433,15 +433,15 @@ function extract_table(body) {
     while ((result = reg.exec(toParse)) !== null) {
         interfaces.push(result[1]);
     }
-    interfaces.forEach(function (interface) {
-        var inRegEx = interfacesRegex(interface);
+    interfaces.forEach(function (iface) {
+        var inRegEx = interfacesRegex(iface);
         var match = toParse.match(inRegEx);
         if (match) {
             var values = [];
             for (var i = 1; i < match.length; i++) {
                 values.push(match[i]);
             }
-            table.insertRecord(interface, values);
+            table.insertRecord(iface, values);
         }
     });
 }

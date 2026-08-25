@@ -21,13 +21,12 @@ var table = D.createTable("Kubelets", [
     {label: "CPU: System seconds"},
     {label: "CPU: User seconds"},
 ]);
-Array.prototype._first = function () {
-    return this.length ? this[0] : null;
-};
-Array.prototype._find = function (filterFn) {
-    return this.filter(filterFn)._first();
-
-};
+function _first(arr) {
+    return arr.length ? arr[0] : null;
+}
+function _find(arr, filterFn) {
+    return _first(arr.filter(filterFn));
+}
 
 
 function httpGet(url){
@@ -100,7 +99,7 @@ function getNodesMetrics(){
         .then(JSON.parse)
         .then(function(data){
             nodes = data.items.map(function(item){
-                var ii = item.status.addresses._find(function(a) {return a.type == "InternalIP";});
+                var ii = _find(item.status.addresses, function(a) {return a.type == "InternalIP";});
                 if(ii.address)
                     return {
                         name: item.metadata.name,
@@ -273,7 +272,7 @@ function fillConfig(){
 
 function fillTable() {
     podsInfo.map(function(item){
-        var node = nodes._find(function(n) {return n.ip == item.hostIp;});
+        var node = _find(nodes, function(n) {return n.ip == item.hostIp;});
         return {
             id: item.podName,
             row: [

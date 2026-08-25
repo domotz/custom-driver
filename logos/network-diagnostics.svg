@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <title>Network Diagnostics</title>
+  <rect width="1000" height="1000" fill="#ffffff"/>
+  <g transform="translate(500,500) scale(1.2) translate(-405,-560)">
+    <!-- ping round-trip rings -->
+    <g fill="none" stroke="#182a49">
+      <circle cx="380" cy="560" r="120" stroke-width="24" opacity="0.95"/>
+      <circle cx="380" cy="560" r="215" stroke-width="22" opacity="0.5"/>
+      <circle cx="380" cy="560" r="310" stroke-width="20" opacity="0.25"/>
+    </g>
+    <!-- traceroute hop path to target -->
+    <g fill="none" stroke="#182a49" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="380,560 560,470 700,400"/>
+    </g>
+    <!-- collector (accent), intermediate hop, target (accent) -->
+    <circle cx="380" cy="560" r="40" fill="#fcb800"/>
+    <circle cx="560" cy="470" r="26" fill="#182a49"/>
+    <circle cx="700" cy="400" r="46" fill="#fcb800" stroke="#182a49" stroke-width="8"/>
+  </g>
+</svg>

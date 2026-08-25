@@ -313,9 +313,26 @@ function convertToJson(value) {
 
 }
 
+/**
+ * Resolves a property path string against a root object without using eval.
+ * Supports dotted access, bracketed numeric indexes and bracket-quoted keys,
+ * e.g. "json.Workers.closing", "json['Total kBytes']", "value.items[0].id".
+ * Returns undefined for any segment that cannot be resolved.
+ * @param {object} root the object the path is rooted in (keyed by the path's first token)
+ * @param {string} path the property path expression
+ */
+function resolvePath(root, path) {
+    if (typeof path !== "string") return undefined;
+    return path
+        .replace(/\[\s*(['"])(.*?)\1\s*\]/g, ".$2")  // ['k'] or ["k"] -> .k
+        .replace(/\[\s*(\d+)\s*\]/g, ".$1")          // [3] -> .3
+        .split(".")
+        .reduce(function (o, k) { return o == null ? undefined : o[k]; }, root);
+}
+
 function extractDataVariables(json) {
     return parametersConfig.map(function (param) {
-        param.value = eval(param.path);
+        param.value = resolvePath({ json: json }, param.path);
         if (param.postProcess) {
             if (Array.isArray(param.postProcess)) {
                 param.postProcess.forEach(function (fn) {
@@ -327,24 +344,6 @@ function extractDataVariables(json) {
         }
         return D.device.createVariable(param.uid, param.label, param.value, param.unit);
     });
-}
-
-function buildTable(body) {
-    var $ = D.htmlParse(body);
-    var processTable = $("table tbody")[0];
-    processTable.children.filter(function (node, index) {
-        return index > 0 && node.name == "tr";
-    }).forEach(function (node, index) {
-        var row = node.children.map(function (td, index) {
-            var text = $(td).text().trim();
-            if (index == 3) {
-                return scoreboardKey[text];
-            }
-            return text;
-        });
-        table.insertRecord("" + index, row);
-    });
-    return table;
 }
 
 function failure(err) {
