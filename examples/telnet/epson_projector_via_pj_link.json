@@ -2,7 +2,7 @@
     "logo": "epson.svg",
     "version": "1.0.0",
     "name": "Epson Projector - PJLink Monitoring",
-    "description": "Monitors and controls an Epson projector over the PJLink Class 1 protocol via raw TCP/IP. Retrieves power status and cumulative lamp hours (per lamp, on multi-lamp projectors), with automatic PJLink MD5 challenge-response authentication. Includes Turn On and Turn Off actions.",
+    "description": "Monitors and controls an Epson projector over the PJLink Class 1 protocol via raw TCP/IP",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": false,

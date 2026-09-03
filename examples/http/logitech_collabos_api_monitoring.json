@@ -2,7 +2,7 @@
     "logo": "logitech.svg",
     "version": "1.0.0",
     "name": "Logitech CollabOS - Device Monitoring",
-    "description": "Monitors Logitech CollabOS-based video conferencing devices (e.g. Rally Bar, Rally Board) via the device's local REST API with token-based authentication. Retrieves device configuration, device insights (state, mic, speaker), room insights on CollabOS 1.15+ (dynamically discovered), and connected peripherals (dynamically discovered).",
+    "description": "Monitors Logitech CollabOS-based video conferencing devices.",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": true,
