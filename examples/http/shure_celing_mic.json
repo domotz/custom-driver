@@ -2,7 +2,7 @@
     "logo": "shure.svg",
     "version": "1.0.0",
     "name": "Shure Ceiling Microphone Monitor",
-    "description": "Monitors Shure ceiling array microphones via a raw Telnet command/response protocol on the device's control port. Retrieves mute status, serial number, and firmware version. Includes Mute, Unmute, and Toggle Mute/Unmute actions.",
+    "description": "Monitors Shure ceiling array microphones via a raw Telnet command",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": false,
