@@ -1,0 +1,86 @@
+{
+    "logo": "epson.svg",
+    "version": "1.0.0",
+    "name": "Epson Projector - PJLink Monitoring",
+    "description": "Monitors and controls an Epson projector over the PJLink Class 1 protocol via raw TCP/IP. Retrieves power status and cumulative lamp hours (per lamp, on multi-lamp projectors), with automatic PJLink MD5 challenge-response authentication. Includes Turn On and Turn Off actions.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": [
+            "PJLink Class 1 control interface enabled on the projector, reachable on the configured TCP port (default 4352)",
+            "PJLink password configured on the projector, if authentication is enabled (pwd parameter)"
+        ]
+    },
+    "tags": [
+        "epson",
+        "projector",
+        "pjlink",
+        "conference",
+        "room",
+        "video",
+        "lamp",
+        "power"
+    ],
+    "sample_period_s": 900,
+    "has_actions": true,
+    "expected_variables": {
+        "independent": "[2]"
+    },
+    "protocols": [
+        "TELNET"
+    ],
+    "tested_on": [
+        {
+            "name": "EPSON L630U",
+            "version": "n/a"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "defaultTcpPort",
+            "label": "PJLink TCP Port",
+            "value": "4352"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "pwd",
+            "label": "Projector Password"
+        }
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Epson"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [
+                "4352"
+            ],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}
