@@ -69,7 +69,7 @@
             "values": [
                 "2202"
             ],
-            "qualifier": null
+            "qualifier": "preferred"
         },
         "required_mibs": {
             "values": [],
