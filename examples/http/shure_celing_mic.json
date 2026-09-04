@@ -1,58 +1,51 @@
 {
-    "logo": "epson.svg",
+    "logo": "shure.svg",
     "version": "1.0.0",
-    "name": "Epson Projector - PJLink Monitoring",
-    "description": "Monitors and controls an Epson projector over the PJLink Class 1 protocol via raw TCP/IP",
+    "name": "Shure Ceiling Microphone Monitor",
+    "description": "Monitors Shure ceiling array microphones via a raw Telnet command",
     "category": "Hardware Integration",
     "requirements": {
         "credentials": false,
         "sandbox_version": "1.12",
         "others": [
-            "PJLink Class 1 control interface enabled on the projector, reachable on the configured TCP port (default 4352)",
-            "PJLink password configured on the projector, if authentication is enabled (pwd parameter)"
+            "Shure ceiling microphone Telnet control interface accessible on the configured port (default 2202)"
         ]
     },
     "tags": [
-        "epson",
-        "projector",
-        "pjlink",
+        "shure",
+        "microphone",
+        "ceiling-mic",
         "conference",
         "room",
-        "video",
-        "lamp",
-        "power"
+        "audio",
+        "mute"
     ],
     "sample_period_s": 900,
     "has_actions": true,
     "expected_variables": {
-        "independent": "[2]"
+        "independent": "[3]"
     },
     "protocols": [
         "TELNET"
     ],
     "tested_on": [
         {
-            "name": "EPSON L630U",
+            "name": "Shure Ceiling Array Microphone",
             "version": "n/a"
         }
     ],
     "parameters": [
         {
             "value_type": "NUMBER",
-            "name": "defaultTcpPort",
-            "label": "PJLink TCP Port",
-            "value": "4352"
-        },
-        {
-            "value_type": "SECRET_TEXT",
-            "name": "pwd",
-            "label": "Projector Password"
+            "name": "port",
+            "label": "Telnet Port",
+            "value": "2202"
         }
     ],
     "compatibility": {
         "vendor": {
             "values": [
-                "Epson"
+                "Shure"
             ],
             "qualifier": "required"
         },
@@ -74,7 +67,7 @@
         },
         "open_ports": {
             "values": [
-                "4352"
+                "2202"
             ],
             "qualifier": "preferred"
         },
