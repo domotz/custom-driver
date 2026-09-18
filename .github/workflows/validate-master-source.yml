@@ -1,0 +1,24 @@
+name: Validate master source branch
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  validate-source-branch:
+    name: validate-master-source
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Allow only rc -> master
+        run: |
+          echo "Source branch: ${{ github.head_ref }}"
+          echo "Target branch: ${{ github.base_ref }}"
+
+          if [ "${{ github.head_ref }}" != "rc" ]; then
+            echo "ERROR: Pull requests targeting master must originate from rc."
+            exit 1
+          fi
+
+          echo "Valid PR: rc -> master"
