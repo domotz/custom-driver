@@ -193,8 +193,15 @@ SSHHandler.prototype.checkError = function (output, error) {
 SSHHandler.prototype.executeCommand = function (command) {
     const d = D.q.defer();
     const self = this;
-    config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
-    D.device.sendSSHCommand(config, function (output, error) {
+    // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
+    // so the sandbox uses the device SSH port (22 by default).
+    const sshConfig = {
+        username: config.username,
+        password: config.password,
+        timeout: config.timeout,
+        command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
+    };
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
             self.checkError(output, error);
             d.reject(error);
