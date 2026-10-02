@@ -1,0 +1,47 @@
+{
+    "logo": "ms-teams.svg",
+    "version": "1.0.0",
+    "name": "Microsoft Teams Calls Quality of Services",
+    "description": "Monitor Teams Calls Quality of Services",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": false,
+        "sandbox_version": "1.12",
+        "others": []
+    },
+    "tags": [
+        "teams"
+    ],
+    "sample_period_s": 1800,
+    "has_actions": false,
+    "expected_variables": {
+        "table": "[17]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [],
+    "parameters": [
+        {
+            "value_type": "STRING",
+            "name": "tenantId",
+            "label": "Tenant Id"
+        },
+        {
+            "value_type": "STRING",
+            "name": "clientId",
+            "label": "Client Id"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "Client Secret"
+        },
+        {
+            "value_type": "NUMBER",
+            "name": "maxRows",
+            "label": "Max Rows",
+            "value": 20
+        }
+    ]
+}
