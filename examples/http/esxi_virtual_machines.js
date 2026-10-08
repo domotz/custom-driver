@@ -161,6 +161,19 @@ function getSessionKey(soapResponse) {
 }
 
 /**
+ * Escapes the characters that have a special meaning in XML (&, <, >),
+ * so that credentials containing them do not break the SOAP request.
+ * @param {string} value - The text to escape.
+ * @returns {string} The escaped text.
+ */
+function escapeXml (value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+}
+
+/**
  * Constructs and sends a SOAP login request to the ESXi server.
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
@@ -168,8 +181,8 @@ function login () {
   const payload = createSoapPayload(
     '<vim25:Login>' +
     '  <_this type="SessionManager">ha-sessionmgr</_this>' +
-    '  <userName>' + D.device.username() + '</userName>' +
-    '  <password>' + D.device.password() + '</password>' +
+    '  <userName>' + escapeXml(D.device.username()) + '</userName>' +
+    '  <password>' + escapeXml(D.device.password()) + '</password>' +
     '</vim25:Login>'
   )
   return sendSoapRequest(payload, getSessionKey)

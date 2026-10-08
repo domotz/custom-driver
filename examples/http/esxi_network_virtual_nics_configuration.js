@@ -59,7 +59,7 @@ function sendSoapRequest (body, extractData) {
             D.failure(D.errorType.GENERIC_ERROR)
         } else if (!response) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 400) {
+        } else if (response.statusCode === 400 || isInvalidLogin(body)) {
             D.failure(D.errorType.AUTHENTICATION_ERROR)
         } else if (response.statusCode !== 200) {
             D.failure(D.errorType.GENERIC_ERROR)
@@ -93,6 +93,30 @@ function getSessionKey(soapResponse) {
 }
 
 /**
+ * Escapes the characters that have a special meaning in XML (&, <, >),
+ * so that credentials containing them do not break the SOAP request.
+ * @param {string} value - The text to escape.
+ * @returns {string} The escaped text.
+ */
+function escapeXml (value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+}
+
+/**
+ * Checks whether a SOAP response is the fault ESXi returns (with HTTP 500) for wrong credentials.
+ * @param {string} body - The SOAP response body.
+ * @returns {boolean} True if the response is an InvalidLogin fault.
+ */
+function isInvalidLogin (body) {
+    const text = String(body || '')
+    return text.indexOf('InvalidLoginFault') !== -1 ||
+      text.indexOf('Cannot complete login due to an incorrect user name or password.') !== -1
+}
+
+/**
  * Constructs and sends a SOAP login request to the ESXi server.
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
@@ -100,8 +124,8 @@ function login () {
     const payload = createSoapPayload(
         '<vim25:Login>' +
         '   <_this type="SessionManager">ha-sessionmgr</_this>' +
-        '   <userName>' + D.device.username() + '</userName>' +
-        '   <password>' + D.device.password() + '</password>' +
+        '   <userName>' + escapeXml(D.device.username()) + '</userName>' +
+        '   <password>' + escapeXml(D.device.password()) + '</password>' +
         '</vim25:Login>'
     )
     // Send the SOAP request and handle the response to extract the Session Key.
