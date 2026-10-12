@@ -28,6 +28,13 @@
 var psuCommand = 'racadm hwinventory'
 var powerUsageCommand = 'racadm getsensorinfo'
 
+/**
+ * @param {number} customPort
+ * @label Custom SSH port
+ * @description SSH port to connect to the iDRAC (default: 22)
+ * @type NUMBER
+ */
+var customPort = D.getParameter("customPort") || 22
 
 // SSH options when running the command
 var sshConfig = {
@@ -35,7 +42,7 @@ var sshConfig = {
     'password': D.device.password(),
     'timeout': 60000,
     'keyboard_interactive': true,
-    'port': 52144
+    'port': customPort
 }
 
 // Custom Driver Table to store PSU information
