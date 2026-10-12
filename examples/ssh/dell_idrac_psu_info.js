@@ -30,7 +30,7 @@ var powerUsageCommand = 'racadm getsensorinfo'
 
 /**
  * @param {number} customPort
- * @label Custom SSH port
+ * @label SSH port
  * @description SSH port to connect to the iDRAC (default: 22)
  * @type NUMBER
  */
