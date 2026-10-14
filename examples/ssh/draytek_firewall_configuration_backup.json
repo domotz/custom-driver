@@ -30,7 +30,7 @@
     "tested_on": [
         {
             "name": "DrayTek Vigor2960",
-            "version": "Hardware 1.0, Firmware 1.0.9"
+            "version": "FW 1.0.9 / HW 1.0"
         }
     ],
     "compatibility": {
