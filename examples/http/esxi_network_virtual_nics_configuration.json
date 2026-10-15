@@ -1,6 +1,6 @@
 {
     "logo": "vmware-esxi.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "ESXi Network Virtual NIC Configuration",
     "description": "Monitors the ESXi host Network Virtual NIC Configuration",
     "category": "Software Integration",
