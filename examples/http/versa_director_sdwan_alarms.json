@@ -1,0 +1,103 @@
+{
+    "logo": "versa.svg",
+    "version": "1.0.0",
+    "name": "Versa Director - SD-WAN Alarms",
+    "description": "Reports Versa SD-WAN active alarms per site by severity",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Versa Director OAuth client (Client ID and Client Secret)",
+            "HTTPS reachability from the collector to the Director (default port 9183)"
+        ]
+    },
+    "tags": [
+        "versa",
+        "sd-wan",
+        "sdwan",
+        "director",
+        "alarms"
+    ],
+    "sample_period_s": 300,
+    "execution_timeout_s": 60,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[6]",
+        "table": "[11]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Versa Director",
+            "version": "22.1.4-GA"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientId",
+            "label": "OAuth Client ID"
+        },
+        {
+            "value_type": "SECRET_TEXT",
+            "name": "clientSecret",
+            "label": "OAuth Client Secret"
+        },
+        {
+            "value_type": "STRING",
+            "name": "authPort",
+            "label": "Auth Port",
+            "value": "9183"
+        },
+        {
+            "value_type": "STRING",
+            "name": "apiPort",
+            "label": "API Port",
+            "value": "9183"
+        },
+        {
+            "value_type": "STRING",
+            "name": "directorHost",
+            "label": "Director Host (optional FQDN)"
+        },
+        {
+            "value_type": "STRING",
+            "name": "maxAlarms",
+            "label": "Max Alarms",
+            "value": "5000"
+        }
+    ],
+    "compatibility": {
+        "vendor": {
+            "values": [],
+            "qualifier": null
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}
