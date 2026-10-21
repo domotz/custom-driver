@@ -74,21 +74,20 @@ var table = D.createTable(
  * @returns Promise wait for server-status page to be loaded
  */
 function getApache2Status() {
-    var d = D.q.defer();
-    D.device.http.get(apacheHttpParams, function (error, response, body) {
-        if (error) {
-            failure(error);
-        }
-        if(response.statusCode == 401){
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if(response.statusCode == 404){
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get(apacheHttpParams, function (error, response, body) {
+            if (error) {
+                failure(error);
+            }
+            if(response.statusCode == 401){
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if(response.statusCode == 404){
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            resolve(body);
+        });
     });
-
-    return d.promise;
 }
 
 function buildTable(body) {

@@ -365,16 +365,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response and extracts the access token
- * @param {Object} d  The deferred promise object
+ * @param {Function} resolve  Resolves the promise
+ * @param {Function} reject  Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error("Access token not found in response body")
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -402,10 +403,10 @@ function generateLoginConf() {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-    const d = D.q.defer()
     const config = generateLoginConf()
-    zoomLogin.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -473,11 +474,11 @@ function populateTable(roomsQosAverage) {
  * @returns {Promise} A promise that resolves after the specified duration.
  */
 function wait(ms) {
-    const d = D.q.defer()
-    setTimeout(function() {
-        d.resolve()
-    }, ms)
-    return d.promise
+    return new Promise(function (resolve) {
+        setTimeout(function() {
+            resolve()
+        }, ms)
+    })
 }
 
 /**
@@ -485,63 +486,63 @@ function wait(ms) {
  * @returns {Promise} A promise that resolves with the Virtual Machine Scale Set data.
  */
 function callGetHttpRequest(extractDetailsFromBody, checkBodyJsonIsNotEmpty, endpoint) {
-    const d = D.q.defer()
     let output = []
     let pageToken = null
     let countCall = 0
 
-    function fetchData() {
-        const url = getPaginationUrl(endpoint, pageToken)
-        const config = generateConfig(url)
-        zoomResources.http.get(config, function (error, response, body) {
-            countCall++
-            if (countCall <= 3) {
-                if (response.statusCode === 429) {
-                    console.log("Rate limit hit, waiting for 1 seconds...")
-                    wait(1000).then(function () {
-                        fetchData()
-                    })
-                    return
-                }
-                checkHTTPError(error, response)
-                if (error) {
-                    d.reject(error)
-                    return
-                }
-                const bodyAsJSON = JSON.parse(body)
-                if (checkBodyJsonIsNotEmpty(bodyAsJSON)) {
-                     d.resolve([])
-                }
-                const extractedDetails = extractDetailsFromBody(bodyAsJSON)
-                pageToken = bodyAsJSON.next_page_token
+    return new Promise(function (resolve, reject) {
+        function fetchData() {
+            const url = getPaginationUrl(endpoint, pageToken)
+            const config = generateConfig(url)
+            zoomResources.http.get(config, function (error, response, body) {
+                countCall++
+                if (countCall <= 3) {
+                    if (response.statusCode === 429) {
+                        console.log("Rate limit hit, waiting for 1 seconds...")
+                        wait(1000).then(function () {
+                            fetchData()
+                        })
+                        return
+                    }
+                    checkHTTPError(error, response)
+                    if (error) {
+                        reject(error)
+                        return
+                    }
+                    const bodyAsJSON = JSON.parse(body)
+                    if (checkBodyJsonIsNotEmpty(bodyAsJSON)) {
+                         resolve([])
+                    }
+                    const extractedDetails = extractDetailsFromBody(bodyAsJSON)
+                    pageToken = bodyAsJSON.next_page_token
 
-                if (pageToken === undefined) {
-                    output = extractedDetails
-                }else{
-                    if (Array.isArray(extractedDetails)) {
-                        output = output.concat(extractedDetails)
-                    } else {
-                        if (typeof extractedDetails === "object") {
-                            output.push(extractedDetails)
-                        }else{
-                            D.failure(D.errorType.GENERIC_ERROR)
+                    if (pageToken === undefined) {
+                        output = extractedDetails
+                    }else{
+                        if (Array.isArray(extractedDetails)) {
+                            output = output.concat(extractedDetails)
+                        } else {
+                            if (typeof extractedDetails === "object") {
+                                output.push(extractedDetails)
+                            }else{
+                                D.failure(D.errorType.GENERIC_ERROR)
+                            }
                         }
                     }
-                }
-                if (pageToken) {
-                    fetchData()
+                    if (pageToken) {
+                        fetchData()
+                    } else {
+                        console.log("All data retrieved successfully from: " + endpoint)
+                        resolve(output)
+                    }
                 } else {
-                    console.log("All data retrieved successfully from: " + endpoint)
-                    d.resolve(output)
+                    console.error("This endpoint: " + url + " is not reachable for 3 times.")
+                    D.failure(D.errorType.GENERIC_ERROR)
                 }
-            } else {
-                console.error("This endpoint: " + url + " is not reachable for 3 times.")
-                D.failure(D.errorType.GENERIC_ERROR)
-            }
-        })
-    }
-    fetchData()
-    return d.promise
+            })
+        }
+        fetchData()
+    })
 }
 
 /**
@@ -575,7 +576,7 @@ function retrieveAllMeetingQos(roomDetails) {
                 return processMeetingParticipantQos(responses, room)
             })
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 /**
@@ -583,16 +584,14 @@ function retrieveAllMeetingQos(roomDetails) {
  * @returns {Promise}
  */
 function retrieveMeetingParticipantQos(room) {
-    const d = D.q.defer()
     const meetingId = room.meetingId
     if (meetingId) {
         const url = "/v2/metrics/meetings/" + meetingId + "/participants/qos?page_size=" + pageSize
         return callGetHttpRequest(extractMeetingParticipantQos, checkParticipantQosBodyJsonIsNotEmpty, url)
     } else {
         console.log("There is no live meeting related to this room " + room.roomName)
-        d.resolve(meetingParticipantQosExtractors)
+        return Promise.resolve(meetingParticipantQosExtractors)
     }
-    return d.promise
 }
 
 /**
@@ -614,7 +613,7 @@ function retrieveAllRoomsLiveMeetingDetails(zoomRooms) {
     const promises = zoomRooms.map(function (roomId) {
         return retrieveRoomDetails(roomId)
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 /**

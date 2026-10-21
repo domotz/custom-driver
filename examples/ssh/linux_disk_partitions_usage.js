@@ -46,17 +46,17 @@ function checkSshError(err) {
 
 // Execute SSH command and return a promise
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            d.resolve(out);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) {
+                checkSshError(err);
+                reject(err);
+            } else {
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 
 // Function to validate the output of the executed command

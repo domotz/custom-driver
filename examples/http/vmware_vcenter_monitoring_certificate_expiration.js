@@ -52,25 +52,25 @@ function generateConfig (url) {
 
 // Function to handle the login procedure
 function login () {
-    var d = D.q.defer()
     var config = generateConfig("/api/session")
     config.auth = "basic"
     config.username = D.device.username()
     config.password = D.device.password()
-    D.device.http.post(config, function (error, response, body){
-        if (error) {          
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } 
-        d.resolve(JSON.parse(body))
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body){
+            if (error) {          
+                console.error(error)
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            } else if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR)
+            } else if (response.statusCode != 201) {
+                D.failure(D.errorType.GENERIC_ERROR)
+            } 
+            resolve(JSON.parse(body))
+        })
     })
-    return d.promise
 }
 
 /**
@@ -80,23 +80,23 @@ function login () {
  * @returns A promise containing the body of the response
  */
 function httpGet (url, sessionId) {
-    var d = D.q.defer()
     var config = generateConfig(url)
-    config.headers = {
-        "vmware-api-session-id": sessionId 
-    },
-    D.device.http.get(config, function (error, response, body) {
-        if (error) {          
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } 
-        d.resolve(JSON.parse(body))
+    return new Promise(function (resolve) {
+        config.headers = {
+            "vmware-api-session-id": sessionId 
+        },
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {          
+                console.error(error)
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR)
+            } 
+            resolve(JSON.parse(body))
+        })
     })
-    return d.promise
 }
 
 /**
@@ -145,7 +145,7 @@ function getTrustedRootCertificate (sessionId){
                         return rootCertChain[0]
                     })       
             })
-            return D.q.all(promises)
+            return Promise.all(promises)
         })
         .catch(function (error) {
             console.error("Error getting trusted root certificates:", error)
@@ -159,7 +159,7 @@ function getTrustedRootCertificate (sessionId){
  * @returns An array of promises for certificate retrieval
  */
 function loadCertificates (sessionId){
-    return D.q.all([
+    return Promise.all([
         getTLSCertificate (sessionId),
         getSigningCertificate (sessionId),
         getTrustedRootCertificate (sessionId)
@@ -186,22 +186,22 @@ function genarateCommands (certificates) {
  * @returns A promise containing the command output
  */
 function executeCommands (certificates) {
-    var d = D.q.defer()
     sshOptions.commands = genarateCommands(certificates)
-    D.device.sendSSHCommands(sshOptions, function (out, err) {
-        if (err) {
-            d.reject(err)
-        } else {
-            var data = JSON.stringify(out)
-            if (data.indexOf("command not found") != -1){
-                console.error("Command not found. Unable to retrieve certificates information.")
-                D.failure(D.errorType.PARSING_ERROR)
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(sshOptions, function (out, err) {
+            if (err) {
+                reject(err)
             } else {
-                d.resolve(data)
+                var data = JSON.stringify(out)
+                if (data.indexOf("command not found") != -1){
+                    console.error("Command not found. Unable to retrieve certificates information.")
+                    D.failure(D.errorType.PARSING_ERROR)
+                } else {
+                    resolve(data)
+                }
             }
-        }
+        })
     })
-    return d.promise
 }
 
 /**

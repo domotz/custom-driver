@@ -85,7 +85,6 @@ var body = JSON.stringify({
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost() {
-    var d = D.q.defer();
     var service = "ce";
     var method = "POST";
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
@@ -103,35 +102,36 @@ function httpPost() {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.post({
-        url: canonicalUri,
-        protocol: "https",
-        headers: {
-            "x-amz-date": amzdate,
-            "X-Amz-Target": "AWSInsightsIndexService.GetCostAndUsage",
-            "Content-Type": "application/x-amz-json-1.0",
-            "Authorization": auth,
-            "Host": host,
+    return new Promise(function (resolve) {
+        device.http.post({
+            url: canonicalUri,
+            protocol: "https",
+            headers: {
+                "x-amz-date": amzdate,
+                "X-Amz-Target": "AWSInsightsIndexService.GetCostAndUsage",
+                "Content-Type": "application/x-amz-json-1.0",
+                "Authorization": auth,
+                "Host": host,
+            },
+            body: body
         },
-        body: body
-    },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            console.error(body);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+        function (err, response, body) {
+            if (err) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode === 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                console.error(body);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**

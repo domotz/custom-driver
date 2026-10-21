@@ -133,16 +133,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error('Access token not found in response body')
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -152,10 +153,11 @@ function processLoginResponse(d) {
 
 /**
  * Processes the response from the request to retrieve rooms from Microsoft Graph.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processRoomsResponse(d) {
+function processRoomsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -167,16 +169,17 @@ function processRoomsResponse(d) {
         if (!listRooms.length) {
             console.info('There is no Rooms')
         }
-        d.resolve(listRooms)
+        resolve(listRooms)
     }
 }
 
 /**
  * Processes the response from the request to retrieve room availability from Microsoft Graph.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processRoomAvailabilityResponse(d) {
+function processRoomAvailabilityResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -188,7 +191,7 @@ function processRoomAvailabilityResponse(d) {
         if (!availabilityRooms.length) {
             console.info('There is no schedule info')
         }
-        d.resolve(availabilityRooms)
+        resolve(availabilityRooms)
     }
 }
 
@@ -197,7 +200,6 @@ function processRoomAvailabilityResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer()
     const config = {
         url: '/' + tenantId + '/oauth2/v2.0/token', protocol: 'https', headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -208,8 +210,9 @@ function login() {
             scope: 'https://graph.microsoft.com/.default'
         }, rejectUnauthorized: false, jar: true
     }
-    microsoftLoginService.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        microsoftLoginService.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -251,7 +254,6 @@ function extractAvailabilityRoomsInfo(room) {
  * @returns {Promise} A promise that resolves with the list of rooms.
  */
 function retrieveListRooms() {
-    const d = D.q.defer()
     const config = {
         url:  '/v1.0/places/microsoft.graph.room',
         protocol: 'https',
@@ -261,8 +263,9 @@ function retrieveListRooms() {
         rejectUnauthorized: false,
         jar: true
     }
-    teamsManagementService.http.get(config, processRoomsResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        teamsManagementService.http.get(config, processRoomsResponse(resolve, reject))
+    })
 }
 
 /**
@@ -280,7 +283,6 @@ function toISOStringNoMs(date) {
  * @returns {Promise} A promise that resolves with the availability data of the rooms.
  */
 function checkRoomAvailability(rooms) {
-    const d = D.q.defer()
     const schedules = rooms.map(function (room) {
         return room.emailAddress
     })
@@ -304,8 +306,9 @@ function checkRoomAvailability(rooms) {
         rejectUnauthorized: false,
         jar: true
     }
-    teamsManagementService.http.post(config, processRoomAvailabilityResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        teamsManagementService.http.post(config, processRoomAvailabilityResponse(resolve, reject))
+    })
 }
 
 /**

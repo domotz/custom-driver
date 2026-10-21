@@ -208,7 +208,6 @@ function findResource(config) {
     if(config.host){
         device = D.createExternalDevice(config.host);
     }
-    var d = D.q.defer();
     var start = new Date();
     var call;
     switch(config.method){
@@ -218,35 +217,36 @@ function findResource(config) {
     case "delete": call = device.http.delete; break;
     default: call = D.device.http.get;
     }
-    call(httpConfig, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-
-        if (!config.responseType) {
-            var contentType = response.headers["content-type"];
-            if(contentType.indexOf("application/json") >= 0){
-                config.responseType = responseType.json;
-            }else if(contentType.indexOf("text/html") >= 0){
-                config.responseType = responseType.html;
-            }else{
-                config.responseType = responseType.text;
+    return new Promise(function (resolve) {
+        call(httpConfig, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                D.failure(D.errorType.GENERIC_ERROR);
             }
-        }
-        config.responseBody = body;
-        config.elapsed = (new Date().getTime() - start) / 1000;
-        config.status = response.statusCode;
-        d.resolve(config);
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
 
+            if (!config.responseType) {
+                var contentType = response.headers["content-type"];
+                if(contentType.indexOf("application/json") >= 0){
+                    config.responseType = responseType.json;
+                }else if(contentType.indexOf("text/html") >= 0){
+                    config.responseType = responseType.html;
+                }else{
+                    config.responseType = responseType.text;
+                }
+            }
+            config.responseBody = body;
+            config.elapsed = (new Date().getTime() - start) / 1000;
+            config.status = response.statusCode;
+            resolve(config);
+
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -339,7 +339,7 @@ function valueValidation(config) {
  * @returns promise execute all http queries simultaneously
  */
 function findResourceForAll() {
-    return D.q.all(httpMonitoringConfig.map(findResource));
+    return Promise.all(httpMonitoringConfig.map(findResource));
 }
 /**
  * 

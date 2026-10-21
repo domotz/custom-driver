@@ -32,7 +32,7 @@ var table = D.createTable(
 );
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
@@ -47,7 +47,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -56,7 +56,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -67,13 +66,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 //Retrieves failover load balanging groups from the SonicWALL device
 function getFailoverLBgroups() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/reporting/failover-lb/status/members",
         protocol: "https",
@@ -81,8 +80,9 @@ function getFailoverLBgroups() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 function sanitize(output){

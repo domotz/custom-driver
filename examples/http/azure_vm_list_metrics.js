@@ -236,16 +236,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the request promise
+ * @param {Function} reject Rejects the request promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error("Access token not found in response body")
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -270,16 +271,17 @@ function filterVmInfoList(vmInfoList) {
 
 /**
  * Processes the response from the VMs API call, extracts VM data, and populates the table
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the request promise
+ * @param {Function} reject Rejects the request promise
  * @returns {Function} A function to process the HTTP response
  */
-function processVMsResponse(d) {
+function processVMsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (!bodyAsJSON.value) {
             D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No VMs found in the response")
+            reject("No VMs found in the response")
             return
         }
         let vmInfoList = bodyAsJSON.value.map(extractVmInfo)
@@ -288,17 +290,18 @@ function processVMsResponse(d) {
         } else {
             vmInfoList = filterVmInfoList(vmInfoList)
         }
-        d.resolve(vmInfoList)
+        resolve(vmInfoList)
     }
 }
 
 /**
  * Processes the VM configuration API response and updates the VM display status
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the request promise
+ * @param {Function} reject Rejects the request promise
  * @param {Object} vmInfo The VM information object to be updated with display status
  * @returns {Function} A function to process the HTTP response and update the VM display status
  */
-function processVmConfigResponse(d, vmInfo, error, response, body) {
+function processVmConfigResponse(resolve, reject, vmInfo, error, response, body) {
     checkHTTPError(error, response)
     if (error || response.statusCode !== 200) {
         return
@@ -306,10 +309,10 @@ function processVmConfigResponse(d, vmInfo, error, response, body) {
     try {
         const bodyAsJSON = JSON.parse(body)
         extractVmConfig(vmInfo, bodyAsJSON)
-        d.resolve(vmInfo)
+        resolve(vmInfo)
     } catch (parseError) {
         console.error("Error parsing VM configuration:", parseError)
-        d.reject(parseError)
+        reject(parseError)
     }
 }
 
@@ -348,14 +351,15 @@ function extractMetricsFromBody(body) {
 
 /**
  * Processes the response from the VMs API call and populates the table with VM data
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the request promise
+ * @param {Function} reject Rejects the request promise
  * @param vmInfo
  * @param error
  * @param response
  * @param body
  * @returns {Function} A function to process the HTTP response
  */
-function processVmPerformanceResponse(d, vmInfo, error, response, body) {
+function processVmPerformanceResponse(resolve, reject, vmInfo, error, response, body) {
     checkHTTPError(error, response)
     if (error || response.statusCode !== 200) {
         return
@@ -363,10 +367,10 @@ function processVmPerformanceResponse(d, vmInfo, error, response, body) {
     try {
         const vmMetrics = extractMetricsFromBody(body);
         insertAllMetrics(vmInfo.vmName, vmMetrics);
-        d.resolve(allMetricByVm)
+        resolve(allMetricByVm)
     } catch (parseError) {
         console.error("Error parsing VM Performance:", parseError)
-        d.reject("Failed to parse response: " + parseError)
+        reject("Failed to parse response: " + parseError)
     }
 }
 
@@ -375,7 +379,6 @@ function processVmPerformanceResponse(d, vmInfo, error, response, body) {
  * @returns {Promise} A promise that resolves upon successful login
  */
 function login() {
-    const d = D.q.defer()
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -386,8 +389,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     }
-    azureCloudLoginService.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -474,25 +478,25 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the VM data upon successful retrieval from the Azure API
  */
 function retrieveVMs() {
-    const d = D.q.defer()
     const config = generateConfig("/providers/Microsoft.Compute/virtualMachines?api-version=2021-04-01")
-    azureCloudManagementService.http.get(config, processVMsResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processVMsResponse(resolve, reject))
+    })
 }
 
 /**
  * Performs an HTTP GET request and processes the response with a callback.
  * @param {Object} config - The HTTP request configuration.
  * @param {Object} vmInfo - Virtual machine details for processing.
- * @param {Function} callback - Handles the response with the signature: (deferred, vmInfo, error, response, body).
+ * @param {Function} callback - Handles the response with the signature: (resolve, reject, vmInfo, error, response, body).
  * @returns {Promise} Resolves or rejects based on the callback's logic.
  */
 function callGetHttpRequest(config, vmInfo, callback) {
-    var d = D.q.defer();
-    azureCloudManagementService.http.get(config, function (error, response, body) {
-        callback(d, vmInfo, error, response, body)
-    })
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, function (error, response, body) {
+            callback(resolve, reject, vmInfo, error, response, body)
+        })
+    });
 }
 
 /**
@@ -505,7 +509,7 @@ function retrieveVMsConfiguration(vmInfoList) {
         const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/instanceView?api-version=2024-07-01")
         return callGetHttpRequest(config, vmInfo, processVmConfigResponse)
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 /**
@@ -540,7 +544,7 @@ function retrieveVMsPerformanceMetrics(vmInfoList) {
             })
         }
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 /**

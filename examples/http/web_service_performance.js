@@ -23,7 +23,7 @@ var urls = D.getParameter("urls");
  * @returns promise that resolves when all response times have been obtained
  */
 function getResponseTimes() {
-    return D.q.all(
+    return Promise.all(
         urls.map(responseTime)
     );
 }
@@ -33,7 +33,6 @@ function getResponseTimes() {
  * @returns Promise that wait for the HTTP call to the URL and parse the response data
  */
 function responseTime(url) {
-    var d = D.q.defer();
     var address, port, path;
 
     var hasProtocol = /^https?:\/\//i.test(url);
@@ -49,7 +48,7 @@ function responseTime(url) {
         path = urlParts[3] || "/";
     } else {
         console.error("Invalid URL format");
-        return d.resolve({
+        return Promise.resolve({
             server: url,
             statusCode: -1,
             responseTime: -1
@@ -58,30 +57,30 @@ function responseTime(url) {
     
     var website = D.createExternalDevice(address);
     var start = new Date();
-    website.http.get({
-        url: path,
-        timeout: 5000,
-        time: true,
-        port: port
-    }, function (err, resp) {
-        var data = {
-            server: hasProtocol ? url : url.replace(/^https?:\/\//i, ''),
-            statusCode: resp ? resp.statusCode : -1,
-            responseTime: -1
-        };
-        if (err) {
-            console.error(err);
-            return d.resolve(data);
-        }
-        if (resp && resp.elapsedTime) {
-            data.responseTime = resp.elapsedTime;
-        } else {
-            data.responseTime = new Date() - start;
-        }
-        d.resolve(data);
+    return new Promise(function (resolve) {
+        website.http.get({
+            url: path,
+            timeout: 5000,
+            time: true,
+            port: port
+        }, function (err, resp) {
+            var data = {
+                server: hasProtocol ? url : url.replace(/^https?:\/\//i, ''),
+                statusCode: resp ? resp.statusCode : -1,
+                responseTime: -1
+            };
+            if (err) {
+                console.error(err);
+                return resolve(data);
+            }
+            if (resp && resp.elapsedTime) {
+                data.responseTime = resp.elapsedTime;
+            } else {
+                data.responseTime = new Date() - start;
+            }
+            resolve(data);
+        });
     });
-
-    return d.promise;
 }
 
 function sanitize(output){

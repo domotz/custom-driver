@@ -52,18 +52,18 @@ function checkSshError(err) {
 }
 
 function executeCommand(command){
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            console.error("Command execution error: " + err);
-            checkSsherr(err);
-            d.reject(err);
-        } else {
-            d.resolve(out);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) {
+                console.error("Command execution error: " + err);
+                checkSsherr(err);
+                reject(err);
+            } else {
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**

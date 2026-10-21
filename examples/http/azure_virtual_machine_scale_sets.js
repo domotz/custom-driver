@@ -250,16 +250,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            d.resolve();
+            resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -284,16 +285,17 @@ function filterVirtualMachineScaleSetInfoList(virtualMachineScaleSetInfoList) {
 
 /**
  * Processes the response from the Virtual Machine Scale Sets API call and extracts Virtual Machine Scale Set information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processVirtualMachineScaleSetsResponse(d) {
+function processVirtualMachineScaleSetsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
             D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No Virtual Machine Scale Sets found in the response");
+            reject("No Virtual Machine Scale Sets found in the response");
             return;
         }
         let virtualMachineScaleSetInfoList = bodyAsJSON.value.map(extractVirtualMachineScaleSetInfo);
@@ -302,7 +304,7 @@ function processVirtualMachineScaleSetsResponse(d) {
         } else {
             virtualMachineScaleSetInfoList = filterVirtualMachineScaleSetInfoList(virtualMachineScaleSetInfoList);
         }
-        d.resolve(virtualMachineScaleSetInfoList);
+        resolve(virtualMachineScaleSetInfoList);
     }
 }
 
@@ -311,7 +313,6 @@ function processVirtualMachineScaleSetsResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -322,8 +323,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    azureCloudLoginService.http.post(config, processLoginResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -382,10 +384,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the Virtual Machine Scale Set data.
  */
 function retrieveVirtualMachineScaleSets() {
-    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2024-07-01");
-    azureCloudManagementService.http.get(config, processVirtualMachineScaleSetsResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processVirtualMachineScaleSetsResponse(resolve, reject));
+    });
 }
 
 /**
@@ -424,11 +426,12 @@ function extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachin
 
 /**
  * Processes the Virtual Machine Scale Set performance API response and updates the Virtual Machine Scale Set information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {Object} virtualMachineScaleSetInfo - The Virtual Machine Scale Set information to update.
  * @returns {Function} A function to process the HTTP response.
  */
-function processVirtualMachineScaleSetPerformanceResponse(d, virtualMachineScaleSetInfo) {
+function processVirtualMachineScaleSetPerformanceResponse(resolve, reject, virtualMachineScaleSetInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         if (error || response.statusCode !== 200) {
@@ -443,10 +446,10 @@ function processVirtualMachineScaleSetPerformanceResponse(d, virtualMachineScale
             bodyAsJSON.value.map(function (performanceInfo) {
                 extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachineScaleSetInfo)
             });
-            d.resolve(virtualMachineScaleSetInfo);
+            resolve(virtualMachineScaleSetInfo);
         } catch (parseError) {
             console.error("Error parsing Virtual Machine Scale Sets configuration:", parseError);
-            d.reject("Failed to parse response for " + virtualMachineScaleSetInfo.name);
+            reject("Failed to parse response for " + virtualMachineScaleSetInfo.name);
         }
     }
 }
@@ -495,13 +498,13 @@ function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSe
     }
     virtualMachineScaleSetInfoList.forEach(function (diskInfo) {
         performanceKeyGroups.forEach(function (group) {
-            const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-            azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
-            promises.push(d.promise);
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(resolve, reject, diskInfo));
+            }));
         });
     });
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
 /**

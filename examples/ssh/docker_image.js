@@ -49,16 +49,15 @@ function checkSshError(err) {
  * @returns Promise wait for docker images result
  */
 function getDockerImages() {
-    var d = D.q.defer();
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) checkSshError(err);
-        var images = out.split("\n").map(function (json_string) {
-            return JSON.parse(json_string);
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) checkSshError(err);
+            var images = out.split("\n").map(function (json_string) {
+                return JSON.parse(json_string);
+            });
+            resolve(images);
         });
-        d.resolve(images);
     });
-
-    return d.promise;
 }
 
 /**

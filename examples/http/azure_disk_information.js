@@ -246,16 +246,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            d.resolve();
+            resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -280,16 +281,17 @@ function filterDiskInfoList(diskInfoList) {
 
 /**
  * Processes the response from the Disks API call and extracts disk information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDisksResponse(d) {
+function processDisksResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
             D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No Disks found in the response");
+            reject("No Disks found in the response");
             return;
         }
         let diskInfoList = bodyAsJSON.value.map(extractDiskInfo);
@@ -298,7 +300,7 @@ function processDisksResponse(d) {
         } else {
             diskInfoList = filterDiskInfoList(diskInfoList);
         }
-        d.resolve(diskInfoList);
+        resolve(diskInfoList);
     }
 }
 
@@ -307,7 +309,6 @@ function processDisksResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -318,8 +319,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    azureCloudLoginService.http.post(config, processLoginResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -378,10 +380,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the disk data.
  */
 function retrieveDisks() {
-    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.Compute/disks?api-version=2021-04-01");
-    azureCloudManagementService.http.get(config, processDisksResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processDisksResponse(resolve, reject));
+    });
 }
 
 /**
@@ -420,11 +422,12 @@ function extractDiskPerformance(performanceInfo, diskInfo) {
 
 /**
  * Processes the disk performance API response and updates the disk information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {Object} diskInfo - The disk information to update.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDiskPerformanceResponse(d, diskInfo) {
+function processDiskPerformanceResponse(resolve, reject, diskInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         if (error || response.statusCode !== 200) {
@@ -439,10 +442,10 @@ function processDiskPerformanceResponse(d, diskInfo) {
             bodyAsJSON.value.map(function (performanceInfo) {
                 extractDiskPerformance(performanceInfo, diskInfo)
             });
-            d.resolve(diskInfo);
+            resolve(diskInfo);
         } catch (parseError) {
             console.error("Error parsing Disks configuration:", parseError);
-            d.reject("Failed to parse response for " + diskInfo.name);
+            reject("Failed to parse response for " + diskInfo.name);
         }
     }
 }
@@ -479,13 +482,13 @@ function retrieveDisksPerformanceMetrics(diskInfoList) {
     }
    diskInfoList.forEach(function (diskInfo) {
         performanceKeyGroups.forEach(function (group) {
-            const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-            azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
-            promises.push(d.promise);
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, processDiskPerformanceResponse(resolve, reject, diskInfo));
+            }));
         });
     });
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
 /**

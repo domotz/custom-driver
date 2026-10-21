@@ -74,22 +74,21 @@ var redisTelnetParams = {
  * @returns Promise wait for redis information
  */
 function getRedisInfo() {
-    var d = D.q.defer();
-    telnet(redisTelnetParams, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + redisTelnetParams.command);
-            failure(err);
-        }
-        if (!out) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (out.indexOf("-NOAUTH") >= 0) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        d.resolve(out.split("\n"));
+    return new Promise(function (resolve) {
+        telnet(redisTelnetParams, function (out, err) {
+            if (err) {
+                console.error("error while executing command: " + redisTelnetParams.command);
+                failure(err);
+            }
+            if (!out) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (out.indexOf("-NOAUTH") >= 0) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            resolve(out.split("\n"));
+        });
     });
-
-    return d.promise;
 }
 
 /**

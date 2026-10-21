@@ -52,20 +52,20 @@ function checkSshError(err) {
 
 // Execute SSH command and return a promise
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            checkSshError(error);
-        } else {           
-            d.resolve(output);      
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                checkSshError(error);
+            } else {           
+                resolve(output);      
+            }
+        });
     });
-    return d.promise;
 }
 
 function executePoolCommands(){
-    return D.q.all([
+    return Promise.all([
         executeCommand(dhcpPoolInfo),
         executeCommand(dhcpPoolUsedIps)
     ]);

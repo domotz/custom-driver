@@ -87,16 +87,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response, extracting the access token
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
   return function process(error, response, body) {
     checkHTTPError(error, response)
     const bodyAsJSON = JSON.parse(body)
     if (bodyAsJSON.access_token) {
       accessToken = bodyAsJSON.access_token
-      d.resolve()
+      resolve()
     } else {
       console.error('Access token not found in response body')
       D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -118,17 +119,18 @@ function filterStorageAccountsByRG(storageAccounts) {
 
 /**
  * Processes the response containing storage accounts, filtering and resolving the data.
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processStorageAccountsResponse(d) {
+function processStorageAccountsResponse(resolve, reject) {
   return function process(error, response, body) {
     checkHTTPError(error, response)
     const bodyAsJSON = JSON.parse(body)
     if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
       const storageAccounts = bodyAsJSON.value.map(extracStorageAccountsInfo)
       const filteredAccounts = filterStorageAccountsByRG(storageAccounts)
-      d.resolve(filteredAccounts)
+      resolve(filteredAccounts)
     } else {
       console.error('No storage accounts found')
       D.failure(D.errorType.GENERIC_ERROR)
@@ -138,16 +140,17 @@ function processStorageAccountsResponse(d) {
 
 /**
  * Processes the performance metrics response for storage accounts
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processStorageAccountsMetricsResponse(d) {
+function processStorageAccountsMetricsResponse(resolve, reject) {
   return function process(error, response, body) {
     checkHTTPError(error, response);
     const bodyAsJSON = JSON.parse(body)
     if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
       const metricsData = extractMetricsInfo(bodyAsJSON)
-      d.resolve(metricsData)
+      resolve(metricsData)
     } else {
       console.error('No performance metrics found for the storage account')
       D.failure(D.errorType.GENERIC_ERROR)
@@ -160,7 +163,6 @@ function processStorageAccountsMetricsResponse(d) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-  const d = D.q.defer()
   const config = {
     url: '/' + tenantId + '/oauth2/token', 
     protocol: 'https', 
@@ -176,8 +178,9 @@ function login() {
     rejectUnauthorized: false, 
     jar: true
   }
-  azureCloudLoginService.http.post(config, processLoginResponse(d))
-  return d.promise
+  return new Promise(function (resolve, reject) {
+    azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject))
+  })
 }
 
 /**
@@ -254,10 +257,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the list of storage accounts
  */
 function retrieveStorageAccounts() {
-  const d = D.q.defer()
   const config = generateConfig('/providers/Microsoft.Storage/storageAccounts?api-version=2024-01-01')
-  azureCloudManagementService.http.get(config, processStorageAccountsResponse(d))
-  return d.promise
+  return new Promise(function (resolve, reject) {
+    azureCloudManagementService.http.get(config, processStorageAccountsResponse(resolve, reject))
+  })
 }
 
 /**
@@ -276,13 +279,13 @@ function retrieveStorageAccountsMetrics(storageAccounts) {
   }
   storageAccounts.forEach(function (storageAccount) {
     performanceKeyGroups.forEach(function (group) {
-      const d = D.q.defer()
       const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + group + "&timespan=PT1H")
-      azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(d, storageAccount))
-      promises.push(d.promise)
+      promises.push(new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(resolve, reject, storageAccount))
+      }))
     })
   })
-  return D.q.all(promises)
+  return Promise.all(promises)
 }
 
 /**

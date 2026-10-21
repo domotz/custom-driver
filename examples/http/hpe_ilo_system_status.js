@@ -13,38 +13,38 @@
 
 // Function to make an HTTP POST request to retrieve status from the HPE iLO device
 function getSystemStatus() {
-    var d = D.q.defer();
     var payload = {
         "Select": [{
             "From": "/Systems/1/",
             "Properties": ["Oem.Hpe.AggregateHealthStatus as Health", "PowerState AS PowerState", "Oem.Hpe.PostState as PostState"]
         }]
     };
-    D.device.http.post({
-        url: "/redfish/v1/Views",
-        username: D.device.username(), 
-        password: D.device.password(), 
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false,
-        body: JSON.stringify(payload),
-        headers: {
-            "Content-Type":"application/json"
-        }
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.post({
+            url: "/redfish/v1/Views",
+            username: D.device.username(), 
+            password: D.device.password(), 
+            protocol: "https",
+            auth: "basic",
+            jar: true,
+            rejectUnauthorized: false,
+            body: JSON.stringify(payload),
+            headers: {
+                "Content-Type":"application/json"
+            }
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // Create a Custom Driver table to store system status information

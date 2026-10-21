@@ -43,24 +43,24 @@ function checkSshError (error) {
  * @returns {Promise} A promise that resolves with the command output or rejects with an error
  */
 function executeCommands () {
-    const d = D.q.defer()
     sshConfig.commands = ['display authentication-scheme', 'display stp']
-    D.device.sendSSHCommands(sshConfig, function (output, error) {
-        if (error) {
-            checkSshError(error)
-            d.reject(error)
-        } else {
-            if (output && output.some(function(commandOutput) {
-                return commandOutput.includes("Ambiguous command found")
-            })) {
-                console.error("Error: Ambiguous command found")
-                D.failure(D.errorType.PARSING_ERROR)
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(sshConfig, function (output, error) {
+            if (error) {
+                checkSshError(error)
+                reject(error)
             } else {
-                d.resolve(output)
+                if (output && output.some(function(commandOutput) {
+                    return commandOutput.includes("Ambiguous command found")
+                })) {
+                    console.error("Error: Ambiguous command found")
+                    D.failure(D.errorType.PARSING_ERROR)
+                } else {
+                    resolve(output)
+                }
             }
-        }
+        })
     })
-    return d.promise
 }
 
 /**

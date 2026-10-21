@@ -34,30 +34,30 @@ const table = D.createTable(
  * @returns {Promise} A promise that resolves with the JSON response containing temperature data from the iDRAC API
  */
 function getComponentsTemperature() {
-    const d = D.q.defer()
-    D.device.http.get({
-        url: "/redfish/v1/Chassis/System.Embedded.1/Thermal",
-        username: D.device.username(), 
-        password: D.device.password(), 
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (response.statusCode === 400) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(JSON.parse(body))
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: "/redfish/v1/Chassis/System.Embedded.1/Thermal",
+            username: D.device.username(), 
+            password: D.device.password(), 
+            protocol: "https",
+            auth: "basic",
+            jar: true,
+            rejectUnauthorized: false
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error)
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else if (response.statusCode === 400) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            } else if (response.statusCode === 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR)
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else {
+                resolve(JSON.parse(body))
+            }
+        })
     })
-    return d.promise
 }
 
 /**

@@ -28,14 +28,14 @@ function checkSshError(err) {
  * @returns Promise wait for docker system information
  */
 function getDockerInfo() {
-    var d = D.q.defer();
 
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if(err) checkSshError(err);
-        d.resolve({ key: "", value: JSON.parse(out) });
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if(err) checkSshError(err);
+            resolve({ key: "", value: JSON.parse(out) });
         
+        });
     });
-    return d.promise;
 }
 
 var data = [];

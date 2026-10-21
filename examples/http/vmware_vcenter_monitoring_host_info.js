@@ -29,7 +29,6 @@ var hostId = D.getParameter("hostId");
 
 // Function to handle the login procedure
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/sdk/vim25/8.0.1.0/SessionManager/SessionManager/Login",
         protocol: "https",
@@ -40,29 +39,29 @@ function login() {
             "password": D.device.password() 
         })
     };
-    D.device.http.post(config, function(error, response){
-        if (error) {  
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);                     
-        } else {
-            if (response.body && response.body.indexOf("Cannot complete login") !== -1) {
-                console.error("Cannot complete login due to an incorrect username or password");
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.body && response.body.indexOf("Invalid URI") !== -1) {
-                console.error("Invalid URI");
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            var sessionId = response.headers["vmware-api-session-id"];
-            d.resolve(sessionId);
-        }         
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response){
+            if (error) {  
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);                     
+            } else {
+                if (response.body && response.body.indexOf("Cannot complete login") !== -1) {
+                    console.error("Cannot complete login due to an incorrect username or password");
+                    D.failure(D.errorType.AUTHENTICATION_ERROR);
+                }
+                if (response.body && response.body.indexOf("Invalid URI") !== -1) {
+                    console.error("Invalid URI");
+                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                }
+                var sessionId = response.headers["vmware-api-session-id"];
+                resolve(sessionId);
+            }         
+        });
     });
-    return d.promise;
 }
 
 // This function retrieves host information
 function getHostInfo(sessionId) {
-    var d = D.q.defer();
     var config = {
         url: "/sdk/vim25/8.0.1.0/HostSystem/" + hostId + "/summary",
         protocol: "https",
@@ -72,23 +71,24 @@ function getHostInfo(sessionId) {
             "vmware-api-session-id": sessionId 
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else  {
-            if (response.body && response.body.indexOf("Invalid URI") !== -1) {
-                console.error("Invalid URI");
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.body && response.body.indexOf("already been deleted or has not been completely created") !== -1) {
-                console.error("The " + hostId + " has already been deleted or has not been completely created");
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            d.resolve(JSON.parse(body));
-        } 
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body){
+            if (error) {          
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else  {
+                if (response.body && response.body.indexOf("Invalid URI") !== -1) {
+                    console.error("Invalid URI");
+                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                }
+                if (response.body && response.body.indexOf("already been deleted or has not been completely created") !== -1) {
+                    console.error("The " + hostId + " has already been deleted or has not been completely created");
+                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                }
+                resolve(JSON.parse(body));
+            } 
+        });
     });
-    return d.promise;
 }
 
 // This function extracts data from the response body  

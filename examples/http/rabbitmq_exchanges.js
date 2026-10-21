@@ -57,30 +57,30 @@ var table = D.createTable("Exchanges", [
  * @returns promise for http response body
  */
 function httpGet(url) {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: url,
-        port: port,
-        username: D.device.username(),
-        password: D.device.password(),
-        auth: "basic"
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: url,
+            port: port,
+            username: D.device.username(),
+            password: D.device.password(),
+            auth: "basic"
 
-    }, function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(body);
+        }, function (err, response, body) {
+            if (err) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -163,7 +163,7 @@ function fillTable(exchanges) {
 
 // load exchanges informations
 function loadData() {
-    return D.q.all([
+    return Promise.all([
         getExchanges()
     ]);
 }

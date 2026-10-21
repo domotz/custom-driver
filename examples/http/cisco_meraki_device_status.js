@@ -97,24 +97,24 @@ function handleApiError(error, response, body) {
  * @returns {Promise} A promise that resolves with the parsed response data or rejects with an error
  */
 function getApiResponse(url) {
-    const d = D.q.defer()
     const requestOptions = createRequestOptions(url)
     console.log('🌍Sending API request to:', url)
-    externalDevice.http.get(requestOptions, function (error, response, body) {
-        const errorResponse = handleApiError(error, response, body)
-        if (errorResponse) {
-            d.reject(errorResponse)
-            return
-        }
-        if (body) {
-            const parsedBody = JSON.parse(body)
-            d.resolve(parsedBody)
-        } else {
-            console.error('❌ No response body received')
-            D.failure(D.errorType.PARSING_ERROR)
-        }
+    return new Promise(function (resolve, reject) {
+        externalDevice.http.get(requestOptions, function (error, response, body) {
+            const errorResponse = handleApiError(error, response, body)
+            if (errorResponse) {
+                reject(errorResponse)
+                return
+            }
+            if (body) {
+                const parsedBody = JSON.parse(body)
+                resolve(parsedBody)
+            } else {
+                console.error('❌ No response body received')
+                D.failure(D.errorType.PARSING_ERROR)
+            }
+        })
     })
-    return d.promise
 }
 
 /**

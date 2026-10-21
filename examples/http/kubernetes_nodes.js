@@ -61,16 +61,16 @@ var nodeTable = D.createTable(
  * @returns http api response
  */
 function httpGet(params) {
-    var d = D.q.defer();
-    D.device.http.get(params, function (err, response) {
-        if (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(response);
+    return new Promise(function (resolve) {
+        D.device.http.get(params, function (err, response) {
+            if (err) {
+                console.error(err);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(response);
 
+        });
     });
-    return d.promise;
 }
 
 var Kube = {
@@ -228,7 +228,7 @@ var Fmt = {
  * @returns object containing the nodes and pods information
  */
 function parse() {
-    return D.q.all([
+    return Promise.all([
         Kube.getNodes(),
         Kube.getPods(),
         Kube.getEndpointIPs()
@@ -418,7 +418,7 @@ function fillTable(data) {
 * @documentation This procedure is used to validate if the nodes, pods, endpointIPs are accessible for the device
 */
 function validate() {
-    D.q.all([
+    Promise.all([
         Kube.getNodes(),
         Kube.getPods(),
         Kube.getEndpointIPs()

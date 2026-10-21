@@ -59,17 +59,17 @@ function checkSshError(err) {
  * Return a promise that resolves with the command output or rejects with an error
  */
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            console.error(err);
-            d.resolve({err: err.message});
-        } else {
-            d.resolve(out);
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) {
+                console.error(err);
+                resolve({err: err.message});
+            } else {
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 
 function sanitize(output){
@@ -147,7 +147,7 @@ function parseData(data) {
             });
         promises.push(promise);
     });
-    D.q.all(promises)
+    Promise.all(promises)
         .then(function() {
             D.success(kvmsTable);
         });

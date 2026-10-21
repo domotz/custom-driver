@@ -325,7 +325,6 @@ function get_status(){
 
 function getAccessToken() {
     console.log("Getting access token... - execute getAccessToken()");
-    const d = D.q.defer();
 
     const config = {
         url: "/oauth/token",
@@ -339,32 +338,32 @@ function getAccessToken() {
             client_secret: client_secret
         })
     };
+    return new Promise(function (resolve, reject) {
 
-    polyLensAPI.http.post(config, function (err, response, body) {
-        console.log("Token response received");
-        if (err) {
-            console.error("Token error:", err);
-            d.reject(err);
-            return;
-        }
-        try {
-            const bodyAsJSON = JSON.parse(body);
-            console.log("Token parsed successfully");
-            accessToken = bodyAsJSON.access_token;
-            d.resolve(accessToken);
-        } catch (e) {
-            console.error("Token parsing error:", e);
-            console.log("Raw token response:", body);
-            d.reject(e);
-        }
+        polyLensAPI.http.post(config, function (err, response, body) {
+            console.log("Token response received");
+            if (err) {
+                console.error("Token error:", err);
+                reject(err);
+                return;
+            }
+            try {
+                const bodyAsJSON = JSON.parse(body);
+                console.log("Token parsed successfully");
+                accessToken = bodyAsJSON.access_token;
+                resolve(accessToken);
+            } catch (e) {
+                console.error("Token parsing error:", e);
+                console.log("Raw token response:", body);
+                reject(e);
+            }
+        });
+
     });
-
-    return d.promise;
 }
 
 function retrieveInventory() {
     console.log("Retrieving inventory... - execute retrieveInventory()");
-    const d = D.q.defer();
 
     const query = {
         query: 'query allDevices($params: DeviceFindArgs) {' +
@@ -403,52 +402,52 @@ function retrieveInventory() {
     };
 
     console.log("Sending GraphQL query...");
-    polyLensGraphQLAPI.http.post(config, function (err, response, body) {
-        if (err) {
-            console.error("GraphQL error:", err);
-            d.reject(err);
-            return;
-        }
-        console.log("GraphQL response received");
-        try {
-            const bodyAsJSON = JSON.parse(body);
-            console.log("GraphQL response parsed");
-            if (bodyAsJSON.errors) {
-                console.error("GraphQL errors:", bodyAsJSON.errors);
-                apiResponseOutcome = "error";
-                // Store errors for potential error mode processing
-                graphqlErrors = graphqlErrors.concat(bodyAsJSON.errors);
-                // Continue execution even with errors if we have data
-                if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
-                    console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices despite errors");
-                    d.resolve(bodyAsJSON.data.deviceSearch.edges);
-                    return;
-                }
-                d.reject(bodyAsJSON.errors);
+    return new Promise(function (resolve, reject) {
+        polyLensGraphQLAPI.http.post(config, function (err, response, body) {
+            if (err) {
+                console.error("GraphQL error:", err);
+                reject(err);
                 return;
             }
-            if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
-                console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices");
-                d.resolve(bodyAsJSON.data.deviceSearch.edges);
-            } else {
-                console.error("Unexpected response structure:", bodyAsJSON);
+            console.log("GraphQL response received");
+            try {
+                const bodyAsJSON = JSON.parse(body);
+                console.log("GraphQL response parsed");
+                if (bodyAsJSON.errors) {
+                    console.error("GraphQL errors:", bodyAsJSON.errors);
+                    apiResponseOutcome = "error";
+                    // Store errors for potential error mode processing
+                    graphqlErrors = graphqlErrors.concat(bodyAsJSON.errors);
+                    // Continue execution even with errors if we have data
+                    if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
+                        console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices despite errors");
+                        resolve(bodyAsJSON.data.deviceSearch.edges);
+                        return;
+                    }
+                    reject(bodyAsJSON.errors);
+                    return;
+                }
+                if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
+                    console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices");
+                    resolve(bodyAsJSON.data.deviceSearch.edges);
+                } else {
+                    console.error("Unexpected response structure:", bodyAsJSON);
+                    apiResponseOutcome = "error";
+                    reject("Invalid response structure");
+                }
+            } catch (e) {
+                console.error("GraphQL response parsing error:", e);
+                console.log("Raw GraphQL response:", body);
                 apiResponseOutcome = "error";
-                d.reject("Invalid response structure");
+                reject(e);
             }
-        } catch (e) {
-            console.error("GraphQL response parsing error:", e);
-            console.log("Raw GraphQL response:", body);
-            apiResponseOutcome = "error";
-            d.reject(e);
-        }
-    });
+        });
 
-    return d.promise;
+    });
 }
 
 function retrieveInventoryByMacAddress() {
     console.log("Retrieving inventory by MAC address... - execute retrieveInventoryByMacAddress()");
-    const d = D.q.defer();
 
     var deviceMacAddress = D.device.macAddress().toLowerCase();
     console.log("Device MAC address:", deviceMacAddress);
@@ -563,83 +562,82 @@ function retrieveInventoryByMacAddress() {
     };
 
     console.log("Sending GraphQL query for MAC address...");
-    polyLensGraphQLAPI.http.post(config, function (err, response, body) {
-        if (err) {
-            console.error("GraphQL error:", err);
-            d.reject(err);
-            return;
-        }
-        console.log("GraphQL response received");
-        try {
-            const bodyAsJSON = JSON.parse(body);
-            console.log("GraphQL response parsed");
-            if (bodyAsJSON.errors) {
-                console.error("GraphQL errors:", bodyAsJSON.errors);
-                apiResponseOutcome = "error";
-                // Store errors for potential error mode processing
-                graphqlErrors = graphqlErrors.concat(bodyAsJSON.errors);
-                // Continue execution even with errors if we have data
-                if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
-                    console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices by MAC address despite errors");
+    return new Promise(function (resolve, reject) {
+        polyLensGraphQLAPI.http.post(config, function (err, response, body) {
+            if (err) {
+                console.error("GraphQL error:", err);
+                reject(err);
+                return;
+            }
+            console.log("GraphQL response received");
+            try {
+                const bodyAsJSON = JSON.parse(body);
+                console.log("GraphQL response parsed");
+                if (bodyAsJSON.errors) {
+                    console.error("GraphQL errors:", bodyAsJSON.errors);
+                    apiResponseOutcome = "error";
+                    // Store errors for potential error mode processing
+                    graphqlErrors = graphqlErrors.concat(bodyAsJSON.errors);
+                    // Continue execution even with errors if we have data
+                    if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
+                        console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices by MAC address despite errors");
                     
-                    if (bodyAsJSON.data.deviceSearch.edges.length === 0) {
-                        console.error("No device found with the specified MAC address");
-                        d.reject("No device found with MAC address: " + deviceMacAddress);
+                        if (bodyAsJSON.data.deviceSearch.edges.length === 0) {
+                            console.error("No device found with the specified MAC address");
+                            reject("No device found with MAC address: " + deviceMacAddress);
+                            return;
+                        }
+                    
+                        // Extract the device from the edges array (only one device expected due to pageSize: 1)
+                        var device = bodyAsJSON.data.deviceSearch.edges[0].node;
+                        console.log("Processing device data directly from MAC address lookup");
+                    
+                        // Process the device data directly (same as retrieveDeviceDetails does)
+                        createDeviceInfoVariables(device);
+                        resolve();
                         return;
                     }
-                    
+                    reject(bodyAsJSON.errors);
+                    return;
+                }
+                if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
+                    console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices by MAC address");
+                
+                    if (bodyAsJSON.data.deviceSearch.edges.length === 0) {
+                        console.error("No device found with the specified MAC address");
+                        reject("No device found with MAC address: " + deviceMacAddress);
+                        return;
+                    }
+                
                     // Extract the device from the edges array (only one device expected due to pageSize: 1)
                     var device = bodyAsJSON.data.deviceSearch.edges[0].node;
                     console.log("Processing device data directly from MAC address lookup");
-                    
+                
                     // Process the device data directly (same as retrieveDeviceDetails does)
                     createDeviceInfoVariables(device);
-                    d.resolve();
-                    return;
+                    resolve();
+                } else {
+                    console.error("Unexpected response structure:", bodyAsJSON);
+                    apiResponseOutcome = "error";
+                    reject("Invalid response structure");
                 }
-                d.reject(bodyAsJSON.errors);
-                return;
-            }
-            if (bodyAsJSON.data && bodyAsJSON.data.deviceSearch && bodyAsJSON.data.deviceSearch.edges) {
-                console.log("Found", bodyAsJSON.data.deviceSearch.edges.length, "devices by MAC address");
-                
-                if (bodyAsJSON.data.deviceSearch.edges.length === 0) {
-                    console.error("No device found with the specified MAC address");
-                    d.reject("No device found with MAC address: " + deviceMacAddress);
-                    return;
-                }
-                
-                // Extract the device from the edges array (only one device expected due to pageSize: 1)
-                var device = bodyAsJSON.data.deviceSearch.edges[0].node;
-                console.log("Processing device data directly from MAC address lookup");
-                
-                // Process the device data directly (same as retrieveDeviceDetails does)
-                createDeviceInfoVariables(device);
-                d.resolve();
-            } else {
-                console.error("Unexpected response structure:", bodyAsJSON);
+            } catch (e) {
+                console.error("GraphQL response parsing error:", e);
+                console.log("Raw GraphQL response:", body);
                 apiResponseOutcome = "error";
-                d.reject("Invalid response structure");
+                reject(e);
             }
-        } catch (e) {
-            console.error("GraphQL response parsing error:", e);
-            console.log("Raw GraphQL response:", body);
-            apiResponseOutcome = "error";
-            d.reject(e);
-        }
-    });
+        });
 
-    return d.promise;
+    });
 }
 
 function findDevice(devices) {
     console.log("Finding device in inventory... - execute findDevice()");
-    const d = D.q.defer();
-    
+
     if (!Array.isArray(devices)) {
         console.error("Invalid devices data");
-        d.reject("Invalid devices data");
-        return d.promise;
+        return Promise.reject("Invalid devices data");
     }
 
     var device = null;
@@ -649,8 +647,7 @@ function findDevice(devices) {
     
     if (!deviceIp) {
         console.error("Device IP is not available");
-        d.reject("Device IP address is not available for device matching");
-        return d.promise;
+        return Promise.reject("Device IP address is not available for device matching");
     }
     
     // IP address matching only
@@ -666,19 +663,16 @@ function findDevice(devices) {
 
     if (!device) {
         console.error("Device not found in inventory");
-        d.reject("IP address " + deviceIp + " not found in Poly Lens inventory");
+        return Promise.reject("IP address " + deviceIp + " not found in Poly Lens inventory");
     } else {
-        d.resolve(device.id);
+        return Promise.resolve(device.id);
     }
-
-    return d.promise;
 }
 
 function retrieveDeviceDetails(deviceId) {
 
     console.log("Execute retrieveDeviceDetails()");
 
-    const d = D.q.defer();
 
     const query = {
         query: 'query getDevice($id: String!) {' +
@@ -778,53 +772,54 @@ function retrieveDeviceDetails(deviceId) {
         },
         body: JSON.stringify(query)
     };
+    return new Promise(function (resolve, reject) {
 
-    polyLensGraphQLAPI.http.post(config, function (err, response, body) {
-        if (err) {
-            console.error("GraphQL error:", err);
-            apiResponseOutcome = "error";
-            d.reject(err);
-            return;
-        }
-        
-        try {
-            const bodyAsJSON = JSON.parse(body);
-            console.log("GraphQL response parsed");
-            
-            if (bodyAsJSON.errors) {
-                console.error("GraphQL errors:", bodyAsJSON.errors);
+        polyLensGraphQLAPI.http.post(config, function (err, response, body) {
+            if (err) {
+                console.error("GraphQL error:", err);
                 apiResponseOutcome = "error";
-                // Store errors for potential error mode processing
-                graphqlErrors = graphqlErrors.concat(bodyAsJSON.errors);
-                // Continue execution even with errors if we have data
-                if (bodyAsJSON.data && bodyAsJSON.data.device) {
-                    console.log("Found device data despite errors");
-                    createDeviceInfoVariables(bodyAsJSON.data.device);
-                    d.resolve();
-                    return;
-                }
-                d.reject(bodyAsJSON.errors);
+                reject(err);
                 return;
             }
+        
+            try {
+                const bodyAsJSON = JSON.parse(body);
+                console.log("GraphQL response parsed");
             
-            if (bodyAsJSON.data && bodyAsJSON.data.device) {
-                console.log("Found device data");
-                createDeviceInfoVariables(bodyAsJSON.data.device);
-                d.resolve();
-            } else {
-                console.error("Unexpected response structure:", bodyAsJSON);
+                if (bodyAsJSON.errors) {
+                    console.error("GraphQL errors:", bodyAsJSON.errors);
+                    apiResponseOutcome = "error";
+                    // Store errors for potential error mode processing
+                    graphqlErrors = graphqlErrors.concat(bodyAsJSON.errors);
+                    // Continue execution even with errors if we have data
+                    if (bodyAsJSON.data && bodyAsJSON.data.device) {
+                        console.log("Found device data despite errors");
+                        createDeviceInfoVariables(bodyAsJSON.data.device);
+                        resolve();
+                        return;
+                    }
+                    reject(bodyAsJSON.errors);
+                    return;
+                }
+            
+                if (bodyAsJSON.data && bodyAsJSON.data.device) {
+                    console.log("Found device data");
+                    createDeviceInfoVariables(bodyAsJSON.data.device);
+                    resolve();
+                } else {
+                    console.error("Unexpected response structure:", bodyAsJSON);
+                    apiResponseOutcome = "error";
+                    reject("Invalid response structure");
+                }
+            } catch (e) {
+                console.error("GraphQL response parsing error:", e);
+                console.log("Raw GraphQL response:", body);
                 apiResponseOutcome = "error";
-                d.reject("Invalid response structure");
+                reject(e);
             }
-        } catch (e) {
-            console.error("GraphQL response parsing error:", e);
-            console.log("Raw GraphQL response:", body);
-            apiResponseOutcome = "error";
-            d.reject(e);
-        }
-    });
+        });
 
-    return d.promise;
+    });
 }
 
 function publishVariables() {
@@ -921,12 +916,10 @@ function polishStrings(inputString) {
 
 function processAllDevicesForTable(devices) {
     console.log("Processing all devices for table... - execute processAllDevicesForTable()");
-    const d = D.q.defer();
     
     if (!Array.isArray(devices)) {
         console.error("Invalid devices data for table processing");
-        d.reject("Invalid devices data for table processing");
-        return d.promise;
+        return Promise.reject("Invalid devices data for table processing");
     }
     
     console.log("Adding", devices.length, "devices to device table");
@@ -961,8 +954,7 @@ function processAllDevicesForTable(devices) {
     // Add API response outcomes variable even when showing all devices
     variables.push(D.device.createVariable("api-response-outcomes", "Api response outcomes", apiResponseOutcome, null, D.valueType.STRING));
     
-    d.resolve();
-    return d.promise;
+    return Promise.resolve();
 }
 
 function processConnections(deviceData) {
@@ -1125,7 +1117,7 @@ function custom_1(){
             cloudControllerDeviceID.trim().toLowerCase() !== 'all') {
             console.log("Using provided cloudControllerDeviceID for reboot:", cloudControllerDeviceID);
             // Use provided ID directly
-            return D.q.resolve(cloudControllerDeviceID);
+            return Promise.resolve(cloudControllerDeviceID);
         } else {
             console.log("No valid cloudControllerDeviceID provided, retrieving device ID");
             var deviceMacAddress = D.device.macAddress();
@@ -1178,7 +1170,6 @@ function custom_1(){
 
 function rebootDevice(deviceId) {
     console.log("Executing reboot for device:", deviceId);
-    const d = D.q.defer();
     
     const mutation = {
         query: 'mutation reboot($deviceId: String!, $includeLinkedDevices: Boolean) { ' +
@@ -1202,37 +1193,38 @@ function rebootDevice(deviceId) {
         },
         body: JSON.stringify(mutation)
     };
+    return new Promise(function (resolve, reject) {
     
-    polyLensGraphQLAPI.http.post(config, function (err, response, body) {
-        if (err) {
-            console.error("Reboot GraphQL error:", err);
-            d.reject(err);
-            return;
-        }
-        
-        try {
-            const bodyAsJSON = JSON.parse(body);
-            console.log("Reboot GraphQL response parsed");
-            
-            if (bodyAsJSON.errors) {
-                console.error("Reboot GraphQL errors:", bodyAsJSON.errors);
-                d.reject(bodyAsJSON.errors);
+        polyLensGraphQLAPI.http.post(config, function (err, response, body) {
+            if (err) {
+                console.error("Reboot GraphQL error:", err);
+                reject(err);
                 return;
             }
+        
+            try {
+                const bodyAsJSON = JSON.parse(body);
+                console.log("Reboot GraphQL response parsed");
             
-            if (bodyAsJSON.data && bodyAsJSON.data.rebootDevice) {
-                console.log("Reboot response:", bodyAsJSON.data.rebootDevice);
-                d.resolve(bodyAsJSON.data.rebootDevice);
-            } else {
-                console.error("Unexpected reboot response structure:", bodyAsJSON);
-                d.reject("Invalid reboot response structure");
+                if (bodyAsJSON.errors) {
+                    console.error("Reboot GraphQL errors:", bodyAsJSON.errors);
+                    reject(bodyAsJSON.errors);
+                    return;
+                }
+            
+                if (bodyAsJSON.data && bodyAsJSON.data.rebootDevice) {
+                    console.log("Reboot response:", bodyAsJSON.data.rebootDevice);
+                    resolve(bodyAsJSON.data.rebootDevice);
+                } else {
+                    console.error("Unexpected reboot response structure:", bodyAsJSON);
+                    reject("Invalid reboot response structure");
+                }
+            } catch (e) {
+                console.error("Reboot response parsing error:", e);
+                console.log("Raw reboot response:", body);
+                reject(e);
             }
-        } catch (e) {
-            console.error("Reboot response parsing error:", e);
-            console.log("Raw reboot response:", body);
-            d.reject(e);
-        }
-    });
+        });
     
-    return d.promise;
+    });
 }

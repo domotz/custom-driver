@@ -49,17 +49,17 @@ function checkSshError (err) {
  * @returns {Promise} A promise that resolves with the command output or rejects with an error
  */
 function executeCommand (command) {
-  var d = D.q.defer()
   sshConfig.command = command
-  D.device.sendSSHCommand(sshConfig, function (output, error) {
-    if (error) {
-      checkSshError(error)
-      d.reject(error)
-    } else {
-      d.resolve(output)
-    }
+  return new Promise(function (resolve, reject) {
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+      if (error) {
+        checkSshError(error)
+        reject(error)
+      } else {
+        resolve(output)
+      }
+    })
   })
-  return d.promise
 }
 
 /**

@@ -84,7 +84,6 @@ function getSecurityEnvelope () {
  * @returns A promise that resolves with the parsed response.
  */
 function sendSoapRequest (body, parseResponse) {
-  const d = D.q.defer()
   const config = {
     url,
     username,
@@ -92,22 +91,23 @@ function sendSoapRequest (body, parseResponse) {
     port: onvifPort,
     body
   }
-  D.device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (!response) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode === 400) {
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode !== 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      const result = parseResponse(body)
-      d.resolve(result)
-    }
+  return new Promise(function (resolve) {
+    D.device.http.post(config, function (error, response, body) {
+      if (error) {
+        console.error(error)
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else if (!response) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else if (response.statusCode === 400) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+      } else if (response.statusCode !== 200) {
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else {
+        const result = parseResponse(body)
+        resolve(result)
+      }
+    })
   })
-  return d.promise
 }
 
 /**
@@ -166,7 +166,7 @@ function getStreamURIs (profilesInfo) {
       return { profileName: profile.profileName, uris }
     })
   })
-  return D.q.all(promises)
+  return Promise.all(promises)
 }
 
 /**
@@ -175,31 +175,31 @@ function getStreamURIs (profilesInfo) {
  * @returns {Promise} A promise that resolves with an object containing the realm and nonce values.
  */
 function getNonceAndRealm (uri) {
-  const d = D.q.defer()
   const command = 'DESCRIBE ' + uri + ' RTSP/1.0\r\nCSeq: 1\r\n'
   telnetParams.command = command
-  D.device.sendTelnetCommand(telnetParams, function (out, err) {
-    if (err) {
-      d.reject('Initial request failed: ' + err)
-    } else {
-      const authenticateHeaderArray = out.match(/WWW-Authenticate: (.+)/)
-      if (authenticateHeaderArray && authenticateHeaderArray[1]) {
-        const authenticateHeader = authenticateHeaderArray[1]
-        const realmMatch = authenticateHeader.match(/realm="([^"]*)"/)
-        const nonceMatch = authenticateHeader.match(/nonce="([^"]*)"/)
-        if (realmMatch && nonceMatch) {
-          const realm = realmMatch[1]
-          const nonce = nonceMatch[1]
-          d.resolve({ realm, nonce })
-        } else {
-          d.reject('realm or nonce not found in WWW-Authenticate header')
-        }
+  return new Promise(function (resolve, reject) {
+    D.device.sendTelnetCommand(telnetParams, function (out, err) {
+      if (err) {
+        reject('Initial request failed: ' + err)
       } else {
-        d.resolve({ realm: '', nonce: '' })
+        const authenticateHeaderArray = out.match(/WWW-Authenticate: (.+)/)
+        if (authenticateHeaderArray && authenticateHeaderArray[1]) {
+          const authenticateHeader = authenticateHeaderArray[1]
+          const realmMatch = authenticateHeader.match(/realm="([^"]*)"/)
+          const nonceMatch = authenticateHeader.match(/nonce="([^"]*)"/)
+          if (realmMatch && nonceMatch) {
+            const realm = realmMatch[1]
+            const nonce = nonceMatch[1]
+            resolve({ realm, nonce })
+          } else {
+            reject('realm or nonce not found in WWW-Authenticate header')
+          }
+        } else {
+          resolve({ realm: '', nonce: '' })
+        }
       }
-    }
+    })
   })
-  return d.promise
 }
 
 /**
@@ -227,29 +227,28 @@ function healthCheck (streamUrisProfiles) {
   const healthPromises = []
   streamUrisProfiles.forEach(function (stream) {
     stream.uris.forEach(function (uri) {
-      const d = D.q.defer()
-      getNonceAndRealm(uri)
-        .then(function (digestParams) {
-          const authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, stream.uris, 'DESCRIBE')
-          const command = 'DESCRIBE ' + stream.uris + ' RTSP/1.0\r\nCSeq: 2\r\nAuthorization: ' + authHeader + '\r\n'
-          telnetParams.command = command
-          telnetParams.timeout = 1000
-          D.device.sendTelnetCommand(telnetParams, function (out, err) {
-            if (err) {
-              console.log(err)
-            } else {
-              d.resolve({ healthStatus: out, profileName: stream.profileName })
-            }
+      healthPromises.push(new Promise(function (resolve) {
+        getNonceAndRealm(uri)
+          .then(function (digestParams) {
+            const authHeader = generateDigestAuth(digestParams.realm, digestParams.nonce, stream.uris, 'DESCRIBE')
+            const command = 'DESCRIBE ' + stream.uris + ' RTSP/1.0\r\nCSeq: 2\r\nAuthorization: ' + authHeader + '\r\n'
+            telnetParams.command = command
+            telnetParams.timeout = 1000
+            D.device.sendTelnetCommand(telnetParams, function (out, err) {
+              if (err) {
+                console.log(err)
+              } else {
+                resolve({ healthStatus: out, profileName: stream.profileName })
+              }
+            })
+          }).catch(function (error) {
+            console.log(error)
+            resolve({ healthStatus: 'NOT OK', profileName: stream.profileName })
           })
-        }).catch(function (error) {
-          console.log(error)
-          d.resolve({ healthStatus: 'NOT OK', profileName: stream.profileName })
-        })
-
-      healthPromises.push(d.promise)
+      }))
     })
   })
-  return D.q.all(healthPromises)
+  return Promise.all(healthPromises)
 }
 
 function sanitize (output) {

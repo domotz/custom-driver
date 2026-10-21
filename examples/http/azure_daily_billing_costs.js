@@ -92,16 +92,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response, extracting the access token
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
   return function process(error, response, body) {
     checkHTTPError(error, response)
     const bodyAsJSON = JSON.parse(body)
     if (bodyAsJSON.access_token) {
       accessToken = bodyAsJSON.access_token
-      d.resolve()
+      resolve()
     } else {
       console.error('Access token not found in response body')
       D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -111,16 +112,17 @@ function processLoginResponse(d) {
 
 /**
  * Processes the cost data response and extracts relevant metrics information.
- * @param {Object} d The deferred promise object.
+ * @param {Function} resolve Resolves the promise.
+ * @param {Function} reject Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processCostResponse(d) {
+function processCostResponse(resolve, reject) {
 	return function process(error, response, body) {
     checkHTTPError(error, response)
     const bodyAsJSON = JSON.parse(body)
     if (bodyAsJSON && bodyAsJSON.properties && bodyAsJSON.properties.rows && bodyAsJSON.properties.rows.length > 0) {
 			const metricsData = extractMetricsInfo(bodyAsJSON)
-      d.resolve(metricsData)
+      resolve(metricsData)
     } else {
 			console.error('Data not found in response body')
       D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -133,7 +135,6 @@ function processCostResponse(d) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-  const d = D.q.defer()
   const config = {
     url: '/' + tenantId + '/oauth2/token', 
     protocol: 'https', 
@@ -149,8 +150,9 @@ function login() {
     rejectUnauthorized: false, 
     jar: true
   }
-  azureCloudLoginService.http.post(config, processLoginResponse(d))
-  return d.promise
+  return new Promise(function (resolve, reject) {
+    azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject))
+  })
 }
 
 
@@ -159,7 +161,6 @@ function login() {
  * @returns {Promise} A promise that resolves with the cost data
  */
 function queryCostData() {
-  const d = D.q.defer()
   const config = {
     url: '/subscriptions/' + subscriptionId + '/providers/Microsoft.CostManagement/query?api-version=2023-11-01',
     protocol: 'https', 
@@ -171,8 +172,9 @@ function queryCostData() {
     rejectUnauthorized: false, 
     jar: true
   }
-	azureCloudManagementService.http.post(config, processCostResponse(d))
-  return d.promise
+  return new Promise(function (resolve, reject) {
+  	azureCloudManagementService.http.post(config, processCostResponse(resolve, reject))
+  })
 }
 
 /**

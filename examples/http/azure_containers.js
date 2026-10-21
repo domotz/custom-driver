@@ -167,16 +167,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            d.resolve();
+            resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -202,16 +203,17 @@ function filterContainerGroupInfoList(containerGroupInfoList) {
 
 /**
  * Processes the response from the Container Groups API call, extracts Container Groups data, and populates the table.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processContainerGroupsResponse(d) {
+function processContainerGroupsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
             D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No Container Groups found in the response");
+            reject("No Container Groups found in the response");
             return;
         }
         let containerGroupInfoList = bodyAsJSON.value.map(extractContainerGroupInfo);
@@ -220,7 +222,7 @@ function processContainerGroupsResponse(d) {
         } else {
             containerGroupInfoList = filterContainerGroupInfoList(containerGroupInfoList);
         }
-        d.resolve(containerGroupInfoList);
+        resolve(containerGroupInfoList);
     }
 }
 
@@ -229,7 +231,6 @@ function processContainerGroupsResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -240,8 +241,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    azureCloudLoginService.http.post(config, processLoginResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -321,10 +323,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the Container Group data upon successful retrieval from the Azure API.
  */
 function retrieveContainerGroups() {
-    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.ContainerInstance/containerGroups?api-version=2024-05-01-preview");
-    azureCloudManagementService.http.get(config, processContainerGroupsResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processContainerGroupsResponse(resolve, reject));
+    });
 }
 
 /**
@@ -363,11 +365,12 @@ function extractContainerGroupPerformance(performanceInfo, containerGroupInfo) {
 
 /**
  * Processes the response from the Container Groups API call and populates the table with Container Group data.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {Object} containerGroupInfo - The Container Group information object containing resource group and Container Group details.
  * @returns {Function} A function to process the HTTP response.
  */
-function processContainerGroupPerformanceResponse(d, containerGroupInfo) {
+function processContainerGroupPerformanceResponse(resolve, reject, containerGroupInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         if (error || response.statusCode !== 200) {
@@ -382,10 +385,10 @@ function processContainerGroupPerformanceResponse(d, containerGroupInfo) {
             bodyAsJSON.value.map(function (performanceInfo) {
                 extractContainerGroupPerformance(performanceInfo, containerGroupInfo)
             });
-            d.resolve(containerGroupInfo);
+            resolve(containerGroupInfo);
         } catch (parseError) {
             console.error("Error parsing Container Groups configuration:", parseError);
-            d.reject("Failed to parse response for " + containerGroupInfo.name);
+            reject("Failed to parse response for " + containerGroupInfo.name);
         }
     }
 }
@@ -406,15 +409,15 @@ function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
     }
     containerGroupInfoList.forEach(function (containerGroupInfo) {
         performanceKeyGroups.forEach(function (group) {
-            const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + containerGroupInfo.resourceGroup + "/providers/Microsoft.ContainerInstance/containerGroups/" + containerGroupInfo.resourceName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-            azureCloudManagementService.http.get(config, function (error, response, body) {
-                processContainerGroupPerformanceResponse(d, containerGroupInfo)(error, response, body);
-            });
-            promises.push(d.promise);
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, function (error, response, body) {
+                    processContainerGroupPerformanceResponse(resolve, reject, containerGroupInfo)(error, response, body);
+                });
+            }));
         });
     });
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
 /**

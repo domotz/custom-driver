@@ -38,7 +38,6 @@ const networkDetailsTable = D.createTable(
  * @returns A promise that resolves with the parsed response.
  */
 function sendSoapRequest(body, extractData) {
-  const d = D.q.defer()
 
   let config = {
     url,
@@ -48,22 +47,23 @@ function sendSoapRequest(body, extractData) {
     jar: true
   }
 
-  D.device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (!response) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode === 400 || isInvalidLogin(body)) {
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode !== 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      const result = extractData(body)
-      d.resolve(result)
-    }
+  return new Promise(function (resolve) {
+    D.device.http.post(config, function (error, response, body) {
+      if (error) {
+        console.error(error)
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else if (!response) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else if (response.statusCode === 400 || isInvalidLogin(body)) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+      } else if (response.statusCode !== 200) {
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else {
+        const result = extractData(body)
+        resolve(result)
+      }
+    })
   })
-  return d.promise
 }
 
 /**
@@ -302,7 +302,7 @@ function generateTableOutput(soapResponse) {
     promises.push(promise);
   });
 
-  D.q.all(promises).then(function () {
+  Promise.all(promises).then(function () {
     D.success(networkDetailsTable);
   });
 }

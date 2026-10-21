@@ -39,10 +39,11 @@ var deviceTable = null;
 
 /**
  * Processes the HTTP response and handles errors
- * @param {Object} d - Deferred promise object
+ * @param {Function} resolve - Resolves the promise
+ * @param {Function} reject - Rejects the promise
  * @returns {Function} Callback function to process the response
  */
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
@@ -57,7 +58,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -66,7 +67,6 @@ function processResponse(d) {
  * @returns {Object} A promise that resolves on successful login with auth token.
  */
 function login() {
-    var d = D.q.defer();
     var loginData = {
         user: D.device.username(),
         password: D.device.password()
@@ -83,42 +83,42 @@ function login() {
         rejectUnauthorized: false
     };
     
-    D.device.http.post(config, function(error, response, body) {
-        if (error) {
-            console.error("Login error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
-        
-        if (response.statusCode == 401) {
-            console.error("Authentication failed");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
-        
-        if (response.statusCode != 200) {
-            console.error("Login failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
-        
-        try {
-            var responseData = JSON.parse(body);
-            if (responseData.status === 200 && responseData.data && responseData.data.token) {
-                authToken = responseData.data.token;
-                console.info("Login successful. Auth token:", authToken);
-                d.resolve(authToken);
-            } else {
-                console.error("Invalid login response:", body);
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response, body) {
+            if (error) {
+                console.error("Login error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
             }
-        } catch (parseError) {
-            console.error("Failed to parse login response:", parseError);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
+        
+            if (response.statusCode == 401) {
+                console.error("Authentication failed");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+        
+            if (response.statusCode != 200) {
+                console.error("Login failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+        
+            try {
+                var responseData = JSON.parse(body);
+                if (responseData.status === 200 && responseData.data && responseData.data.token) {
+                    authToken = responseData.data.token;
+                    console.info("Login successful. Auth token:", authToken);
+                    resolve(authToken);
+                } else {
+                    console.error("Invalid login response:", body);
+                    D.failure(D.errorType.AUTHENTICATION_ERROR);
+                }
+            } catch (parseError) {
+                console.error("Failed to parse login response:", parseError);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -126,12 +126,11 @@ function login() {
  * @returns {Object} A promise that resolves with the device list data.
  */
 function getDeviceList() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for device list request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -144,30 +143,30 @@ function getDeviceList() {
         rejectUnauthorized: false
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("Device list request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("Device list request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for device list request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for device list request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("Device list request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("Device list request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("Device list retrieved successfully");
-        d.resolve(body);
+            console.info("Device list retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -175,12 +174,11 @@ function getDeviceList() {
  * @returns {Object} A promise that resolves with the audio status data.
  */
 function getAudioStatus() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for audio status request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -194,30 +192,30 @@ function getAudioStatus() {
         rejectUnauthorized: false
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("Audio status request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("Audio status request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for audio status request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for audio status request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("Audio status request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("Audio status request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("Audio status retrieved successfully");
-        d.resolve(body);
+            console.info("Audio status retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -225,12 +223,11 @@ function getAudioStatus() {
  * @returns {Object} A promise that resolves with the camera position data.
  */
 function getCameraPosition() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for camera position request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -243,30 +240,30 @@ function getCameraPosition() {
         rejectUnauthorized: false
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("Camera position request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("Camera position request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for camera position request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for camera position request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("Camera position request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("Camera position request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("Camera position retrieved successfully");
-        d.resolve(body);
+            console.info("Camera position retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -274,12 +271,11 @@ function getCameraPosition() {
  * @returns {Object} A promise that resolves with the system status data.
  */
 function getSystemStatus() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for system status request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -293,30 +289,30 @@ function getSystemStatus() {
         rejectUnauthorized: false
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("System status request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("System status request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for system status request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for system status request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("System status request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("System status request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("System status retrieved successfully");
-        d.resolve(body);
+            console.info("System status retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -495,7 +491,7 @@ function get_status() {
             console.info("Authentication successful, proceeding with data retrieval");
             
             // Fetch all data in parallel
-            return D.q.all([
+            return Promise.all([
                 getDeviceList(),
                 getAudioStatus(),
                 getSystemStatus(),
@@ -540,12 +536,11 @@ function get_status() {
  * @returns {Object} A promise that resolves with the reboot status
  */
 function rebootDevice(serialNumber) {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for reboot request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var rebootData = {
@@ -565,36 +560,36 @@ function rebootDevice(serialNumber) {
         rejectUnauthorized: false
     };
     
-    D.device.http.post(config, function(error, response, body) {
-        if (error) {
-            console.error("Reboot request error for device " + serialNumber + ":", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response, body) {
+            if (error) {
+                console.error("Reboot request error for device " + serialNumber + ":", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for reboot request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for reboot request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("Reboot request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("Reboot request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        try {
-            var responseData = JSON.parse(body);
-            console.info("Reboot status for device " + serialNumber + ":", responseData.status);
-            d.resolve(responseData);
-        } catch (parseError) {
-            console.error("Failed to parse reboot response:", parseError);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
+            try {
+                var responseData = JSON.parse(body);
+                console.info("Reboot status for device " + serialNumber + ":", responseData.status);
+                resolve(responseData);
+            } catch (parseError) {
+                console.error("Failed to parse reboot response:", parseError);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -635,7 +630,7 @@ function custom_1(){
                     }
                     
                     // Execute all reboot operations
-                    return D.q.all(rebootPromises);
+                    return Promise.all(rebootPromises);
                 } else {
                     console.error("Invalid device list response:", deviceListResponse);
                     D.failure(D.errorType.GENERIC_ERROR);

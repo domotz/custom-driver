@@ -32,13 +32,13 @@ function checkSshError(err) {
 }
 
 function executeCommand(command){
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if(err) checkSshError(err);
-        d.resolve(out);
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if(err) checkSshError(err);
+            resolve(out);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -123,7 +123,7 @@ function parseData(executionResult){
 * @documentation This procedure is used for retrieving device * variables data
 */
 function get_status() {
-    D.q.all([
+    Promise.all([
         executeCommand(cmdTemperature),
         executeCommand(cmdInfo)
     ])

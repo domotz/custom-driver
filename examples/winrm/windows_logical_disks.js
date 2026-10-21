@@ -129,7 +129,7 @@ function parseValidateOutput(isValidated) {
 }
 
 function execute() {
-    return D.q.all([
+    return Promise.all([
         instance.executeCommand(logicalDisksCmd),
         instance.executeCommand(bitLockerCmd)
     ])
@@ -284,17 +284,17 @@ WinRMHandler.prototype.checkError = function (output) {
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
@@ -321,7 +321,6 @@ SSHHandler.prototype.checkError = function (output, error) {
 }
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -331,15 +330,16 @@ SSHHandler.prototype.executeCommand = function (command) {
         timeout: config.timeout,
         command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
     };
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.reject(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                reject(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 SSHHandler.prototype.parseOutputToJson = function (output) {

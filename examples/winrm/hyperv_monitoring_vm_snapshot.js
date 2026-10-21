@@ -65,16 +65,16 @@ function checkWinRmError(err) {
 
 // Execute WinRM command
 function executeWinrmCommand(command) {
-    var d = D.q.defer();
     winrmConfig.command = command;
-    D.device.sendWinRMCommand(winrmConfig, function (output) {
-        if (output.error === null) {
-            d.resolve(output);
-        } else {
-            d.reject(output.error);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(winrmConfig, function (output) {
+            if (output.error === null) {
+                resolve(output);
+            } else {
+                reject(output.error);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**

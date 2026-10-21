@@ -20,7 +20,6 @@ var table = D.createTable(
 
 // Function to login to the VMWare vCenter
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/session",
         username: D.device.username(),
@@ -30,20 +29,21 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response, body){
+            if (error) {          
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 201) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } 
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -53,7 +53,6 @@ function login() {
  * @returns A promise containing the body of the response
  */
 function httpGet(url, sessionId) {
-    var d = D.q.defer();
     var config = {
         url: url,
         protocol: "https",
@@ -63,19 +62,20 @@ function httpGet(url, sessionId) {
             "vmware-api-session-id": sessionId
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode != 200) {
-            console.log(response.body);
-            d.resolve("N/A");
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body){
+            if (error) {          
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode != 200) {
+                console.log(response.body);
+                resolve("N/A");
+            } 
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 var config = [
@@ -95,7 +95,7 @@ function getSystemHealthInfo(sessionId) {
         return httpGet(urls.url, sessionId);
     });
 
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
 // This function extracts data from the response and populates the custom table 

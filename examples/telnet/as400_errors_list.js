@@ -43,16 +43,16 @@ var table = D.createTable(
  * @returns Promise that waits for the telnet command 
  */
 function getAS400Info() {
-    var d = D.q.defer();
     telnetParams.command = command;
-    telnet(telnetParams, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + telnetParams.command);
-            failure(err);
-        }
-        d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
+    return new Promise(function (resolve) {
+        telnet(telnetParams, function (out, err) {
+            if (err) {
+                console.error("error while executing command: " + telnetParams.command);
+                failure(err);
+            }
+            resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -68,15 +68,15 @@ function errorParsing(result) {
     }
     var errorCheck = errorCheckCmds.join("");
     telnetParams.command = command + errorCheck;
-    var d = D.q.defer();
-    telnet(telnetParams, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + telnetParams.command);
-            failure(err);
-        }
-        d.resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
+    return new Promise(function (resolve) {
+        telnet(telnetParams, function (out, err) {
+            if (err) {
+                console.error("error while executing command: " + telnetParams.command);
+                failure(err);
+            }
+            resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
+        });
     });
-    return d.promise;
 }
 
 /**

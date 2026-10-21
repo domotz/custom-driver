@@ -51,7 +51,6 @@ var table = D.createTable(
  * @returns {Promise} A promise that resolves with the session ID or rejects with an error
  */
 function login() {
-  var d = D.q.defer()
   var config = {
     url: "/api/session",
     username: D.device.username(),
@@ -61,20 +60,21 @@ function login() {
     jar: true,
     rejectUnauthorized: false
   }
-  D.device.http.post(config, function(error, response, body){
-    if (error) {          
-      console.error(error);
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (response.statusCode == 404) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode == 401) {
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode != 201) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } 
-    d.resolve(JSON.parse(body))
+  return new Promise(function (resolve) {
+    D.device.http.post(config, function(error, response, body){
+      if (error) {          
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else if (response.statusCode == 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else if (response.statusCode == 401) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+      } else if (response.statusCode != 201) {
+        D.failure(D.errorType.GENERIC_ERROR)
+      } 
+      resolve(JSON.parse(body))
+    })
   })
-  return d.promise
 }
 
 /**
@@ -83,7 +83,6 @@ function login() {
  * @returns {Promise} A promise that resolves with an array of host IDs or rejects with an error
  */
 function getHostList(sessionId) {
-  var d = D.q.defer()
   var config = {
     url: "/api/vcenter/host",
     protocol: "https",
@@ -93,34 +92,35 @@ function getHostList(sessionId) {
       "vmware-api-session-id": sessionId 
     }
   }
-  D.device.http.get(config, function(error, response, body){
-    if (error) {          
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (response.statusCode == 404) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode != 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      var data = JSON.parse(body)
-      if (Array.isArray(data) && data.length > 0) {
-        var hosts = data.map(function(item) { return item.host })
-        var filteredHosts
-        if (hostId.includes('ALL')) {
-          filteredHosts = hosts
-        } else {
-          filteredHosts = hosts.filter(function(host) {
-            return host === hostId
-          })
-        }
-        d.resolve(filteredHosts)
+  return new Promise(function (resolve) {
+    D.device.http.get(config, function(error, response, body){
+      if (error) {          
+        console.error(error)
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else if (response.statusCode == 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else if (response.statusCode != 200) {
+        D.failure(D.errorType.GENERIC_ERROR)
       } else {
-        console.error('No hosts found')
-        D.failure(D.errorType.PARSING_ERROR)
+        var data = JSON.parse(body)
+        if (Array.isArray(data) && data.length > 0) {
+          var hosts = data.map(function(item) { return item.host })
+          var filteredHosts
+          if (hostId.includes('ALL')) {
+            filteredHosts = hosts
+          } else {
+            filteredHosts = hosts.filter(function(host) {
+              return host === hostId
+            })
+          }
+          resolve(filteredHosts)
+        } else {
+          console.error('No hosts found')
+          D.failure(D.errorType.PARSING_ERROR)
+        }
       }
-    }
+    })
   })
-  return d.promise
 }
 
 /**
@@ -131,7 +131,6 @@ function getHostList(sessionId) {
  */
 function getHostInfo(sessionId, hostIds) {
   var promises = hostIds.map(function(hostId) {
-    var d = D.q.defer()
     var config = {
       url: "/sdk/vim25/8.0.1.0/HostSystem/" + hostId + "/summary",
       protocol: "https",
@@ -141,28 +140,29 @@ function getHostInfo(sessionId, hostIds) {
         "vmware-api-session-id": sessionId 
       }
     }
-    D.device.http.get(config, function(error, response, body) {
-      if (error) {          
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
-      } else {
-        if (response.body && response.body.indexOf("Invalid URI") !== -1) {
-          console.error("Invalid URI")
-          D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+    return new Promise(function (resolve) {
+      D.device.http.get(config, function(error, response, body) {
+        if (error) {          
+          console.error(error)
+          D.failure(D.errorType.GENERIC_ERROR)
         } else {
-          var data = JSON.parse(body)
-          if (data._typeName === 'ManagedObjectNotFound') {
-            console.error('Host "' + data.obj.value + '" has already been deleted or has not been completely created')
-            d.resolve(null)
+          if (response.body && response.body.indexOf("Invalid URI") !== -1) {
+            console.error("Invalid URI")
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
           } else {
-            d.resolve(data)
+            var data = JSON.parse(body)
+            if (data._typeName === 'ManagedObjectNotFound') {
+              console.error('Host "' + data.obj.value + '" has already been deleted or has not been completely created')
+              resolve(null)
+            } else {
+              resolve(data)
+            }
           }
-        }
-      } 
+        } 
+      })
     })
-    return d.promise
   })
-  return D.q.all(promises)
+  return Promise.all(promises)
     .then(function (results) {
       return results.filter(function (result) { return result !== null })
     })

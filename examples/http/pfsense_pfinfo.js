@@ -234,15 +234,15 @@ var http_config = {
  */
 function get_login_form(config) {
     config.url = "/";
-    var d = D.q.defer();
-    D.device.http.get(config, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            return D.failure();
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                return D.failure();
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -263,7 +263,6 @@ function get_csrf_magic(body) {
  * @returns promise processing login and add cookie to http config
  */
 function login(csrf_magic) {
-    var d = D.q.defer();
     var config = clone({
         form: {
             "__csrf_magic": csrf_magic,
@@ -275,15 +274,16 @@ function login(csrf_magic) {
     }, http_config);
     config.url = "/";
 
-    D.device.http.post(config, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            return D.failure();
-        }
-        delete http_config.body;
-        d.resolve();
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                return D.failure();
+            }
+            delete http_config.body;
+            resolve();
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -291,18 +291,18 @@ function login(csrf_magic) {
  * @returns promise contains csrf_magic code to query pfinfo page
  */
 function get_pfinfo_csrf_magic() {
-    var d = D.q.defer();
     var config = clone({
         url: "/diag_pf_info.php",
     }, http_config);
-    D.device.http.get(config, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            return D.failure();
-        }
-        d.resolve(get_csrf_magic(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                return D.failure();
+            }
+            resolve(get_csrf_magic(body));
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -311,24 +311,24 @@ function get_pfinfo_csrf_magic() {
  * @returns promise for html pfinfo page
  */
 function get_pfinfo_body(csrf_magic) {
-    var d = D.q.defer();
     var config = clone({
         url: "/diag_pf_info.php",
         form: {
             "__csrf_magic": csrf_magic, "refresh": "yes", "getactivity": "yes"
         }
     }, http_config);
-    D.device.http.post(config, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            return D.failure();
-        }
-        if(!body || body.indexOf("Hostid") < 0){
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                return D.failure();
+            }
+            if(!body || body.indexOf("Hostid") < 0){
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 
 }
 
@@ -467,7 +467,9 @@ var exec = [
 ];
 function execute() {
 
-    return exec.reduce(D.q.when, D.q(clone({}, http_config)));
+    return exec.reduce(function (promise, step) {
+        return promise.then(step);
+    }, Promise.resolve(clone({}, http_config)));
 }
 
 /**

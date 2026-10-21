@@ -50,7 +50,6 @@ if (!urlCl.indexOf("//")) {
  * @returns promise for http response body
  */
 function httpGet(url) {
-    var d = D.q.defer();
 	var website = D.createExternalDevice(urlCl);
     var config = {
         url: url,
@@ -59,23 +58,24 @@ function httpGet(url) {
 			"X-Api-Key": D.device.password() //api key == password
 		}
     };
-    website.http.get(config, function (error, response, body) {
-		if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } 
-        else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } 
-        else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        website.http.get(config, function (error, response, body) {
+    		if (error) {
+                console.error(error)
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } 
+            else if (response.statusCode == 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } 
+            else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**

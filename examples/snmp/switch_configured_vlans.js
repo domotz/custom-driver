@@ -17,20 +17,20 @@
 var dot1qVlanStaticName = "1.3.6.1.2.1.17.7.1.4.3.1.1";
 
 function validateAndGetData() {
-    var d = D.q.defer();
-    D.device.createSNMPSession().walk(dot1qVlanStaticName, function(out, err) {
-         if (err) {
-            console.error("Error during SNMP walk:", err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (!out || Object.keys(out).length === 0) {
-            console.error("Empty response or no data received during SNMP walk");
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else {
-            console.log("SNMP walk successful");
-            d.resolve(out);
-        }
+    return new Promise(function (resolve) {
+        D.device.createSNMPSession().walk(dot1qVlanStaticName, function(out, err) {
+             if (err) {
+                console.error("Error during SNMP walk:", err);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!out || Object.keys(out).length === 0) {
+                console.error("Empty response or no data received during SNMP walk");
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else {
+                console.log("SNMP walk successful");
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 function parseData(out){
     var vlanList = [];

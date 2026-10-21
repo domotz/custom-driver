@@ -47,6 +47,17 @@ var MAX_RETRIES = 4;
 var BASE_TIMEOUT = 2000;
 
 /**
+ * Returns a promise that resolves after the given number of milliseconds
+ * @param {number} ms The delay in milliseconds
+ * @returns {Promise<void>}
+ */
+function delay(ms) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, ms);
+    });
+}
+
+/**
  * @remote_procedure
  * @label Mute
  * @documentation Mute the microphone
@@ -90,7 +101,6 @@ function sendShureCommandWithRetry(command, retryCount, currentTimeout) {
     retryCount = retryCount || 0;
     currentTimeout = currentTimeout || BASE_TIMEOUT;
 
-    var d = D.q.defer();
     
     // Format command with < > brackets and proper line ending
     var formattedCmd = "< " + command + " >\r\n";
@@ -103,32 +113,32 @@ function sendShureCommandWithRetry(command, retryCount, currentTimeout) {
         timeout: currentTimeout
     });
 
-    D.device.sendTelnetCommand(params, function(out, err) {
-        if (err) {
-            console.error("Error executing command:", command, "Retry:", retryCount, "Error:", err);
-            handleRetry(command, retryCount, currentTimeout, d);
-            return;
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendTelnetCommand(params, function(out, err) {
+            if (err) {
+                console.error("Error executing command:", command, "Retry:", retryCount, "Error:", err);
+                handleRetry(command, retryCount, currentTimeout, resolve, reject);
+                return;
+            }
 
-        if (!out || !out.trim()) {
-            console.warn("Empty response for command:", command, "Retry:", retryCount);
-            handleRetry(command, retryCount, currentTimeout, d);
-            return;
-        }
+            if (!out || !out.trim()) {
+                console.warn("Empty response for command:", command, "Retry:", retryCount);
+                handleRetry(command, retryCount, currentTimeout, resolve, reject);
+                return;
+            }
 
-        // Check if response contains the expected pattern
-        var expectedPattern = new RegExp("< REP " + command.replace("GET ", "") + "\\s+([^>]+)>");
-        if (!expectedPattern.test(out)) {
-            console.warn("Invalid response format:", out, "Retry:", retryCount);
-            handleRetry(command, retryCount, currentTimeout, d);
-            return;
-        }
+            // Check if response contains the expected pattern
+            var expectedPattern = new RegExp("< REP " + command.replace("GET ", "") + "\\s+([^>]+)>");
+            if (!expectedPattern.test(out)) {
+                console.warn("Invalid response format:", out, "Retry:", retryCount);
+                handleRetry(command, retryCount, currentTimeout, resolve, reject);
+                return;
+            }
 
-        console.log("Success for command:", command, "Retry:", retryCount);
-        d.resolve(out);
+            console.log("Success for command:", command, "Retry:", retryCount);
+            resolve(out);
+        });
     });
-
-    return d.promise;
 }
 
 /**
@@ -136,12 +146,13 @@ function sendShureCommandWithRetry(command, retryCount, currentTimeout) {
  * @param {string} command The command to retry
  * @param {number} retryCount Current retry count
  * @param {number} currentTimeout Current timeout value
- * @param {Object} deferred The deferred object to resolve/reject
+ * @param {Function} resolve Resolves the command promise
+ * @param {Function} reject Rejects the command promise
  */
-function handleRetry(command, retryCount, currentTimeout, deferred) {
+function handleRetry(command, retryCount, currentTimeout, resolve, reject) {
     if (retryCount >= MAX_RETRIES) {
         console.error("Max retries reached for command:", command);
-        deferred.resolve(""); // Resolve with empty string to continue with other commands
+        resolve(""); // Resolve with empty string to continue with other commands
         return;
     }
 
@@ -150,15 +161,15 @@ function handleRetry(command, retryCount, currentTimeout, deferred) {
     console.log("Retrying command:", command, "Next timeout:", nextTimeout);
 
     // Add a small delay before retry
-    D.q.delay(200)
+    delay(200)
         .then(function() {
             return sendShureCommandWithRetry(command, retryCount + 1, nextTimeout);
         })
         .then(function(response) {
-            deferred.resolve(response);
+            resolve(response);
         })
         .catch(function(err) {
-            deferred.reject(err);
+            reject(err);
         });
 }
 
@@ -189,7 +200,7 @@ function executeCommandSequence(commands, results) {
     results = results || [];
     
     if (commands.length === 0) {
-        return D.q.resolve(results);
+        return Promise.resolve(results);
     }
 
     var currentCmd = commands[0];
@@ -204,7 +215,7 @@ function executeCommandSequence(commands, results) {
             ));
 
             // Add a small delay before next command
-            return D.q.delay(200);
+            return delay(200);
         })
         .then(function() {
             return executeCommandSequence(remainingCmds, results);
@@ -217,7 +228,7 @@ function executeCommandSequence(commands, results) {
                 "Error"
             ));
             // Continue with next command even after error
-            return D.q.delay(200).then(function() {
+            return delay(200).then(function() {
                 return executeCommandSequence(remainingCmds, results);
             });
         });
@@ -287,7 +298,6 @@ function sendShureSetCommand(command, retryCount, currentTimeout) {
     retryCount = retryCount || 0;
     currentTimeout = currentTimeout || BASE_TIMEOUT;
 
-    var d = D.q.defer();
     
     console.log("Attempting SET command:", command, "Retry:", retryCount, "Timeout:", currentTimeout);
     
@@ -300,32 +310,32 @@ function sendShureSetCommand(command, retryCount, currentTimeout) {
         timeout: currentTimeout
     });
 
-    D.device.sendTelnetCommand(params, function(out, err) {
-        if (err) {
-            console.error("Error executing SET command:", command, "Retry:", retryCount, "Error:", err);
-            handleSetRetry(command, retryCount, currentTimeout, d);
-            return;
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendTelnetCommand(params, function(out, err) {
+            if (err) {
+                console.error("Error executing SET command:", command, "Retry:", retryCount, "Error:", err);
+                handleSetRetry(command, retryCount, currentTimeout, resolve, reject);
+                return;
+            }
 
-        // For SET commands, we might need to wait and verify the state changed
-        if (!out || !out.trim()) {
-            console.warn("Empty response for SET command:", command, "Retry:", retryCount);
-            handleSetRetry(command, retryCount, currentTimeout, d);
-            return;
-        }
+            // For SET commands, we might need to wait and verify the state changed
+            if (!out || !out.trim()) {
+                console.warn("Empty response for SET command:", command, "Retry:", retryCount);
+                handleSetRetry(command, retryCount, currentTimeout, resolve, reject);
+                return;
+            }
 
-        // Accept any response that doesn't indicate an error
-        if (out.includes("ERR") || out.includes("ERROR")) {
-            console.error("Error response from device:", out);
-            handleSetRetry(command, retryCount, currentTimeout, d);
-            return;
-        }
+            // Accept any response that doesn't indicate an error
+            if (out.includes("ERR") || out.includes("ERROR")) {
+                console.error("Error response from device:", out);
+                handleSetRetry(command, retryCount, currentTimeout, resolve, reject);
+                return;
+            }
 
-        console.log("Success for SET command:", command, "Response:", out);
-        d.resolve(out);
+            console.log("Success for SET command:", command, "Response:", out);
+            resolve(out);
+        });
     });
-
-    return d.promise;
 }
 
 /**
@@ -333,12 +343,13 @@ function sendShureSetCommand(command, retryCount, currentTimeout) {
  * @param {string} command The command to retry
  * @param {number} retryCount Current retry count
  * @param {number} currentTimeout Current timeout value
- * @param {Object} deferred The deferred object to resolve/reject
+ * @param {Function} resolve Resolves the command promise
+ * @param {Function} reject Rejects the command promise
  */
-function handleSetRetry(command, retryCount, currentTimeout, deferred) {
+function handleSetRetry(command, retryCount, currentTimeout, resolve, reject) {
     if (retryCount >= MAX_RETRIES) {
         console.error("Max retries reached for SET command:", command);
-        deferred.reject(new Error("Max retries reached"));
+        reject(new Error("Max retries reached"));
         return;
     }
 
@@ -347,15 +358,15 @@ function handleSetRetry(command, retryCount, currentTimeout, deferred) {
     console.log("Retrying SET command:", command, "Next timeout:", nextTimeout);
 
     // Add a delay before retry
-    D.q.delay(500)  // Longer delay for SET commands
+    delay(500)  // Longer delay for SET commands
         .then(function() {
             return sendShureSetCommand(command, retryCount + 1, nextTimeout);
         })
         .then(function(response) {
-            deferred.resolve(response);
+            resolve(response);
         })
         .catch(function(err) {
-            deferred.reject(err);
+            reject(err);
         });
 }
 

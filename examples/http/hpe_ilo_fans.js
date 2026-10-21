@@ -15,28 +15,28 @@
 
 // Function to make an HTTP GET request to retrieve fan status from the HPE iLO device
 function getComponentsTemperatures() {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: "/redfish/v1/Chassis/1/Thermal",
-        username: D.device.username(), 
-        password: D.device.password(), 
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: "/redfish/v1/Chassis/1/Thermal",
+            username: D.device.username(), 
+            password: D.device.password(), 
+            protocol: "https",
+            auth: "basic",
+            jar: true,
+            rejectUnauthorized: false
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // Sanitize name to create a recordId

@@ -154,16 +154,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response and extracts the access token
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error('Access token not found in response body')
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -197,10 +198,10 @@ function generateLoginConf() {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-    const d = D.q.defer()
     const config = generateLoginConf();
-    zoomLogin.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -231,19 +232,20 @@ function filterDevices(devices) {
  * Handles error checking, processes the devices, and fetches additional pages if available
  * @param {Object} error The error returned by the HTTP request
  * @param {Object} response The HTTP response object
- * @param {Object} d The deferred promise object for handling async operations
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @param {string} body The raw response body from the HTTP request
  */
-function processdevicesResponse(error, response, d, body) {
+function processdevicesResponse(error, response, resolve, reject, body) {
     checkHTTPError(error, response)
     if (error) {
-        d.reject(error)
+        reject(error)
         return
     }
     const bodyAsJSON = JSON.parse(body)
     if (!Array.isArray(bodyAsJSON.devices) || bodyAsJSON.devices.length === 0) {
         console.error('No devices found.')
-        d.resolve(devicesTable)
+        resolve(devicesTable)
 
     }
     let filteredDevices = filterDevices(bodyAsJSON.devices)
@@ -252,15 +254,15 @@ function processdevicesResponse(error, response, d, body) {
         pageToken = bodyAsJSON.next_page_token
         retrieveListDevices()
             .then(function (devices) {
-                d.resolve(devices)
+                resolve(devices)
             })
             .catch(function (err) {
                 console.error('Error fetching next page of devices:', err)
-                d.reject(err)
+                reject(err)
             })
     } else {
         console.log('All devices retrieved successfully.')
-        d.resolve(devices)
+        resolve(devices)
     }
 }
 
@@ -286,12 +288,12 @@ function generateConfig() {
  * @returns {Promise} A promise that resolves with the list of devices
  */
 function retrieveListDevices() {
-    const d = D.q.defer()
     const config = generateConfig()
-    zoomResources.http.get(config, function (error, response, body) {
-        processdevicesResponse(error, response, d, body)
+    return new Promise(function (resolve, reject) {
+        zoomResources.http.get(config, function (error, response, body) {
+            processdevicesResponse(error, response, resolve, reject, body)
+        })
     })
-    return d.promise
 }
 
 /**

@@ -93,33 +93,30 @@ function checkSshError(err) {
 // Function for executing SSH command 
 function executeCommand(commandTemplate, serverIndex, extractorFn) {
     return function (result) {
-        var d = D.q.defer();
         var command = commandTemplate;
 
-        if (serverIndex !== null) {
-            if (serverIndex < targetServerUrl.length) {
-                var server = targetServerUrl[serverIndex];
-                var hostPort = server.split(":");
-
-                command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
-                sshConfig.command = command;
-                D.device.sendSSHCommand(sshConfig, function (out, err) {
-
-                    if (err) {
-                        return d.reject(err);
-                    }
-                    if (extractorFn)
-                        result.push(extractorFn(out));
-                    d.resolve(result);
-                });
-            } else {
-                console.error("no more server to test with");
-                result.push(null);
-                d.resolve(result);
-            }
+        if (serverIndex >= targetServerUrl.length) {
+            console.error("no more server to test with");
+            result.push(null);
+            return Promise.resolve(result);
         }
 
-        return d.promise.catch(function (err) {
+        var server = targetServerUrl[serverIndex];
+        var hostPort = server.split(":");
+
+        command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
+        sshConfig.command = command;
+        return new Promise(function (resolve, reject) {
+            D.device.sendSSHCommand(sshConfig, function (out, err) {
+
+                if (err) {
+                    return reject(err);
+                }
+                if (extractorFn)
+                    result.push(extractorFn(out));
+                resolve(result);
+            });
+        }).catch(function (err) {
             console.error(err.message);
             return executeCommand(commandTemplate, serverIndex + 1, extractorFn)(result);
         });
@@ -135,7 +132,9 @@ function execute() {
         executeCommand(execConfig[3].command, 0, udpExtractor)
     ];
 
-    return commands.reduce(D.q.when, D.q([]))
+    return commands.reduce(function (promise, command) {
+        return promise.then(command);
+    }, Promise.resolve([]))
         .then(function (result) {
             return result.map(function (res, index) {
                 if (res == null){

@@ -65,16 +65,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response and extracts the access token
- * @param {Object} d  The deferred promise object
+ * @param {Function} resolve  Resolves the promise
+ * @param {Function} reject  Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
 	return function process(error, response, body) {
 		checkHTTPError(error, response)
 		const bodyAsJSON = JSON.parse(body)
 		if (bodyAsJSON.access_token) {
 			accessToken = bodyAsJSON.access_token
-			d.resolve()
+			resolve()
 		} else {
 			console.error("Access token not found in response body")
 			D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -87,7 +88,6 @@ function processLoginResponse(d) {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-	const d = D.q.defer()
 	const config = {
 		url: "/oauth/token", 
 		protocol: "https", 
@@ -102,8 +102,9 @@ function login() {
 		rejectUnauthorized: false, 
 		jar: true
 	}
-	zoomLogin.http.post(config, processLoginResponse(d))
-	return d.promise
+	return new Promise(function (resolve, reject) {
+		zoomLogin.http.post(config, processLoginResponse(resolve, reject))
+	})
 }
 
 /**
@@ -142,39 +143,39 @@ function generateConfig(url) {
  * @returns {Promise<Array>} A promise that resolves with all rooms
  */
 function retrieveZoomRooms() {
-  const d = D.q.defer();
   let allRooms = [];
   let pageToken = null;
 
-  function fetchRooms() {
-    const url = getPaginationUrl(pageToken);
-    const config = generateConfig(url);
+  return new Promise(function (resolve, reject) {
+    function fetchRooms() {
+      const url = getPaginationUrl(pageToken);
+      const config = generateConfig(url);
 
-    zoomResources.http.get(config, function(error, response, body) {
-      checkHTTPError(error, response);
-      if (error) {
-        d.reject(error);
-        return;
-      }
-      const bodyAsJSON = JSON.parse(body);
-      if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
-        console.error("No rooms found.");
-        D.failure(D.errorType.GENERIC_ERROR);
-        return;
-      }
-      allRooms = allRooms.concat(extractZoomRoomsInfo(bodyAsJSON));
-      pageToken = bodyAsJSON.next_page_token;
-      if (pageToken) {
-        fetchRooms(); // Continue fetching if there's a next page
-      } else {
-        console.log("All rooms retrieved successfully.");
-        d.resolve(allRooms);
-      }
-    });
-  }
+      zoomResources.http.get(config, function(error, response, body) {
+        checkHTTPError(error, response);
+        if (error) {
+          reject(error);
+          return;
+        }
+        const bodyAsJSON = JSON.parse(body);
+        if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
+          console.error("No rooms found.");
+          D.failure(D.errorType.GENERIC_ERROR);
+          return;
+        }
+        allRooms = allRooms.concat(extractZoomRoomsInfo(bodyAsJSON));
+        pageToken = bodyAsJSON.next_page_token;
+        if (pageToken) {
+          fetchRooms(); // Continue fetching if there's a next page
+        } else {
+          console.log("All rooms retrieved successfully.");
+          resolve(allRooms);
+        }
+      });
+    }
 
-  fetchRooms();
-  return d.promise;
+    fetchRooms();
+  });
 }
 
 /**
@@ -200,28 +201,28 @@ function extractZoomRoomsInfo(zoomRoomsInfo) {
  * @returns {Promise} A promise that resolves to location data (or null) once the request is complete
  */
 function retrieveLocationInfo(locationId) {
-  const d = D.q.defer()
-  if (locationId === "N/A" || !locationId) {
-    console.log('Invalid location ID: ', locationId)
-    d.resolve(null)
+  return new Promise(function (resolve) {
+    if (locationId === "N/A" || !locationId) {
+      console.log('Invalid location ID: ', locationId)
+      resolve(null)
     
-  }
-  const config = generateConfig('/v2/rooms/locations/' + locationId)  
-  zoomResources.http.get(config, function(error, response, body) {
-    if (error) {
-      console.error('Error retrieving location info for location id: ' + locationId, error)
-      d.resolve(null)
-      return
     }
-    const bodyAsJSON = JSON.parse(body)
-    if (bodyAsJSON && bodyAsJSON.basic) {
-      d.resolve(bodyAsJSON.basic)
-    } else {
-      console.error("Location information not foun for location id: " + locationId)
-      d.resolve(null)
-    }
+    const config = generateConfig('/v2/rooms/locations/' + locationId)  
+    zoomResources.http.get(config, function(error, response, body) {
+      if (error) {
+        console.error('Error retrieving location info for location id: ' + locationId, error)
+        resolve(null)
+        return
+      }
+      const bodyAsJSON = JSON.parse(body)
+      if (bodyAsJSON && bodyAsJSON.basic) {
+        resolve(bodyAsJSON.basic)
+      } else {
+        console.error("Location information not foun for location id: " + locationId)
+        resolve(null)
+      }
+    })
   })
-  return d.promise
 }
 
 /**
@@ -238,7 +239,7 @@ function attachLocationInfoToRooms(rooms) {
       } 
     })
   })
-  D.q.all(locationPromises)
+  Promise.all(locationPromises)
     .then(function() {
       insertZoomRooms(rooms)
     })

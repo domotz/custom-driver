@@ -36,20 +36,20 @@ function checkSshError(err) {
 
 // Executes a SSH command and returns a promise
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            d.resolve({error: error.message});
-        }else{
-            d.resolve(output);
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                resolve({error: error.message});
+            }else{
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 function execute() {
-    return D.q.all([
+    return Promise.all([
         executeCommand(cmdPVEVersion),
         executeCommand(cmdPVEPerf)
     ]);

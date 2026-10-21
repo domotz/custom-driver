@@ -91,7 +91,6 @@ function get_status(){
  * @returns {Promise} Resolves when the status is retrieved
  */
 function retrieveStatus() {
-    const d = D.q.defer()
 
     const httpConfig = createBaseHTTPConfig()
     httpConfig.url = "/sony/system"
@@ -101,13 +100,14 @@ function retrieveStatus() {
         id: 1,
         version: "1.0"
     })
-    D.device.http.post(httpConfig, function (err, response, body) {
-        checkHttpError(err, response, body)
-        const responseAsJSON = JSON.parse(body)
-        tvStatus = responseAsJSON.result[0].status
-        d.resolve()
+    return new Promise(function (resolve) {
+        D.device.http.post(httpConfig, function (err, response, body) {
+            checkHttpError(err, response, body)
+            const responseAsJSON = JSON.parse(body)
+            tvStatus = responseAsJSON.result[0].status
+            resolve()
+        })
     })
-    return d.promise
 }
 
 /**
@@ -115,7 +115,6 @@ function retrieveStatus() {
  * @returns {Promise} Resolves when the video source is retrieved
  */
 function retrieveVideoSource() {
-    const d = D.q.defer()
 
     const httpConfig = createBaseHTTPConfig()
     httpConfig.url = "/sony/avContent"
@@ -125,15 +124,16 @@ function retrieveVideoSource() {
         id: 1,
         version: "1.0"
     })
-    D.device.http.post(httpConfig, function (err, response, body) {
-        checkHttpError(err, response, body)
-        const responseAsJSON = JSON.parse(body)
+    return new Promise(function (resolve) {
+        D.device.http.post(httpConfig, function (err, response, body) {
+            checkHttpError(err, response, body)
+            const responseAsJSON = JSON.parse(body)
 
-        if (!responseAsJSON.hasOwnProperty('error'))
-            videoSource = extractVideoSource(responseAsJSON)
-        d.resolve()
+            if (!responseAsJSON.hasOwnProperty('error'))
+                videoSource = extractVideoSource(responseAsJSON)
+            resolve()
+        })
     })
-    return d.promise
 }
 
 /**
@@ -221,7 +221,6 @@ function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, s
 function turnOn() {
     console.info("Turning TV on")
 
-    const d = D.q.defer()
 
     const httpConfig = createBaseHTTPConfig()
     httpConfig.url = "/sony/system"
@@ -231,11 +230,12 @@ function turnOn() {
         id: 1,
         version: "1.0"
     })
-    D.device.http.post(httpConfig, function (err, response, body) {
-        checkHttpError(err, response, body)
-        d.resolve()
+    return new Promise(function (resolve) {
+        D.device.http.post(httpConfig, function (err, response, body) {
+            checkHttpError(err, response, body)
+            resolve()
+        })
     })
-    return d.promise
 }
 
 /**
@@ -245,7 +245,6 @@ function turnOn() {
 function turnOff() {
     console.info("Turning TV off")
 
-    const d = D.q.defer()
 
     const httpConfig = createBaseHTTPConfig()
     httpConfig.url = "/sony/system"
@@ -255,11 +254,12 @@ function turnOff() {
         id: 1,
         version: "1.0"
     })
-    D.device.http.post(httpConfig, function (err, response, body) {
-        checkHttpError(err, response, body)
-        d.resolve()
+    return new Promise(function (resolve) {
+        D.device.http.post(httpConfig, function (err, response, body) {
+            checkHttpError(err, response, body)
+            resolve()
+        })
     })
-    return d.promise
 }
 
 /**

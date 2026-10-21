@@ -100,42 +100,42 @@ function checkSshError(err) {
 }
 
 function extractFullPrompt() {
-    var d = D.q.defer();
     extractPromptSshOptions.commands = ['exec /bin/vbash'];
-    D.device.sendSSHCommands(extractPromptSshOptions, function (out, err) {
-        if (err) {
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            if (out && out.length > 0) {
-                // Extract the prompt from the output
-                const fullPrompt = out[0].split('\n')[1].trim();
-                console.info('Full prompt extracted: ' + fullPrompt);
-                sshOptions.prompt = fullPrompt;
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(extractPromptSshOptions, function (out, err) {
+            if (err) {
+                checkSshError(err);
+                reject(err);
             } else {
-                console.error('No output received to extract prompt.');
-                D.failure(D.errorType.GENERIC_ERROR);
+                if (out && out.length > 0) {
+                    // Extract the prompt from the output
+                    const fullPrompt = out[0].split('\n')[1].trim();
+                    console.info('Full prompt extracted: ' + fullPrompt);
+                    sshOptions.prompt = fullPrompt;
+                } else {
+                    console.error('No output received to extract prompt.');
+                    D.failure(D.errorType.GENERIC_ERROR);
+                }
+                resolve(out);
             }
-            d.resolve(out);
-        }
+        });
     });
-    return d.promise;
 }
 
 // Utility function that changes the bash terminal and executes the command on the EdgeOS device
 function executeCommand(command) {
     return extractFullPrompt()
     .then(function () {
-        var d = D.q.defer();
         sshOptions.commands = ["exec /bin/vbash", command];
-        D.device.sendSSHCommands(sshOptions, function (out, err) {
-            if (err) {
-                checkSshError(err);
-                d.reject(err);
-            } else {
-                d.resolve(out);
-            }
+        return new Promise(function (resolve, reject) {
+            D.device.sendSSHCommands(sshOptions, function (out, err) {
+                if (err) {
+                    checkSshError(err);
+                    reject(err);
+                } else {
+                    resolve(out);
+                }
+            });
         });
-        return d.promise;
     })
 }

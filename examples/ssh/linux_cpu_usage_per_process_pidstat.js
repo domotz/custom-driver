@@ -31,16 +31,16 @@ function checkSshError(err) {
 }
 
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            checkSshError(error);
-            d.reject(error);
-        }
-        d.resolve(output);
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                checkSshError(error);
+                reject(error);
+            }
+            resolve(output);
+        });
     });
-    return d.promise;
 }
 
 // Checks if 'pidstat' is installed on the remote device based on the provided output.

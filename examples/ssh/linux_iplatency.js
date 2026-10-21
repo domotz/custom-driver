@@ -41,16 +41,16 @@ function checkSshError(err) {
 }
 
 function executeCommand(command) {
-    var d = D.q.defer();
     sshCommandOptions.command = command;
-    D.device.sendSSHCommand(sshCommandOptions, function (output, error) {
-        if (error) {
-            d.resolve(error);
-        }else{
-            d.resolve(output);
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshCommandOptions, function (output, error) {
+            if (error) {
+                resolve(error);
+            }else{
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -95,7 +95,7 @@ function get_status() {
                 checkSshError(error);
             });
     });     
-    D.q.all(commands)
+    Promise.all(commands)
         .then(function () {
             D.success(tableColumns);
         })

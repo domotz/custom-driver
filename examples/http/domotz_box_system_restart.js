@@ -9,24 +9,24 @@
  **/
 
 function getStatusApi () {
-    var deferred = D.q.defer();
-    D.device.http.get({
-        url: '/api/v1/status',
-        port: 3000,
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            deferred.reject(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            deferred.reject(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode != 200) {
-            deferred.reject(D.errorType.GENERIC_ERROR);
-        } else {
-            var json = JSON.parse(body);
-            deferred.resolve(json);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.http.get({
+            url: '/api/v1/status',
+            port: 3000,
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                reject(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                reject(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode != 200) {
+                reject(D.errorType.GENERIC_ERROR);
+            } else {
+                var json = JSON.parse(body);
+                resolve(json);
+            }
+        });
     });
-    return deferred.promise;
 }
 
 /**
