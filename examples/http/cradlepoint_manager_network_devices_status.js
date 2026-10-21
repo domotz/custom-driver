@@ -57,24 +57,24 @@ var networkDevicesStatusTable = D.createTable(
 
 // calling get network devices status API
 function getNetworkDevicesStatus() {
-    var d = D.q.defer();
     var device = D.createExternalDevice('www.cradlepointecm.com')
-    device.http.get(httpParams, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            return d.failure(D.errorType.GENERIC_ERROR);
-        }
-        if(!response){
-            d.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
-            d.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode !== 200) {
-            d.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        device.http.get(httpParams, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if(!response){
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode === 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**

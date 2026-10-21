@@ -106,7 +106,6 @@ const paths = [
  * @returns A promise that resolves with the parsed response
  */
 function sendSoapRequest (body, extractData) {
-  const d = D.q.defer()
   const config ={
     url,
     protocol: 'https',
@@ -114,30 +113,31 @@ function sendSoapRequest (body, extractData) {
     jar: true,
     rejectUnauthorized: false
   }
-  D.device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.log(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    }
-    const $ = D.htmlParse(body)
-    const faultCode = $('faultcode').text()
-    const faultString = $('faultstring').text()
-    if (faultCode && faultString) {
-      if (faultCode.includes('ServerFaultCode') && faultString.includes('Cannot complete login due to an incorrect user name or password.')) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-      } else {
+  return new Promise(function (resolve) {
+    D.device.http.post(config, function (error, response, body) {
+      if (error) {
+        console.log(error)
         D.failure(D.errorType.GENERIC_ERROR)
       }
-    } else if (!body) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode !== 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      const result = extractData(body)
-      d.resolve(result)
-    }
+      const $ = D.htmlParse(body)
+      const faultCode = $('faultcode').text()
+      const faultString = $('faultstring').text()
+      if (faultCode && faultString) {
+        if (faultCode.includes('ServerFaultCode') && faultString.includes('Cannot complete login due to an incorrect user name or password.')) {
+          D.failure(D.errorType.AUTHENTICATION_ERROR)
+        } else {
+          D.failure(D.errorType.GENERIC_ERROR)
+        }
+      } else if (!body) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else if (response.statusCode !== 200) {
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else {
+        const result = extractData(body)
+        resolve(result)
+      }
+    })
   })
-  return d.promise
 }
 
 /**

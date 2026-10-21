@@ -77,15 +77,13 @@ var pwd = D.getParameter('pwd');
  * @private
  */
 function _connectToProjector() {
-    const d = D.q.defer();
     const ip = D.device.ip();
     console.info('Connecting to projector at IP: ', ip);
     const client = net.createConnection({
         host: ip,
         port: defaultTcpPort,
     });
-    d.resolve(client);
-    return d.promise;
+    return Promise.resolve(client);
 }
 
 /**
@@ -182,54 +180,52 @@ function handlePowerResponse(responseObject) {
  * @returns {Promise<Socket>}
  */
 function executeCommand(client, command) {
-    const d = D.q.defer();
     if (!client) {
         console.error('Client is not defined');
-        d.reject('Client is not defined');
-        return d.promise;
+        return Promise.reject('Client is not defined');
     }
-    client.setTimeout(COMMAND_TIMEOUT);
-    client.on('timeout', function () {
-        console.warn('Socket Timeout');
-        client.end();
-        d.resolve();
-        return d.promise;
-    });
-    client.on('data', function (data) {
-        const responseObject = parseResponse(data);
-        if (responseObject.err) {
-            console.error('Error:', responseObject.err);
-            d.reject(responseObject.err);
+    return new Promise(function (resolve, reject) {
+        client.setTimeout(COMMAND_TIMEOUT);
+        client.on('timeout', function () {
+            console.warn('Socket Timeout');
             client.end();
-        }
-        switch (responseObject.cmd) {
-        case AUTH:
-            if (responseObject.authVersion === '1') {
-                executeAuthenticatedCommand(client, responseObject, command);
+            resolve();
+        });
+        client.on('data', function (data) {
+            const responseObject = parseResponse(data);
+            if (responseObject.err) {
+                console.error('Error:', responseObject.err);
+                reject(responseObject.err);
+                client.end();
             }
-            if (responseObject.authVersion === '0') {
+            switch (responseObject.cmd) {
+            case AUTH:
+                if (responseObject.authVersion === '1') {
+                    executeAuthenticatedCommand(client, responseObject, command);
+                }
+                if (responseObject.authVersion === '0') {
+                    client.write(command);
+                }
+                break;
+            case LAMP:
+                client.end();
+                resolve(handleLampHours(responseObject));
+                break;
+            case POWER:
+                resolve(handlePowerResponse(responseObject));
+                client.end();
+                break;
+            case INFO:
+                client.end();
+                console.info(responseObject.args);
+                resolve();
+            default:
                 client.write(command);
+                break;
             }
-            break;
-        case LAMP:
-            client.end();
-            d.resolve(handleLampHours(responseObject));
-            break;
-        case POWER:
-            d.resolve(handlePowerResponse(responseObject));
-            client.end();
-            break;
-        case INFO:
-            client.end();
-            console.info(responseObject.args);
-            d.resolve();
-        default:
-            client.write(command);
-            break;
-        }
 
+        });
     });
-    return d.promise;
 }
 
 

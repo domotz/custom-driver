@@ -34,22 +34,22 @@ var shutdown = false;
  * @returns {Promise} A promise that resolves after executing the telnet command 
  */
 function getAS400Info() {
-    var d = D.q.defer();
     telnetParams.command = command;
-    telnet(telnetParams, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + telnetParams.command);
-            failure(err);
-        }
-        if (out.indexOf("Spegnimento immediato del sistema") !== -1) {
-            shutdown = true;
-        }
-        if (out.indexOf("Spegnimento immediato del sistema e successiva accensione") !== -1) {
-            reboot = true;
-        }
-        d.resolve({ reboot: reboot, shutdown: shutdown }); 
+    return new Promise(function (resolve) {
+        telnet(telnetParams, function (out, err) {
+            if (err) {
+                console.error("error while executing command: " + telnetParams.command);
+                failure(err);
+            }
+            if (out.indexOf("Spegnimento immediato del sistema") !== -1) {
+                shutdown = true;
+            }
+            if (out.indexOf("Spegnimento immediato del sistema e successiva accensione") !== -1) {
+                reboot = true;
+            }
+            resolve({ reboot: reboot, shutdown: shutdown }); 
+        });
     });
-    return d.promise;
 }
 
 // Function to handle errors

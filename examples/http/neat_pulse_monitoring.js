@@ -98,32 +98,31 @@ var variables = [];
 }
 
 function retrieveRegions() {
-    const d = D.q.defer();
 
     const url = "/v1/orgs/" + neatOrgID + "/regions";
+    return new Promise(function (resolve) {
 
-    callNeatPulseAPI(url, function (bodyAsJSON) {
-        d.resolve();    
+        callNeatPulseAPI(url, function (bodyAsJSON) {
+            resolve();    
+        });
+
     });
-
-    return d.promise;
 }
 
 
 function retrieveInventory() {
-    const d = D.q.defer();
 
     const url =  "/v1/orgs/" + neatOrgID + "/endpoints";
+    return new Promise(function (resolve) {
 
-    callNeatPulseAPI(url, function (bodyAsJSON) {
-        d.resolve(bodyAsJSON.endpoints);    
+        callNeatPulseAPI(url, function (bodyAsJSON) {
+            resolve(bodyAsJSON.endpoints);    
+        });
+
     });
-
-    return d.promise;
 }
 
 function findDevice(endpoints) {
-    const d = D.q.defer();
 
     var device = null;
     for (var i = 0; i < endpoints.length; i++) {
@@ -132,41 +131,42 @@ function findDevice(endpoints) {
         break;
       }
     }
+    return new Promise(function (resolve) {
 
-    if (!device)
-        D.success([D.createVariable("msg", "Message", "Serial " +  D.device.serial() + " not found in Neat inventory", null, D.valueType.STRING)]);
-    else   
-        d.resolve(device.id);
+        if (!device)
+            D.success([D.createVariable("msg", "Message", "Serial " +  D.device.serial() + " not found in Neat inventory", null, D.valueType.STRING)]);
+        else   
+            resolve(device.id);
 
-    return d.promise;
+    });
 }
 
 function retrieveEndpointBasicInfo(deviceID) {
-    const d = D.q.defer();
 
     const url = "/v1/orgs/" + neatOrgID + "/endpoints/"+deviceID;
+    return new Promise(function (resolve) {
 
-    callNeatPulseAPI(url, function (bodyAsJSON) {
-        createDeviceInfoVariables(bodyAsJSON)
-        d.resolve(deviceID);
+        callNeatPulseAPI(url, function (bodyAsJSON) {
+            createDeviceInfoVariables(bodyAsJSON)
+            resolve(deviceID);
+        });
+
     });
-
-    return d.promise;
 }
 
 function reboot(deviceID) {
-    const d = D.q.defer();
 
     console.info("Rebooting device " + deviceID)
 
     const url = "/v1/orgs/" + neatOrgID + "/endpoints/"+deviceID+"/reboot";
+    return new Promise(function (resolve) {
 
-    callNeatPulseAPI(url, function (bodyAsJSON) {
-        createDeviceInfoVariables(bodyAsJSON)
-        d.resolve(deviceID);
-    }, "POST");
+        callNeatPulseAPI(url, function (bodyAsJSON) {
+            createDeviceInfoVariables(bodyAsJSON)
+            resolve(deviceID);
+        }, "POST");
  
-    return d.promise;
+    });
 }
 
 function callNeatPulseAPI(url, responseCallback, method = "GET")
@@ -194,16 +194,16 @@ function callNeatPulseAPI(url, responseCallback, method = "GET")
 }
 
 function retrieveEndpointSensors(deviceID) {
-    const d = D.q.defer();
 
     const url = "/v1/orgs/" + neatOrgID + "/endpoints/"+deviceID+"/sensor";
+    return new Promise(function (resolve) {
 
-    callNeatPulseAPI(url, function (bodyAsJSON) {
-        createDeviceSensorsVariables(bodyAsJSON)
-        d.resolve();
+        callNeatPulseAPI(url, function (bodyAsJSON) {
+            createDeviceSensorsVariables(bodyAsJSON)
+            resolve();
+        });
+
     });
-
-    return d.promise;
 }
 
 function publishVariables() {

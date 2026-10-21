@@ -53,21 +53,21 @@ function checkSshError (err) {
  * @returns {Promise} A promise that resolves with the command output or rejects with an error
  */
 function executeCommand (cmdGetDiskPartition) {
-  var d = D.q.defer()
   sshConfig.command = cmdGetDiskPartition
-  D.device.sendSSHCommand(sshConfig, function (output, error) {
-    if (error) { 
-      if (error.message.indexOf('command not found') !== -1){
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      } else { 
-        checkSshError(error)
-        d.reject(error)
+  return new Promise(function (resolve, reject) {
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+      if (error) { 
+        if (error.message.indexOf('command not found') !== -1){
+          D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        } else { 
+          checkSshError(error)
+          reject(error)
+        }
+      } else {
+        resolve(output)
       }
-    } else {
-      d.resolve(output)
-    }
+    })
   })
-  return d.promise
 }
 
 /**

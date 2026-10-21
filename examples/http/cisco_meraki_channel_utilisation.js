@@ -49,7 +49,6 @@ const table = D.createTable(
  * @returns {Promise} A promise that resolves with an array of network information.
  */
 function getNetworkInfo () {
-  const d = D.q.defer()
   const config = {
     url: '/api/v1/organizations/' + organizationId + '/networks',
     protocol: 'https',
@@ -58,61 +57,7 @@ function getNetworkInfo () {
       'Content-Type': 'application/json'
     }
   }
-  device.http.get(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (response.statusCode === 404) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode === 401) {
-      console.error('Invalid API key')
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode !== 200) {
-      console.error(body)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      const data = JSON.parse(body)
-      const networksInfo = []
-      if (networkId.toUpperCase() === 'ALL') {
-        data.forEach(function (network) {
-          networksInfo.push({ id: network.id, name: network.name })
-        })
-      } else {
-        let networkFound = false
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].id === networkId) {
-            networksInfo.push({ id: data[i].id, name: data[i].name })
-            networkFound = true
-            break
-          }
-        }
-        if (!networkFound) {
-          console.error('Network with specified ID not found.')
-        }
-      }
-      d.resolve(networksInfo)
-    }
-  })
-  return d.promise
-}
-
-/**
- * Function to retrieve channel utilization data for each network within a 15 minute interval.
- * @param {Array} networksInfo Array of network information.
- * @returns {Promise} A promise that resolves with an array of channel utilization information
- */
-function getChannelUtilization (networksInfo) {
-  const promises = networksInfo.map(function (network) {
-    const d = D.q.defer()
-    const timespan = 15 * 60
-    const config = {
-      url: '/api/v1/networks/' + network.id + '/networkHealth/channelUtilization?timespan=' + timespan,
-      protocol: 'https',
-      headers: {
-        Authorization: 'Bearer ' + apiKey,
-        'Content-Type': 'application/json'
-      }
-    }
+  return new Promise(function (resolve) {
     device.http.get(config, function (error, response, body) {
       if (error) {
         console.error(error)
@@ -122,18 +67,73 @@ function getChannelUtilization (networksInfo) {
       } else if (response.statusCode === 401) {
         console.error('Invalid API key')
         D.failure(D.errorType.AUTHENTICATION_ERROR)
-      } else if (response.statusCode === 400) {
-        console.error('Channel utilization data not available for network: ' + network.id + '. Only wireless networks are supported.')
-        d.resolve(null)
       } else if (response.statusCode !== 200) {
+        console.error(body)
         D.failure(D.errorType.GENERIC_ERROR)
       } else {
-        d.resolve({ id: network.id, name: network.name, body })
+        const data = JSON.parse(body)
+        const networksInfo = []
+        if (networkId.toUpperCase() === 'ALL') {
+          data.forEach(function (network) {
+            networksInfo.push({ id: network.id, name: network.name })
+          })
+        } else {
+          let networkFound = false
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].id === networkId) {
+              networksInfo.push({ id: data[i].id, name: data[i].name })
+              networkFound = true
+              break
+            }
+          }
+          if (!networkFound) {
+            console.error('Network with specified ID not found.')
+          }
+        }
+        resolve(networksInfo)
       }
     })
-    return d.promise
   })
-  return D.q.all(promises)
+}
+
+/**
+ * Function to retrieve channel utilization data for each network within a 15 minute interval.
+ * @param {Array} networksInfo Array of network information.
+ * @returns {Promise} A promise that resolves with an array of channel utilization information
+ */
+function getChannelUtilization (networksInfo) {
+  const promises = networksInfo.map(function (network) {
+    const timespan = 15 * 60
+    const config = {
+      url: '/api/v1/networks/' + network.id + '/networkHealth/channelUtilization?timespan=' + timespan,
+      protocol: 'https',
+      headers: {
+        Authorization: 'Bearer ' + apiKey,
+        'Content-Type': 'application/json'
+      }
+    }
+    return new Promise(function (resolve) {
+      device.http.get(config, function (error, response, body) {
+        if (error) {
+          console.error(error)
+          D.failure(D.errorType.GENERIC_ERROR)
+        } else if (response.statusCode === 404) {
+          D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        } else if (response.statusCode === 401) {
+          console.error('Invalid API key')
+          D.failure(D.errorType.AUTHENTICATION_ERROR)
+        } else if (response.statusCode === 400) {
+          console.error('Channel utilization data not available for network: ' + network.id + '. Only wireless networks are supported.')
+          resolve(null)
+        } else if (response.statusCode !== 200) {
+          D.failure(D.errorType.GENERIC_ERROR)
+        } else {
+          resolve({ id: network.id, name: network.name, body })
+        }
+      })
+    })
+  })
+  return Promise.all(promises)
     .then(function (results) {
       return results.filter(function (result) { return result !== null })
     })

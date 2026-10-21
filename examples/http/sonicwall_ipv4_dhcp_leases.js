@@ -33,7 +33,7 @@ function generateConfig(url) {
 }
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
@@ -48,7 +48,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -58,13 +58,13 @@ function processResponse(d) {
  * @returns {promise} The promise for the login operation.
  */
 function login() {
-    var d = D.q.defer();
     var config = generateConfig("/api/sonicos/auth");
     config.auth = "basic";
     config.username = D.device.username();
     config.password = D.device.password();
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 /**
@@ -72,10 +72,10 @@ function login() {
  * @returns {promise} The promise for retrieving DHCP leases info
  */
 function getDHCPLeases() {
-    var d = D.q.defer();
     var config = generateConfig("/api/sonicos/reporting/dhcp-server/ipv4/leases/statistic");
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 function getDisplayValue(value) {

@@ -27,20 +27,20 @@ var sshOptions = {
 */
 function validate() {
     console.info("Validating SSH login only...");
-    var d = D.q.defer();
     sshOptions.commands = ["echo 'Connected'"];
-    D.device.sendSSHCommands(sshOptions, function(out, err) {
-        if (err) {
-            console.error("Validation failed with SSH error");
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            console.info("SSH connection established.");
-            D.success();
-            d.resolve();
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(sshOptions, function(out, err) {
+            if (err) {
+                console.error("Validation failed with SSH error");
+                checkSshError(err);
+                reject(err);
+            } else {
+                console.info("SSH connection established.");
+                D.success();
+                resolve();
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -131,17 +131,17 @@ function checkSshError(err) {
  */
 function executeCommand(command) {
     console.info("Executing command on VyOS device: " + command);
-    var d = D.q.defer();
     sshOptions.commands = [command];
-    D.device.sendSSHCommands(sshOptions, function(out, err) {
-        if (err) {
-            console.error("Error during SSH execution: " + JSON.stringify(err));
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            console.info("Command execution successful");
-            d.resolve(out);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(sshOptions, function(out, err) {
+            if (err) {
+                console.error("Error during SSH execution: " + JSON.stringify(err));
+                checkSshError(err);
+                reject(err);
+            } else {
+                console.info("Command execution successful");
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }

@@ -29,7 +29,6 @@ var table = D.createTable(
  * @returns A promise that resolves on successful login
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/login",
         username: D.device.username(),
@@ -39,33 +38,33 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, function(error, response){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } 
-        if (response.statusCode == 401 || response.statusCode == 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } 
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }   
-        if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Authentication Unsuccessful") !=-1) {
-            console.error("Session key not found in response headers");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        var sessionKey = response.headers["command-status"].split(" ")[1];
-        d.resolve(sessionKey);
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response){
+            if (error) {          
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } 
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } 
+            if (response.statusCode == 401 || response.statusCode == 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } 
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }   
+            if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Authentication Unsuccessful") !=-1) {
+                console.error("Session key not found in response headers");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            var sessionKey = response.headers["command-status"].split(" ")[1];
+            resolve(sessionKey);
+        });
     });
-    return d.promise;
 }
 
 // Retrieves voltage and current sensor data from the HPE MSA SAN device
 function getVoltageCurrent(sessionKey) {
-    var d = D.q.defer();
     var config = {
         url: "/api/show/sensor-status",
         protocol: "https",
@@ -75,23 +74,24 @@ function getVoltageCurrent(sessionKey) {
             "sessionKey": sessionKey 
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } 
-        if (response.statusCode == 401 || response.statusCode == 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } 
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }   
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body){
+            if (error) {          
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } 
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } 
+            if (response.statusCode == 401 || response.statusCode == 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } 
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }   
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 // Sanitize sensor name to create a recordId

@@ -20,7 +20,7 @@
 var port = D.getParameter("portNumber");
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
@@ -33,13 +33,12 @@ function processResponse(d) {
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(JSON.parse(body));
+        resolve(JSON.parse(body));
     };
 }
 
 // Retrieves firmware status from the OPNsense device
 function  getFirmwareStatus() {
-    var d = D.q.defer();
     var config = {
         url: "/api/core/firmware/status",
         username: D.device.username(), //api key == username
@@ -50,13 +49,13 @@ function  getFirmwareStatus() {
         rejectUnauthorized: false,
         port: port
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves activity data from the OPNsense device
 function getActivity() {
-    var d = D.q.defer();
     var config = {
         url: "/api/diagnostics/activity/getActivity",
         protocol: "https",
@@ -65,8 +64,9 @@ function getActivity() {
         rejectUnauthorized: false,
         port: port
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 function extractHeaders(headers) {
@@ -106,7 +106,7 @@ function extractData(data) {
 
 // Loads firmware status and activity informations
 function loadData() {
-    return D.q.all([
+    return Promise.all([
         getFirmwareStatus(),
         getActivity()
     ]);    

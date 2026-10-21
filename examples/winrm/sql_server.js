@@ -65,23 +65,23 @@ function checkWinRmError(err) {
 
 // Function to execute WinRM command
 function executeWinrmCommand(command) {
-    var d = D.q.defer();
     winrmConfig.command = command;
-    D.device.sendWinRMCommand(winrmConfig, function (output) {
-        if (output.error === null) {
-            d.resolve(output);
-        } else {
-            if (output.error){
-                if (output.error.message.indexOf("Cannot find any service") !== -1){
-                    console.error("Error getting service status");
-                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-                } else {
-                    checkWinRmError(output.error);
-                }
-            }  
-        }            
+    return new Promise(function (resolve) {
+        D.device.sendWinRMCommand(winrmConfig, function (output) {
+            if (output.error === null) {
+                resolve(output);
+            } else {
+                if (output.error){
+                    if (output.error.message.indexOf("Cannot find any service") !== -1){
+                        console.error("Error getting service status");
+                        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                    } else {
+                        checkWinRmError(output.error);
+                    }
+                }  
+            }            
+        });
     });
-    return d.promise;
 }
 
 // Function to get SQL Server service status

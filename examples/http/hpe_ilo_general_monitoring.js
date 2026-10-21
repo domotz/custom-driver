@@ -17,28 +17,28 @@
 
 // Function to make an HTTP GET request to retrieve HPE iLO device information
 function getHPEILOInformation() {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: "/redfish/v1/Systems/1",
-        username: D.device.username(), 
-        password: D.device.password(), 
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: "/redfish/v1/Systems/1",
+            username: D.device.username(), 
+            password: D.device.password(), 
+            protocol: "https",
+            auth: "basic",
+            jar: true,
+            rejectUnauthorized: false
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // Function to extract relevant data from the HPE iLO device information and create variables

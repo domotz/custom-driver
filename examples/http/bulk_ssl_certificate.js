@@ -33,7 +33,7 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
  * @returns Promise wait until all https calls are done to the target servers
  */
 function getAllCertificateData() {
-    return D.q.all(
+    return Promise.all(
         serversToCheck.map(getCertificateData)
     );
 }
@@ -44,18 +44,17 @@ function getAllCertificateData() {
  * @returns Promise that wait for the https call to the targetServer and parse the needed data
  */
 function getCertificateData(targetServer) {
-    var d = D.q.defer();
     var website = D.createExternalDevice(targetServer);
-    website.http.getTLSCertificate({}, function (err, resp) {
-            if (err) {
-                console.error(err);
-                return d.resolve();
-            }
-            resp.server = targetServer;
-            d.resolve(resp);
-        });
-
-    return d.promise;
+    return new Promise(function (resolve) {
+        website.http.getTLSCertificate({}, function (err, resp) {
+                if (err) {
+                    console.error(err);
+                    return resolve();
+                }
+                resp.server = targetServer;
+                resolve(resp);
+            });
+    });
 }
 
 /**

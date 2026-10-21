@@ -105,21 +105,20 @@ function generateConfig(url, form) {
  * @returns {Promise<Object>} A promise resolving to the CSRF token.
  */
 function fetchCSRFToken() {
-    var d = D.q.defer()
     var config =  generateConfig("/diag_backup.php")
 
-    D.device.http.get(config, function (error, response, body) {
-        checkHTTPError(error, response)
-        var tokenMatch = /var csrfMagicToken = "(.*?)"/.exec(body)
-        if (tokenMatch) {
-            d.resolve(tokenMatch[1])
-        } else {
-            console.error("CSRF token not found in response.")
-            D.failure(D.errorType.GENERIC_ERROR)
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            checkHTTPError(error, response)
+            var tokenMatch = /var csrfMagicToken = "(.*?)"/.exec(body)
+            if (tokenMatch) {
+                resolve(tokenMatch[1])
+            } else {
+                console.error("CSRF token not found in response.")
+                D.failure(D.errorType.GENERIC_ERROR)
+            }
+        })
     })
-
-    return d.promise
 }
 
 /**
@@ -128,7 +127,6 @@ function fetchCSRFToken() {
  * @returns {Promise<Object>} A promise resolving to session data.
  */
 function performLogin(csrfToken) {
-    var d = D.q.defer()
     var config = generateConfig("/index.php", {
         login: "Login",
         usernamefld: D.device.username(),
@@ -136,32 +134,30 @@ function performLogin(csrfToken) {
         __csrf_magic: csrfToken
     })
 
-    D.device.http.post(config, function (error, response) {
-        checkHTTPError(error, response)
-        var redirectURL = handleRedirect(response)
-        if (redirectURL) {
-            fetchCSRFToken()
-                .then(function (data) {
-                    d.resolve(data)
-                }).catch(function (error) {
-                d.reject(error)
-            })
-        } else {
-            console.error("Login failed; redirect URL not found.")
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, function (error, response) {
+            checkHTTPError(error, response)
+            var redirectURL = handleRedirect(response)
+            if (redirectURL) {
+                fetchCSRFToken()
+                    .then(function (data) {
+                        resolve(data)
+                    }).catch(function (error) {
+                    reject(error)
+                })
+            } else {
+                console.error("Login failed; redirect URL not found.")
+                D.failure(D.errorType.AUTHENTICATION_ERROR)
+            }
+        })
     })
-
-    return d.promise
 }
 
 /**
  * Downloads the configuration file from pfSense after successful login.
  * @param {Object} csrfToken - The CSRF token to include in the download request.
- * @returns {Promise<Object>} A promise resolving to the configuration backup data.
  */
 function downloadConfiguration(csrfToken) {
-    var d = D.q.defer()
     var config = generateConfig("/diag_backup.php", {
         download: "download",
         donotbackuprrd: "yes",
@@ -180,5 +176,4 @@ function downloadConfiguration(csrfToken) {
             D.failure(D.errorType.GENERIC_ERROR)
         }
     })
-    return d.promise
 }

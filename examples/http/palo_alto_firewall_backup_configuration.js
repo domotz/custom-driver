@@ -19,7 +19,6 @@
  * @returns {Promise} A promise that resolves to the API key as a string
  */
 function getAPIkey() {
-    var d = D.q.defer()
     var config = {
         url: "/api/?type=keygen",
         protocol: "https",
@@ -32,23 +31,24 @@ function getAPIkey() {
         },
         rejectUnauthorized: false
     }
-    D.device.http.post(config, function(error, response, body){
-        if (error) {          
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            var $ = D.htmlParse(body)
-            var key = $('key').text()
-            d.resolve(key)
-        }
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response, body){
+            if (error) {          
+                console.error(error)
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            } else if (response.statusCode == 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR)
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else {
+                var $ = D.htmlParse(body)
+                var key = $('key').text()
+                resolve(key)
+            }
+        })
     })
-    return d.promise
 }
 
 /**
@@ -57,27 +57,27 @@ function getAPIkey() {
  * @returns {Promise} A promise that resolves to the configuration backup as a string
  */
 function getConfigBackup(key){
-    var d = D.q.defer()
     var config = {
         url: "/api/?type=export&category=configuration&key=" + key,
         protocol: "https",
         rejectUnauthorized: false
     }
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(body)
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body){
+            if (error) {          
+                console.error(error)
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+            } else if (response.statusCode == 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR)
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR)
+            } else {
+                resolve(body)
+            }
+        })
     })
-    return d.promise
 }
 
 /**

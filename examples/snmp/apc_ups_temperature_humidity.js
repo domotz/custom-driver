@@ -16,21 +16,21 @@ var probeTempUnitsOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.5.1";
 var probeHumidityOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.6.1";
 
 function validateAndGetData() {
-    var d = D.q.defer();
-    D.device.createSNMPSession().walk(iemStatusProbesTableOID, function(out, err) {
-        if (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (!out) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (!(probNameOID in out) || !(probeTempOID in out) || !(probeTempUnitsOID in out) || !(probeHumidityOID in out)) {
-            console.error("Missing necessary OID in SNMP response");
-            D.failure(D.errorType.PARSING_ERROR);
-        }  else {
-            d.resolve(out);
-        }
+    return new Promise(function (resolve) {
+        D.device.createSNMPSession().walk(iemStatusProbesTableOID, function(out, err) {
+            if (err) {
+                console.error(err);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!out) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (!(probNameOID in out) || !(probeTempOID in out) || !(probeTempUnitsOID in out) || !(probeHumidityOID in out)) {
+                console.error("Missing necessary OID in SNMP response");
+                D.failure(D.errorType.PARSING_ERROR);
+            }  else {
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**

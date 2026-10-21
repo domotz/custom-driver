@@ -276,16 +276,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response, extracting the access token
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error("Access token not found in response body")
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -310,17 +311,18 @@ function filterNetworkInterfaces(networkInterfaces) {
 
 /**
  * Processes the response containing network interfaces, filtering and resolving the data
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processNetworkInterfacesResponse(d) {
+function processNetworkInterfacesResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
             const networkInterfaces = bodyAsJSON.value.map(extractNetworkInterfacesInfo)
             const filteredInterfaces = filterNetworkInterfaces(networkInterfaces)
-            d.resolve(filteredInterfaces)
+            resolve(filteredInterfaces)
         } else {
             console.error("No Network Interfaces found")
             D.failure(D.errorType.GENERIC_ERROR)
@@ -330,11 +332,12 @@ function processNetworkInterfacesResponse(d) {
 
 /**
  * Processes the performance metrics response for a network interface
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @param networkInterfaceInfo
  * @returns {Function} A function to process the HTTP response
  */
-function processNIPerformanceMetricsResponse(d, networkInterfaceInfo) {
+function processNIPerformanceMetricsResponse(resolve, reject, networkInterfaceInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -342,7 +345,7 @@ function processNIPerformanceMetricsResponse(d, networkInterfaceInfo) {
             bodyAsJSON.value.map(function (performanceInfo) {
                 extractMetricsInfo(performanceInfo, networkInterfaceInfo)
             })
-            d.resolve(networkInterfaceInfo)
+            resolve(networkInterfaceInfo)
         } else {
             console.error("No performance metrics found for the network interface")
             D.failure(D.errorType.GENERIC_ERROR)
@@ -355,7 +358,6 @@ function processNIPerformanceMetricsResponse(d, networkInterfaceInfo) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-    const d = D.q.defer()
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -366,8 +368,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     }
-    azureCloudLoginService.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -436,10 +439,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the list of network interfaces
  */
 function retrieveNetworkInterfaces() {
-    const d = D.q.defer()
     const config = generateConfig("/providers/Microsoft.Network/networkInterfaces?api-version=2023-02-01")
-    azureCloudManagementService.http.get(config, processNetworkInterfacesResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processNetworkInterfacesResponse(resolve, reject))
+    })
 }
 
 /**
@@ -458,13 +461,13 @@ function retrieveNIPerformanceMetrics(networkInterfaceList) {
     }
     networkInterfaceList.forEach(function (networkInterface) {
         performanceKeyGroups.forEach(function (group) {
-            const d = D.q.defer()
             const config = generateConfig("/resourceGroups/" + networkInterface.resourceGroupName + "/providers/Microsoft.Network/networkInterfaces/" + networkInterface.id + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M")
-            azureCloudManagementService.http.get(config, processNIPerformanceMetricsResponse(d, networkInterface))
-            promises.push(d.promise)
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, processNIPerformanceMetricsResponse(resolve, reject, networkInterface))
+            }))
         })
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 /**

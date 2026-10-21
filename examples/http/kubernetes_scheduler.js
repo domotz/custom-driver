@@ -18,32 +18,32 @@ var port = 80;
  * @returns promise for http response body containig Kubernetes API metrics in PROMETHEUS format
  */
 function getMetrics() {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: "/metrics",
-        port: port,
-        headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-        }
-    }, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if(response.statusCode == 404){
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if(response.statusCode == 401){
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if(response.statusCode != 200){
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: "/metrics",
+            port: port,
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        }, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if(response.statusCode == 404){
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if(response.statusCode == 401){
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if(response.statusCode != 200){
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(body);
 
+        });
     });
-    return d.promise;
 }
 
 /**

@@ -80,7 +80,6 @@ function generateTotpCode(secret) {
 }
 
 function attemptTfaLogin() {
-    var d = D.q.defer();
     var username = D.device.username();
     var password = D.device.password();
     var totp = generateTotpCode(totpSeed);
@@ -104,28 +103,27 @@ function attemptTfaLogin() {
     };
 
     console.log("Attempting login via /tfa...");
-    D.device.http.post(tfaPayload, function (err, res, body) {
-        if (!err && res && res.statusCode === 200) {
-            try {
-                var parsed = JSON.parse(body);
-                var token = parsed.status && parsed.status.info && parsed.status.info[0].bearer_token;
-                if (token) {
-                    console.log("Bearer token acquired.");
-                    d.resolve({ type: "bearer", value: token });
-                    return;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(tfaPayload, function (err, res, body) {
+            if (!err && res && res.statusCode === 200) {
+                try {
+                    var parsed = JSON.parse(body);
+                    var token = parsed.status && parsed.status.info && parsed.status.info[0].bearer_token;
+                    if (token) {
+                        console.log("Bearer token acquired.");
+                        resolve({ type: "bearer", value: token });
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("TFA response parse failed.");
                 }
-            } catch (e) {
-                console.warn("TFA response parse failed.");
             }
-        }
-        d.reject("TFA failed");
+            reject("TFA failed");
+        });
     });
-
-    return d.promise;
 }
 
 function fallbackToLegacyAuth() {
-    var d = D.q.defer();
     var authOptions = {
         url: authPath,
         protocol: "https",
@@ -144,17 +142,17 @@ function fallbackToLegacyAuth() {
     };
 
     console.log("Attempting fallback login via /auth...");
-    D.device.http.post(authOptions, function (err, res) {
-        if (!err && res && res.statusCode === 200) {
-            console.log("Fallback login succeeded.");
-            d.resolve({ type: "cookie", jar: true });
-        } else {
-            console.error("Fallback login failed.");
-            d.reject(D.errorType.AUTHENTICATION_ERROR);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(authOptions, function (err, res) {
+            if (!err && res && res.statusCode === 200) {
+                console.log("Fallback login succeeded.");
+                resolve({ type: "cookie", jar: true });
+            } else {
+                console.error("Fallback login failed.");
+                reject(D.errorType.AUTHENTICATION_ERROR);
+            }
+        });
     });
-
-    return d.promise;
 }
 
 function loginAndGetToken() {
@@ -164,7 +162,6 @@ function loginAndGetToken() {
 }
 
 function getCliConfig(authMode) {
-    var d = D.q.defer();
 
     var request = {
         url: cliExportPath,
@@ -190,23 +187,23 @@ function getCliConfig(authMode) {
     }
 
     console.log("Fetching CLI config...");
-    D.device.http.get(request, function (err, res, body) {
-        if (err || !res || res.statusCode !== 200) {
-            console.error("Fetch failed: " + (err || res.statusCode));
-            d.reject(D.errorType.RESOURCE_UNAVAILABLE);
-            return;
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(request, function (err, res, body) {
+            if (err || !res || res.statusCode !== 200) {
+                console.error("Fetch failed: " + (err || res.statusCode));
+                reject(D.errorType.RESOURCE_UNAVAILABLE);
+                return;
+            }
 
-        try {
-            var bodyText = body.toString("utf8");
-            d.resolve(prettifyJSON(bodyText));
-        } catch (e) {
-            console.error("JSON parse failed: " + e);
-            d.reject(D.errorType.GENERIC_ERROR);
-        }
+            try {
+                var bodyText = body.toString("utf8");
+                resolve(prettifyJSON(bodyText));
+            } catch (e) {
+                console.error("JSON parse failed: " + e);
+                reject(D.errorType.GENERIC_ERROR);
+            }
+        });
     });
-
-    return d.promise;
 }
 
 /**

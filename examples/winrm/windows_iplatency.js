@@ -93,7 +93,7 @@ function get_status() {
             })
             .catch(instance.checkError);
     });
-    D.q.all(commands)
+    Promise.all(commands)
         .then(displayOutput)
 }
 
@@ -127,19 +127,19 @@ WinRMHandler.prototype.checkError = function (output) {
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
 
-    // config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        // config.command = command;
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 WinRMHandler.prototype.parseOutputToString = function (output) {
@@ -166,7 +166,6 @@ SSHHandler.prototype.checkError = function (output, error) {
 }
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -177,16 +176,17 @@ SSHHandler.prototype.executeCommand = function (command) {
         command: command
     };
 
-    // config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.resolve(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve) {
+        // config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                resolve(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 SSHHandler.prototype.parseOutputToString = function (output) {

@@ -16,7 +16,7 @@
  **/
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(err, response, body) {
         if (err) {
             console.error(err);
@@ -29,7 +29,7 @@ function processResponse(d) {
             }
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -37,7 +37,6 @@ function processResponse(d) {
  * @returns A promise that resolves when the login is successful.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/userlogin.html",
         headers: {
@@ -53,21 +52,22 @@ function login() {
         rejectUnauthorized: false
     };
 
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 //Retrieves device information from the Crestron TSW.
 function getDevice() {
-    var d = D.q.defer();
     var config = {
         url: "/Device",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 //Extracts monitoring variables from the HTTP response body.

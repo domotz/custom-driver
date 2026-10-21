@@ -31,7 +31,6 @@ var variables = [];
  * @returns A promise that resolves on successful login with auth token.
  */
 function login() {
-    var d = D.q.defer();
     var loginData = {
         username: D.device.username(),
         password: D.device.password()
@@ -49,42 +48,42 @@ function login() {
         jar: true
     };
     
-    D.device.http.post(config, function(error, response, body) {
-        if (error) {
-            console.error("Login error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
-        
-        if (response.statusCode == 401) {
-            console.error("Authentication failed");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
-        
-        if (response.statusCode != 200) {
-            console.error("Login failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
-        
-        try {
-            var responseData = JSON.parse(body);
-            if (responseData.code === 200 && responseData.result && responseData.result.auth_token) {
-                authToken = responseData.result.auth_token;
-                console.info("Login successful. Auth token:", authToken);
-                d.resolve(authToken);
-            } else {
-                console.error("Invalid login response:", body);
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response, body) {
+            if (error) {
+                console.error("Login error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
             }
-        } catch (parseError) {
-            console.error("Failed to parse login response:", parseError);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
+        
+            if (response.statusCode == 401) {
+                console.error("Authentication failed");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+        
+            if (response.statusCode != 200) {
+                console.error("Login failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+        
+            try {
+                var responseData = JSON.parse(body);
+                if (responseData.code === 200 && responseData.result && responseData.result.auth_token) {
+                    authToken = responseData.result.auth_token;
+                    console.info("Login successful. Auth token:", authToken);
+                    resolve(authToken);
+                } else {
+                    console.error("Invalid login response:", body);
+                    D.failure(D.errorType.AUTHENTICATION_ERROR);
+                }
+            } catch (parseError) {
+                console.error("Failed to parse login response:", parseError);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -92,12 +91,11 @@ function login() {
  * @returns A promise that resolves with the device configuration data.
  */
 function getDeviceConfig() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for device config request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -113,30 +111,30 @@ function getDeviceConfig() {
         jar: true
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("Device config request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("Device config request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for device config request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for device config request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("Device config request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("Device config request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("Device config retrieved successfully");
-        d.resolve(body);
+            console.info("Device config retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -144,12 +142,11 @@ function getDeviceConfig() {
  * @returns A promise that resolves with the device insights data.
  */
 function getDeviceInsights() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for device insights request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -165,30 +162,30 @@ function getDeviceInsights() {
         jar: true
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("device insights request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("device insights request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for device insights request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for device insights request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("device insights request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("device insights request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("device insights data retrieved successfully");
-        d.resolve(body);
+            console.info("device insights data retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -196,12 +193,11 @@ function getDeviceInsights() {
  * @returns A promise that resolves with the room insights data.
  */
 function getRoomInsights() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for room insights request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -217,30 +213,30 @@ function getRoomInsights() {
         jar: true
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("room insights request error:", error);
-            d.resolve(null); // Return null instead of failing for version compatibility
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("room insights request error:", error);
+                resolve(null); // Return null instead of failing for version compatibility
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for room insights request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for room insights request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("room insights request failed with status code:", response.statusCode);
-            d.resolve(null); // Return null instead of failing for version compatibility
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("room insights request failed with status code:", response.statusCode);
+                resolve(null); // Return null instead of failing for version compatibility
+                return;
+            }
         
-        console.info("room insights data retrieved successfully");
-        d.resolve(body);
+            console.info("room insights data retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 /**
@@ -248,12 +244,11 @@ function getRoomInsights() {
  * @returns A promise that resolves with the peripherals data.
  */
 function getPeripheralsData() {
-    var d = D.q.defer();
     
     if (!authToken) {
         console.error("No auth token available for peripherals request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return d.promise;
+        return new Promise(function () {});
     }
     
     var config = {
@@ -269,30 +264,30 @@ function getPeripheralsData() {
         jar: true
     };
     
-    D.device.http.get(config, function(error, response, body) {
-        if (error) {
-            console.error("peripherals request error:", error);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body) {
+            if (error) {
+                console.error("peripherals request error:", error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        if (response.statusCode == 401) {
-            console.error("Authentication failed for peripherals request");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-            return;
-        }
+            if (response.statusCode == 401) {
+                console.error("Authentication failed for peripherals request");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
         
-        if (response.statusCode != 200) {
-            console.error("peripherals request failed with status code:", response.statusCode);
-            D.failure(D.errorType.GENERIC_ERROR);
-            return;
-        }
+            if (response.statusCode != 200) {
+                console.error("peripherals request failed with status code:", response.statusCode);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
         
-        console.info("peripherals data retrieved successfully");
-        d.resolve(body);
+            console.info("peripherals data retrieved successfully");
+            resolve(body);
+        });
     });
-    
-    return d.promise;
 }
 
 function sanitize(output){
@@ -688,10 +683,10 @@ function get_status() {
                 apiCalls.push(getRoomInsights());
             } else {
                 console.info("CollabOS version does not support room insights or version unknown");
-                apiCalls.push(D.q.resolve(null)); // Add null as placeholder for room insights
+                apiCalls.push(Promise.resolve(null)); // Add null as placeholder for room insights
             }
             
-            return D.q.all(apiCalls);
+            return Promise.all(apiCalls);
         })
         .then(function(responses) {
             var deviceInsightsResponse = responses[0];

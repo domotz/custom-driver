@@ -67,7 +67,6 @@ var table = D.createTable(
  * @returns {Promise} A promise that resolves with the device data or rejects with an error
  */
 function getDevicesInfo() {
-  var d = D.q.defer()
 	var device = D.createExternalDevice(danteHost)
   var config = {
     url: '/graphql',
@@ -88,33 +87,34 @@ function getDevicesInfo() {
   }
 
   
-  device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (response.statusCode != 200) {
-      D.failure(D.errorType.GENERIC_ERROR);
-    } else {
-      var parsedResponse = JSON.parse(body)
-      if (parsedResponse.errors && parsedResponse.errors.length > 0){
-        var errorMessage = parsedResponse.errors[0].message
-        if (errorMessage === 'Unauthenticated user or user not found') {
-          D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (errorMessage === 'ID or Name must be defined'){
-          console.error('Missing ID')
-          D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        }
-      } else if (parsedResponse.data) {
-        if (parsedResponse.data.domain === null) {
-          console.error('Domain ID is invalid')
-          D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else {
-          d.resolve(parsedResponse.data.domain)
+  return new Promise(function (resolve) {
+    device.http.post(config, function (error, response, body) {
+      if (error) {
+        console.error(error)
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else if (response.statusCode != 200) {
+        D.failure(D.errorType.GENERIC_ERROR);
+      } else {
+        var parsedResponse = JSON.parse(body)
+        if (parsedResponse.errors && parsedResponse.errors.length > 0){
+          var errorMessage = parsedResponse.errors[0].message
+          if (errorMessage === 'Unauthenticated user or user not found') {
+            D.failure(D.errorType.AUTHENTICATION_ERROR)
+          } else if (errorMessage === 'ID or Name must be defined'){
+            console.error('Missing ID')
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+          }
+        } else if (parsedResponse.data) {
+          if (parsedResponse.data.domain === null) {
+            console.error('Domain ID is invalid')
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+          } else {
+            resolve(parsedResponse.data.domain)
+          }
         }
       }
-    }
+    })
   })
-  return d.promise
 }
 
 /**

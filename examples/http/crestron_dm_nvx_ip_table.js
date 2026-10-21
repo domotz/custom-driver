@@ -26,39 +26,38 @@ var table = D.createTable(
  * @returns a promise containing the body of the login page.
  */
 function login() {
-    var d = D.q.defer();
-    D.device.http.post({
-        url: "/userlogin.html",
-        protocol: "https",
-        form: {
-            login: D.device.username(),
-            passwd: D.device.password(),
-        },
-        jar: true,
-        rejectUnauthorized: false
-    }, function (err, res, body) {
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.post({
+            url: "/userlogin.html",
+            protocol: "https",
+            form: {
+                login: D.device.username(),
+                passwd: D.device.password(),
+            },
+            jar: true,
+            rejectUnauthorized: false
+        }, function (err, res, body) {
+            resolve(body);
+        });
     });
-
-    return d.promise;
 }
 
 /**
  * @returns a promise containing the body of the response.
  */
 function httpGet(url) {
-    var d = D.q.defer();
     var config = {
         url: url,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, function (error, response, body) {
-        if (response.statusCode && response.statusCode === 200 && body)
-            d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            if (response.statusCode && response.statusCode === 200 && body)
+                resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**

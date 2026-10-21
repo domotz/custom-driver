@@ -33,19 +33,19 @@ function publishVariables(installed, version, vulnerable) {
 
 // Function to make an HTTP GET request to retrieve ScreenConnect version
 function getScreenConnecVersion() {
-    var d = D.q.defer();
-    D.device.http.get(screenconnectServerConfig, 
-        function (error, response, body) {
-        if (error) {
-            console.error("Received error: " + error);
-            publishVariables("No", "N/A", "N/A");
-        } else if (response && response.statusCode != 200){
-            console.error("Received unexpected response code: " + response.statusCode);
-            publishVariables("N/A", "N/A", "N/A");
-        } else 
-            d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get(screenconnectServerConfig, 
+            function (error, response, body) {
+            if (error) {
+                console.error("Received error: " + error);
+                publishVariables("No", "N/A", "N/A");
+            } else if (response && response.statusCode != 200){
+                console.error("Received unexpected response code: " + response.statusCode);
+                publishVariables("N/A", "N/A", "N/A");
+            } else 
+                resolve(body);
+        });
     });
-    return d.promise;
 }
 
 function compareVersions(version1, version2) {

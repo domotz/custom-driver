@@ -21,7 +21,6 @@ var vmId = D.getParameter("vmId");
 
 // Function to handle the login procedure
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/sdk/vim25/8.0.1.0/SessionManager/SessionManager/Login",
         protocol: "https",
@@ -32,27 +31,27 @@ function login() {
             "password": D.device.password() 
         })
     };
-    D.device.http.post(config, function(error, response){
-        if (error) {  
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);                     
-        } else {
-            if (response.body && response.body.indexOf("InvalidLogin") !== -1) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.body && response.body.indexOf("InvalidRequest") !== -1) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            var sessionId = response.headers["vmware-api-session-id"];
-            d.resolve(sessionId);
-        }         
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function(error, response){
+            if (error) {  
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);                     
+            } else {
+                if (response.body && response.body.indexOf("InvalidLogin") !== -1) {
+                    D.failure(D.errorType.AUTHENTICATION_ERROR);
+                }
+                if (response.body && response.body.indexOf("InvalidRequest") !== -1) {
+                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                }
+                var sessionId = response.headers["vmware-api-session-id"];
+                resolve(sessionId);
+            }         
+        });
     });
-    return d.promise;
 }
 
 // This function retrieves snapshot information for the VM
 function getVMSnapshots(sessionId) {
-    var d = D.q.defer();
     var config = {
         url: "/sdk/vim25/8.0.1.0/VirtualMachine/" + vmId + "/snapshot",
         protocol: "https",
@@ -62,27 +61,28 @@ function getVMSnapshots(sessionId) {
             "vmware-api-session-id": sessionId 
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else {
-            if (response.body && response.body.indexOf("InvalidType") !== -1) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.body && response.body.indexOf("already been deleted or has not been completely created") !== -1) {
-                console.error("The " + vmId + " has already been deleted or has not been completely created");
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (body && body.length > 0) {
-                d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function(error, response, body){
+            if (error) {          
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
             } else {
-                console.error("No snapshot data available for VM " + vmId);
-                D.failure(D.errorType.PARSING_ERROR);
-            }
-        } 
+                if (response.body && response.body.indexOf("InvalidType") !== -1) {
+                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                }
+                if (response.body && response.body.indexOf("already been deleted or has not been completely created") !== -1) {
+                    console.error("The " + vmId + " has already been deleted or has not been completely created");
+                    D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+                }
+                if (body && body.length > 0) {
+                    resolve(JSON.parse(body));
+                } else {
+                    console.error("No snapshot data available for VM " + vmId);
+                    D.failure(D.errorType.PARSING_ERROR);
+                }
+            } 
+        });
     });
-    return d.promise;
 }
 
 function sanitize(output){

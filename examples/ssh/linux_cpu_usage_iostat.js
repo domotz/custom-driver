@@ -43,19 +43,19 @@ function checkSshError(err) {
  */
 function executeCommand(command, ignoreTimeout) {
     return function () {
-        var d = D.q.defer();
         sshConfig.command = command;
-        D.device.sendSSHCommand(sshConfig, function (output, error) {
-            if (error) {
-                if(error.message == "Timeout of " + commandTimeout + "ms expired" && ignoreTimeout){
-                    return d.resolve();
+        return new Promise(function (resolve, reject) {
+            D.device.sendSSHCommand(sshConfig, function (output, error) {
+                if (error) {
+                    if(error.message == "Timeout of " + commandTimeout + "ms expired" && ignoreTimeout){
+                        return resolve();
+                    }
+                    checkSshError(error);
+                    return reject(error);
                 }
-                checkSshError(error);
-                return d.reject(error);
-            }
-            d.resolve(output);
+                resolve(output);
+            });
         });
-        return d.promise;
     };
 }
 

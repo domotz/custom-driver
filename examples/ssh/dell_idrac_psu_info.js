@@ -78,20 +78,20 @@ function checkSshError(err) {
  * @returns {Promise} Resolves with the command output, or rejects with an error
  */
 function executeCommand(command) {
-    var d = D.q.defer()
     sshConfig.command = command
-    D.device.sendSSHCommand(sshConfig, function (output, err) {
-        if (err) {
-            checkSshError(err)
-        } else {           
-            if (output && output.indexOf('COMMAND NOT RECOGNIZED')!==-1 || output.indexOf('ERROR')!==-1) {
-                D.failure(D.errorType.PARSING_ERROR)
-            } else {
-                d.resolve(output)
-            }           
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, err) {
+            if (err) {
+                checkSshError(err)
+            } else {           
+                if (output && output.indexOf('COMMAND NOT RECOGNIZED')!==-1 || output.indexOf('ERROR')!==-1) {
+                    D.failure(D.errorType.PARSING_ERROR)
+                } else {
+                    resolve(output)
+                }           
+            }
+        })
     })
-    return d.promise
 }
 
 /**

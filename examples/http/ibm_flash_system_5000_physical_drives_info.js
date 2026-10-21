@@ -64,7 +64,6 @@ const physicalDrivesTable = D.createTable('Physical Drives', [
  * @returns {Promise} Parsed JSON response
  */
 function callHttps(endpoint, headers) {
-  const d = D.q.defer();
   const config = {
     url: endpoint,
     protocol: "https",
@@ -72,21 +71,22 @@ function callHttps(endpoint, headers) {
     rejectUnauthorized: false,
     headers: headers
   }
-  D.device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (response.statusCode === 404) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode === 403) {
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode !== 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      d.resolve(JSON.parse(body))
-    }
+  return new Promise(function (resolve) {
+    D.device.http.post(config, function (error, response, body) {
+      if (error) {
+        console.error(error)
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else if (response.statusCode === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+      } else if (response.statusCode === 403) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+      } else if (response.statusCode !== 200) {
+        D.failure(D.errorType.GENERIC_ERROR)
+      } else {
+        resolve(JSON.parse(body))
+      }
+    })
   })
-  return d.promise
 }
 
 /**
@@ -186,7 +186,7 @@ function retrieveAndStoreData(body) {
         return response
       })
   })
-  return D.q.all(promises)
+  return Promise.all(promises)
 }
 
 /**

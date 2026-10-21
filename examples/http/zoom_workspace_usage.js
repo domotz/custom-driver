@@ -93,16 +93,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response and extracts the access token
- * @param {Object} d  The deferred promise object
+ * @param {Function} resolve  Resolves the promise
+ * @param {Function} reject  Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error("Access token not found in response body")
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -114,13 +115,14 @@ function processLoginResponse(d) {
  * Processes the Locations data and handles pagination if necessary.
  * @param {Error|null} error - The error object, if any, from the API response.
  * @param {Object} response - The HTTP response object.
- * @param {Object} d - A deferred object for resolving or rejecting the promise.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {string} body - The raw response body as a JSON string.
  */
-function processLocations(error, response, d, body) {
+function processLocations(error, response, resolve, reject, body) {
     checkHTTPError(error, response)
     if (error) {
-        d.reject(error)
+        reject(error)
         return
     }
     const bodyAsJSON = JSON.parse(body)
@@ -131,20 +133,21 @@ function processLocations(error, response, d, body) {
         return
     }
     locations = bodyAsJSON.locations
-    d.resolve()
+    resolve()
 }
 
 /**
  * Processes the Workspaces Usage data and handles pagination if necessary.
  * @param {Error|null} error - The error object, if any, from the API response.
  * @param {Object} response - The HTTP response object.
- * @param {Object} d - A deferred object for resolving or rejecting the promise.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {string} body - The raw response body as a JSON string.
  */
-function processWorkspacesUsage(d, error, response, body) {
+function processWorkspacesUsage(resolve, reject, error, response, body) {
     checkHTTPError(error, response)
     if (error) {
-        d.reject(error)
+        reject(error)
         return
     }
     try {
@@ -155,10 +158,10 @@ function processWorkspacesUsage(d, error, response, body) {
             return
         }
         workspaceUsage = bodyAsJSON
-        d.resolve(workspaceUsage)
+        resolve(workspaceUsage)
     } catch (parseError) {
         console.error("Error parsing Workspaces Usage:", parseError)
-        d.reject("Failed to parse response")
+        reject("Failed to parse response")
     }
 }
 
@@ -198,13 +201,13 @@ function generateConfig(url) {
  * @returns {promise}
  */
 function retrieveLocations() {
-    const d = D.q.defer()
     const url = "/v2/rooms/locations"
     const config = generateConfig(url)
-    zoomResources.http.get(config, function (error, response, body) {
-        processLocations(error, response, d, body)
+    return new Promise(function (resolve, reject) {
+        zoomResources.http.get(config, function (error, response, body) {
+            processLocations(error, response, resolve, reject, body)
+        })
     })
-    return d.promise
 }
 
 /**
@@ -212,14 +215,14 @@ function retrieveLocations() {
  * @returns {promise}
  */
 function retrieveWorkspacesUsage(locationId) {
-    var d = D.q.defer()
     if (locationId){
         const url = "/v2/workspaces/usage?location_id=" + locationId
         const config = generateConfig(url)
-        zoomResources.http.get(config, function (error, response, body) {
-            processWorkspacesUsage(d, error, response, body)
+        return new Promise(function (resolve, reject) {
+            zoomResources.http.get(config, function (error, response, body) {
+                processWorkspacesUsage(resolve, reject, error, response, body)
+            })
         })
-        return d.promise
     }
     console.error("No valid locationId found")
     D.failure(D.errorType.GENERIC_ERROR)
@@ -249,10 +252,10 @@ function generateLoginConf() {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-    const d = D.q.defer()
     const config = generateLoginConf()
-    zoomLogin.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**

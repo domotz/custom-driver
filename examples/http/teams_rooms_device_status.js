@@ -374,16 +374,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error("Access token not found in response body")
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -393,10 +394,11 @@ function processLoginResponse(d) {
 
 /**
  * Processes the response from the Devices API call and extracts device information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDevicesResponse(d) {
+function processDevicesResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -408,7 +410,7 @@ function processDevicesResponse(d) {
         if (!deviceInfoList.length) {
             console.info('There is no Devices')
         }
-        d.resolve(deviceInfoList)
+        resolve(deviceInfoList)
     }
 }
 
@@ -441,10 +443,11 @@ function extendDisplayExtractors(deviceHealth) {
 
 /**
  * Processes the response from the health API and extracts relevant device health info.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDeviceHelthResponse(d) {
+function processDeviceHelthResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -460,7 +463,7 @@ function processDeviceHelthResponse(d) {
         }
         
         const deviceHealthInfo = extractDeviceHealthInfo(bodyAsJSON)
-        d.resolve(deviceHealthInfo)
+        resolve(deviceHealthInfo)
     }
 }
 
@@ -469,7 +472,6 @@ function processDeviceHelthResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer()
     const config = {
         url: "/" + tenantId + "/oauth2/v2.0/token", protocol: "https", headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -480,8 +482,9 @@ function login() {
             scope: "https://graph.microsoft.com/.default"
         }, rejectUnauthorized: false, jar: true
     }
-    microsoftLoginService.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        microsoftLoginService.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -524,7 +527,6 @@ function extractDeviceHealthInfo(deviceHealth) {
  * @returns {Promise} A promise that resolves with the device data.
  */
 function retrieveDevices() {
-    const d = D.q.defer()
     const config = {
         url:  "/beta/teamwork/devices",
         protocol: "https",
@@ -534,8 +536,9 @@ function retrieveDevices() {
         rejectUnauthorized: false,
         jar: true
     }
-    teamsManagementService.http.get(config, processDevicesResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        teamsManagementService.http.get(config, processDevicesResponse(resolve, reject))
+    })
 }
 
 /**
@@ -556,16 +559,16 @@ function insertRecord(device) {
  */
 function retrieveDeviceHealthInfo(device) {
     const promises = device.map(function (item) {
-        const d = D.q.defer()
         const config = {
             url: "/beta/teamwork/devices/" + item.id + "/health", protocol: "https", headers: {
                 "Authorization": "Bearer " + accessToken,
             }, rejectUnauthorized: false, jar: true
         }
-        teamsManagementService.http.get(config, processDeviceHelthResponse(d))
-        return d.promise
+        return new Promise(function (resolve, reject) {
+            teamsManagementService.http.get(config, processDeviceHelthResponse(resolve, reject))
+        })
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 

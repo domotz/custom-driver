@@ -20,32 +20,32 @@ var port = D.getParameter("portNumber");
 
 // Function to make an HTTP GET request to retrieve OPNsense services
 function getServices() {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: "/api/core/service/search",
-        username: D.device.username(), //api key == username
-        password: D.device.password(), //api secret == password
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false,
-        port: port
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: "/api/core/service/search",
+            username: D.device.username(), //api key == username
+            password: D.device.password(), //api secret == password
+            protocol: "https",
+            auth: "basic",
+            jar: true,
+            rejectUnauthorized: false,
+            port: port
 
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 function sanitize(output){

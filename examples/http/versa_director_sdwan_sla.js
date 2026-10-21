@@ -358,7 +358,6 @@ function errorTypeForStatus(statusCode) {
  * @returns {Promise} resolves once a token has been obtained
  */
 function login() {
-  const deferred = D.q.defer()
   const config = {
     url: TOKEN_PATH,
     protocol: "https",
@@ -379,44 +378,45 @@ function login() {
   }
   console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
     (resolvedHost ? " (directorHost)" : " (device IP)"))
-  target.http.post(config, function (error, response, body) {
-    if (error) {
-      console.log("Token request failed: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-      return
-    }
-    const statusCode = response && response.statusCode
-    if (statusCode !== 200) {
-      console.log("Token endpoint returned HTTP " + statusCode + ": " +
-        (body ? String(body).slice(0, 500) : "<empty response>"))
-      D.failure(errorTypeForStatus(statusCode))
-      return
-    }
-    let payload
-    try {
-      payload = JSON.parse(body)
-    } catch (parseError) {
-      console.log("Token response was not valid JSON: " + parseError)
-      D.failure(D.errorType.PARSING_ERROR)
-      return
-    }
-    const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token
-    if (!token) {
-      console.log("No access token in the response. Keys returned: " +
-        Object.keys(payload).join(", "))
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-      return
-    }
-    accessToken = token
-    authenticatedOrg = (payload.user && payload.user.organization) || null
-    if (!authenticatedOrg) {
-      console.log("The token response did not name an organization, which the YANG path requires.")
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-      return
-    }
-    deferred.resolve()
+  return new Promise(function (resolve) {
+    target.http.post(config, function (error, response, body) {
+      if (error) {
+        console.log("Token request failed: " + error)
+        D.failure(D.errorType.GENERIC_ERROR)
+        return
+      }
+      const statusCode = response && response.statusCode
+      if (statusCode !== 200) {
+        console.log("Token endpoint returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"))
+        D.failure(errorTypeForStatus(statusCode))
+        return
+      }
+      let payload
+      try {
+        payload = JSON.parse(body)
+      } catch (parseError) {
+        console.log("Token response was not valid JSON: " + parseError)
+        D.failure(D.errorType.PARSING_ERROR)
+        return
+      }
+      const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token
+      if (!token) {
+        console.log("No access token in the response. Keys returned: " +
+          Object.keys(payload).join(", "))
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        return
+      }
+      accessToken = token
+      authenticatedOrg = (payload.user && payload.user.organization) || null
+      if (!authenticatedOrg) {
+        console.log("The token response did not name an organization, which the YANG path requires.")
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        return
+      }
+      resolve()
+    })
   })
-  return deferred.promise
 }
 
 /**
@@ -425,7 +425,6 @@ function login() {
  * @returns {Promise<Object>} resolves with the parsed JSON body
  */
 function apiGet(path) {
-  const deferred = D.q.defer()
   const config = {
     url: path,
     protocol: "https",
@@ -437,27 +436,28 @@ function apiGet(path) {
     rejectUnauthorized: false,
     jar: true
   }
-  target.http.get(config, function (error, response, body) {
-    if (error) {
-      console.log("Request to " + path + " failed: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-      return
-    }
-    const statusCode = response && response.statusCode
-    if (statusCode !== 200) {
-      console.log("GET " + path + " returned HTTP " + statusCode + ": " +
-        (body ? String(body).slice(0, 500) : "<empty response>"))
-      D.failure(errorTypeForStatus(statusCode))
-      return
-    }
-    try {
-      deferred.resolve(body ? JSON.parse(body) : {})
-    } catch (parseError) {
-      console.log("Response from " + path + " was not valid JSON: " + parseError)
-      D.failure(D.errorType.PARSING_ERROR)
-    }
+  return new Promise(function (resolve) {
+    target.http.get(config, function (error, response, body) {
+      if (error) {
+        console.log("Request to " + path + " failed: " + error)
+        D.failure(D.errorType.GENERIC_ERROR)
+        return
+      }
+      const statusCode = response && response.statusCode
+      if (statusCode !== 200) {
+        console.log("GET " + path + " returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"))
+        D.failure(errorTypeForStatus(statusCode))
+        return
+      }
+      try {
+        resolve(body ? JSON.parse(body) : {})
+      } catch (parseError) {
+        console.log("Response from " + path + " was not valid JSON: " + parseError)
+        D.failure(D.errorType.PARSING_ERROR)
+      }
+    })
   })
-  return deferred.promise
 }
 
 /**
@@ -466,7 +466,6 @@ function apiGet(path) {
  * @returns {Promise<Object>} resolves with { statusCode, json, body }
  */
 function apiGetSoft(path) {
-  const deferred = D.q.defer()
   const config = {
     url: path,
     protocol: "https",
@@ -478,20 +477,21 @@ function apiGetSoft(path) {
     rejectUnauthorized: false,
     jar: true
   }
-  target.http.get(config, function (error, response, body) {
-    if (error) {
-      deferred.resolve({ statusCode: 0, json: null, body: String(error) })
-      return
-    }
-    let parsed = null
-    try {
-      parsed = body ? JSON.parse(body) : null
-    } catch (parseError) {
-      parsed = null
-    }
-    deferred.resolve({ statusCode: response && response.statusCode, json: parsed, body: body })
+  return new Promise(function (resolve) {
+    target.http.get(config, function (error, response, body) {
+      if (error) {
+        resolve({ statusCode: 0, json: null, body: String(error) })
+        return
+      }
+      let parsed = null
+      try {
+        parsed = body ? JSON.parse(body) : null
+      } catch (parseError) {
+        parsed = null
+      }
+      resolve({ statusCode: response && response.statusCode, json: parsed, body: body })
+    })
   })
-  return deferred.promise
 }
 
 /**
@@ -588,7 +588,7 @@ function retrieveSummary(source) {
  * @returns {Promise<Array<Object>>} resolves with { site, record } entries, or an empty array
  */
 function tryBulkPaths(source, index) {
-  if (index >= SLA_BULK_PATHS.length) return D.q.when([])
+  if (index >= SLA_BULK_PATHS.length) return Promise.resolve([])
 
   const yangSuffix = SLA_BULK_PATHS[index]
   return apiGetSoft(liveCommandUrl(source, yangSuffix)).then(function (result) {
@@ -722,7 +722,7 @@ function walkSites(source, siteNames) {
         })
       })
     })
-  }, D.q.when()).then(function () {
+  }, Promise.resolve()).then(function () {
     return collected
   })
 }

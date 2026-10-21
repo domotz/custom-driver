@@ -177,16 +177,17 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token
-            d.resolve()
+            resolve()
         } else {
             console.error('Access token not found in response body')
             D.failure(D.errorType.AUTHENTICATION_ERROR)
@@ -196,10 +197,11 @@ function processLoginResponse(d) {
 
 /**
  * Processes the response from the request to retrieve rooms from Microsoft Graph.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processRoomsResponse(d) {
+function processRoomsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -211,16 +213,17 @@ function processRoomsResponse(d) {
         if (!listRooms.length) {
             console.info('There is no Rooms')
         }
-        d.resolve(listRooms)
+        resolve(listRooms)
     }
 }
 
 /**
  * Processes the response from the API call that retrieves ongoing meetings.
- * @param {Object} d - The deferred object to resolve or reject the operation.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A callback function that processes the API response.
  */
-function processOngoingMeetingsResponse(d) {
+function processOngoingMeetingsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response)
         const bodyAsJSON = JSON.parse(body)
@@ -237,7 +240,7 @@ function processOngoingMeetingsResponse(d) {
             return ongoingMeetings
         })
 
-        d.resolve(meetings)
+        resolve(meetings)
     }
 }
 
@@ -246,7 +249,6 @@ function processOngoingMeetingsResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer()
     const config = {
         url: '/' + tenantId + '/oauth2/v2.0/token', protocol: 'https', headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -257,8 +259,9 @@ function login() {
             scope: 'https://graph.microsoft.com/.default'
         }, rejectUnauthorized: false, jar: true
     }
-    microsoftLoginService.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        microsoftLoginService.http.post(config, processLoginResponse(resolve, reject))
+    })
 }
 
 /**
@@ -300,7 +303,6 @@ function extractOngoingMeetingsInfo(meetings) {
  * @returns {Promise} A promise that resolves with the list of rooms.
  */
 function retrieveListRooms() {
-    const d = D.q.defer()
     const config = {
         url:  '/v1.0/places/microsoft.graph.room',
         protocol: 'https',
@@ -310,8 +312,9 @@ function retrieveListRooms() {
         rejectUnauthorized: false,
         jar: true
     }
-    teamsManagementService.http.get(config, processRoomsResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        teamsManagementService.http.get(config, processRoomsResponse(resolve, reject))
+    })
 }
 
 /**
@@ -333,7 +336,6 @@ function retrieveOngoingMeetings(meetings) {
         email = meeting.emailAddress
         const now = new Date()
         const end = new Date(now.getTime() + 30 * 60000)
-        const d = D.q.defer()
         const config = {
             url: '/v1.0/users/' + email + '/calendarView?startDateTime=' + toISOStringNoMs(now) + '&endDateTime=' + toISOStringNoMs(end),
             protocol: 'https',
@@ -344,10 +346,11 @@ function retrieveOngoingMeetings(meetings) {
             rejectUnauthorized: false,
             jar: true
         }
-        teamsManagementService.http.get(config, processOngoingMeetingsResponse(d))
-        return d.promise
+        return new Promise(function (resolve, reject) {
+            teamsManagementService.http.get(config, processOngoingMeetingsResponse(resolve, reject))
+        })
     })
-    return D.q.all(promises)
+    return Promise.all(promises)
 }
 
 /**

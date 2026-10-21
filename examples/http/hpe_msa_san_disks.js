@@ -36,7 +36,7 @@ var table = D.createTable(
 );
 
 // Process the response from the server
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {          
             console.error(error);
@@ -55,7 +55,7 @@ function processResponse(d) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
-        d.resolve(body);      
+        resolve(body);      
     };
 }
 
@@ -64,7 +64,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/login",
         username: D.device.username(),
@@ -74,13 +73,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves disks data from the HPE MSA SAN device
 function getDisks() {
-    var d = D.q.defer();
     var config = {
         url: "/api/show/disks",
         protocol: "https",
@@ -90,8 +89,9 @@ function getDisks() {
             "sessionKey": sessionKey 
         }
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Sanitize location value to create a recordId

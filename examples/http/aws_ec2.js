@@ -129,7 +129,6 @@ function prepareParams(params) {
  * @returns HTTP GET request to an AWS EC2 API to retrieve information about DB instances. 
  */
 function httpGet(params) {
-    var d = D.q.defer();
     var service = "monitoring";
     var data = "";
     var method = "GET";
@@ -148,33 +147,34 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.get({
-        url: canonicalUri + "?" + params,
-        protocol: "https",
-        headers: {
-            "x-amz-date": amzdate,
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Content-Encoding": "amz-1.0",
-            "Authorization": auth
-        }
-    },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        device.http.get({
+            url: canonicalUri + "?" + params,
+            protocol: "https",
+            headers: {
+                "x-amz-date": amzdate,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Content-Encoding": "amz-1.0",
+                "Authorization": auth
+            }
+        },
+        function (err, response, body) {
+            if (err) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode === 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**

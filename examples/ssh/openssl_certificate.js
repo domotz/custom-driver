@@ -46,18 +46,18 @@ function checkSshError(err) {
 }
 
 function executeCommand(host) {
-    var d = D.q.defer();
     var command = 'echo | openssl s_client -servername ' + host + ' -connect ' + host + ' 2>/dev/null | openssl x509 -enddate -issuer -noout';
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            console.error("Command execution error: " + error);
-            d.resolve({error: error.message});
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                console.error("Command execution error: " + error);
+                resolve({error: error.message});
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 
@@ -82,7 +82,7 @@ function validate() {
         var host = serversToCheck[i];
         promises.push(executeCommand(host));
     }
-    D.q.all(promises)
+    Promise.all(promises)
         .then(parseValidateOutput)
         .catch(checkSshError);
 }
@@ -124,7 +124,7 @@ function get_status() {
             });
     });
 
-    D.q.all(promises)
+    Promise.all(promises)
         .then(function () {
             D.success(table);
         })
