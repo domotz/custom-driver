@@ -1,6 +1,6 @@
 {
     "logo": "vmware-esxi.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "ESXi Firewall",
     "description": "Monitors the ESXi host Firewall",
     "category": "Software Integration",

@@ -1,0 +1,72 @@
+{
+    "logo": "logitech.svg",
+    "version": "1.0.0",
+    "name": "Logitech CollabOS - Device Monitoring",
+    "description": "Monitors Logitech CollabOS-based video conferencing devices.",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Logitech CollabOS device REST API accessible over HTTPS (port 443)",
+            "Room insights variables are only available on CollabOS 1.15 and later",
+            "Peripherals and room insights variables are created dynamically from the API response, so the total variable count varies by device and number of connected peripherals"
+        ]
+    },
+    "tags": [
+        "logitech",
+        "collabos",
+        "rally",
+        "conference",
+        "room",
+        "audio-video",
+        "peripherals"
+    ],
+    "sample_period_s": 900,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[15]"
+    },
+    "protocols": [
+        "HTTPS"
+    ],
+    "tested_on": [
+        {
+            "name": "Logitech CollabOS REST API",
+            "version": "v1"
+        }
+    ],
+    "parameters": [],
+    "compatibility": {
+        "vendor": {
+            "values": [
+                "Logitech"
+            ],
+            "qualifier": "required"
+        },
+        "models": {
+            "values": [],
+            "qualifier": null
+        },
+        "name": {
+            "values": [],
+            "qualifier": null
+        },
+        "os_family": {
+            "values": [],
+            "qualifier": null
+        },
+        "firmware_version": {
+            "values": [],
+            "qualifier": null
+        },
+        "open_ports": {
+            "values": [],
+            "qualifier": null
+        },
+        "required_mibs": {
+            "values": [],
+            "qualifier": null
+        }
+    }
+}

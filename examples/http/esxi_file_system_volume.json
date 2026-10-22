@@ -1,6 +1,6 @@
 {
     "logo": "vmware-esxi.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "ESXi File System Volume",
     "description": "Monitors the ESXi host File System Volume",
     "category": "Software Integration",
