@@ -37,6 +37,37 @@ const valueType = {
 };
 const deviceProperty = { SERIAL: "SERIAL", FIRMWARE: "FIRMWARE", MODEL: "MODEL" };
 
+// Record validation of Table.insertRecord, mirroring remote_pawn_ng src/sandbox/library/table.js:
+// insertRecord (:226) builds { value, metadata: null } with for...of and calls addMetrics (:201),
+// which runs validateInsertRecord (:85-141: id string 1..50 not matching a reserved path segment,
+// value count equal to the column count, no value over 500 characters) and then rejects a duplicate
+// id (:207). Limits: MAX_RECORD_ID_LEN (table.js:33), validUidRegex and maxMetricLength
+// (constants.js:120, :133). Same order and messages; production throws Error(message).
+const MAX_RECORD_ID_LEN = 50;
+const MAX_METRIC_LENGTH = 500;
+const VALID_UID_RE = /^((?!((\/|^)(table|column|history)(\/|$))).)*$/;
+const RECORD_ID_MESSAGE = "Defined record id must be a string with max length: " + MAX_RECORD_ID_LEN;
+
+function validateRecordId(id) {
+    if (typeof id !== "string" || id.length < 1 || id.length > MAX_RECORD_ID_LEN) {
+        throw Error(RECORD_ID_MESSAGE);
+    }
+    if (!VALID_UID_RE.test(id)) {
+        throw Error("Defined record id '" + id + "' is a reserved word");
+    }
+}
+
+function validateRecordValues(metrics, columnHeadersLength) {
+    if (metrics.length !== columnHeadersLength) {
+        throw Error("Defined column header size is different than inserted values size: " + columnHeadersLength + " != " + metrics.length);
+    }
+    metrics.forEach((item, index) => {
+        if (item.value !== undefined && item.value !== null && String(item.value).length > MAX_METRIC_LENGTH) {
+            throw Error("Record cannot contain a value that exceeds 500 characters (index: " + index + ")");
+        }
+    });
+}
+
 // Methods whose callbacks production wraps in try/catch (7.4.4+).
 const WRAPPED = new Set([
     "http.get", "http.post", "http.put", "http.delete",
@@ -194,6 +225,16 @@ function createFakeD(config) {
                     columnHeaders,
                     records,
                     insertRecord(id, values) {
+                        // Production builds the metrics with for...of (a non-iterable throws a TypeError).
+                        const metrics = [];
+                        for (const value of values) {
+                            metrics.push({ value, metadata: null });
+                        }
+                        validateRecordId(id);
+                        validateRecordValues(metrics, (columnHeaders || []).length);
+                        if (records.some((r) => r.id === id)) {
+                            throw Error("Duplicate record id. Cannot insert record: " + id);
+                        }
                         records.push({ id, values });
                     }
                 };

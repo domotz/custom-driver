@@ -180,4 +180,52 @@ describe("strict fake D", () => {
             });
         });
     });
+
+    describe("createTable().insertRecord validates like library/table.js", () => {
+        const table = () => createFakeD({ responder: () => [] }).D.createTable("T", [{ label: "A" }, { label: "B" }]);
+        const idMessage = "Defined record id must be a string with max length: 50";
+
+        it("accepts a valid record and records it", () => {
+            const t = table();
+            t.insertRecord("row-1", ["a", 2]);
+            t.insertRecord("x".repeat(50), [null, "y".repeat(500)]);
+            expect(t.records).toEqual([
+                { id: "row-1", values: ["a", 2] },
+                { id: "x".repeat(50), values: [null, "y".repeat(500)] }
+            ]);
+        });
+
+        it("rejects an empty, non-string or over-50-character id", () => {
+            expect(() => table().insertRecord("", ["a", "b"])).toThrowError(idMessage);
+            expect(() => table().insertRecord(undefined, ["a", "b"])).toThrowError(idMessage);
+            expect(() => table().insertRecord(7, ["a", "b"])).toThrowError(idMessage);
+            expect(() => table().insertRecord("x".repeat(51), ["a", "b"])).toThrowError(idMessage);
+        });
+
+        it("rejects a reserved id", () => {
+            for (const id of ["table", "column", "history", "a/table", "history/b"]) {
+                expect(() => table().insertRecord(id, ["a", "b"])).toThrowError(`Defined record id '${id}' is a reserved word`);
+            }
+            expect(() => table().insertRecord("tables", ["a", "b"])).not.toThrow();
+        });
+
+        it("rejects a value count different from the column count", () => {
+            expect(() => table().insertRecord("r", ["a"]))
+                .toThrowError("Defined column header size is different than inserted values size: 2 != 1");
+            expect(() => table().insertRecord("r", ["a", "b", "c"]))
+                .toThrowError("Defined column header size is different than inserted values size: 2 != 3");
+        });
+
+        it("rejects a value over 500 characters", () => {
+            expect(() => table().insertRecord("r", ["a", "z".repeat(501)]))
+                .toThrowError("Record cannot contain a value that exceeds 500 characters (index: 1)");
+        });
+
+        it("rejects a duplicate id", () => {
+            const t = table();
+            t.insertRecord("r", ["a", "b"]);
+            expect(() => t.insertRecord("r", ["c", "d"])).toThrowError("Duplicate record id. Cannot insert record: r");
+            expect(t.records.length).toBe(1);
+        });
+    });
 });
