@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "test": "jasmine",
+    "test:net": "jasmine spec/robustness_spec.js",
     "lint": "eslint ."
   },
   "devDependencies": {
