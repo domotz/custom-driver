@@ -42,6 +42,7 @@ function handleSshError(error) {
 function validateCallback(output, error) {
     if (error) {
         handleSshError(error);
+        return;
     }
     console.info("Validation successful.");
     D.success();
@@ -51,9 +52,9 @@ function validateCallback(output, error) {
  * Extracts the "Current configuration" section from raw command output.
  */
 function extractConfiguration(output) {
-    if (!Array.isArray(output)) {
-        console.error("Unexpected output format. Expected an array.");
-        D.failure(D.errorType.GENERIC_ERROR);
+    if (!Array.isArray(output) || typeof output[1] !== "string") {
+        console.error("Unexpected output format. Expected an array with the configuration output.");
+        return null;
     }
     const table = output[1].split("\r\n");
     return table.slice(1, table.length - 1).join("\n");
@@ -65,6 +66,7 @@ function extractConfiguration(output) {
 function backupCallback(output, error) {
     if (error) {
         handleSshError(error);
+        return;
     }
     const config = extractConfiguration(output);
 
@@ -84,9 +86,12 @@ function backupCallback(output, error) {
 /**
  * Extracts the prompt from the output.
  * @param {Array} output - The SSH command output.
- * @returns {string} The extracted prompt from the output.
+ * @returns {string|null} The extracted prompt from the output, or null when the output is missing.
  */
 function getPrompt(output) {
+    if (!Array.isArray(output) || typeof output[0] !== "string") {
+        return null;
+    }
     return output[0].split("\r\n")[2];
 }
 
@@ -109,8 +114,14 @@ function updateSshOptionsToDisplayConfig(prompt) {
 function getConfig(output, error) {
     if (error) {
         handleSshError(error);
+        return;
     }
     const prompt = getPrompt(output);
+    if (prompt === null) {
+        console.error("Unexpected output format. Expected an array with the prompt output.");
+        D.failure(D.errorType.GENERIC_ERROR);
+        return;
+    }
     updateSshOptionsToDisplayConfig(prompt);
 
     D.device.sendSSHCommands(sshOptions, backupCallback);
