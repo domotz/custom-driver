@@ -190,6 +190,14 @@ function executeCommand(client, command) {
             client.end();
             resolve();
         });
+        client.on("error", function (err) {
+            console.error("Socket error:", err);
+            reject(err);
+            client.end();
+        });
+        client.on("close", function () {
+            reject("Connection closed without a valid response");
+        });
         client.on("data", function (data) {
             const responseObject = parseResponse(data);
             if (responseObject.err) {
