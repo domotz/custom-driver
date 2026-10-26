@@ -9,7 +9,8 @@
  *
  * runEntryPoint({ source, filename, entryPoint, responder, parameters, timeLimitMs }) -> Promise<CaseResult>
  * CaseResult = { firstReport, reports, crashes, unhandledRejections, syncThrow, wrapperError,
- *                timedOut, idle, runaway, unknownMembers, transportCalls, logs, elapsedMs }
+ *                wrappedThrows, sandboxViolations, timedOut, idle, runaway, unknownMembers,
+ *                transportCalls, logs, elapsedMs }
  * verdict(result) -> { pass, reason }
  */
 
@@ -127,6 +128,7 @@ function runCase(options) {
     let activity = 0;
     let closed = false;
     let runaway = false;
+    const sandboxViolations = [];
     let wrapperError = null;
     let syncThrow = null;
     let record = null;
@@ -150,7 +152,9 @@ function runCase(options) {
         if (closed) {
             return;
         }
-        if (record && record.transportCalls > RUNAWAY_TRANSPORT_CALLS) {
+        // Runaway = too many transport calls before the first report. After a report, further
+        // calls (e.g. a driver that keeps polling) are harmless in production: the script is done.
+        if (record && !record.firstReport && record.transportCalls > RUNAWAY_TRANSPORT_CALLS) {
             runaway = true;
             return;
         }
@@ -211,6 +215,8 @@ function runCase(options) {
                 unhandledRejections,
                 syncThrow,
                 wrapperError,
+                wrappedThrows: record.wrappedThrows,
+                sandboxViolations,
                 timedOut: !firstReport && !syncThrow && !runaway && (how === "limit" || how === "idle"),
                 idle: how === "idle",
                 runaway,
@@ -233,10 +239,12 @@ function runCase(options) {
     const endowments = {
         D,
         import: function () {
+            sandboxViolations.push("import");
             sandboxConsole.error("Error: Import not possible in sandbox");
             D.failure("IMPORT_NOT_ALLOWED");
         },
         require: function () {
+            sandboxViolations.push("require");
             sandboxConsole.error("Error: Require not possible in sandbox");
             D.failure("REQUIRE_NOT_ALLOWED");
         },
@@ -259,6 +267,10 @@ function runCase(options) {
     } catch (error) {
         // sandbox.js: a synchronous throw from evaluate (SyntaxError) is reported as GENERIC_ERROR.
         syncThrow = error;
+        // SES rejects a dynamic import() at parse time (SES_IMPORT_REJECTED).
+        if (/SES_IMPORT_REJECTED/.test(String(error && error.message))) {
+            sandboxViolations.push("import");
+        }
         sandboxConsole.error("Caught exception: " + String(error) + "\n" + error.stack);
         D.failure("GENERIC_ERROR");
     }
@@ -290,25 +302,53 @@ function describeReason(reason) {
     return describeError(reason);
 }
 
-// ReferenceError / SyntaxError caught by the wrapper or thrown by evaluate: production reports
-// GENERIC_ERROR, but these are code bugs that break the driver on EVERY run under SES strict mode
-// (e.g. a regression to an implicit global on 9.x collectors), whatever the device answers, so
-// they fail. Other errors from the entry point's sync body (e.g. a TypeError on bad input) are
-// production-acceptable GENERIC_ERROR reports and pass (controller ruling, Task 3).
-const STRICT_MODE_BREAKERS = new Set(["ReferenceError", "SyntaxError"]);
+// Verdict rules (design §5 plus controller rulings, Task 3). Problems are listed in this order and
+// the first one is the reason:
+// - any crash (throw from an unwrapped callback, timer or socket event, or uncaughtException);
+// - any unhandled rejection, before or after the report;
+// - any read of a sandbox member the fakes lack;
+// - require()/import(): production reports REQUIRE/IMPORT_NOT_ALLOWED, but such a driver can never
+//   work, so it fails;
+// - "broken under SES strict mode": code bugs that break the driver whatever the device answers,
+//   although production reports them as GENERIC_ERROR:
+//     * a SyntaxError from syncThrow only (parse time, e.g. a legacy octal literal) - a runtime
+//       SyntaxError such as JSON.parse("") on bad input is input handling and passes;
+//     * a ReferenceError from syncThrow, from the wrapper's .catch (wrapperError, e.g. an implicit
+//       global) or from a wrapped transport callback (e.g. an error-path typo like checkSsherr);
+//   every other error caught by the wrapper or a wrapped callback (TypeError, runtime SyntaxError,
+//   ...) is a production-acceptable GENERIC_ERROR report and passes;
+// - runaway: more than RUNAWAY_TRANSPORT_CALLS transport calls before the first report (calls
+//   after the first report, and work still pending at the limit after a report, are fine);
+// - no report: went idle without reporting, or still pending at the time limit.
+const isReferenceError = (e) => Boolean(e) && e.name === "ReferenceError";
+
+function strictModeBreakers(result) {
+    const found = [];
+    if (result.syncThrow && (result.syncThrow.name === "SyntaxError" || isReferenceError(result.syncThrow))) {
+        found.push(result.syncThrow);
+    }
+    if (isReferenceError(result.wrapperError)) {
+        found.push(result.wrapperError);
+    }
+    (result.wrappedThrows || []).forEach((w) => {
+        if (isReferenceError(w.error)) {
+            found.push(w.error);
+        }
+    });
+    return found;
+}
 
 function verdict(result) {
     const problems = [];
     result.crashes.forEach((c) => problems.push("crash in " + c.where + ": " + describeReason(c.error)));
     result.unhandledRejections.forEach((r) => problems.push("unhandled rejection: " + describeReason(r)));
     result.unknownMembers.forEach((m) => problems.push("unknown sandbox member " + m));
-    [result.syncThrow, result.wrapperError].forEach((e) => {
-        if (e && STRICT_MODE_BREAKERS.has(e.name)) {
-            problems.push("broken under SES strict mode: " + describeError(e));
-        }
-    });
+    if ((result.sandboxViolations || []).length) {
+        problems.push("uses require/import, not allowed in the sandbox (" + result.sandboxViolations.join(", ") + ")");
+    }
+    strictModeBreakers(result).forEach((e) => problems.push("broken under SES strict mode: " + describeError(e)));
     if (result.runaway) {
-        problems.push("runaway: more than " + RUNAWAY_TRANSPORT_CALLS + " transport calls in one case");
+        problems.push("runaway: more than " + RUNAWAY_TRANSPORT_CALLS + " transport calls before the first report");
     }
     if (result.timedOut) {
         problems.push(result.idle

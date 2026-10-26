@@ -168,13 +168,58 @@ describe("production-style runner", () => {
         expect(verdict(result).reason).toMatch(/unknown sandbox member D\.device\.nope/);
     });
 
-    it("fails a call to import or require as the sandbox does", async () => {
+    it("fails a driver that calls require(), although production reports REQUIRE_NOT_ALLOWED", async () => {
+        const result = await run("uses-require.js", "empty-success");
+        expect(result.firstReport.errorType).toBe("REQUIRE_NOT_ALLOWED");
+        expect(verdict(result)).toEqual({ pass: false, reason: "uses require/import, not allowed in the sandbox (require)" });
+    });
+
+    it("fails a driver that uses a dynamic import()", async () => {
         const result = await runEntryPoint({
-            source: "function validate() { require(\"fs\"); D.success(); }",
+            source: "function validate() { import(\"fs\").then(D.success); }",
             filename: "inline.js",
             entryPoint: "validate",
             responder: scenario("empty-success")
         });
-        expect(result.firstReport.errorType).toBe("REQUIRE_NOT_ALLOWED");
+        expect(result.syncThrow).toEqual(jasmine.any(SyntaxError));
+        expect(verdict(result).reason).toMatch(/^uses require\/import, not allowed in the sandbox/);
+    });
+
+    it("passes a runtime SyntaxError from bad input (load-time JSON.parse) as GENERIC_ERROR", async () => {
+        const result = await run("load-time-json-parse.js", "empty-success");
+        expect(result.syncThrow).toBeNull();
+        expect(result.wrapperError.name).toBe("SyntaxError");
+        expect(result.firstReport.errorType).toBe("GENERIC_ERROR");
+        expect(verdict(result)).toEqual({ pass: true, reason: "" });
+    });
+
+    it("fails a ReferenceError (implicit global) inside a wrapped HTTP callback", async () => {
+        const result = await run("reference-error-in-http-callback.js", "transport-error");
+        expect(result.crashes).toEqual([]);
+        expect(result.firstReport.errorType).toBe("GENERIC_ERROR");
+        const v = verdict(result);
+        expect(v.pass).toBe(false);
+        expect(v.reason).toMatch(/^broken under SES strict mode: ReferenceError: lastError is not defined/);
+    });
+
+    it("passes a driver that reports and then keeps polling over HTTP on a timer", async () => {
+        const result = await run("reports-then-polls-transport.js", "empty-success");
+        expect(result.runaway).toBe(false);
+        expect(result.timedOut).toBe(false);
+        expect(result.transportCalls).toBeGreaterThan(1);
+        expect(verdict(result)).toEqual({ pass: true, reason: "" });
+    });
+
+    it("does not count transport calls after the first report as runaway", async () => {
+        const result = await runEntryPoint({
+            source: "function more() { D.device.http.get({}, more); }\nfunction validate() { D.success(); more(); }",
+            filename: "inline.js",
+            entryPoint: "validate",
+            responder: scenario("empty-success"),
+            timeLimitMs: 300
+        });
+        expect(result.transportCalls).toBeGreaterThan(200);
+        expect(result.runaway).toBe(false);
+        expect(verdict(result)).toEqual({ pass: true, reason: "" });
     });
 });
