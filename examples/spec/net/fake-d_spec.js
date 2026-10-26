@@ -130,4 +130,54 @@ describe("strict fake D", () => {
         expect(D.crypto.hash("a", "md5", "utf8", "hex")).toBe("0cc175b9c0f1b6a831c399e269772661");
         expect(() => D.crypto.nope).toThrowError(/D.crypto.nope/);
     });
+
+    it("tolerates serialisation and pretty-printing reads", () => {
+        const { D, record } = createFakeD({ responder: () => [] });
+        expect(() => JSON.stringify(D.device)).not.toThrow();
+        expect(() => JSON.stringify(D)).not.toThrow();
+        expect(typeof jasmine.makePrettyPrinter()(D)).toBe("string");
+        expect(record.unknownMembers).toEqual([]);
+    });
+
+    describe("callback rows", () => {
+        const rows = [
+            ["http.get", true, (D, cb) => D.device.http.get({}, cb), "http.get"],
+            ["http.post", true, (D, cb) => D.device.http.post({}, cb), "http.post"],
+            ["http.put", true, (D, cb) => D.device.http.put({}, cb), "http.put"],
+            ["http.delete", true, (D, cb) => D.device.http.delete({}, cb), "http.delete"],
+            ["sendSSHCommand", true, (D, cb) => D.device.sendSSHCommand({}, cb), "sendSSHCommand"],
+            ["sendTelnetCommand", true, (D, cb) => D.device.sendTelnetCommand({}, cb), "sendTelnetCommand"],
+            ["sendTCPCommand", true, (D, cb) => D.device.sendTCPCommand({}, cb), "sendTCPCommand"],
+            ["snmp get", true, (D, cb) => D.device.createSNMPSession({}).get([], cb), "get"],
+            ["snmp walk", true, (D, cb) => D.device.createSNMPSession({}).walk("1", cb), "walk"],
+            ["snmp getRaw", true, (D, cb) => D.device.createSNMPSession({}).getRaw([], cb), "getRaw"],
+            ["snmp set", true, (D, cb) => D.device.createSNMPSession({}).set([], cb), "set"],
+            ["getTLSCertificate", false, (D, cb) => D.device.http.getTLSCertificate({}, cb), "getTLSCertificate"],
+            ["sendSSHCommands", false, (D, cb) => D.device.sendSSHCommands({}, cb), "sendSSHCommands"],
+            ["sendWinRMCommand", false, (D, cb) => D.device.sendWinRMCommand({}, cb), "sendWinRMCommand"],
+            ["ping", false, (D, cb) => D.device.ping({}, cb), "ping"],
+            ["mtr", false, (D, cb) => D.device.mtr({}, cb), "mtr"],
+            ["tftpServer.accept", false, (D, cb) => D.tftpServer.accept({}, cb, () => {}), "tftp.accept"]
+        ];
+        rows.forEach(([label, wrapped, invoke, where]) => {
+            it(label + (wrapped ? " is wrapped" : " is unwrapped"), async () => {
+                const { D, record } = createFakeD({ responder: () => [null, null] });
+                invoke(D, () => {
+                    throw new Error("boom");
+                });
+                await new Promise((resolve) => setImmediate(resolve));
+                if (wrapped) {
+                    expect(record.wrappedThrows.length).toBe(1);
+                    expect(record.crashes.length).toBe(0);
+                    expect(record.reports.length).toBe(1);
+                    expect(record.reports[0]).toEqual(jasmine.objectContaining({ type: "failure", errorType: "GENERIC_ERROR" }));
+                } else {
+                    expect(record.crashes.length).toBe(1);
+                    expect(record.crashes[0].where).toBe(where);
+                    expect(record.wrappedThrows.length).toBe(0);
+                    expect(record.reports.length).toBe(0);
+                }
+            });
+        });
+    });
 });

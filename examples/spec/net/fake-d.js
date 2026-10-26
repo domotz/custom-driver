@@ -44,10 +44,13 @@ const WRAPPED = new Set([
     "snmp.get", "snmp.walk", "snmp.getRaw", "snmp.set"
 ]);
 
+// Reads made by Promise resolution, JSON.stringify, util.inspect and jasmine printing.
+const PASSTHROUGH = new Set(["then", "toJSON", "inspect", "asymmetricMatch", "jasmineToString", "nodeType", "constructor", "and", "calls"]);
+
 function strict(target, path, record) {
     return new Proxy(target, {
         get(obj, prop, receiver) {
-            if (typeof prop === "symbol" || prop === "then" || prop in obj) {
+            if (typeof prop === "symbol" || PASSTHROUGH.has(prop) || prop in obj) {
                 return Reflect.get(obj, prop, receiver);
             }
             const name = path + "." + prop;
