@@ -44,8 +44,14 @@ with one of these reasons:
 | `timed out after N ms without reporting` | still pending at the time limit with no report | make sure a failed or silent device ends in `D.failure` |
 | `never reported` | the run ended with no report and none of the reasons above (a fallback; the two "never reported"/"timed out" rows above are the usual form) | as for `never reported: went idle ...` |
 
-Known behaviour changes that were deliberately not made are listed under "Needs Andrea" in
-`docs/superpowers/notes/2026-10-26-robustness-baseline.md`.
+Known issues deliberately left alone, because fixing them changes what a driver reports on a working device:
+
+- `ssh/mysql.js` never reports `usedRam`: `parse()` expects the pmap line first, but the command prints the
+  service status line first (pinned by `mysql_spec.js`).
+- `telnet/epson_projector_via_pj_link.js` reports success when the projector never answers (the socket
+  `timeout` handler resolves), and likewise after a `PJLINK 1` greeting whose seed is not 8 characters.
+- `winrm/windows_host_users.js` has its `@remote_procedure` comment above `parseValidateOutput()` instead of
+  `validate()` (the only exception in `catalogue_spec.js`).
 
 Size (2026-10-26): 276 drivers, 583 entry points (`validate` 276, `get_status` 265, `backup` 11,
 `custom_N` 31 in 14 drivers) × 8 scenarios = 4,664 net cases; `npm test` runs 4,904 specs in about 45 s.

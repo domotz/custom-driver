@@ -4,7 +4,7 @@ var mockD = require("./helpers/mock-d");
 // loaded through the vm harness, which exposes its functions on the sandbox.
 var driver = mockD.loadDriver("ssh/mysql.js", mockD.createMockD());
 
-// Pins current behaviour. usedRam is never parsed because parse() expects the pmap line first but the command prints the service status line first. Listed under 'Needs Andrea' in docs/superpowers/notes/2026-10-26-robustness-baseline.md.
+// Pins current behaviour. usedRam is never parsed because parse() expects the pmap line first but the command prints the service status line first. Listed under known issues in spec/README.md.
 describe("MySQL driver testing", function () {
     describe("Output parsing", function () {
         var parse = driver.parse;
