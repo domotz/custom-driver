@@ -1,0 +1,17 @@
+{
+  "name": "domotz-custom-driver-examples-tests",
+  "version": "1.0.0",
+  "description": "Unit tests for the Domotz custom driver examples",
+  "private": true,
+  "scripts": {
+    "test": "jasmine",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@stylistic/eslint-plugin": "5.10.0",
+    "eslint": "9.39.5",
+    "globals": "17.13.0",
+    "jasmine": "^5.5.0"
+  }
+}
