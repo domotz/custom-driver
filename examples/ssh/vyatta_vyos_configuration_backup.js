@@ -40,6 +40,9 @@ function validate() {
                 resolve();
             }
         });
+    }).catch(function (err) {
+        // checkSshError has already reported the failure
+        console.error("Validation error handled: " + (err && err.message ? err.message : err));
     });
 }
 
