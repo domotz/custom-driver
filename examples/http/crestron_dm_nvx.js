@@ -54,10 +54,17 @@ function httpGet(url) {
         jar: true,
         rejectUnauthorized: false
     };
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
         D.device.http.get(config, function (error, response, body) {
-            if (response.statusCode && response.statusCode === 200 && body)
+            if (error) {
+                reject(error);
+            } else if (!response || response.statusCode !== 200) {
+                reject(new Error("HTTP request failed with status " + (response && response.statusCode)));
+            } else if (!body) {
+                reject(new Error("Empty response body"));
+            } else {
                 resolve(body);
+            }
         });
     });
 }
