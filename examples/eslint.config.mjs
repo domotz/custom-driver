@@ -36,29 +36,36 @@ const styleRules = {
     "@stylistic/semi-spacing": "error",
 };
 
+const driverConfig = {
+    languageOptions: {
+        ecmaVersion: 2022,
+        sourceType: "script",
+        globals: sandboxGlobals,
+    },
+    rules: {
+        ...js.configs.recommended.rules,
+        ...styleRules,
+        // Entry points (validate, get_status, custom_N) are called by the sandbox, not the file.
+        "no-unused-vars": ["error", { vars: "local", args: "none", caughtErrors: "none" }],
+        // Regex escapes are harmless and widespread; ANSI escape stripping needs control chars.
+        "no-useless-escape": "off",
+        "no-control-regex": "off",
+    },
+};
+
 export default [
     { ignores: ["node_modules/**"] },
     { plugins: { "@stylistic": stylistic } },
     {
         files: ["**/*.js"],
         ignores: ["spec/**"],
-        languageOptions: {
-            ecmaVersion: 2022,
-            sourceType: "script",
-            globals: sandboxGlobals,
-        },
-        rules: {
-            ...js.configs.recommended.rules,
-            ...styleRules,
-            // Entry points (validate, get_status, custom_N) are called by the sandbox, not the file.
-            "no-unused-vars": ["error", { vars: "local", args: "none", caughtErrors: "none" }],
-            // Regex escapes are harmless and widespread; ANSI escape stripping needs control chars.
-            "no-useless-escape": "off",
-            "no-control-regex": "off",
-        },
+        ...driverConfig,
     },
+    // Robustness-net fixtures are tiny drivers: lint them exactly like drivers.
+    { files: ["spec/net/fixtures/**/*.js"], ...driverConfig },
     {
         files: ["spec/**/*.js"],
+        ignores: ["spec/net/fixtures/**"],
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: "commonjs",
