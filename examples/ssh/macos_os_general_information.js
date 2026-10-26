@@ -115,6 +115,9 @@ function parseValidateOutput(output) {
     if (output.trim !== undefined && output.trim() !== "") {
         console.log("Validation successful");
         D.success();
+    } else {
+        console.error("Validation failed: empty output");
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
