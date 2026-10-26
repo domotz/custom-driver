@@ -31,6 +31,50 @@ describe("driver catalogue", () => {
         expect(typeof byPath("http/apache2_status.js").source).toBe("string");
     });
 
+    it("finds validate in every driver", () => {
+        for (const d of drivers) {
+            expect(d.entryPoints).withContext(d.path).toContain("validate");
+        }
+    });
+
+    it("finds every top-level function documented as a @remote_procedure", () => {
+        // A JSDoc block, then (on the same or the next lines) a top-level function declaration.
+        const documented = /^\s*\/\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*(?:async\s+)?function\s+(\w+)\s*\(/gm;
+        // winrm/windows_host_users.js: the "Validate WinRM" @remote_procedure block sits above the
+        // helper parseValidateOutput(); the validate() it describes follows right after it.
+        const misplacedJsdoc = new Set(["winrm/windows_host_users.js parseValidateOutput"]);
+        let checked = 0;
+        for (const d of drivers) {
+            for (const m of d.source.matchAll(documented)) {
+                if (!/@remote_procedure\b/.test(m[1]) || misplacedJsdoc.has(`${d.path} ${m[2]}`)) {
+                    continue;
+                }
+                checked += 1;
+                expect(d.entryPoints).withContext(d.path).toContain(m[2]);
+            }
+        }
+        expect(checked).toBeGreaterThan(drivers.length);
+        for (const key of misplacedJsdoc) {
+            const [file, name] = key.split(" ");
+            expect(byPath(file).source).withContext(key).toMatch(new RegExp(`function ${name}\\s*\\(`));
+        }
+    });
+
+    it("finds backup in configuration-management drivers", () => {
+        const withBackup = drivers.filter((d) => /^function backup\s*\(/m.test(d.source));
+        expect(withBackup.length).toBeGreaterThan(0);
+        for (const d of withBackup) {
+            expect(d.entryPoints).withContext(d.path).toEqual(jasmine.arrayContaining(["validate", "backup"]));
+        }
+        expect(byPath("ssh/huawei_switch_configuration_backup.js").entryPoints).toEqual(["validate", "backup"]);
+    });
+
+    it("finds declarations written right after a JSDoc block (*/function validate)", () => {
+        expect(byPath("telnet/epson_projector_via_pj_link.js").entryPoints)
+            .toEqual(["validate", "get_status", "custom_1", "custom_2"]);
+        expect(byPath("http/neat_pulse_monitoring.js").entryPoints).toEqual(["validate", "get_status", "custom_1"]);
+    });
+
     it("takes parameter defaults from the companion json", () => {
         expect(parametersFor(byPath("winrm/failed_login.js")).hours).toBe(24);
     });

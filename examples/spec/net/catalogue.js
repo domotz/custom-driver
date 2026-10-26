@@ -9,7 +9,14 @@ const fs = require("fs");
 const path = require("path");
 
 const DRIVER_DIRS = ["http", "icmp", "snmp", "ssh", "telnet", "winrm"];
-const ENTRY_POINT_RE = /^function (validate|get_status|custom_\d+)\s*\(/gm;
+// Procedures the platform can invoke (remote_pawn_ng src/sandbox/context.js): validate, get_status and
+// custom_N for generic drivers (context.js:308), validate and backup for configuration-management
+// drivers (context.js:429), restore for a configuration-management restore (context.js:533-538,
+// "should be passed to restore()"; no catalogue driver defines it yet). The sandbox runs whatever
+// call the backend appends to the script (sandbox.js:313), so the names are a platform contract.
+// A declaration may follow a JSDoc block on the same line ("*/function validate() {").
+const ENTRY_POINT_RE = /^\s*(?:\*\/\s*)?function (validate|get_status|backup|restore|custom_\d+)\s*\(/gm;
+const ENTRY_POINT_ORDER = ["validate", "get_status", "backup", "restore"];
 const PARAM_RE = /D\.getParameter\(\s*(["'])([^"']+)\1\s*\)/g;
 const DEFAULT_VALUE = "test";
 
@@ -34,7 +41,7 @@ function listJs(dir) {
 
 function entryPointsOf(source) {
     const found = new Set([...source.matchAll(ENTRY_POINT_RE)].map((m) => m[1]));
-    const order = (n) => (n === "validate" ? 0 : n === "get_status" ? 1 : 2);
+    const order = (n) => (ENTRY_POINT_ORDER.includes(n) ? ENTRY_POINT_ORDER.indexOf(n) : ENTRY_POINT_ORDER.length);
     return [...found].sort((a, b) => order(a) - order(b) || Number(a.slice(7)) - Number(b.slice(7)));
 }
 
