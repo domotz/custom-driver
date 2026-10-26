@@ -16,7 +16,12 @@ NET_DRIVER=apache2 npm run test:net   # only drivers whose path contains "apache
 npm run lint
 ```
 
-Node requirement: `cheerio` needs Node >= 20.18.1, so any future GitHub CI must use Node >= 20.18.1.
+Node requirement: `cheerio` needs Node >= 20.18.1 (declared in `package.json` `engines`), so any future
+GitHub CI must use Node >= 20.18.1.
+
+CI must run both `npm run lint` and `npm test`. The net runs drivers under SES, where a call to a
+misspelled function inside a branch the scenarios never reach goes unnoticed; eslint's `no-undef` rule
+is what catches those typos.
 
 ## The robustness net
 
