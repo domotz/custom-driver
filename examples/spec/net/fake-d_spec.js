@@ -1,0 +1,133 @@
+const { createFakeD } = require("./fake-d");
+
+describe("strict fake D", () => {
+    const tick = () => new Promise((resolve) => setImmediate(resolve));
+
+    it("delivers http.get callbacks asynchronously with the responder's args", async () => {
+        const calls = [];
+        const { D, record } = createFakeD({
+            responder: (call) => {
+                calls.push(call);
+                return [null, { statusCode: 200 }, "ok"];
+            }
+        });
+        let received = null;
+        D.device.http.get({ url: "/x" }, (...args) => {
+            received = args;
+        });
+        expect(received).toBeNull();
+        await tick();
+        expect(received).toEqual([null, { statusCode: 200 }, "ok"]);
+        expect(calls[0]).toEqual({ kind: "http", method: "get", options: { url: "/x" } });
+        expect(record.transportCalls).toBe(1);
+    });
+
+    it("records a throw in a wrapped callback as a GENERIC_ERROR failure", async () => {
+        const { D, record } = createFakeD({ responder: () => [null, {}, ""] });
+        D.device.http.get({}, () => {
+            throw new Error("boom");
+        });
+        await tick();
+        expect(record.reports[0]).toEqual(jasmine.objectContaining({ type: "failure", errorType: "GENERIC_ERROR" }));
+        expect(record.wrappedThrows.length).toBe(1);
+        expect(record.crashes.length).toBe(0);
+    });
+
+    it("records a throw in an unwrapped callback as a crash", async () => {
+        const { D, record } = createFakeD({ responder: () => [{ outcome: null, error: "x" }] });
+        D.device.sendWinRMCommand({}, () => {
+            throw new Error("boom");
+        });
+        await tick();
+        expect(record.crashes.length).toBe(1);
+        expect(record.crashes[0].where).toBe("sendWinRMCommand");
+        expect(record.wrappedThrows.length).toBe(0);
+    });
+
+    it("first report wins", () => {
+        const { D, record } = createFakeD({ responder: () => [] });
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+        D.success();
+        expect(record.firstReport.errorType).toBe("AUTHENTICATION_ERROR");
+        expect(record.reports.length).toBe(2);
+    });
+
+    it("counts D.failure(undefined) as GENERIC_ERROR and keeps the original", () => {
+        const { D, record } = createFakeD({ responder: () => [] });
+        D.failure(undefined);
+        expect(record.firstReport.errorType).toBe("GENERIC_ERROR");
+        expect(record.firstReport.originalErrorType).toBeUndefined();
+    });
+
+    it("throws on an unknown D member", () => {
+        const { D, record } = createFakeD({ responder: () => [] });
+        expect(() => D.nope).toThrowError(/fake D has no member D.nope/);
+        expect(() => D.device.nope).toThrowError(/fake D has no member D.device.nope/);
+        expect(() => D.q).toThrowError(/fake D has no member D.q/);
+        expect(record.unknownMembers).toEqual(["D.nope", "D.device.nope", "D.q"]);
+    });
+
+    it("does not trip on symbols or then", async () => {
+        const { D, record } = createFakeD({ responder: () => [] });
+        expect(D.then).toBeUndefined();
+        expect(D[Symbol.toPrimitive]).toBeUndefined();
+        expect((await D) === D).toBe(true);
+        expect(record.unknownMembers).toEqual([]);
+    });
+
+    it("supports typeof feature checks on real members", () => {
+        const { D } = createFakeD({ responder: () => [] });
+        expect(typeof D.createBackup).toBe("function");
+        expect(typeof D._.isArray).toBe("function");
+    });
+
+    it("getParameter returns the provided parameters", () => {
+        const { D } = createFakeD({ responder: () => [], parameters: { port: 22 } });
+        expect(D.getParameter("port")).toBe(22);
+        expect(D.getParameter("other")).toBeNull();
+    });
+
+    it("createExternalDevice exposes the same transports", async () => {
+        const calls = [];
+        const { D } = createFakeD({
+            responder: (call) => {
+                calls.push(call);
+                return [null, {}, ""];
+            }
+        });
+        D.createExternalDevice("h").http.get({}, () => {});
+        await tick();
+        expect(calls[0].kind).toBe("http");
+    });
+
+    it("routes SNMP sessions and delivers (output, error)", async () => {
+        const { D, record } = createFakeD({ responder: () => [{ "1.2": "v" }, null] });
+        const session = D.device.createSNMPSession({ community: "c" });
+        expect(() => session.nope).toThrowError(/fake D has no member/);
+        let got;
+        session.get(["1.2"], (...args) => {
+            got = args;
+        });
+        await tick();
+        expect(got).toEqual([{ "1.2": "v" }, null]);
+        expect(record.transportCalls).toBe(1);
+    });
+
+    it("uses the supplied schedule for delivery", () => {
+        const queue = [];
+        const { D } = createFakeD({ responder: () => ["out", null], schedule: (fn) => queue.push(fn) });
+        let got;
+        D.device.sendSSHCommand({}, (...a) => {
+            got = a;
+        });
+        expect(queue.length).toBe(1);
+        queue[0]();
+        expect(got).toEqual(["out", null]);
+    });
+
+    it("hashes like production crypto", () => {
+        const { D } = createFakeD({ responder: () => [] });
+        expect(D.crypto.hash("a", "md5", "utf8", "hex")).toBe("0cc175b9c0f1b6a831c399e269772661");
+        expect(() => D.crypto.nope).toThrowError(/D.crypto.nope/);
+    });
+});
