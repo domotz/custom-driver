@@ -97,7 +97,13 @@ function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        try {
+            jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             gpoTable.insertRecord((jsonOutput[k].Name).slice(0, 50), [
                 jsonOutput[k].Status,

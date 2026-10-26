@@ -72,7 +72,7 @@ function executeWinrmCommand(command) {
                 resolve(output);
             } else {
                 if (output.error) {
-                    if (output.error.message.indexOf("Cannot find any service") !== -1) {
+                    if ((output.error.message || String(output.error)).indexOf("Cannot find any service") !== -1) {
                         console.error("Error getting service status");
                         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
                     } else {

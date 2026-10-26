@@ -216,7 +216,13 @@ function parseOutput(output) {
         if (!jsonOutput.outcome.stdout) {
             console.info("There are no virtual machines related to this filter.");
         } else {
-            result = JSON.parse(jsonOutput.outcome.stdout.replace(/__/g, ""));
+            try {
+                result = JSON.parse(jsonOutput.outcome.stdout.replace(/__/g, ""));
+            } catch (e) {
+                console.error("Unable to parse the WinRM output: " + e.message);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
         }
         if (Array.isArray(result)) {
             listOfVMs = result;

@@ -80,7 +80,13 @@ function parseOutput(output) {
         var k = 0;
         var totPrivilegedUsers = 0;
         var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        try {
+            jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             privilegedUsersTable.insertRecord(k.toString(), [jsonOutput[k].Name, jsonOutput[k].MemberCount]);
             totPrivilegedUsers += jsonOutput[k].MemberCount;

@@ -90,7 +90,14 @@ function sanitize(output) {
 // Parses the output of the WinRM command and extracts data
 function parseOutput(output) {
     if (output.error === null) {
-        var jsonOutput = JSON.parse(output.outcome.stdout);
+        var jsonOutput;
+        try {
+            jsonOutput = JSON.parse(output.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         var data = {};
         for (var i = 0; i < jsonOutput.length; i++) {
             var instanceName = jsonOutput[i].InstanceName;

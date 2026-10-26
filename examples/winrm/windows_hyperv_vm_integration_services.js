@@ -137,11 +137,17 @@ function parseOutput(output) {
         if (!jsonOutput.outcome.stdout) {
             console.log("There are no integration services related to this virtual machine.");
         } else {
-            result = JSON.parse(jsonOutput.outcome.stdout);
+            try {
+                result = JSON.parse(jsonOutput.outcome.stdout);
+            } catch (e) {
+                console.error("Unable to parse the WinRM output: " + e.message);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
         }
         if (Array.isArray(result)) {
             listOfIntegrationServices = result;
-        } else if (typeof result === "object") {
+        } else if (result !== null && typeof result === "object") {
             listOfIntegrationServices.push(result);
         }
         for (let k = 0; k < listOfIntegrationServices.length; k++) {

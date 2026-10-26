@@ -150,11 +150,17 @@ function parseOutput(output) {
         if (!jsonOutput.outcome.stdout) {
             console.log("There are no virtual network adapters related to this virtual machine.");
         } else {
-            result = JSON.parse(jsonOutput.outcome.stdout);
+            try {
+                result = JSON.parse(jsonOutput.outcome.stdout);
+            } catch (e) {
+                console.error("Unable to parse the WinRM output: " + e.message);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
         }
         if (Array.isArray(result)) {
             listOfVirtualNetworkAdapters = result;
-        } else if (typeof result === "object") {
+        } else if (result !== null && typeof result === "object") {
             listOfVirtualNetworkAdapters.push(result);
         }
         for (let k = 0; k < listOfVirtualNetworkAdapters.length; k++) {

@@ -78,7 +78,14 @@ function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var variables = [];
-        var jsonOutput = JSON.parse(output.outcome.stdout);
+        var jsonOutput;
+        try {
+            jsonOutput = JSON.parse(output.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             var instanceName = jsonOutput[k].InstanceName || "-";
             var value = jsonOutput[k].CookedValue;
