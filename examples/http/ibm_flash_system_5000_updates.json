@@ -1,6 +1,6 @@
 {
     "logo": "ibm.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "IBM FlashSystem5000 Updates",
     "description": "Retrieves information about the system, enclosure, and drive updates from the IBM FlashSystem 5000",
     "category": "Hardware Integration",

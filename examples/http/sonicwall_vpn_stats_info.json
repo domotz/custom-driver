@@ -1,6 +1,6 @@
 {
     "logo": "sonicwall.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sonicwall - VPN Stats info",
     "description": "Monitors VPN sessions for Sonicwall devices and populates a custom table with session information",
     "category": "Software Integration",

@@ -1,6 +1,6 @@
 {
     "logo": "shure.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Shure Ceiling Microphone Monitor",
     "description": "Monitors Shure ceiling array microphones via a raw Telnet command",
     "category": "Hardware Integration",

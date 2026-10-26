@@ -1,6 +1,6 @@
 {
     "logo": "sonicwall.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sonicwall Security Services Status and License",
     "description": "Monitors the operational and licensing status of diverse security services on a SonicWALL device",
     "category": "Software Integration",

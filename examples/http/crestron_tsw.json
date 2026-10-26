@@ -1,6 +1,6 @@
 {
     "logo": "crestron.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Crestron Touch Screen (TSW)",
     "description": "Collects information for crestron touch screen device's calendar syncronisations",
     "category": "Hardware Integration",

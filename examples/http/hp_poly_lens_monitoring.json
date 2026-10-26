@@ -1,6 +1,6 @@
 {
     "logo": "poly.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "HP Poly Lens - Device Monitoring",
     "description": "Monitors HP Poly devices via the Poly Lens cloud GraphQL API. Retrieves device identity, connectivity, firmware, call status, room assignment, and integration health (Zoom, Teams). Supports direct lookup by Poly Object ID, automatic discovery by MAC or IP, full-inventory table mode ('all'), and API diagnostics mode ('error'). Includes a Reboot action.",
     "category": "Hardware Integration",

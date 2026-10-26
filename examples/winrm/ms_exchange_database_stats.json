@@ -1,6 +1,6 @@
 {
     "logo": "ms-exchange.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Microsoft Exchange Server (on-prem) - Database Latency (R/W)",
     "description": "This script is used to monitor database statistics from a Microsoft Exchange Server",
     "category": "Software Integration",

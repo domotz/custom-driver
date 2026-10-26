@@ -1,6 +1,6 @@
 {
     "logo": "opnsense.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "OPNSense General / Monitoring",
     "description": "Retrieves general information about OPNsense including product version, firmware updates, CPU usage, memory usage, etc.",
     "category": "Software Integration",

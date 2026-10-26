@@ -1,6 +1,6 @@
 {
     "logo": "sonicwall.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sonicwall - NAT IPV4 Access Rules",
     "description": "Monitors IPv4 access rules for Sonicwall devices",
     "category": "Software Integration",

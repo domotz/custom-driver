@@ -1,6 +1,6 @@
 {
     "logo": "yealink.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Yealink M Core Series - Device Monitoring",
     "description": "Monitors Yealink M Core series meeting room controllers via HTTPS with token-based authentication. Retrieves the list of connected peripherals, audio mute status, system status, and camera PTZ position. Includes a Reboot action that reboots all devices connected to the M Core hub.",
     "category": "Hardware Integration",

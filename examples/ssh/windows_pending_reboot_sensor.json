@@ -1,6 +1,6 @@
 {
     "logo": "windows.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Windows Pending Reboot",
     "description": "Monitor the Pending Reboot state in Windows. It also provides a button to reboot the computer",
     "category": "Software Integration",

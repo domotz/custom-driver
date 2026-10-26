@@ -1,6 +1,6 @@
 {
     "logo": "rabbitmq.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Monitor RabbitMQ Queues",
     "description": "Check RabbitMQ queues from RabbitMQ management plugin",
     "category": "Software Integration",

@@ -1,6 +1,6 @@
 {
     "logo": "philips-hue.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Monitor Philips Hue Brigde",
     "description": "Monitor the status of Philips Hue Lights from a Hue Bridge",
     "category": "Hardware Integration",

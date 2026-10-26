@@ -1,6 +1,6 @@
 {
     "logo": "ibm.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "IBM FlashSystem5000 Enclosure Statistics",
     "description": "Monitors the Enclosure Statistics of the IBM FlashSystem5000",
     "category": "Hardware Integration",

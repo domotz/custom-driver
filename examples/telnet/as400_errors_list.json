@@ -1,6 +1,6 @@
 {
     "logo": "ibm-iseries.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "IBM ISeries AS400 Error List (IT)",
     "description": "(ITALIAN VERSION) Monitor the IBM iSeries IBM server (AS400). This script collects the error list reported on the device.",
     "category": "Hardware Integration",

@@ -1,6 +1,6 @@
 {
     "logo": "sonicwall.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sonicwall firewall - Product lifecycle",
     "description": "Extract the product lifecycle information for a SonicWall device. This information is used to monitor the product lifecycle and check when a product is approaching end of support",
     "category": "Software Integration",

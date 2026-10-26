@@ -1,6 +1,6 @@
 {
     "logo": "ibm.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "IBM FlashSystem5000 Enclosure Power Supply Unit",
     "description": "information about each power-supply unit (PSU) within the enclosure of the IBM FlashSystem5000",
     "category": "Hardware Integration",
