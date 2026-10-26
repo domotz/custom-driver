@@ -157,6 +157,23 @@ describe("production-style runner", () => {
         expect(garbage.firstReport.variables[0].value).toBe("%%% unexpected output %%%");
     });
 
+    it("fires the socket timeout event, never error, when a silent peer outlasts setTimeout", async () => {
+        const result = await run("uses-net-socket-timeout.js", "timeout");
+        expect(verdict(result)).toEqual({ pass: true, reason: "" });
+        expect(result.firstReport.errorType).toBe("TIMEOUT_ERROR");
+        expect(result.crashes.length).toBe(0);
+    });
+
+    it("keeps a silent socket with no inactivity timer open: no error, and the driver never reports", async () => {
+        const handled = await run("uses-net-socket-handled.js", "timeout");
+        expect(handled.firstReport).toBeFalsy();
+        expect(handled.crashes.length).toBe(0);
+        expect(verdict(handled).reason).toMatch(/never reported|timed out/);
+        const unhandled = await run("uses-net-socket.js", "timeout");
+        expect(unhandled.crashes.length).toBe(0);
+        expect(verdict(unhandled).reason).toMatch(/never reported|timed out/);
+    });
+
     it("fails a driver that reads a D member the fake lacks", async () => {
         const result = await runEntryPoint({
             source: "function validate() { D.device.nope(); }",

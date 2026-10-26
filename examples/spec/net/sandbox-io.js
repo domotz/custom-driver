@@ -12,6 +12,13 @@
  * reply shape `[output, error]`: error set -> "error" then "close"; otherwise "connect",
  * "data" (only when the output is non-empty, as Node never emits empty data), "end", "close".
  * An "error" with no listener throws out of emit(), exactly as Node does, so it is a crash.
+ *
+ * The reply SILENT_PEER models a peer that accepts the connection and never answers (the timeout
+ * scenario). A real net.Socket never emits "error" for inactivity: it emits "connect" and then, only
+ * if the driver armed an inactivity timer with socket.setTimeout(ms > 0), a single "timeout" event
+ * (Node lib/net.js Socket.prototype.setTimeout / _onTimeout). Without a timer the socket stays open
+ * and the driver waits until the script timeout. end() or destroy() then closes it. For dgram,
+ * SILENT_PEER means the datagram is sent and nothing ever comes back.
  */
 
 const { EventEmitter } = require("events");
@@ -19,6 +26,7 @@ const nodeNet = require("net");
 
 const PASSTHROUGH = new Set(["then", "toJSON", "inspect", "constructor", "domain"]);
 const MAX_TIMER_DELAY_MS = 10;
+const SILENT_PEER = Object.freeze({ silentPeer: true });
 
 function strict(target, path, unknownMembers) {
     return new Proxy(target, {
@@ -61,6 +69,23 @@ class FakeSocket extends EventEmitter {
         this.remoteAddress = host;
         this.remotePort = port;
         this.writes = [];
+        this._silent = false;
+        this._connected = false;
+        this._timeoutMs = 0;
+        this._timedOut = false;
+    }
+
+    // Fires "timeout" once the inactivity timer would expire on a connected, silent socket.
+    _armTimeout() {
+        if (!this._silent || !this._connected || this._timedOut || this._timeoutMs <= 0) {
+            return;
+        }
+        this._timedOut = true;
+        this._deliver(() => {
+            if (!this.closed && !this.destroyed && this._timeoutMs > 0) {
+                this.emit("timeout");
+            }
+        }, "net.timeout");
     }
 
     _emitLater(event, ...args) {
@@ -97,9 +122,14 @@ class FakeSocket extends EventEmitter {
         if (data !== undefined && typeof data !== "function" && !this.writableEnded) {
             this.write(data, typeof encoding === "string" ? encoding : undefined);
         }
+        const wasEnded = this.writableEnded;
         this.writableEnded = true;
         if (cb) {
             this._deliver(() => cb(), "net.end");
+        }
+        // A silent peer still closes its side when we end ours (FIN, then close).
+        if (this._silent && !wasEnded) {
+            this._deliver(() => this._close(false), "net.close");
         }
         return this;
     }
@@ -117,10 +147,12 @@ class FakeSocket extends EventEmitter {
     }
 
     setTimeout(ms, callback) {
-        // The fake always ends with "close", so the inactivity timeout never fires.
+        // Only a silent peer (SILENT_PEER) lets the inactivity timer expire; other replies end with "close".
         if (typeof callback === "function") {
             this.once("timeout", callback);
         }
+        this._timeoutMs = Number(ms) || 0;
+        this._armTimeout();
         return this;
     }
 
@@ -149,9 +181,20 @@ class FakeSocket extends EventEmitter {
 // Runs the remote side of one connection: each event is delivered in its own turn and the next
 // one is queued only after it ran, so handlers attached in between still see later events.
 function playConnection(socket, deliver, reply) {
+    const steps = [];
+    if (reply === SILENT_PEER) {
+        socket._silent = true;
+        deliver(() => {
+            if (!socket.closed && !socket.destroyed) {
+                socket._connected = true;
+                socket.emit("connect");
+                socket._armTimeout();
+            }
+        }, "net.connect");
+        return;
+    }
     const output = reply[0];
     const error = reply[1];
-    const steps = [];
     if (error !== undefined && error !== null) {
         steps.push(["error", () => socket.emit("error", toError(error))]);
         steps.push(["close", () => socket._close(true)]);
@@ -201,7 +244,7 @@ function createNet(ctx) {
             socket.once("connect", listener);
         }
         const reply = ctx.responder({ kind: "tcp", method: "net.createConnection", options });
-        if (Array.isArray(reply)) {
+        if (Array.isArray(reply) || reply === SILENT_PEER) {
             playConnection(socket, ctx.deliver, reply);
         }
         return strict(socket, "net.Socket", ctx.record.unknownMembers);
@@ -244,6 +287,12 @@ class FakeDgramSocket extends EventEmitter {
         ctx.record.transportCalls++;
         const cb = rest.find((arg) => typeof arg === "function");
         const reply = ctx.responder({ kind: "tcp", method: "dgram.send", options: { msg, args: rest.filter((arg) => typeof arg !== "function") } });
+        if (reply === SILENT_PEER) {
+            if (cb) {
+                ctx.deliver(() => cb(null, toBuffer(msg).length), "dgram.send");
+            }
+            return;
+        }
         if (!Array.isArray(reply)) {
             return;
         }
@@ -328,4 +377,4 @@ function createSetTimeout(ctx) {
     };
 }
 
-module.exports = { createNet, createDgram, createSetTimeout, MAX_TIMER_DELAY_MS };
+module.exports = { createNet, createDgram, createSetTimeout, MAX_TIMER_DELAY_MS, SILENT_PEER };

@@ -1,3 +1,4 @@
+const { SILENT_PEER } = require("./sandbox-io");
 const { SCENARIOS } = require("./scenarios");
 
 const KINDS = {
@@ -106,6 +107,14 @@ describe("hostile scenarios", () => {
         expect(ans("empty-success", "ssh")).toEqual(["", null]);
         expect(ans("transport-error", "ssh")[0]).toBeUndefined();
         expect(ans("timeout", "tcp")).toEqual([null, "Timeout"]);
+    });
+
+    it("raw net and dgram sockets time out as a silent peer, not with an error", () => {
+        const timeout = find("timeout").responder;
+        expect(timeout({ kind: "tcp", method: "net.createConnection", options: {} })).toBe(SILENT_PEER);
+        expect(timeout({ kind: "tcp", method: "dgram.send", options: {} })).toBe(SILENT_PEER);
+        expect(find("transport-error").responder({ kind: "tcp", method: "net.createConnection", options: {} })[1].code)
+            .toBe("ECONNREFUSED");
         expect(ans("empty-success", "telnet")).toEqual(["", ""]);
     });
 

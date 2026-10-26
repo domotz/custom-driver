@@ -10,6 +10,8 @@
  * shape, the nearest production-possible reply. No shape is invented.
  */
 
+const { SILENT_PEER } = require("./sandbox-io");
+
 const DEVICE_IP = "192.0.2.10";
 const GARBAGE = "%%% unexpected output %%%";
 
@@ -64,12 +66,14 @@ const TELNET = {
 
 // ---- tcp: sandbox/library/tcp.js:43-46 -> callback(result.response, result.error) with commands/tcpRequest.js:76-95:
 // success (string, null), socket error (null, Error), timeout (null, "Timeout").
+// Raw net/dgram sockets (endowed as-is, sandbox.js) share the success and error replies, but a real socket
+// never errors on inactivity: their timeout is a peer that stays silent (sandbox-io.js SILENT_PEER).
 const TCP = {
     transport: () => [null, errorWith("connect ECONNREFUSED", { code: "ECONNREFUSED" })],
     auth: null,
     empty: () => ["", null],
     garbage: () => [GARBAGE, null],
-    timeout: () => [null, "Timeout"]
+    timeout: (call) => (call.method === "sendTCPCommand" ? [null, "Timeout"] : SILENT_PEER)
 };
 
 // ---- winrm: sandbox/library/winrm.js:21-27 -> callback({ outcome: null, error: error.message }) on a brokered error,
