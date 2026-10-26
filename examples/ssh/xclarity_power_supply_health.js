@@ -1,11 +1,11 @@
 /**
  * Name: XClarity Power Supply Health
  * Description: This script monitors the health status of power supplies on Lenovo XClarity server.
- *         
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under Lenovo XClarity version 8.42
- * 
+ *
  * Creates a Custom Driver table with the following columns:
  *      - ID (Name): The identifier of each power supply
  *      - Status: The current status of each power supply
@@ -26,16 +26,16 @@ var sshConfig = {
 var powerTable = D.createTable(
     "Power Supply Health Info",
     [
-        { label: "Status", valueType: D.valueType.STRING},
-        { label: "Rated Power", unit: "W", valueType: D.valueType.NUMBER },      
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Rated Power", unit: "W", valueType: D.valueType.NUMBER }
     ]
 );
 
 // Function to handle SSH errors and failure cases
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -49,7 +49,7 @@ function executeCommand(command) {
                 checkSshError(err);
             } else {
                 resolve(output);
-            }                  
+            }
         });
     });
 }
@@ -70,7 +70,7 @@ function parseValidateOutput(output) {
     if (output && output.indexOf("Error: Command not recognized") !== -1) {
         console.info("Validation failed: Command not supported");
         D.failure(D.errorType.PARSING_ERROR);
-    }else {
+    } else {
         console.info("Validation successful: Command is supported");
     }
 }
@@ -89,14 +89,14 @@ function get_status() {
 // Parse and insert power supply health data into the custom driver table
 function parseData(output) {
     var lines = output.split("\n");
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    for (var i = 2; i < lines.length-1; i++) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    for (var i = 2; i < lines.length - 1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + " " + values[1] + values[2]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
-        var status =  values[3]; 
-        var ratedPower =  values[4]; 
+        var recordId = (values[0] + " " + values[1] + values[2]).replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+        var status =  values[3];
+        var ratedPower =  values[4];
         powerTable.insertRecord(
             recordId, [status, ratedPower]
         );

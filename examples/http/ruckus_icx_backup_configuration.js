@@ -16,7 +16,7 @@
  * Set to 'TFTP' to use TFTP mode instead of SSH.
  * SSH is the default and recommended method.
  */
-var PROTOCOL = 'SSH';
+var PROTOCOL = "SSH";
 
 /* ------------ SSH helpers (SSH version — unchanged) ------------ */
 
@@ -99,18 +99,18 @@ function makeBackup(obj) {
 
 /* ------------ TFTP helpers (TFTP version — const→var, rest unchanged) ------------ */
 
-var TFTP_FILENAME = Date.now() + '_ruckus_config.cfg';
+var TFTP_FILENAME = Date.now() + "_ruckus_config.cfg";
 
 var sshOptionsTftp = {
     username: D.device.username(),
     password: D.device.password(),
-    prompt: '#',
+    prompt: "#",
     timeout: 30000,
     inter_command_timeout_ms: 2000
 };
 
 function handleSshErrorTftp(error) {
-    console.error("SSH error:", error ? error.message : 'Unknown error');
+    console.error("SSH error:", error ? error.message : "Unknown error");
     if (error && error.code === 5) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else {
@@ -132,10 +132,10 @@ function startBackup() {
             return;
         }
 
-        console.info('TFTP server ready on %s. Sending copy command...', host);
+        console.info("TFTP server ready on %s. Sending copy command...", host);
 
         var tftpCommands = [
-            'copy running-config tftp ' + host + ' ' + TFTP_FILENAME
+            "copy running-config tftp " + host + " " + TFTP_FILENAME
         ];
 
         sshOptionsTftp.commands = tftpCommands;
@@ -156,7 +156,7 @@ function startBackup() {
         }
 
         if (content && content.length > 0) {
-            console.info('Backup received: %d bytes', content.length);
+            console.info("Backup received: %d bytes", content.length);
             var backup = D.createBackup({
                 label: "Ruckus Running Config",
                 running: content
@@ -182,8 +182,8 @@ function startBackup() {
 function validate() {
     var protocol = PROTOCOL;
 
-    if (protocol === 'TFTP') {
-        sshOptionsTftp.commands = ['show stack'];
+    if (protocol === "TFTP") {
+        sshOptionsTftp.commands = ["show stack"];
         D.device.sendSSHCommands(sshOptionsTftp, function (output, error) {
             if (error) {
                 handleSshErrorTftp(error);
@@ -223,7 +223,7 @@ function validate() {
 function backup() {
     var protocol = PROTOCOL;
 
-    if (protocol === 'TFTP') {
+    if (protocol === "TFTP") {
         startBackup();
         return;
     }

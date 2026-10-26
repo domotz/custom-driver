@@ -5,10 +5,10 @@
  *      - Probe Name: The descriptive name for the probe
  *      - Probe Temperature: The current temperature reading from the probe
  *      - Probe Humidity: The current humidity reading from the probe in percent
- * 
+ *
  * Tested under APC Smart-UPS X 3000 version 6.8.2
  */
-    
+
 var iemStatusProbesTableOID = "1.3.6.1.4.1.318.1.1.10.2.3.2";
 var probNameOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.2.1";
 var probeTempOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.4.1";
@@ -17,7 +17,7 @@ var probeHumidityOID = "1.3.6.1.4.1.318.1.1.10.2.3.2.1.6.1";
 
 function validateAndGetData() {
     return new Promise(function (resolve) {
-        D.device.createSNMPSession().walk(iemStatusProbesTableOID, function(out, err) {
+        D.device.createSNMPSession().walk(iemStatusProbesTableOID, function (out, err) {
             if (err) {
                 console.error(err);
                 D.failure(D.errorType.GENERIC_ERROR);
@@ -38,14 +38,14 @@ function validateAndGetData() {
  * @label Host Device Is APC UPS
  * @documentation This procedure is used to validate if the device is an APC UPS device with temperature and humidity data over SNMP
  */
-function validate(){
+function validate() {
     validateAndGetData()
         .then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
-}  
+}
 
 /**
 * @remote_procedure
@@ -54,7 +54,7 @@ function validate(){
 */
 function get_status() {
     validateAndGetData()
-        .then(function(out) {
+        .then(function (out) {
             var iemStatusProbeTempUnits = out[probeTempUnitsOID];
             var unitTemp;
             if (iemStatusProbeTempUnits == 2) {
@@ -66,7 +66,7 @@ function get_status() {
             var iemStatusProbeCurrentTemp = D.device.createVariable("probe_temperature", "Probe Temperature", out[probeTempOID], unitTemp);
             var iemStatusProbeCurrentHumid = D.device.createVariable("probe_humidity", "Probe Humidity", out[probeHumidityOID], "%");
             D.success([iemStatusProbeName, iemStatusProbeCurrentTemp, iemStatusProbeCurrentHumid]);
-        }).catch(function(err) {
+        }).catch(function (err) {
             console.error("Walk error for OID", err);
             D.failure(D.errorType.PARSING_ERROR);
         });

@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
@@ -32,7 +32,7 @@ function login() {
             protocol: "https",
             form: {
                 login: D.device.username(),
-                passwd: D.device.password(),
+                passwd: D.device.password()
             },
             jar: true,
             rejectUnauthorized: false
@@ -82,7 +82,7 @@ function extractValue(data, key) {
     };
 }
 
-//Fill the table with data related to ip table  
+//Fill the table with data related to ip table
 function fillTable() {
     ipTable.Device.IpTable.Entries.forEach(function (item) {
         var model = item.ModelName;

@@ -41,20 +41,20 @@
  **/
 
 // Parameters for Azure authentication
-const tenantId = D.getParameter('tenantID')
-const clientId = D.getParameter('clientId')
-const clientSecret = D.getParameter('clientSecret')
-const subscriptionId = D.getParameter('subscriptionId')
+const tenantId = D.getParameter("tenantID");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
+const subscriptionId = D.getParameter("subscriptionId");
 
-const resourceGroups = D.getParameter('resourceGroups')
-const vmNames = D.getParameter('vmNames')
+const resourceGroups = D.getParameter("resourceGroups");
+const vmNames = D.getParameter("vmNames");
 
-const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com')
-const azureCloudManagementService = D.createExternalDevice('management.azure.com')
+const azureCloudLoginService = D.createExternalDevice("login.microsoftonline.com");
+const azureCloudManagementService = D.createExternalDevice("management.azure.com");
 
-let accessToken
-let vmTable
-let allMetricByVm = []
+let accessToken;
+let vmTable;
+let allMetricByVm = [];
 
 // This is the list of all allowed performance metrics that can be retrieved from a running VM.
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
@@ -105,66 +105,66 @@ let allMetricByVm = []
 // This is the list of selected performance metrics retrieved when a VM is running
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table
 const performanceMetrics = [
-    {label: 'Network Out Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network Out Total', callback: convertBytesToGb},
-    {label: 'Network In Total', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Network In Total', callback: convertBytesToGb},
-    {label: 'Available Memory', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Available Memory Bytes', callback: convertBytesToGb},
-    {label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'},
-    {label: 'CPU Credits Remaining', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'},
-    {label: 'CPU Credits Consumed', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'},
-    {label: 'Disk Read', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Read Bytes', callback: convertBytesToGb},
-    {label: 'Disk Write', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'Disk Write Bytes', callback: convertBytesToGb},
-    {label: 'Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Read Operations/Sec'},
-    {label: 'Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'Disk Write Operations/Sec', callback: formatNumberToTwoDecimals},
-    {label: 'Data Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Read Bytes/sec'},
-    {label: 'Data Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Data Disk Write Bytes/sec'},
-    {label: 'Data Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'Data Disk Latency', callback: formatNumberToTwoDecimals},
-    {label: 'OS Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Read Bytes/sec'},
-    {label: 'OS Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'OS Disk Write Bytes/sec'},
-    {label: 'OS Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'OS Disk Latency'},
-    {label: 'OS Disk Read Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Read Operations/Sec'},
-    {label: 'OS Disk Write Ops', valueType: D.valueType.NUMBER, unit: 'ops/sec', key: 'OS Disk Write Operations/Sec'},
-    {label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric', callback: function (value){if(value === 1) return "Yes"; return "No"}},
-    {label: 'Temp Disk Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'Temp Disk Latency'},
-    {label: 'Temp Disk Read', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Temp Disk Read Bytes/sec'},
-    {label: 'Temp Disk Write', valueType: D.valueType.NUMBER, unit: 'bps', key: 'Temp Disk Write Bytes/sec'}
-]
+    { label: "Network Out Total", valueType: D.valueType.NUMBER, unit: "Gb", key: "Network Out Total", callback: convertBytesToGb },
+    { label: "Network In Total", valueType: D.valueType.NUMBER, unit: "Gb", key: "Network In Total", callback: convertBytesToGb },
+    { label: "Available Memory", valueType: D.valueType.NUMBER, unit: "Gb", key: "Available Memory Bytes", callback: convertBytesToGb },
+    { label: "Percentage CPU", valueType: D.valueType.NUMBER, unit: "%", key: "Percentage CPU" },
+    { label: "CPU Credits Remaining", valueType: D.valueType.NUMBER, key: "CPU Credits Remaining" },
+    { label: "CPU Credits Consumed", valueType: D.valueType.NUMBER, key: "CPU Credits Consumed" },
+    { label: "Disk Read", valueType: D.valueType.NUMBER, unit: "Gb", key: "Disk Read Bytes", callback: convertBytesToGb },
+    { label: "Disk Write", valueType: D.valueType.NUMBER, unit: "Gb", key: "Disk Write Bytes", callback: convertBytesToGb },
+    { label: "Disk Read Ops", valueType: D.valueType.NUMBER, unit: "ops/sec", key: "Disk Read Operations/Sec" },
+    { label: "Disk Write Ops", valueType: D.valueType.NUMBER, unit: "ops/sec", key: "Disk Write Operations/Sec", callback: formatNumberToTwoDecimals },
+    { label: "Data Disk Read", valueType: D.valueType.NUMBER, unit: "bps", key: "Data Disk Read Bytes/sec" },
+    { label: "Data Disk Write", valueType: D.valueType.NUMBER, unit: "bps", key: "Data Disk Write Bytes/sec" },
+    { label: "Data Disk Latency", valueType: D.valueType.NUMBER, unit: "ms", key: "Data Disk Latency", callback: formatNumberToTwoDecimals },
+    { label: "OS Disk Read", valueType: D.valueType.NUMBER, unit: "bps", key: "OS Disk Read Bytes/sec" },
+    { label: "OS Disk Write", valueType: D.valueType.NUMBER, unit: "bps", key: "OS Disk Write Bytes/sec" },
+    { label: "OS Disk Latency", valueType: D.valueType.NUMBER, unit: "ms", key: "OS Disk Latency" },
+    { label: "OS Disk Read Ops", valueType: D.valueType.NUMBER, unit: "ops/sec", key: "OS Disk Read Operations/Sec" },
+    { label: "OS Disk Write Ops", valueType: D.valueType.NUMBER, unit: "ops/sec", key: "OS Disk Write Operations/Sec" },
+    { label: "Vm Availability", valueType: D.valueType.NUMBER, key: "VmAvailabilityMetric", callback: function (value) {if (value === 1) return "Yes"; return "No";} },
+    { label: "Temp Disk Latency", valueType: D.valueType.NUMBER, unit: "ms", key: "Temp Disk Latency" },
+    { label: "Temp Disk Read", valueType: D.valueType.NUMBER, unit: "bps", key: "Temp Disk Read Bytes/sec" },
+    { label: "Temp Disk Write", valueType: D.valueType.NUMBER, unit: "bps", key: "Temp Disk Write Bytes/sec" }
+];
 
 // Extract configuration information for the VM
 const vmConfigExtractors = [
     {
-        label: 'OS Name', valueType: D.valueType.STRING, key: 'osName', extract: function (bodyAsJSON) {
-            return bodyAsJSON && bodyAsJSON.osName ? bodyAsJSON.osName : "N/A"
+        label: "OS Name", valueType: D.valueType.STRING, key: "osName", extract: function (bodyAsJSON) {
+            return bodyAsJSON && bodyAsJSON.osName ? bodyAsJSON.osName : "N/A";
         }
     }, {
-        label: 'OS Version', valueType: D.valueType.STRING, key: 'osVersion', extract: function (bodyAsJSON) {
-            return bodyAsJSON && bodyAsJSON.osVersion ? bodyAsJSON.osVersion : "N/A"
+        label: "OS Version", valueType: D.valueType.STRING, key: "osVersion", extract: function (bodyAsJSON) {
+            return bodyAsJSON && bodyAsJSON.osVersion ? bodyAsJSON.osVersion : "N/A";
         }
     }, {
-        label: 'Extension Type', valueType: D.valueType.STRING, key: 'type', extract: function (bodyAsJSON) {
-            return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length ? bodyAsJSON.vmAgent.extensionHandlers[0].type : "N/A"
+        label: "Extension Type", valueType: D.valueType.STRING, key: "type", extract: function (bodyAsJSON) {
+            return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length ? bodyAsJSON.vmAgent.extensionHandlers[0].type : "N/A";
         }
     }, {
-        label: 'Extension Status', valueType: D.valueType.STRING, key: 'statusCode', extract: function (bodyAsJSON) {
-            return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.code ? bodyAsJSON.vmAgent.extensionHandlers[0].status.code : "N/A"
+        label: "Extension Status", valueType: D.valueType.STRING, key: "statusCode", extract: function (bodyAsJSON) {
+            return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.code ? bodyAsJSON.vmAgent.extensionHandlers[0].status.code : "N/A";
         }
     }, {
-        label: 'Extension Status msg', valueType: D.valueType.STRING, key: 'statusMessage', extract: function (bodyAsJSON) {
-            return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.message ? bodyAsJSON.vmAgent.extensionHandlers[0].status.message : "N/A"
+        label: "Extension Status msg", valueType: D.valueType.STRING, key: "statusMessage", extract: function (bodyAsJSON) {
+            return bodyAsJSON && bodyAsJSON.vmAgent && bodyAsJSON.vmAgent.extensionHandlers && bodyAsJSON.vmAgent.extensionHandlers.length && bodyAsJSON.vmAgent.extensionHandlers[0].status && bodyAsJSON.vmAgent.extensionHandlers[0].status.message ? bodyAsJSON.vmAgent.extensionHandlers[0].status.message : "N/A";
         }
     }, {
-        label: 'Power State', valueType: D.valueType.STRING, key: 'displayStatus', extract: function (bodyAsJSON) {
-            return bodyAsJSON && bodyAsJSON.statuses[1] && bodyAsJSON.statuses[1].displayStatus ? bodyAsJSON.statuses[1].displayStatus : "N/A"
+        label: "Power State", valueType: D.valueType.STRING, key: "displayStatus", extract: function (bodyAsJSON) {
+            return bodyAsJSON && bodyAsJSON.statuses[1] && bodyAsJSON.statuses[1].displayStatus ? bodyAsJSON.statuses[1].displayStatus : "N/A";
         }
     }
-]
+];
 
 // Extract basic VM information
 const vmInfoExtractors = [
-    {key: "id", extract: function (vm) {return sanitize(vm.properties.vmId)}},
-    {label: 'Name', valueType: D.valueType.NUMBER, key: 'vmName', extract: function (vm) {return vm.name || "N/A"}}, 
-    {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup}, 
-    {label: 'OS Type', valueType: D.valueType.STRING, key: 'osType', extract: function (vm) {return vm.location || "N/A"}}
-]
+    { key: "id", extract: function (vm) {return sanitize(vm.properties.vmId);} },
+    { label: "Name", valueType: D.valueType.NUMBER, key: "vmName", extract: function (vm) {return vm.name || "N/A";} },
+    { label: "Resource Group", valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup },
+    { label: "OS Type", valueType: D.valueType.STRING, key: "osType", extract: function (vm) {return vm.location || "N/A";} }
+];
 
 /**
  * Extracts the resource group from the VM object
@@ -172,12 +172,12 @@ const vmInfoExtractors = [
  * @returns {string} The name of the resource group, or "N/A" if not found
  */
 function extractResourceGroup(vm) {
-    let resourceGroup = "N/A"
+    let resourceGroup = "N/A";
     if (vm.id) {
-        const resourceGroupMatch = vm.id.match(/\/resourceGroups\/([^\/]*)\//)
-        if (resourceGroupMatch && resourceGroupMatch[1]) resourceGroup = resourceGroupMatch[1]
+        const resourceGroupMatch = vm.id.match(/\/resourceGroups\/([^\/]*)\//);
+        if (resourceGroupMatch && resourceGroupMatch[1]) resourceGroup = resourceGroupMatch[1];
     }
-    return resourceGroup
+    return resourceGroup;
 }
 
 /**
@@ -186,11 +186,11 @@ function extractResourceGroup(vm) {
  * @returns The formatted value as a string with two decimal places, or the original value if it is not a valid number
  */
 function formatNumberToTwoDecimals(value) {
-    let number = parseFloat(value)
+    let number = parseFloat(value);
     if (isNaN(number)) {
-        return value
+        return value;
     }
-    return number.toFixed(2)
+    return number.toFixed(2);
 }
 
 /**
@@ -200,9 +200,9 @@ function formatNumberToTwoDecimals(value) {
  */
 function convertBytesToGb(bytesValue) {
     if (bytesValue !== "N/A") {
-        return (bytesValue / (1024 * 1024 * 1024)).toFixed(2)
+        return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
     }
-    return bytesValue
+    return bytesValue;
 }
 
 /**
@@ -211,9 +211,9 @@ function convertBytesToGb(bytesValue) {
  * @returns {string} The sanitized string
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -223,14 +223,14 @@ function sanitize(output) {
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
@@ -242,16 +242,16 @@ function checkHTTPError(error, response) {
  */
 function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
-            accessToken = bodyAsJSON.access_token
-            resolve()
+            accessToken = bodyAsJSON.access_token;
+            resolve();
         } else {
-            console.error("Access token not found in response body")
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -261,12 +261,12 @@ function processLoginResponse(resolve, reject) {
  */
 function filterVmInfoList(vmInfoList) {
     return vmInfoList.filter(function (vmInfo) {
-        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
-            return resourceGroup.toLowerCase() === vmInfo.resourceGroup.toLowerCase()
-        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
-            return vmName.toLowerCase() === vmInfo.vmName.toLowerCase()
-        }))
-    })
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === "all") || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === vmInfo.resourceGroup.toLowerCase();
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === "all") || vmNames.some(function (vmName) {
+            return vmName.toLowerCase() === vmInfo.vmName.toLowerCase();
+        }));
+    });
 }
 
 /**
@@ -277,21 +277,21 @@ function filterVmInfoList(vmInfoList) {
  */
 function processVMsResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
-            D.failure(D.errorType.GENERIC_ERROR)
-            reject("No VMs found in the response")
-            return
+            D.failure(D.errorType.GENERIC_ERROR);
+            reject("No VMs found in the response");
+            return;
         }
-        let vmInfoList = bodyAsJSON.value.map(extractVmInfo)
+        let vmInfoList = bodyAsJSON.value.map(extractVmInfo);
         if (!vmInfoList.length) {
-            console.info('There is no Virtual machine')
+            console.info("There is no Virtual machine");
         } else {
-            vmInfoList = filterVmInfoList(vmInfoList)
+            vmInfoList = filterVmInfoList(vmInfoList);
         }
-        resolve(vmInfoList)
-    }
+        resolve(vmInfoList);
+    };
 }
 
 /**
@@ -302,17 +302,17 @@ function processVMsResponse(resolve, reject) {
  * @returns {Function} A function to process the HTTP response and update the VM display status
  */
 function processVmConfigResponse(resolve, reject, vmInfo, error, response, body) {
-    checkHTTPError(error, response)
+    checkHTTPError(error, response);
     if (error || response.statusCode !== 200) {
-        return
+        return;
     }
     try {
-        const bodyAsJSON = JSON.parse(body)
-        extractVmConfig(vmInfo, bodyAsJSON)
-        resolve(vmInfo)
+        const bodyAsJSON = JSON.parse(body);
+        extractVmConfig(vmInfo, bodyAsJSON);
+        resolve(vmInfo);
     } catch (parseError) {
-        console.error("Error parsing VM configuration:", parseError)
-        reject(parseError)
+        console.error("Error parsing VM configuration:", parseError);
+        reject(parseError);
     }
 }
 
@@ -323,9 +323,9 @@ function processVmConfigResponse(resolve, reject, vmInfo, error, response, body)
  */
 function insertAllMetrics(vmName, vmMetrics) {
     if (allMetricByVm[vmName]) {
-        allMetricByVm[vmName] = Object.assign(allMetricByVm[vmName], vmMetrics)
+        allMetricByVm[vmName] = Object.assign(allMetricByVm[vmName], vmMetrics);
     } else {
-        allMetricByVm[vmName] = vmMetrics
+        allMetricByVm[vmName] = vmMetrics;
     }
 }
 
@@ -336,11 +336,11 @@ function insertAllMetrics(vmName, vmMetrics) {
  * @throws Will invoke `D.failure` with a generic error if the `value` property is missing in the parsed body.
  */
 function extractMetricsFromBody(body) {
-    const bodyAsJSON = JSON.parse(body)
+    const bodyAsJSON = JSON.parse(body);
     if (!bodyAsJSON.value) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
-    return bodyAsJSON.value.reduce(function(acc, performanceInfo) {
+    return bodyAsJSON.value.reduce(function (acc, performanceInfo) {
         const vmPerformance = extractVmPerformance(performanceInfo);
         if (vmPerformance) {
             Object.assign(acc, vmPerformance);
@@ -360,17 +360,17 @@ function extractMetricsFromBody(body) {
  * @returns {Function} A function to process the HTTP response
  */
 function processVmPerformanceResponse(resolve, reject, vmInfo, error, response, body) {
-    checkHTTPError(error, response)
+    checkHTTPError(error, response);
     if (error || response.statusCode !== 200) {
-        return
+        return;
     }
     try {
         const vmMetrics = extractMetricsFromBody(body);
         insertAllMetrics(vmInfo.vmName, vmMetrics);
-        resolve(allMetricByVm)
+        resolve(allMetricByVm);
     } catch (parseError) {
-        console.error("Error parsing VM Performance:", parseError)
-        reject("Failed to parse response: " + parseError)
+        console.error("Error parsing VM Performance:", parseError);
+        reject("Failed to parse response: " + parseError);
     }
 }
 
@@ -381,17 +381,17 @@ function processVmPerformanceResponse(resolve, reject, vmInfo, error, response, 
 function login() {
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded"
         }, form: {
             grant_type: "client_credentials",
             client_id: clientId,
             client_secret: clientSecret,
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
-    }
+    };
     return new Promise(function (resolve, reject) {
-        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject))
-    })
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -400,12 +400,12 @@ function login() {
  * @returns {Object|null} An object containing the extracted VM information, or null if the VM object is invalid
  */
 function extractVmInfo(vm) {
-    if (!vm || !vm.properties || !vm.properties.vmId) return null
-        const extractedInfo = {}
-        vmInfoExtractors.forEach(function (row) {
-            extractedInfo[row.key] = row.extract(vm)
-    })
-    return extractedInfo
+    if (!vm || !vm.properties || !vm.properties.vmId) return null;
+    const extractedInfo = {};
+    vmInfoExtractors.forEach(function (row) {
+        extractedInfo[row.key] = row.extract(vm);
+    });
+    return extractedInfo;
 }
 
 /**
@@ -417,8 +417,8 @@ function extractVmInfo(vm) {
 
 function extractVmConfig(vmInfo, bodyAsJSON) {
     return vmConfigExtractors.map(function (item) {
-        vmInfo[item.key] = item.extract(bodyAsJSON)
-    })
+        vmInfo[item.key] = item.extract(bodyAsJSON);
+    });
 }
 
 /**
@@ -428,15 +428,15 @@ function extractVmConfig(vmInfo, bodyAsJSON) {
  */
 function getNonTimeStampKey(data) {
     if (!data || data.length === 0) {
-        return null
+        return null;
     }
-    const entry = data[0]
+    const entry = data[0];
     for (const key in entry) {
         if (key !== "timeStamp") {
-            return key
+            return key;
         }
     }
-    return null
+    return null;
 }
 
 /**
@@ -447,17 +447,17 @@ function getNonTimeStampKey(data) {
 function extractVmPerformance(performanceInfo) {
     if (performanceInfo.name.value) {
         if (performanceInfo.timeseries && performanceInfo.timeseries[0] && performanceInfo.timeseries[0].data) {
-            const key = getNonTimeStampKey(performanceInfo.timeseries[0].data)
+            const key = getNonTimeStampKey(performanceInfo.timeseries[0].data);
             return {
                 [performanceInfo.name.value]: key
                     ? performanceInfo.timeseries[0].data[0][key]
                     : "N/A"
             };
         } else {
-            return {[performanceInfo.name.value]: "N/A"}
+            return { [performanceInfo.name.value]: "N/A" };
         }
     }
-    return null
+    return null;
 }
 
 /**
@@ -468,9 +468,9 @@ function extractVmPerformance(performanceInfo) {
 function generateConfig(url) {
     return {
         url: "/subscriptions/" + subscriptionId + url, protocol: "https", headers: {
-            "Authorization": "Bearer " + accessToken,
+            "Authorization": "Bearer " + accessToken
         }, rejectUnauthorized: false, jar: true
-    }
+    };
 }
 
 /**
@@ -478,10 +478,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the VM data upon successful retrieval from the Azure API
  */
 function retrieveVMs() {
-    const config = generateConfig("/providers/Microsoft.Compute/virtualMachines?api-version=2021-04-01")
+    const config = generateConfig("/providers/Microsoft.Compute/virtualMachines?api-version=2021-04-01");
     return new Promise(function (resolve, reject) {
-        azureCloudManagementService.http.get(config, processVMsResponse(resolve, reject))
-    })
+        azureCloudManagementService.http.get(config, processVMsResponse(resolve, reject));
+    });
 }
 
 /**
@@ -494,8 +494,8 @@ function retrieveVMs() {
 function callGetHttpRequest(config, vmInfo, callback) {
     return new Promise(function (resolve, reject) {
         azureCloudManagementService.http.get(config, function (error, response, body) {
-            callback(resolve, reject, vmInfo, error, response, body)
-        })
+            callback(resolve, reject, vmInfo, error, response, body);
+        });
     });
 }
 
@@ -506,10 +506,10 @@ function callGetHttpRequest(config, vmInfo, callback) {
  */
 function retrieveVMsConfiguration(vmInfoList) {
     const promises = vmInfoList.map(function (vmInfo) {
-        const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/instanceView?api-version=2024-07-01")
-        return callGetHttpRequest(config, vmInfo, processVmConfigResponse)
-    })
-    return Promise.all(promises)
+        const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/instanceView?api-version=2024-07-01");
+        return callGetHttpRequest(config, vmInfo, processVmConfigResponse);
+    });
+    return Promise.all(promises);
 }
 
 /**
@@ -518,12 +518,12 @@ function retrieveVMsConfiguration(vmInfoList) {
  *    maximum of `maxGroupSize` keys, joined by commas.
  */
 function groupingRequestParams() {
-    const performanceKeyGroups = []
-    const maxGroupSize = 20
+    const performanceKeyGroups = [];
+    const maxGroupSize = 20;
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-            return metric.key
-        }).join(','))
+            return metric.key;
+        }).join(","));
     }
     return performanceKeyGroups;
 }
@@ -534,17 +534,17 @@ function groupingRequestParams() {
  * @returns {Promise} A promise that resolves once all performance data has been retrieved
  */
 function retrieveVMsPerformanceMetrics(vmInfoList) {
-    const promises = []
+    const promises = [];
     const performanceKeyGroups = groupingRequestParams();
     vmInfoList.forEach(function (vmInfo) {
         if (vmInfo.displayStatus === "VM running") {
             performanceKeyGroups.forEach(function (group) {
-                const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M")
-                promises.push(callGetHttpRequest(config, vmInfo, processVmPerformanceResponse))
-            })
+                const config = generateConfig("/resourceGroups/" + vmInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachines/" + vmInfo.vmName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
+                promises.push(callGetHttpRequest(config, vmInfo, processVmPerformanceResponse));
+            });
         }
-    })
-    return Promise.all(promises)
+    });
+    return Promise.all(promises);
 }
 
 /**
@@ -553,8 +553,8 @@ function retrieveVMsPerformanceMetrics(vmInfoList) {
  */
 function generateVirtualMachineProperties() {
     return vmInfoExtractors.concat(vmConfigExtractors).concat(performanceMetrics).filter(function (result) {
-        return result.label
-    })
+        return result.label;
+    });
 }
 
 /**
@@ -562,13 +562,13 @@ function generateVirtualMachineProperties() {
  * @param {Array} vmProperties The list of properties to be included in the VM table
  */
 function createVirtualMachineTable(vmProperties) {
-    vmTable = D.createTable('Virtual Machines Metrics', vmProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType}
+    vmTable = D.createTable("Virtual Machines Metrics", vmProperties.map(function (item) {
+        const tableDef = { label: item.label, valueType: item.valueType };
         if (item.unit) {
-            tableDef.unit = item.unit
+            tableDef.unit = item.unit;
         }
-        return tableDef
-    }))
+        return tableDef;
+    }));
 }
 
 /**
@@ -578,10 +578,10 @@ function createVirtualMachineTable(vmProperties) {
  */
 function insertRecord(vm, vmProperties) {
     const recordValues = vmProperties.map(function (item) {
-        const value = vm[item.key] || "N/A"
-        return item.callback ? item.callback(value) : value
-    })
-    vmTable.insertRecord(vm.id, recordValues)
+        const value = vm[item.key] || "N/A";
+        return item.callback ? item.callback(value) : value;
+    });
+    vmTable.insertRecord(vm.id, recordValues);
 }
 
 /**
@@ -591,8 +591,8 @@ function insertRecord(vm, vmProperties) {
  */
 function populateTable(vmInfoList, vmProperties) {
     vmInfoList.map(function (vmInfo) {
-        insertRecord(Object.assign(vmInfo, allMetricByVm[vmInfo.vmName]), vmProperties)
-    })
+        insertRecord(Object.assign(vmInfo, allMetricByVm[vmInfo.vmName]), vmProperties);
+    });
 }
 
 /**
@@ -600,10 +600,10 @@ function populateTable(vmInfoList, vmProperties) {
  * @param {Array<Object>} virtualMachineList - A list of virtual machine objects to display.
  */
 function displayOutput(virtualMachineList) {
-    const vmProperties = generateVirtualMachineProperties()
-    createVirtualMachineTable(vmProperties)
-    populateTable(virtualMachineList, vmProperties)
-    D.success(vmTable)
+    const vmProperties = generateVirtualMachineProperties();
+    createVirtualMachineTable(vmProperties);
+    populateTable(virtualMachineList, vmProperties);
+    D.success(vmTable);
 }
 
 /**
@@ -617,12 +617,12 @@ function validate() {
         .then(retrieveVMsConfiguration)
         .then(retrieveVMsPerformanceMetrics)
         .then(function () {
-            D.success()
+            D.success();
         })
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -637,10 +637,10 @@ function get_status() {
         .then(function (virtualMachineList) {
             retrieveVMsPerformanceMetrics(virtualMachineList).then(function () {
                 displayOutput(virtualMachineList);
-            })
+            });
         })
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

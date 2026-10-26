@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
- * Name: OPNSense Services 
+ * Domotz Custom Driver
+ * Name: OPNSense Services
  * Description: This script retrieves a list of services running on an OPNsense firewall, along with their status.
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Variable with the retrieved services names, status, and unique identifiers.
@@ -48,10 +48,10 @@ function getServices() {
     });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Function to extract data and create Custom Driver Variable to monitor and display the status of services
@@ -74,13 +74,12 @@ function extractData(data) {
     D.success(variables);
 }
 
-
 /**
  * @remote_procedure
  * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     getServices()
         .then(function (response) {
             if (response) {

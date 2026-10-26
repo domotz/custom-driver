@@ -33,7 +33,7 @@ function sign(key, message) {
     return result;
 }
 
-/**  
+/**
  * @returns CloudWatch metrics to be monitored for an AWS RDS instance.
  */
 function createMetricsPayload(period, dbInstanceId) {
@@ -133,7 +133,7 @@ function createMetricsPayload(period, dbInstanceId) {
 }
 
 /**
- * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost(data) {
@@ -188,7 +188,7 @@ function httpPost(data) {
 }
 
 /**
- * @returns promise for http response containing instance metrics 
+ * @returns promise for http response containing instance metrics
  */
 function getMetricsData() {
     var payload = {},
@@ -462,7 +462,7 @@ function fillConfig() {
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

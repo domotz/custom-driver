@@ -35,7 +35,7 @@ function login() {
         username: D.device.username(),
         password: D.device.password()
     };
-    
+
     var config = {
         url: "/api/v1/signin",
         protocol: "https",
@@ -47,27 +47,27 @@ function login() {
         rejectUnauthorized: false,
         jar: true
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body) {
+        D.device.http.post(config, function (error, response, body) {
             if (error) {
                 console.error("Login error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Login failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             try {
                 var responseData = JSON.parse(body);
                 if (responseData.code === 200 && responseData.result && responseData.result.auth_token) {
@@ -86,7 +86,6 @@ function login() {
     });
 }
 
-
 /**
  * Stops a promise chain after D.success/D.failure has already ended the execution.
  * @returns A promise that never settles, so no later step of the chain runs.
@@ -100,13 +99,13 @@ function haltChain() {
  * @returns A promise that resolves with the device configuration data.
  */
 function getDeviceConfig() {
-    
+
     if (!authToken) {
         console.error("No auth token available for device config request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/api/v1/device",
         protocol: "https",
@@ -119,27 +118,27 @@ function getDeviceConfig() {
         rejectUnauthorized: false,
         jar: true
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("Device config request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for device config request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Device config request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("Device config retrieved successfully");
             resolve(body);
         });
@@ -151,13 +150,13 @@ function getDeviceConfig() {
  * @returns A promise that resolves with the device insights data.
  */
 function getDeviceInsights() {
-    
+
     if (!authToken) {
         console.error("No auth token available for device insights request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/api/v1/insights/device",
         protocol: "https",
@@ -170,27 +169,27 @@ function getDeviceInsights() {
         rejectUnauthorized: false,
         jar: true
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("device insights request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for device insights request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("device insights request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("device insights data retrieved successfully");
             resolve(body);
         });
@@ -202,13 +201,13 @@ function getDeviceInsights() {
  * @returns A promise that resolves with the room insights data.
  */
 function getRoomInsights() {
-    
+
     if (!authToken) {
         console.error("No auth token available for room insights request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/api/v1/insights/room",
         protocol: "https",
@@ -221,27 +220,27 @@ function getRoomInsights() {
         rejectUnauthorized: false,
         jar: true
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("room insights request error:", error);
                 resolve(null); // Return null instead of failing for version compatibility
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for room insights request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("room insights request failed with status code:", response.statusCode);
                 resolve(null); // Return null instead of failing for version compatibility
                 return;
             }
-        
+
             console.info("room insights data retrieved successfully");
             resolve(body);
         });
@@ -253,13 +252,13 @@ function getRoomInsights() {
  * @returns A promise that resolves with the peripherals data.
  */
 function getPeripheralsData() {
-    
+
     if (!authToken) {
         console.error("No auth token available for peripherals request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/api/v1/peripherals",
         protocol: "https",
@@ -272,37 +271,37 @@ function getPeripheralsData() {
         rejectUnauthorized: false,
         jar: true
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("peripherals request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for peripherals request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("peripherals request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("peripherals data retrieved successfully");
             resolve(body);
         });
     });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -310,34 +309,34 @@ function sanitize(output){
  * @param {Object} deviceData - The device configuration data from the API response.
  */
 function createDeviceInfoVariables(deviceData) {
-    if (deviceData.collabOSVersion !== undefined) 
+    if (deviceData.collabOSVersion !== undefined)
         variables.push(D.device.createVariable("collab-os-version", "CollabOS Version", deviceData.collabOSVersion, null, D.valueType.STRING));
-    
-    if (deviceData.deviceConfiguration !== undefined) 
+
+    if (deviceData.deviceConfiguration !== undefined)
         variables.push(D.device.createVariable("device-configuration", "Device Configuration", deviceData.deviceConfiguration, null, D.valueType.STRING));
-    
-    if (deviceData.ethernetMAC !== undefined) 
+
+    if (deviceData.ethernetMAC !== undefined)
         variables.push(D.device.createVariable("ethernet-mac", "Ethernet MAC", deviceData.ethernetMAC, null, D.valueType.STRING));
-    
-    if (deviceData.hwVersion !== undefined) 
+
+    if (deviceData.hwVersion !== undefined)
         variables.push(D.device.createVariable("hw-version", "Hardware Version", deviceData.hwVersion, null, D.valueType.STRING));
-    
-    if (deviceData.modelName !== undefined) 
+
+    if (deviceData.modelName !== undefined)
         variables.push(D.device.createVariable("model-name", "Model Name", deviceData.modelName, null, D.valueType.STRING));
-    
-    if (deviceData.serialNumber !== undefined) 
+
+    if (deviceData.serialNumber !== undefined)
         variables.push(D.device.createVariable("serial-number", "Serial Number", deviceData.serialNumber, null, D.valueType.STRING));
-    
-    if (deviceData.systemName !== undefined) 
+
+    if (deviceData.systemName !== undefined)
         variables.push(D.device.createVariable("system-name", "System Name", deviceData.systemName, null, D.valueType.STRING));
-    
-    if (deviceData.wifiMAC !== undefined) 
+
+    if (deviceData.wifiMAC !== undefined)
         variables.push(D.device.createVariable("wifi-mac", "WiFi MAC", deviceData.wifiMAC, null, D.valueType.STRING));
-    
-    if (deviceData.deviceName !== undefined) 
+
+    if (deviceData.deviceName !== undefined)
         variables.push(D.device.createVariable("device-name", "Device Name", deviceData.deviceName, null, D.valueType.STRING));
-    
-    if (deviceData.serviceProvider !== undefined) 
+
+    if (deviceData.serviceProvider !== undefined)
         variables.push(D.device.createVariable("service-provider", "Service Provider", deviceData.serviceProvider, null, D.valueType.STRING));
 }
 
@@ -346,19 +345,19 @@ function createDeviceInfoVariables(deviceData) {
  * @param {Object} insightsData - The device insights data from the API response.
  */
 function createDeviceInsightsVariables(insightsData) {
-    if (insightsData.deviceState !== undefined) 
+    if (insightsData.deviceState !== undefined)
         variables.push(D.device.createVariable("device-state", "Device State", insightsData.deviceState, null, D.valueType.STRING));
-    
-    if (insightsData.micState !== undefined) 
+
+    if (insightsData.micState !== undefined)
         variables.push(D.device.createVariable("mic-state", "Microphone State", insightsData.micState, null, D.valueType.STRING));
-    
-    if (insightsData.speakerState !== undefined) 
+
+    if (insightsData.speakerState !== undefined)
         variables.push(D.device.createVariable("speaker-state", "Speaker State", insightsData.speakerState, null, D.valueType.STRING));
-    
-    if (insightsData.speakerMaxVolume !== undefined) 
+
+    if (insightsData.speakerMaxVolume !== undefined)
         variables.push(D.device.createVariable("speaker-max-volume", "Speaker Max Volume", insightsData.speakerMaxVolume, null, D.valueType.NUMBER));
-    
-    if (insightsData.speakerVolume !== undefined) 
+
+    if (insightsData.speakerVolume !== undefined)
         variables.push(D.device.createVariable("speaker-volume", "Speaker Volume", insightsData.speakerVolume, null, D.valueType.NUMBER));
 }
 
@@ -369,11 +368,11 @@ function createDeviceInsightsVariables(insightsData) {
  */
 function formatDisplayName(str) {
     if (!str) return str;
-    
+
     // Convert camelCase to space-separated words and capitalize
     return str
-        .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before capital letters
-        .replace(/^./, function(match) { return match.toUpperCase(); }); // Capitalize first letter
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before capital letters
+        .replace(/^./, function (match) { return match.toUpperCase(); }); // Capitalize first letter
 }
 
 /**
@@ -391,7 +390,7 @@ function createVariableId(pathParts) {
  * @returns {string} - Human-readable display name
  */
 function createDisplayName(pathParts) {
-    return pathParts.map(function(part) {
+    return pathParts.map(function (part) {
         return formatDisplayName(part);
     }).join(" ");
 }
@@ -406,9 +405,9 @@ function traverseRoomInsightsData(data, basePath) {
         if (data.hasOwnProperty(property) && data[property] !== undefined) {
             var value = data[property];
             var currentPath = basePath.concat([property]);
-            
+
             // Check if the value is a nested object (but not null)
-            if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+            if (value !== null && typeof value === "object" && !Array.isArray(value)) {
                 console.info("Traversing nested object:", property);
                 // Recursively traverse nested objects
                 traverseRoomInsightsData(value, currentPath);
@@ -417,12 +416,12 @@ function traverseRoomInsightsData(data, basePath) {
                 var variableId = createVariableId(currentPath);
                 var displayName = createDisplayName(currentPath);
                 var valueType = getValueType(value);
-                
+
                 // Convert boolean values to string for consistency
-                var finalValue = (typeof value === 'boolean') ? value.toString() : value;
-                
+                var finalValue = (typeof value === "boolean") ? value.toString() : value;
+
                 console.info("Creating room insights variable:", variableId, "with display name:", displayName, "value:", finalValue);
-                
+
                 // Create the variable
                 variables.push(D.device.createVariable(variableId, displayName, finalValue, null, valueType));
             }
@@ -456,9 +455,9 @@ function capitalizeFirstLetter(str) {
  * @returns {string} - The D.valueType to use
  */
 function getValueType(value) {
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
         return D.valueType.NUMBER;
-    } else if (typeof value === 'boolean') {
+    } else if (typeof value === "boolean") {
         return D.valueType.STRING; // Store boolean as string for consistency
     } else {
         return D.valueType.STRING;
@@ -475,35 +474,35 @@ function createPeripheralsVariables(peripheralsData) {
     for (var peripheralType in peripheralsData) {
         if (peripheralsData.hasOwnProperty(peripheralType)) {
             var peripheralArray = peripheralsData[peripheralType];
-            
+
             // Check if the property is an array (peripheral collection)
             if (Array.isArray(peripheralArray)) {
                 console.info("Handling peripheral type:", peripheralType);
-                
+
                 // Handle each item in the peripheral array
                 for (var i = 0; i < peripheralArray.length; i++) {
                     var peripheralItem = peripheralArray[i];
                     var itemIndex = i.toString();
-                    
+
                     // Handle all properties of the peripheral item
                     for (var propertyName in peripheralItem) {
                         if (peripheralItem.hasOwnProperty(propertyName) && peripheralItem[propertyName] !== undefined) {
                             var propertyValue = peripheralItem[propertyName];
-                            
+
                             // Create the variable ID (sanitized for internal use)
                             var variableId = sanitize("peripherals-" + peripheralType.toLowerCase() + "-" + itemIndex + "-" + propertyName.toLowerCase());
-                            
+
                             // Create the display name with proper capitalization and new format
                             var displayName = "Peripherals - " + capitalizeFirstLetter(peripheralType) + " - " + capitalizeFirstLetter(propertyName);
-                            
+
                             // Determine the appropriate value type
                             var valueType = getValueType(propertyValue);
-                            
+
                             // Convert boolean values to string for consistency
-                            var finalValue = (typeof propertyValue === 'boolean') ? propertyValue.toString() : propertyValue;
-                            
+                            var finalValue = (typeof propertyValue === "boolean") ? propertyValue.toString() : propertyValue;
+
                             console.info("Creating variable:", variableId, "with display name:", displayName, "value:", finalValue);
-                            
+
                             // Create the variable
                             variables.push(D.device.createVariable(variableId, displayName, finalValue, null, valueType));
                         }
@@ -519,10 +518,10 @@ function createPeripheralsVariables(peripheralsData) {
 //Extracts device configuration data and creates device variables
 function extractDeviceConfigData(body) {
     console.info("Extracting device config data from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.code === 200 && responseData.result) {
             console.info("Device configuration data retrieved successfully");
             createDeviceInfoVariables(responseData.result);
@@ -540,10 +539,10 @@ function extractDeviceConfigData(body) {
 //Extracts device insights data and creates device insights variables
 function extractDeviceInsightsData(body) {
     console.info("Extracting device insights data from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.code === 200 && responseData.result) {
             console.info("device insights data retrieved successfully");
             createDeviceInsightsVariables(responseData.result);
@@ -561,17 +560,17 @@ function extractDeviceInsightsData(body) {
 //Extracts room insights data and creates room insights variables
 function extractRoomInsightsData(body, collabOSVersion) {
     console.info("Extracting room insights data from response:", body);
-    
+
     // Check if body is null (API not available for this version)
     if (body === null) {
         console.info("Room insights API not available for CollabOS version:", collabOSVersion);
         variables.push(D.device.createVariable("get-room-insights", "Get Room Insights", "not available as CollabOS not 1.15+", null, D.valueType.STRING));
         return true;
     }
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.code === 200 && responseData.result) {
             console.info("room insights data retrieved successfully");
             createRoomInsightsVariables(responseData.result);
@@ -591,10 +590,10 @@ function extractRoomInsightsData(body, collabOSVersion) {
 //Extracts peripherals data and creates peripherals variables
 function extractPeripheralsData(body) {
     console.info("Extracting peripherals data from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.code === 200 && responseData.result) {
             console.info("peripherals data retrieved successfully");
             createPeripheralsVariables(responseData.result);
@@ -612,13 +611,13 @@ function extractPeripheralsData(body) {
 //Helper function to check if CollabOS version is 1.15 or higher
 function isCollabOSVersionSupported(version) {
     if (!version) return false;
-    
+
     try {
         // Extract version numbers (assuming format like "1.15.0" or "1.15")
-        var versionParts = version.split('.');
+        var versionParts = version.split(".");
         var major = parseInt(versionParts[0]);
         var minor = parseInt(versionParts[1]);
-        
+
         return (major > 1) || (major === 1 && minor >= 15);
     } catch (e) {
         console.error("Error parsing CollabOS version:", e);
@@ -631,7 +630,7 @@ function isCollabOSVersionSupported(version) {
  * @label Validate Connection
  * @documentation This procedure is used to validate the connection to the Logitech device.
  */
-function validate(){
+function validate() {
     login()
         .then(function (token) {
             if (token) {
@@ -657,18 +656,18 @@ function get_status() {
     // Clear variables array for fresh data
     variables = [];
     var collabOSVersion = null;
-    
+
     login()
-        .then(function(token) {
+        .then(function (token) {
             console.info("Authentication successful, proceeding with data retrieval");
-            
+
             // First get device config to extract CollabOS version
             return getDeviceConfig();
         })
-        .then(function(deviceConfigResponse) {
+        .then(function (deviceConfigResponse) {
             // Extract device config data and get CollabOS version
             var deviceConfigSuccess = extractDeviceConfigData(deviceConfigResponse);
-            
+
             // Extract CollabOS version from response for room insights check
             try {
                 var configData = JSON.parse(deviceConfigResponse);
@@ -679,13 +678,13 @@ function get_status() {
             } catch (e) {
                 console.error("Error extracting CollabOS version:", e);
             }
-            
+
             // Now fetch remaining data in parallel, with conditional room insights call
             var apiCalls = [
                 getDeviceInsights(),
                 getPeripheralsData()
             ];
-            
+
             // Only call room insights if CollabOS version is 1.15+
             if (isCollabOSVersionSupported(collabOSVersion)) {
                 console.info("CollabOS version supports room insights, including in API calls");
@@ -694,18 +693,18 @@ function get_status() {
                 console.info("CollabOS version does not support room insights or version unknown");
                 apiCalls.push(Promise.resolve(null)); // Add null as placeholder for room insights
             }
-            
+
             return Promise.all(apiCalls);
         })
-        .then(function(responses) {
+        .then(function (responses) {
             var deviceInsightsResponse = responses[0];
             var peripheralsResponse = responses[1];
             var roomInsightsResponse = responses[2];
-            
+
             var deviceInsightsSuccess = extractDeviceInsightsData(deviceInsightsResponse);
             var peripheralsSuccess = extractPeripheralsData(peripheralsResponse);
             var roomInsightsSuccess = extractRoomInsightsData(roomInsightsResponse, collabOSVersion);
-            
+
             if (deviceInsightsSuccess || peripheralsSuccess || roomInsightsSuccess) {
                 console.info("Data extraction completed successfully");
                 D.success(variables);

@@ -1,11 +1,11 @@
 /**
  * Name: Dell iDRAC PSU Monitoring
  * Description: Monitors the operational status of Power Supply Units (PSUs), as well as power usage details including total power consumption and capacity usage, on a Dell server with iDRAC.
- * 
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under iDRAC version 7.0.3 21053776 U3 P70
- * 
+ *
  * Keyboard Interactive option: true/false (depends on iDRAC version).
  *
  * Creates a Custom Driver Table with the following columns:
@@ -17,7 +17,7 @@
  *      - Part Number: The part number of the PSU unit
  *      - Model: The model identifier for the PSU
  *      - Manufacturer: The manufacturer of the PSU unit
- * 
+ *
  * Creates a Custom Driver Variables
  *      - Power Usage: The current power consumption of the system
  *      - Power Capacity: The maximum power capacity available
@@ -25,8 +25,8 @@
  */
 
 // SSH command to retrieve PSU information
-var psuCommand = 'racadm hwinventory'
-var powerUsageCommand = 'racadm getsensorinfo'
+var psuCommand = "racadm hwinventory";
+var powerUsageCommand = "racadm getsensorinfo";
 
 /**
  * @param {number} customPort
@@ -34,42 +34,42 @@ var powerUsageCommand = 'racadm getsensorinfo'
  * @description SSH port to connect to the iDRAC (default: 22)
  * @type NUMBER
  */
-var customPort = D.getParameter("customPort") || 22
+var customPort = D.getParameter("customPort") || 22;
 
 // SSH options when running the command
 var sshConfig = {
-    'username': D.device.username(),
-    'password': D.device.password(),
-    'timeout': 60000,
-    'keyboard_interactive': true,
-    'port': customPort
-}
+    "username": D.device.username(),
+    "password": D.device.password(),
+    "timeout": 60000,
+    "keyboard_interactive": true,
+    "port": customPort
+};
 
 // Custom Driver Table to store PSU information
 var table = D.createTable(
-    'PSU Info',
+    "PSU Info",
     [
-        { label: 'Description', valueType: D.valueType.STRING },
-        { label: 'Primary Status', valueType: D.valueType.STRING },
-        { label: 'Total Output Power', unit: 'W', valueType: D.valueType.NUMBER },      
-        { label: 'Input Voltage', unit: 'V', valueType: D.valueType.NUMBER },      
-        { label: 'Redundancy Status', valueType: D.valueType.STRING },
-        { label: 'Part Number', valueType: D.valueType.STRING },
-        { label: 'Model', valueType: D.valueType.STRING },
-        { label: 'Manufacturer', valueType: D.valueType.STRING }
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Total Output Power", unit: "W", valueType: D.valueType.NUMBER },
+        { label: "Input Voltage", unit: "V", valueType: D.valueType.NUMBER },
+        { label: "Redundancy Status", valueType: D.valueType.STRING },
+        { label: "Part Number", valueType: D.valueType.STRING },
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Manufacturer", valueType: D.valueType.STRING }
     ]
-)
+);
 
 /**
  * Handles SSH errors and logs them
  * @param {Object} err The error object from the SSH command
  */
 function checkSshError(err) {
-    if(err.message) console.error(err.message)
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR)
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    console.error(err)
-    D.failure(D.errorType.GENERIC_ERROR)
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
@@ -78,34 +78,34 @@ function checkSshError(err) {
  * @returns {Promise} Resolves with the command output, or rejects with an error
  */
 function executeCommand(command) {
-    sshConfig.command = command
+    sshConfig.command = command;
     return new Promise(function (resolve) {
         D.device.sendSSHCommand(sshConfig, function (output, err) {
             if (err) {
-                checkSshError(err)
-            } else {           
-                if (output && output.indexOf('COMMAND NOT RECOGNIZED')!==-1 || output.indexOf('ERROR')!==-1) {
-                    D.failure(D.errorType.PARSING_ERROR)
+                checkSshError(err);
+            } else {
+                if (output && output.indexOf("COMMAND NOT RECOGNIZED") !== -1 || output.indexOf("ERROR") !== -1) {
+                    D.failure(D.errorType.PARSING_ERROR);
                 } else {
-                    resolve(output)
-                }           
+                    resolve(output);
+                }
             }
-        })
-    })
+        });
+    });
 }
 
 /**
  * Executes both the PSU status command and power usage command
  * @returns {Promise} Resolves with the combined output of PSU and power usage commands
  */
-function executeDelliDracCommands(){
-    return executeCommand(psuCommand) 
+function executeDelliDracCommands() {
+    return executeCommand(psuCommand)
         .then(function (psuOutput) {
             return executeCommand(powerUsageCommand)
                 .then(function (powerUsageOutput) {
-                    return { psuOutput, powerUsageOutput }
-                })
-        })
+                    return { psuOutput, powerUsageOutput };
+                });
+        });
 }
 
 /**
@@ -114,9 +114,9 @@ function executeDelliDracCommands(){
  * @returns {string} The sanitized string
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -135,64 +135,64 @@ function insertPsuRecord(recordData) {
             recordData.model,
             recordData.manufacturer
         ]
-    )
+    );
 }
 
 function extractData(output) {
     if (output) {
-        var psulines = output.psuOutput.split('\n');
+        var psulines = output.psuOutput.split("\n");
         var data = {};
         var instanceIdPsu = false;
         for (var i = 0; i < psulines.length; i++) {
             var line = psulines[i].trim();
-            if (line.indexOf('[InstanceID: PSU.Slot.') >= 0) {
+            if (line.indexOf("[InstanceID: PSU.Slot.") >= 0) {
                 instanceIdPsu = true;
                 data = {};
             } else if (instanceIdPsu && line.length === 0) {
                 var recordData = {
-                    recordId: sanitize(data['InstanceID']),
-                    description: data['DeviceDescription'] || 'N/A',
-                    primaryStatus: data['PrimaryStatus'] || 'N/A',
-                    totalOutputPower: (data['TotalOutputPower'] || '').replace(/\D+/g, '') || 'N/A',
-                    inputVoltage: (data['InputVoltage'] || '').replace(/\D+/g, '') || 'N/A',
-                    redundancyStatus: data['RedundancyStatus'] || 'N/A',
-                    partNumber: data['PartNumber'] || 'N/A',
-                    model: data['Model'] || 'N/A',
-                    manufacturer: data['Manufacturer'] || 'N/A'
+                    recordId: sanitize(data["InstanceID"]),
+                    description: data["DeviceDescription"] || "N/A",
+                    primaryStatus: data["PrimaryStatus"] || "N/A",
+                    totalOutputPower: (data["TotalOutputPower"] || "").replace(/\D+/g, "") || "N/A",
+                    inputVoltage: (data["InputVoltage"] || "").replace(/\D+/g, "") || "N/A",
+                    redundancyStatus: data["RedundancyStatus"] || "N/A",
+                    partNumber: data["PartNumber"] || "N/A",
+                    model: data["Model"] || "N/A",
+                    manufacturer: data["Manufacturer"] || "N/A"
                 };
-                insertPsuRecord(recordData)
-                data = {}
-                instanceIdPsu = false
+                insertPsuRecord(recordData);
+                data = {};
+                instanceIdPsu = false;
             } else if (instanceIdPsu) {
-                var keyValue = line.split('=')
+                var keyValue = line.split("=");
                 if (keyValue.length === 2) {
-                    var key = keyValue[0].trim()
-                    var value = keyValue[1].trim()
-                    data[key] = value
+                    var key = keyValue[0].trim();
+                    var value = keyValue[1].trim();
+                    data[key] = value;
                 }
             }
         }
-        var powerUsagelines = output.powerUsageOutput.split('\n');
+        var powerUsagelines = output.powerUsageOutput.split("\n");
         for (var i = 0; i < powerUsagelines.length; i++) {
-            var line = powerUsagelines[i].trim()
-            if (line.indexOf('System Board Pwr Consumption') !== -1) {
-                var parts = line.split(/\s+/)
-                var powerUsage = parseInt(parts[5].replace('Watts', '').trim()) || 'N/A';
-                var powerCapacity = parseInt(parts[7].replace('Watts', '').trim()) || 'N/A';
+            var line = powerUsagelines[i].trim();
+            if (line.indexOf("System Board Pwr Consumption") !== -1) {
+                var parts = line.split(/\s+/);
+                var powerUsage = parseInt(parts[5].replace("Watts", "").trim()) || "N/A";
+                var powerCapacity = parseInt(parts[7].replace("Watts", "").trim()) || "N/A";
                 if (powerUsage && powerCapacity) {
                     var capacityPercentage = ((powerUsage / powerCapacity) * 100).toFixed(2);
                 }
             }
         }
         var variables = [
-            D.createVariable("power-usage", "Power Usage", powerUsage, 'W', D.valueType.NUMBER),
-            D.createVariable("capacity", "Maximum Capacity Usage", powerCapacity, 'W', D.valueType.NUMBER),
-            D.createVariable("capacity-percentage", "Capacity Percentage", capacityPercentage, '%', D.valueType.NUMBER)
-        ]
-        D.success(variables, table)
+            D.createVariable("power-usage", "Power Usage", powerUsage, "W", D.valueType.NUMBER),
+            D.createVariable("capacity", "Maximum Capacity Usage", powerCapacity, "W", D.valueType.NUMBER),
+            D.createVariable("capacity-percentage", "Capacity Percentage", capacityPercentage, "%", D.valueType.NUMBER)
+        ];
+        D.success(variables, table);
     } else {
-        console.error("No output provided.")
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error("No output provided.");
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
@@ -205,15 +205,15 @@ function validate() {
     executeDelliDracCommands()
         .then(parseValidateOutput)
         .then(D.success)
-        .catch(checkSshError)
+        .catch(checkSshError);
 }
 
 function parseValidateOutput(output) {
-    if (!output || !output.psuOutput|| !output.powerUsageOutput) {
-        console.error("Validation failed: One or both of the command outputs are invalid.")
-        D.failure(D.errorType.GENERIC_ERROR)
+    if (!output || !output.psuOutput || !output.powerUsageOutput) {
+        console.error("Validation failed: One or both of the command outputs are invalid.");
+        D.failure(D.errorType.GENERIC_ERROR);
     } else {
-        console.log("Validation successful")
+        console.log("Validation successful");
     }
 }
 
@@ -225,5 +225,5 @@ function parseValidateOutput(output) {
 function get_status() {
     executeDelliDracCommands()
         .then(extractData)
-        .catch(checkSshError)
+        .catch(checkSshError);
 }

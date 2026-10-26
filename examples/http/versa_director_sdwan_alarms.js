@@ -95,25 +95,25 @@
  * Distinct Types, Alarm Types, Worst Severity, Most Recent, Latest Alarm, Source.
  **/
 
-const DEFAULT_PORT = "9183"
-const DEFAULT_MAX_ALARMS = 5000
-const SITE_PAGE_SIZE = 1000
-const TOKEN_PATH = "/auth/token"
-const ALARMS_PATH = "/vnms/fault/alarms"
-const INVENTORY_PATH = "/vnms/appliance/appliance"
-const MAX_TYPES_TEXT = 200
-const MAX_ALARM_TEXT = 180
+const DEFAULT_PORT = "9183";
+const DEFAULT_MAX_ALARMS = 5000;
+const SITE_PAGE_SIZE = 1000;
+const TOKEN_PATH = "/auth/token";
+const ALARMS_PATH = "/vnms/fault/alarms";
+const INVENTORY_PATH = "/vnms/appliance/appliance";
+const MAX_TYPES_TEXT = 200;
+const MAX_ALARM_TEXT = 180;
 
-const clientIdParam = D.getParameter("clientId")
-const clientSecretParam = D.getParameter("clientSecret")
-const authPortParam = D.getParameter("authPort")
-const apiPortParam = D.getParameter("apiPort")
-const directorHostParam = D.getParameter("directorHost")
-const maxAlarmsParam = D.getParameter("maxAlarms")
+const clientIdParam = D.getParameter("clientId");
+const clientSecretParam = D.getParameter("clientSecret");
+const authPortParam = D.getParameter("authPort");
+const apiPortParam = D.getParameter("apiPort");
+const directorHostParam = D.getParameter("directorHost");
+const maxAlarmsParam = D.getParameter("maxAlarms");
 
-const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10)
-const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10)
-const maxAlarmsValue = maxAlarmsParam ? parseInt(maxAlarmsParam, 10) : DEFAULT_MAX_ALARMS
+const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10);
+const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10);
+const maxAlarmsValue = maxAlarmsParam ? parseInt(maxAlarmsParam, 10) : DEFAULT_MAX_ALARMS;
 
 /**
  * Reduces whatever was entered for directorHost to a bare hostname. People reasonably paste a
@@ -124,14 +124,14 @@ const maxAlarmsValue = maxAlarmsParam ? parseInt(maxAlarmsParam, 10) : DEFAULT_M
  * @returns {string|null} a bare hostname, or null when nothing usable was given
  */
 function normalizeHost(raw) {
-  if (!raw) return null
-  let host = String(raw).trim()
-  host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "")
-  host = host.split("/")[0].split("?")[0]
-  // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
-  if (host.charAt(0) !== "[") host = host.split(":")[0]
-  host = host.trim()
-  return host.length > 0 ? host : null
+    if (!raw) return null;
+    let host = String(raw).trim();
+    host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "");
+    host = host.split("/")[0].split("?")[0];
+    // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
+    if (host.charAt(0) !== "[") host = host.split(":")[0];
+    host = host.trim();
+    return host.length > 0 ? host : null;
 }
 
 /**
@@ -151,40 +151,40 @@ function normalizeHost(raw) {
  * at parse time with "Identifier 'directorHost' has already been declared" - before a single line
  * runs. Never name a variable after a parameter; read the parameter into a distinctly named one.
  */
-const resolvedHost = normalizeHost(directorHostParam)
-const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device
+const resolvedHost = normalizeHost(directorHostParam);
+const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device;
 
-let accessToken
+let accessToken;
 
 /**
  * Versa severity ordering, worst first. Used to rank a site's worst severity and to decide which
  * counter each alarm increments.
  */
 const SEVERITY_RANK = {
-  critical: 5,
-  major: 4,
-  minor: 3,
-  warning: 2,
-  indeterminate: 1,
-  cleared: 0
-}
+    critical: 5,
+    major: 4,
+    minor: 3,
+    warning: 2,
+    indeterminate: 1,
+    cleared: 0
+};
 
 const sitesTable = D.createTable(
-  "Alarms by Site",
-  [
-    { label: "Total Alarms", valueType: D.valueType.NUMBER },
-    { label: "Critical", valueType: D.valueType.NUMBER },
-    { label: "Major", valueType: D.valueType.NUMBER },
-    { label: "Warning", valueType: D.valueType.NUMBER },
-    { label: "Other", valueType: D.valueType.NUMBER },
-    { label: "Distinct Types", valueType: D.valueType.NUMBER },
-    { label: "Alarm Types", valueType: D.valueType.STRING },
-    { label: "Worst Severity", valueType: D.valueType.STRING },
-    { label: "Most Recent", valueType: D.valueType.STRING },
-    { label: "Latest Alarm", valueType: D.valueType.STRING },
-    { label: "Source", valueType: D.valueType.STRING }
-  ]
-)
+    "Alarms by Site",
+    [
+        { label: "Total Alarms", valueType: D.valueType.NUMBER },
+        { label: "Critical", valueType: D.valueType.NUMBER },
+        { label: "Major", valueType: D.valueType.NUMBER },
+        { label: "Warning", valueType: D.valueType.NUMBER },
+        { label: "Other", valueType: D.valueType.NUMBER },
+        { label: "Distinct Types", valueType: D.valueType.NUMBER },
+        { label: "Alarm Types", valueType: D.valueType.STRING },
+        { label: "Worst Severity", valueType: D.valueType.STRING },
+        { label: "Most Recent", valueType: D.valueType.STRING },
+        { label: "Latest Alarm", valueType: D.valueType.STRING },
+        { label: "Source", valueType: D.valueType.STRING }
+    ]
+);
 
 // ------------------------------------------------------------------------------------------
 // Helpers
@@ -198,12 +198,12 @@ const sitesTable = D.createTable(
  * @returns {*} the resolved value, or the fallback
  */
 function pick(source, keys, fallback) {
-  if (!source) return fallback
-  for (let i = 0; i < keys.length; i++) {
-    const value = source[keys[i]]
-    if (value !== undefined && value !== null && value !== "") return value
-  }
-  return fallback
+    if (!source) return fallback;
+    for (let i = 0; i < keys.length; i++) {
+        const value = source[keys[i]];
+        if (value !== undefined && value !== null && value !== "") return value;
+    }
+    return fallback;
 }
 
 /**
@@ -212,10 +212,10 @@ function pick(source, keys, fallback) {
  * @returns {string} a safe record id
  */
 function sanitize(value) {
-  const reservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  const sanitizationRegex = new RegExp(reservedWords.join('|'), 'g')
-  return value.replace(sanitizationRegex, '').replace(/[^a-zA-Z0-9]+/g, '-')
-    .slice(0, 50).toLowerCase()
+    const reservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const sanitizationRegex = new RegExp(reservedWords.join("|"), "g");
+    return value.replace(sanitizationRegex, "").replace(/[^a-zA-Z0-9]+/g, "-")
+        .slice(0, 50).toLowerCase();
 }
 
 /**
@@ -226,11 +226,11 @@ function sanitize(value) {
  * @returns {string|null} a "YYYY-MM-DD HH:MM:SS UTC" string, or null
  */
 function formatTimestamp(value) {
-  if (value === undefined || value === null || value === "") return null
-  const millis = typeof value === "number" ? value : parseInt(value, 10)
-  if (isNaN(millis) || millis <= 0) return typeof value === "string" ? value : null
-  const iso = new Date(millis).toISOString()
-  return iso.slice(0, 10) + " " + iso.slice(11, 19) + " UTC"
+    if (value === undefined || value === null || value === "") return null;
+    const millis = typeof value === "number" ? value : parseInt(value, 10);
+    if (isNaN(millis) || millis <= 0) return typeof value === "string" ? value : null;
+    const iso = new Date(millis).toISOString();
+    return iso.slice(0, 10) + " " + iso.slice(11, 19) + " UTC";
 }
 
 /**
@@ -240,9 +240,9 @@ function formatTimestamp(value) {
  * @returns {number} the rank, higher being worse
  */
 function severityRank(severity) {
-  if (!severity) return 0
-  const rank = SEVERITY_RANK[String(severity).toLowerCase()]
-  return rank === undefined ? 1 : rank
+    if (!severity) return 0;
+    const rank = SEVERITY_RANK[String(severity).toLowerCase()];
+    return rank === undefined ? 1 : rank;
 }
 
 /**
@@ -252,8 +252,8 @@ function severityRank(severity) {
  * @returns {string} the truncated text
  */
 function truncate(text, limit) {
-  const value = String(text)
-  return value.length > limit ? value.slice(0, limit - 3) + "..." : value
+    const value = String(text);
+    return value.length > limit ? value.slice(0, limit - 3) + "..." : value;
 }
 
 /**
@@ -264,17 +264,17 @@ function truncate(text, limit) {
  * @returns {Array<Object>|null} the first array of objects found, or null
  */
 function findFirstObjectArray(node, depth) {
-  if (!node || depth > 4) return null
-  if (Array.isArray(node)) {
-    return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null
-  }
-  if (typeof node !== "object") return null
-  const keys = Object.keys(node)
-  for (let i = 0; i < keys.length; i++) {
-    const found = findFirstObjectArray(node[keys[i]], depth + 1)
-    if (found) return found
-  }
-  return null
+    if (!node || depth > 4) return null;
+    if (Array.isArray(node)) {
+        return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null;
+    }
+    if (typeof node !== "object") return null;
+    const keys = Object.keys(node);
+    for (let i = 0; i < keys.length; i++) {
+        const found = findFirstObjectArray(node[keys[i]], depth + 1);
+        if (found) return found;
+    }
+    return null;
 }
 
 /**
@@ -283,9 +283,9 @@ function findFirstObjectArray(node, depth) {
  * @returns {string} a D.errorType constant
  */
 function errorTypeForStatus(statusCode) {
-  if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR
-  if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE
-  return D.errorType.GENERIC_ERROR
+    if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR;
+    if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE;
+    return D.errorType.GENERIC_ERROR;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -297,59 +297,59 @@ function errorTypeForStatus(statusCode) {
  * @returns {Promise} resolves once a token has been obtained
  */
 function login() {
-  const config = {
-    url: TOKEN_PATH,
-    protocol: "https",
-    port: authPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: D.device.username(),
-      password: D.device.password(),
-      grant_type: "password",
-      client_id: clientIdParam,
-      client_secret: clientSecretParam
-    }),
-    rejectUnauthorized: false,
-    jar: true
-  }
-  console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
-    (resolvedHost ? " (directorHost)" : " (device IP)"))
-  return new Promise(function (resolve) {
-    target.http.post(config, function (error, response, body) {
-      if (error) {
-        console.log("Token request failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("Token endpoint returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      let payload
-      try {
-        payload = JSON.parse(body)
-      } catch (parseError) {
-        console.log("Token response was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-        return
-      }
-      const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token
-      if (!token) {
-        console.log("No access token in the response. Keys returned: " +
-          Object.keys(payload).join(", "))
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-        return
-      }
-      accessToken = token
-      resolve()
-    })
-  })
+    const config = {
+        url: TOKEN_PATH,
+        protocol: "https",
+        port: authPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: D.device.username(),
+            password: D.device.password(),
+            grant_type: "password",
+            client_id: clientIdParam,
+            client_secret: clientSecretParam
+        }),
+        rejectUnauthorized: false,
+        jar: true
+    };
+    console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
+    (resolvedHost ? " (directorHost)" : " (device IP)"));
+    return new Promise(function (resolve) {
+        target.http.post(config, function (error, response, body) {
+            if (error) {
+                console.log("Token request failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("Token endpoint returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            let payload;
+            try {
+                payload = JSON.parse(body);
+            } catch (parseError) {
+                console.log("Token response was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
+            const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token;
+            if (!token) {
+                console.log("No access token in the response. Keys returned: " +
+          Object.keys(payload).join(", "));
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+            accessToken = token;
+            resolve();
+        });
+    });
 }
 
 /**
@@ -358,39 +358,39 @@ function login() {
  * @returns {Promise<Object>} resolves with the parsed JSON body
  */
 function apiGet(path) {
-  const config = {
-    url: path,
-    protocol: "https",
-    port: apiPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Authorization": "Bearer " + accessToken
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
-  return new Promise(function (resolve) {
-    target.http.get(config, function (error, response, body) {
-      if (error) {
-        console.log("Request to " + path + " failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("GET " + path + " returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      try {
-        resolve(body ? JSON.parse(body) : {})
-      } catch (parseError) {
-        console.log("Response from " + path + " was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-      }
-    })
-  })
+    const config = {
+        url: path,
+        protocol: "https",
+        port: apiPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve) {
+        target.http.get(config, function (error, response, body) {
+            if (error) {
+                console.log("Request to " + path + " failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("GET " + path + " returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            try {
+                resolve(body ? JSON.parse(body) : {});
+            } catch (parseError) {
+                console.log("Response from " + path + " was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+            }
+        });
+    });
 }
 
 /**
@@ -398,23 +398,23 @@ function apiGet(path) {
  * @returns {Promise<Array<string>>} resolves with appliance names
  */
 function retrieveSites() {
-  return apiGet(INVENTORY_PATH + "?offset=0&limit=" + SITE_PAGE_SIZE).then(function (payload) {
-    const container = payload["versanms.ApplianceStatusResult"]
-    const list = (container && Array.isArray(container.appliance))
-      ? container.appliance
-      : (findFirstObjectArray(payload, 0) || [])
-    if (list.length >= SITE_PAGE_SIZE) {
-      console.log("The site list filled the requested page of " + SITE_PAGE_SIZE +
-        " appliances, so some sites may be missing from the table.")
-    }
-    const names = list.map(function (appliance) {
-      return pick(appliance, ["name", "applianceName"], null)
-    }).filter(function (name) {
-      return !!name
-    })
-    console.log("Retrieved " + names.length + " sites from the appliance inventory.")
-    return names
-  })
+    return apiGet(INVENTORY_PATH + "?offset=0&limit=" + SITE_PAGE_SIZE).then(function (payload) {
+        const container = payload["versanms.ApplianceStatusResult"];
+        const list = (container && Array.isArray(container.appliance))
+            ? container.appliance
+            : (findFirstObjectArray(payload, 0) || []);
+        if (list.length >= SITE_PAGE_SIZE) {
+            console.log("The site list filled the requested page of " + SITE_PAGE_SIZE +
+        " appliances, so some sites may be missing from the table.");
+        }
+        const names = list.map(function (appliance) {
+            return pick(appliance, ["name", "applianceName"], null);
+        }).filter(function (name) {
+            return !!name;
+        });
+        console.log("Retrieved " + names.length + " sites from the appliance inventory.");
+        return names;
+    });
 }
 
 /**
@@ -423,10 +423,10 @@ function retrieveSites() {
  * @returns {Array<Object>} raw alarm objects
  */
 function extractAlarms(payload) {
-  if (Array.isArray(payload)) return payload
-  if (payload.List && Array.isArray(payload.List.value)) return payload.List.value
-  if (Array.isArray(payload.value)) return payload.value
-  return findFirstObjectArray(payload, 0) || []
+    if (Array.isArray(payload)) return payload;
+    if (payload.List && Array.isArray(payload.List.value)) return payload.List.value;
+    if (Array.isArray(payload.value)) return payload.value;
+    return findFirstObjectArray(payload, 0) || [];
 }
 
 /**
@@ -434,21 +434,21 @@ function extractAlarms(payload) {
  * @returns {Promise<Array<Object>>} resolves with the raw alarm objects, capped at maxAlarms
  */
 function retrieveAlarms() {
-  return apiGet(ALARMS_PATH + "?offset=0&limit=" + maxAlarmsValue).then(function (payload) {
-    const alarms = extractAlarms(payload)
-    if (alarms.length === 0) {
-      console.log("No active alarms were returned. Top-level keys: " +
-        Object.keys(payload).join(", "))
-      return []
-    }
-    console.log("Retrieved " + alarms.length + " active alarms.")
-    if (alarms.length > maxAlarmsValue) {
-      console.log("The Director returned " + alarms.length + " alarms, above the maxAlarms cap " +
-        "of " + maxAlarmsValue + ". Only the first " + maxAlarmsValue + " are summarised this run.")
-      return alarms.slice(0, maxAlarmsValue)
-    }
-    return alarms
-  })
+    return apiGet(ALARMS_PATH + "?offset=0&limit=" + maxAlarmsValue).then(function (payload) {
+        const alarms = extractAlarms(payload);
+        if (alarms.length === 0) {
+            console.log("No active alarms were returned. Top-level keys: " +
+        Object.keys(payload).join(", "));
+            return [];
+        }
+        console.log("Retrieved " + alarms.length + " active alarms.");
+        if (alarms.length > maxAlarmsValue) {
+            console.log("The Director returned " + alarms.length + " alarms, above the maxAlarms cap " +
+        "of " + maxAlarmsValue + ". Only the first " + maxAlarmsValue + " are summarised this run.");
+            return alarms.slice(0, maxAlarmsValue);
+        }
+        return alarms;
+    });
 }
 
 /**
@@ -458,21 +458,21 @@ function retrieveAlarms() {
  * @returns {Object} the initialised aggregate
  */
 function newSite(name, inInventory) {
-  return {
-    name: name,
-    inInventory: inInventory,
-    total: 0,
-    critical: 0,
-    major: 0,
-    warning: 0,
-    other: 0,
-    types: {},
-    typeCount: 0,
-    worstRank: -1,
-    worstSeverity: null,
-    latestMillis: 0,
-    latestText: null
-  }
+    return {
+        name: name,
+        inInventory: inInventory,
+        total: 0,
+        critical: 0,
+        major: 0,
+        warning: 0,
+        other: 0,
+        types: {},
+        typeCount: 0,
+        worstRank: -1,
+        worstSeverity: null,
+        latestMillis: 0,
+        latestText: null
+    };
 }
 
 /**
@@ -483,47 +483,47 @@ function newSite(name, inInventory) {
  * @returns {Object} map of site name to its aggregate
  */
 function aggregateBySite(alarms, siteNames) {
-  const sites = {}
-  siteNames.forEach(function (name) {
-    sites[name] = newSite(name, true)
-  })
+    const sites = {};
+    siteNames.forEach(function (name) {
+        sites[name] = newSite(name, true);
+    });
 
-  alarms.forEach(function (alarm) {
-    const name = String(pick(alarm,
-      ["deviceName", "device", "device-name", "applianceName"], "unknown"))
-    if (!sites[name]) sites[name] = newSite(name, false)
-    const site = sites[name]
+    alarms.forEach(function (alarm) {
+        const name = String(pick(alarm,
+            ["deviceName", "device", "device-name", "applianceName"], "unknown"));
+        if (!sites[name]) sites[name] = newSite(name, false);
+        const site = sites[name];
 
-    const severity = String(pick(alarm, ["severity", "lastPerceivedSeverity", "perceived-severity"],
-      "indeterminate")).toLowerCase()
-    const type = String(pick(alarm, ["type", "alarm-type", "alarmType"], "unknown"))
-    const millis = parseInt(pick(alarm,
-      ["lastStatusChangeTimeStamp", "lastStatusChangeTime", "eventTime", "timestamp"], 0), 10)
+        const severity = String(pick(alarm, ["severity", "lastPerceivedSeverity", "perceived-severity"],
+            "indeterminate")).toLowerCase();
+        const type = String(pick(alarm, ["type", "alarm-type", "alarmType"], "unknown"));
+        const millis = parseInt(pick(alarm,
+            ["lastStatusChangeTimeStamp", "lastStatusChangeTime", "eventTime", "timestamp"], 0), 10);
 
-    site.total++
-    if (severity === "critical") site.critical++
-    else if (severity === "major") site.major++
-    else if (severity === "warning") site.warning++
-    else site.other++
+        site.total++;
+        if (severity === "critical") site.critical++;
+        else if (severity === "major") site.major++;
+        else if (severity === "warning") site.warning++;
+        else site.other++;
 
-    if (!site.types[type]) {
-      site.types[type] = true
-      site.typeCount++
-    }
+        if (!site.types[type]) {
+            site.types[type] = true;
+            site.typeCount++;
+        }
 
-    const rank = severityRank(severity)
-    if (rank > site.worstRank) {
-      site.worstRank = rank
-      site.worstSeverity = severity
-    }
+        const rank = severityRank(severity);
+        if (rank > site.worstRank) {
+            site.worstRank = rank;
+            site.worstSeverity = severity;
+        }
 
-    if (!isNaN(millis) && millis > site.latestMillis) {
-      site.latestMillis = millis
-      site.latestText = pick(alarm, ["lastAlarmText", "specific-problem"], type)
-    }
-  })
+        if (!isNaN(millis) && millis > site.latestMillis) {
+            site.latestMillis = millis;
+            site.latestText = pick(alarm, ["lastAlarmText", "specific-problem"], type);
+        }
+    });
 
-  return sites
+    return sites;
 }
 
 /**
@@ -533,55 +533,55 @@ function aggregateBySite(alarms, siteNames) {
  * @returns {Array<Object>} the Domotz variables to report alongside the table
  */
 function buildOutput(sites, alarmTotal) {
-  const names = Object.keys(sites).sort()
-  let critical = 0
-  let major = 0
-  let warning = 0
-  let sitesWithAlarms = 0
-  let sitesClean = 0
-  let sitesOutsideInventory = 0
+    const names = Object.keys(sites).sort();
+    let critical = 0;
+    let major = 0;
+    let warning = 0;
+    let sitesWithAlarms = 0;
+    let sitesClean = 0;
+    let sitesOutsideInventory = 0;
 
-  names.forEach(function (name) {
-    const site = sites[name]
-    critical += site.critical
-    major += site.major
-    warning += site.warning
-    if (site.total > 0) sitesWithAlarms++
-    else sitesClean++
-    if (!site.inInventory) sitesOutsideInventory++
+    names.forEach(function (name) {
+        const site = sites[name];
+        critical += site.critical;
+        major += site.major;
+        warning += site.warning;
+        if (site.total > 0) sitesWithAlarms++;
+        else sitesClean++;
+        if (!site.inInventory) sitesOutsideInventory++;
 
-    const typeList = Object.keys(site.types).sort()
+        const typeList = Object.keys(site.types).sort();
 
-    sitesTable.insertRecord(sanitize(name), [
-      site.total,
-      site.critical,
-      site.major,
-      site.warning,
-      site.other,
-      site.typeCount,
-      typeList.length ? truncate(typeList.join(", "), MAX_TYPES_TEXT) : "None",
-      site.worstSeverity || "None",
-      formatTimestamp(site.latestMillis) || "N/A",
-      site.latestText ? truncate(site.latestText, MAX_ALARM_TEXT) : "N/A",
-      site.inInventory ? "Inventory" : "Alarm feed only"
-    ])
-  })
+        sitesTable.insertRecord(sanitize(name), [
+            site.total,
+            site.critical,
+            site.major,
+            site.warning,
+            site.other,
+            site.typeCount,
+            typeList.length ? truncate(typeList.join(", "), MAX_TYPES_TEXT) : "None",
+            site.worstSeverity || "None",
+            formatTimestamp(site.latestMillis) || "N/A",
+            site.latestText ? truncate(site.latestText, MAX_ALARM_TEXT) : "N/A",
+            site.inInventory ? "Inventory" : "Alarm feed only"
+        ]);
+    });
 
-  console.log("Reported " + names.length + " sites: " + sitesWithAlarms + " with alarms, " +
-    sitesClean + " clean.")
-  if (sitesOutsideInventory > 0) {
-    console.log(sitesOutsideInventory + " device(s) raised alarms but are absent from the tenant " +
-      "appliance inventory, and are marked \"Alarm feed only\" in the Source column.")
-  }
+    console.log("Reported " + names.length + " sites: " + sitesWithAlarms + " with alarms, " +
+    sitesClean + " clean.");
+    if (sitesOutsideInventory > 0) {
+        console.log(sitesOutsideInventory + " device(s) raised alarms but are absent from the tenant " +
+      "appliance inventory, and are marked \"Alarm feed only\" in the Source column.");
+    }
 
-  return [
-    D.createVariable("total-alarms", "Total Active Alarms", alarmTotal, null, D.valueType.NUMBER),
-    D.createVariable("critical-alarms", "Critical Alarms", critical, null, D.valueType.NUMBER),
-    D.createVariable("major-alarms", "Major Alarms", major, null, D.valueType.NUMBER),
-    D.createVariable("warning-alarms", "Warning Alarms", warning, null, D.valueType.NUMBER),
-    D.createVariable("sites-with-alarms", "Sites With Alarms", sitesWithAlarms, null, D.valueType.NUMBER),
-    D.createVariable("sites-clean", "Sites Clean", sitesClean, null, D.valueType.NUMBER)
-  ]
+    return [
+        D.createVariable("total-alarms", "Total Active Alarms", alarmTotal, null, D.valueType.NUMBER),
+        D.createVariable("critical-alarms", "Critical Alarms", critical, null, D.valueType.NUMBER),
+        D.createVariable("major-alarms", "Major Alarms", major, null, D.valueType.NUMBER),
+        D.createVariable("warning-alarms", "Warning Alarms", warning, null, D.valueType.NUMBER),
+        D.createVariable("sites-with-alarms", "Sites With Alarms", sitesWithAlarms, null, D.valueType.NUMBER),
+        D.createVariable("sites-clean", "Sites Clean", sitesClean, null, D.valueType.NUMBER)
+    ];
 }
 
 // ------------------------------------------------------------------------------------------
@@ -595,17 +595,17 @@ function buildOutput(sites, alarmTotal) {
  * and that the fault alarms endpoint is reachable for this account
  */
 function validate() {
-  login()
-    .then(function () {
-      return apiGet(ALARMS_PATH + "?offset=0&limit=1")
-    })
-    .then(function () {
-      D.success()
-    })
-    .catch(function (error) {
-      console.log("Validation failed: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(function () {
+            return apiGet(ALARMS_PATH + "?offset=0&limit=1");
+        })
+        .then(function () {
+            D.success();
+        })
+        .catch(function (error) {
+            console.log("Validation failed: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -616,19 +616,19 @@ function validate() {
  * each, plus fleet-level totals
  */
 function get_status() {
-  login()
+    login()
     // The two calls run sequentially rather than in parallel. Versa's own guidance is to keep
     // concurrent monitor API calls low, and two round trips finish well inside the timeout.
-    .then(retrieveSites)
-    .then(function (siteNames) {
-      return retrieveAlarms().then(function (alarms) {
-        const sites = aggregateBySite(alarms, siteNames)
-        const variables = buildOutput(sites, alarms.length)
-        D.success(variables, sitesTable)
-      })
-    })
-    .catch(function (error) {
-      console.log("Failed to retrieve alarms: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+        .then(retrieveSites)
+        .then(function (siteNames) {
+            return retrieveAlarms().then(function (alarms) {
+                const sites = aggregateBySite(alarms, siteNames);
+                const variables = buildOutput(sites, alarms.length);
+                D.success(variables, sitesTable);
+            });
+        })
+        .catch(function (error) {
+            console.log("Failed to retrieve alarms: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

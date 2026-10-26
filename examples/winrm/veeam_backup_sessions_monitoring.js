@@ -4,9 +4,9 @@
  * Description: This script provides the status of replication job or the last n replication jobs of a single VM replicated by Veeam
  *
  * TESTING ENVIRONMENT:
- * The script was tested on "Veeam Backup & Replication 12" v12.3.2.3617 Community Edition 
+ * The script was tested on "Veeam Backup & Replication 12" v12.3.2.3617 Community Edition
  * for Hyper-V replicas on Windows Server 2022. In this case, Veeam doesn't support API,
- * hence the script connects to the Windows Server operating system via SSH or WinRM and 
+ * hence the script connects to the Windows Server operating system via SSH or WinRM and
  * performs PowerShell interrogations to the Veeam server running on it.
  *
  * COMMUNICATION PROTOCOLS:
@@ -37,34 +37,34 @@
  **/
 
 // VM name to monitor (required parameter)
-const vmName = D.getParameter('vmName');
+const vmName = D.getParameter("vmName");
 
 // Number of results to return (optional, defaults to 100)
-let numberOfResults = D.getParameter('numberOfResults');
-if (!numberOfResults || numberOfResults === '' || numberOfResults === '0') {
+let numberOfResults = D.getParameter("numberOfResults");
+if (!numberOfResults || numberOfResults === "" || numberOfResults === "0") {
     numberOfResults = 100;
 }
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 /**
  * @description Veeam Server IP Address
  * @type STRING
  */
-const veeamServerIP = D.getParameter('veeamServerIP');
+const veeamServerIP = D.getParameter("veeamServerIP");
 
 /**
  * @description Veeam Server Username
  * @type STRING
  */
-const veeamServerUsername = D.getParameter('veeamServerUsername');
+const veeamServerUsername = D.getParameter("veeamServerUsername");
 
 /**
  * @description Veeam Server Password
  * @type SECRET_TEXT
  */
-const veeamServerPassword = D.getParameter('veeamServerPassword');
+const veeamServerPassword = D.getParameter("veeamServerPassword");
 
 // Create external device connection
 const veeamDevice = D.createExternalDevice(veeamServerIP);
@@ -76,15 +76,15 @@ const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRM
  * @returns {string}
  */
 function generateVeeamCmd() {
-    if (!vmName || vmName === '') {
-        return '';
+    if (!vmName || vmName === "") {
+        return "";
     }
-    
+
     // Always fetch at least 2 records for calculations, even if user wants only 1
     const fetchCount = Math.max(parseInt(numberOfResults), 2);
-    
+
     const command = 'Import-Module Veeam.Backup.PowerShell -WarningAction SilentlyContinue; Get-VBRBackupSession | Sort-Object EndTime -Descending | ForEach-Object { $session = $_; $session.GetTaskSessions() | Where-Object { $_.Name -eq "' + vmName + '" } | ForEach-Object { [PSCustomObject]@{ VM = $_.Name; Status = $_.Status; Job = $session.JobName; StartTime = $session.CreationTime; EndTime = $session.EndTime } } } | Sort-Object EndTime -Descending | Select-Object -First ' + fetchCount + ' | ForEach-Object { Write-Output ("{0},{1},{2},{3},{4}" -f $_.VM, $_.Status, $_.Job, $_.StartTime, $_.EndTime) }';
-    
+
     return command;
 }
 
@@ -97,19 +97,19 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 60000,            // per-command timeout in milliseconds
+    timeout: 60000            // per-command timeout in milliseconds
 };
 
 const veeamTable = D.createTable(
     "Veeam Backup Sessions",
     [
-        {label: "VM Name"},
-        {label: "Status"},
-        {label: "Job Name"},
-        {label: "Start Time"},
-        {label: "End Time"},
-        {label: "Job Duration (min)"},
-        {label: "Time from last backup (hours)"}
+        { label: "VM Name" },
+        { label: "Status" },
+        { label: "Job Name" },
+        { label: "Start Time" },
+        { label: "End Time" },
+        { label: "Job Duration (min)" },
+        { label: "Time from last backup (hours)" }
     ]
 );
 
@@ -122,35 +122,35 @@ var backupRecords = []; // Store all backup records for calculating previous bac
  * @returns {Date} - Parsed Date object
  */
 function parseVeeamDate(dateStr) {
-    if (!dateStr || dateStr.trim() === '') {
+    if (!dateStr || dateStr.trim() === "") {
         return new Date();
     }
-    
+
     // Expected format: "16/08/2025 22:00:04"
-    const parts = dateStr.trim().split(' ');
+    const parts = dateStr.trim().split(" ");
     if (parts.length !== 2) {
         console.error("Invalid date format: " + dateStr);
         return new Date();
     }
-    
+
     const datePart = parts[0]; // "16/08/2025"
     const timePart = parts[1]; // "22:00:04"
-    
-    const dateComponents = datePart.split('/');
-    const timeComponents = timePart.split(':');
-    
+
+    const dateComponents = datePart.split("/");
+    const timeComponents = timePart.split(":");
+
     if (dateComponents.length !== 3 || timeComponents.length !== 3) {
         console.error("Invalid date/time components: " + dateStr);
         return new Date();
     }
-    
+
     const day = parseInt(dateComponents[0], 10);
     const month = parseInt(dateComponents[1], 10) - 1; // JavaScript months are 0-based
     const year = parseInt(dateComponents[2], 10);
     const hour = parseInt(timeComponents[0], 10);
     const minute = parseInt(timeComponents[1], 10);
     const second = parseInt(timeComponents[2], 10);
-    
+
     return new Date(year, month, day, hour, minute, second);
 }
 
@@ -162,7 +162,7 @@ function populateTable(record, index) {
     const endTime = record.endTime;
     const jobDuration = record.jobDuration;
     const previousBackupTaken = record.previousBackupTaken;
-    
+
     const recordID = recordCounter.toString();
     recordCounter++;
     veeamTable.insertRecord(recordID, [vmName, status, jobName, startTime, endTime, jobDuration, previousBackupTaken]);
@@ -171,20 +171,20 @@ function populateTable(record, index) {
 function parseOutput(output) {
     recordCounter = 1; // Reset counter for each execution
     backupRecords = []; // Reset backup records array
-    
-    if (!output || output.trim() === '') {
+
+    if (!output || output.trim() === "") {
         console.info("No Veeam backup sessions found for VM: " + vmName);
         D.success(veeamTable);
         return;
     }
-    
-    const lines = output.trim().split('\n');
-    
+
+    const lines = output.trim().split("\n");
+
     // First pass: Parse all records and store them
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
-        if (line !== '') {
-            const parts = line.split(',');
+        if (line !== "") {
+            const parts = line.split(",");
             if (parts.length >= 5) {
                 const record = {
                     vmName: parts[0],
@@ -199,25 +199,25 @@ function parseOutput(output) {
             }
         }
     }
-    
+
     // Second pass: Calculate job duration and previous backup times
     const currentTime = new Date();
     const displayCount = parseInt(numberOfResults);
-    
+
     for (let i = 0; i < backupRecords.length; i++) {
         const record = backupRecords[i];
-        
+
         // Debug logging
         console.info("Processing record " + i + ": Start=" + record.startTime + ", End=" + record.endTime);
         console.info("Parsed dates: Start=" + record.startDate + ", End=" + record.endDate);
-        
+
         // Calculate job duration in minutes
         const durationMs = record.endDate.getTime() - record.startDate.getTime();
         const durationMinutes = Math.round(durationMs / (1000 * 60));
         record.jobDuration = isNaN(durationMinutes) ? "0" : durationMinutes.toString();
-        
+
         console.info("Duration calculation: " + durationMs + "ms = " + durationMinutes + " minutes");
-        
+
         // Calculate previous backup taken in hours
         if (i === 0) {
             // This is the most recent backup - calculate time since completion
@@ -233,7 +233,7 @@ function parseOutput(output) {
             record.previousBackupTaken = isNaN(timeBetweenHours) ? "0" : timeBetweenHours.toString();
             console.info("Time between backups: " + timeBetweenMs + "ms = " + timeBetweenHours + " hours");
         }
-        
+
         // Only populate the table with records up to the requested numberOfResults
         if (i < displayCount) {
             console.info("Displaying record " + i + " (within requested count of " + displayCount + ")");
@@ -242,7 +242,7 @@ function parseOutput(output) {
             console.info("Skipping display of record " + i + " (beyond requested count of " + displayCount + ")");
         }
     }
-    
+
     D.success(veeamTable);
 }
 
@@ -275,19 +275,19 @@ function validate() {
  * @documentation This procedure retrieves Veeam backup session data for the specified VM
  */
 function get_status() {
-    if (!vmName || vmName === '') {
+    if (!vmName || vmName === "") {
         console.error("VM name parameter is required");
         D.failure(D.errorType.GENERIC_ERROR);
         return;
     }
-    
+
     const command = generateVeeamCmd();
-    if (command === '') {
+    if (command === "") {
         console.error("No command generated - VM name is required");
         D.failure(D.errorType.GENERIC_ERROR);
         return;
     }
-    
+
     instance.executeCommand(command)
         .then(instance.parseOutputToString)
         .then(parseOutput)
@@ -301,15 +301,15 @@ function WinRMHandler() {
 // Check for Errors on the command response
 WinRMHandler.prototype.checkError = function (output) {
     // Check if the error message contains CSV data (PowerShell output in error message)
-    if (output.message && output.message.includes(',Success,') && output.message.includes(',Backup Job')) {
+    if (output.message && output.message.includes(",Success,") && output.message.includes(",Backup Job")) {
         console.info("PowerShell command succeeded but WinRM returned error - extracting data from error message");
         // Extract the CSV data from the error message
-        const lines = output.message.split('\n');
-        let csvData = '';
+        const lines = output.message.split("\n");
+        let csvData = "";
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
-            if (line.includes(',Success,') || line.includes(',Warning,') || line.includes(',Failed,')) {
-                csvData += line + '\n';
+            if (line.includes(",Success,") || line.includes(",Warning,") || line.includes(",Failed,")) {
+                csvData += line + "\n";
             }
         }
         if (csvData) {
@@ -317,7 +317,7 @@ WinRMHandler.prototype.checkError = function (output) {
             return;
         }
     }
-    
+
     if (output.message) console.error(output.message);
     if (output.code === 401) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -327,7 +327,7 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
@@ -342,7 +342,7 @@ WinRMHandler.prototype.executeCommand = function (command) {
         veeamDevice.sendWinRMCommand(config, function (output) {
             if (output.error) {
                 // Check if error contains valid data before treating as failure
-                if (output.error.message && output.error.message.includes(',Success,') && output.error.message.includes(',Backup Job')) {
+                if (output.error.message && output.error.message.includes(",Success,") && output.error.message.includes(",Backup Job")) {
                     self.checkError(output.error);
                     // Don't reject, as checkError will handle the data extraction
                 } else {
@@ -354,15 +354,15 @@ WinRMHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 WinRMHandler.prototype.parseOutputToString = function (output) {
-    return output.outcome && output.outcome.stdout ? output.outcome.stdout : '';
-}
+    return output.outcome && output.outcome.stdout ? output.outcome.stdout : "";
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {
@@ -377,7 +377,7 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
     const self = this;
@@ -399,12 +399,12 @@ SSHHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 SSHHandler.prototype.parseOutputToString = function (output) {
-    return output ? output : '';
-}
+    return output ? output : "";
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-} 
+    return output !== undefined;
+};

@@ -1,9 +1,9 @@
 /**
  * The driver gets AWS EBS and uses the script item to make HTTP requests to the CloudWatch API.
- * 
- * Computes hash-based message authentication codes (HMAC) using a specified algorithm and creates a CloudWatch metric to be monitored for an AWS EBS. 
+ *
+ * Computes hash-based message authentication codes (HMAC) using a specified algorithm and creates a CloudWatch metric to be monitored for an AWS EBS.
  * Then it authorizes an HTTP POST request to an Amazon Web Services (AWS) endpoint.
- * 
+ *
  * Communication protocol is https
  */
 
@@ -37,7 +37,7 @@ function sign(key, message) {
     return result;
 }
 
-/** 
+/**
  * @returns CloudWatch metrics to be monitored for an AWS EBS.
  */
 function createMetricsPayload(period, volumeId) {
@@ -77,7 +77,7 @@ function createMetricsPayload(period, volumeId) {
 }
 
 /**
- * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost(data) {
@@ -132,7 +132,7 @@ function httpPost(data) {
 }
 
 /**
- * @returns promise for http response containing EBS metrics 
+ * @returns promise for http response containing EBS metrics
  */
 function getMetricsData() {
     var payload = {},
@@ -170,7 +170,7 @@ function extractValue(label) {
 function fillConfig() {
     monitoringList = [
         {
-            //Provides information about the percentage of I/O credits (for gp2) or throughput credits (for st1 and sc1) remaining in the burst bucket. 
+            //Provides information about the percentage of I/O credits (for gp2) or throughput credits (for st1 and sc1) remaining in the burst bucket.
             uid: "burst_balance",
             label: "Burst balance",
             execute: extractValue("BurstBalance"),
@@ -230,12 +230,12 @@ function fillConfig() {
             label: "Idle time",
             execute: extractValue("VolumeIdleTime"),
             unit: "s"
-        },
+        }
     ];
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

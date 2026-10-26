@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
@@ -24,7 +24,7 @@ var table = D.createTable(
         { label: "Is Image Available" },
         { label: "Size" },
         { label: "Height" },
-        { label: "Width" },
+        { label: "Width" }
     ]
 );
 
@@ -38,7 +38,7 @@ function login() {
             protocol: "https",
             form: {
                 login: D.device.username(),
-                passwd: D.device.password(),
+                passwd: D.device.password()
             },
             jar: true,
             rejectUnauthorized: false
@@ -77,7 +77,7 @@ function getPreviewImages() {
         });
 }
 
-//Fill the table with data related to discovered streams  
+//Fill the table with data related to discovered streams
 function fillTable() {
     var imageList = previewImages.ImageList;
     for (var image in imageList) {
@@ -98,7 +98,6 @@ function fillTable() {
         ]);
     }
 }
-
 
 //Indicate the successful execution for table
 function success() {

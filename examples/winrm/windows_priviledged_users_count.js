@@ -1,19 +1,19 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Active Directory privileged users count
  * Description: reports the number of members of AD privileged groups
- *   
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on Windows Versions:
  *      - Microsoft Windows Server 2019
  * Powershell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates a Custom Driver table with the number of members in AD privileged groups.
- * 
+ *
  * Privilege required: AD User
- * 
+ *
 **/
 
 // Define winrm configuration
@@ -25,7 +25,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 var privilegedUsersTable = D.createTable(

@@ -13,14 +13,13 @@
  *
  */
 
-
 const sshOptions = {
     username: D.device.username(),
     password: D.device.password(),
-    prompt: '>',
-    inter_command_timeout_ms: '2000',
-    timeout: '60000',
-    commands: ['screen-length 0 temporary']
+    prompt: ">",
+    inter_command_timeout_ms: "2000",
+    timeout: "60000",
+    commands: ["screen-length 0 temporary"]
 };
 
 /**
@@ -40,7 +39,7 @@ function handleSshError(error) {
 /**
  * Handles the callback for validating SSH command execution.
  */
-function validateCallback (output, error) {
+function validateCallback(output, error) {
     if (error) {
         handleSshError(error);
     }
@@ -56,8 +55,8 @@ function extractConfiguration(output) {
         console.error("Unexpected output format. Expected an array.");
         D.failure(D.errorType.GENERIC_ERROR);
     }
-    const table = output[1].split('\r\n');
-    return table.slice(1, table.length - 1).join('\n');
+    const table = output[1].split("\r\n");
+    return table.slice(1, table.length - 1).join("\n");
 }
 
 /**
@@ -88,7 +87,7 @@ function backupCallback(output, error) {
  * @returns {string} The extracted prompt from the output.
  */
 function getPrompt(output) {
-    return output[0].split('\r\n')[2];
+    return output[0].split("\r\n")[2];
 }
 
 /**
@@ -97,8 +96,8 @@ function getPrompt(output) {
  * @returns {void}
  */
 function updateSshOptionsToDisplayConfig(prompt) {
-    sshOptions.prompt = prompt
-    sshOptions.commands.push('display current-configuration')
+    sshOptions.prompt = prompt;
+    sshOptions.commands.push("display current-configuration");
 }
 
 /**

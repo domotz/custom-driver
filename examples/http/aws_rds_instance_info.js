@@ -36,8 +36,7 @@ function prepareParams(params) {
     Object.keys(params).sort().forEach(function (key) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
-        }
-        else {
+        } else {
             result.push(prepareObject(key, params[key]));
         }
     });
@@ -45,8 +44,8 @@ function prepareParams(params) {
 }
 
 /**
- * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
- * @returns  HTTP GET request to an AWS RDS API to retrieve information about DB instances. 
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+ * @returns  HTTP GET request to an AWS RDS API to retrieve information about DB instances.
  */
 function httpGet(params) {
     var service = "rds";
@@ -77,7 +76,7 @@ function httpGet(params) {
                 "Content-Type": "application/json",
                 "Content-Encoding": "amz-1.0",
                 "Authorization": auth
-            },
+            }
         },
         function (err, response, body) {
             if (err) {
@@ -151,7 +150,7 @@ function fillConfig() {
             //Indicates the database engine version.
             uid: "version",
             label: "Engine version",
-            execute: extractValueByKey(instanceInfo, "EngineVersion"),
+            execute: extractValueByKey(instanceInfo, "EngineVersion")
         },
         {
             //The status of a read replica. If the instance isn't a read replica, this is blank.
@@ -204,12 +203,12 @@ function fillConfig() {
             uid: "storage_type",
             label: "Storage type",
             execute: extractValueByKey(instanceInfo, "StorageType")
-        },
+        }
     ];
 }
 
 /**
- * @param {[object]} data array of objects 
+ * @param {[object]} data array of objects
  *  @returns list of domotz variables
  */
 function extract(data) {

@@ -1,13 +1,13 @@
 /**
  * Name: Dell iDRAC Fan Monitoring
  * Description: Monitors the operational status of fans on a Dell server with iDRAC
- * 
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under iDRAC version 7.0.3 21053776 U3 P70
- * 
+ *
  * Keyboard Interactive option: true/false (depends on iDRAC version).
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *      - Type
  *      - Description
@@ -41,15 +41,15 @@ var table = D.createTable(
         { label: "Active Cooling", valueType: D.valueType.STRING },
         { label: "Variable Speed", valueType: D.valueType.STRING },
         { label: "PWM", unit: "%", valueType: D.valueType.NUMBER },
-        { label: "Current Reading", unit: "RPM", valueType: D.valueType.NUMBER }      
+        { label: "Current Reading", unit: "RPM", valueType: D.valueType.NUMBER }
     ]
 );
 
 //Handle SSH errors
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -61,12 +61,12 @@ function executeCommand(command) {
         D.device.sendSSHCommand(sshConfig, function (output, err) {
             if (err) {
                 checkSshError(err);
-            } else {           
-                if (output && output.indexOf("COMMAND NOT RECOGNIZED")!==-1) {
+            } else {
+                if (output && output.indexOf("COMMAND NOT RECOGNIZED") !== -1) {
                     D.failure(D.errorType.PARSING_ERROR);
                 } else {
                     resolve(output);
-                }           
+                }
             }
         });
     });
@@ -90,7 +90,7 @@ function validate() {
 function parseValidateOutput(output) {
     if (output.trim() !== "") {
         console.info("Validation successful");
-    } 
+    }
 }
 
 /**
@@ -111,17 +111,17 @@ function get_status() {
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
-    var instanceIdFan = false; 
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var instanceIdFan = false;
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: Fan.") >= 0) {
             instanceIdFan = true;
-            data = {}; 
+            data = {};
         } else if (instanceIdFan && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
-            var type = data["Device Type"] || "-"; 
+            var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+            var type = data["Device Type"] || "-";
             var description = data["DeviceDescription"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var redundancyStatus = data["RedundancyStatus"] || "-";
@@ -144,7 +144,7 @@ function parseData(output) {
             data = {};
             instanceIdFan = false;
         } else if (instanceIdFan) {
-            var keyValue = line.split('=');
+            var keyValue = line.split("=");
             if (keyValue.length === 2) {
                 var key = keyValue[0].trim();
                 var value = keyValue[1].trim();

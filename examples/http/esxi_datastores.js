@@ -22,22 +22,22 @@
  **/
 
 // URL endpoint for accessing the vSphere SDK
-const url = '/sdk'
+const url = "/sdk";
 
 // Creation of Datastore Details table
 const datastoreDetailsTable = D.createTable(
-    'Datastore Details',
+    "Datastore Details",
     [
-      { label: 'Name', valueType: D.valueType.STRING },
-      { label: 'Accessible', valueType: D.valueType.STRING },
-      { label: 'Capacity', valueType: D.valueType.NUMBER, unit: "GB" },
-      { label: 'Free Space', valueType: D.valueType.NUMBER, unit: "GB" },
-      { label: 'Uncommitted Space', valueType: D.valueType.NUMBER, unit: "GB"},
-      { label: 'Type', valueType: D.valueType.STRING },
-      { label: 'URL', valueType: D.valueType.STRING },
-      { label: 'Virtual Machines', valueType: D.valueType.STRING }
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Accessible", valueType: D.valueType.STRING },
+        { label: "Capacity", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Free Space", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Uncommitted Space", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "URL", valueType: D.valueType.STRING },
+        { label: "Virtual Machines", valueType: D.valueType.STRING }
     ]
-)
+);
 
 /**
  * Sends a SOAP request and returns a promise with the parsed response.
@@ -47,31 +47,31 @@ const datastoreDetailsTable = D.createTable(
  */
 function sendSoapRequest(body, extractData) {
 
-  let config = {
-    url,
-    protocol: "https",
-    rejectUnauthorized: false,
-    body,
-    jar: true
-  }
+    let config = {
+        url,
+        protocol: "https",
+        rejectUnauthorized: false,
+        body,
+        jar: true
+    };
 
-  return new Promise(function (resolve) {
-    D.device.http.post(config, function (error, response, body) {
-      if (error) {
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
-      } else if (!response) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      } else if (response.statusCode === 400 || isInvalidLogin(body)) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-      } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
-      } else {
-        const result = extractData(body)
-        resolve(result)
-      }
-    })
-  })
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 400 || isInvalidLogin(body)) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                const result = extractData(body);
+                resolve(result);
+            }
+        });
+    });
 }
 
 /**
@@ -80,9 +80,9 @@ function sendSoapRequest(body, extractData) {
  * @returns {string} The complete SOAP payload as a string, including the envelope and body.
  */
 function createSoapPayload(soapBody) {
-  return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
+    return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
       + soapBody +
-      '</soapenv:Body></soapenv:Envelope>'
+      "</soapenv:Body></soapenv:Envelope>";
 }
 
 /**
@@ -91,8 +91,8 @@ function createSoapPayload(soapBody) {
  * @returns {string} The Session Key extracted from the SOAP response.
  */
 function getSessionKey(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').find('key').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("key").first().text();
 }
 
 /**
@@ -101,11 +101,11 @@ function getSessionKey(soapResponse) {
  * @param {string} value - The text to escape.
  * @returns {string} The escaped text.
  */
-function escapeXml (value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+function escapeXml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
 /**
@@ -113,10 +113,10 @@ function escapeXml (value) {
  * @param {string} body - The SOAP response body.
  * @returns {boolean} True if the response is an InvalidLogin fault.
  */
-function isInvalidLogin (body) {
-  const text = String(body || '')
-  return text.indexOf('InvalidLoginFault') !== -1 ||
-    text.indexOf('Cannot complete login due to an incorrect user name or password.') !== -1
+function isInvalidLogin(body) {
+    const text = String(body || "");
+    return text.indexOf("InvalidLoginFault") !== -1 ||
+    text.indexOf("Cannot complete login due to an incorrect user name or password.") !== -1;
 }
 
 /**
@@ -124,15 +124,15 @@ function isInvalidLogin (body) {
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
 function login() {
-  const payload = createSoapPayload(
-      '<vim25:Login>' +
+    const payload = createSoapPayload(
+        "<vim25:Login>" +
       '   <_this type="SessionManager">ha-sessionmgr</_this>' +
-      '   <userName>' + escapeXml(D.device.username()) + '</userName>' +
-      '   <password>' + escapeXml(D.device.password()) + '</password>' +
-      '</vim25:Login>'
-  )
-  // Send the SOAP request and handle the response to extract the Session Key.
-  return sendSoapRequest(payload, getSessionKey)
+      "   <userName>" + escapeXml(D.device.username()) + "</userName>" +
+      "   <password>" + escapeXml(D.device.password()) + "</password>" +
+      "</vim25:Login>"
+    );
+    // Send the SOAP request and handle the response to extract the Session Key.
+    return sendSoapRequest(payload, getSessionKey);
 }
 
 /**
@@ -141,8 +141,8 @@ function login() {
  * @returns {string} The container ID extracted from the SOAP response.
  */
 function getContainerIdFromSoap(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').text();
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").text();
 }
 
 /**
@@ -150,16 +150,16 @@ function getContainerIdFromSoap(soapResponse) {
  * @returns {Promise} A promise that resolves with the container ID from the SOAP response.
  */
 function createAllDataStoreContainer() {
-  const payload = createSoapPayload(
-      '<CreateContainerView xmlns="urn:vim25">' +
+    const payload = createSoapPayload(
+        '<CreateContainerView xmlns="urn:vim25">' +
       '    <_this type="ViewManager">ViewManager</_this>' +
       '    <container type="Folder">ha-folder-datastore</container>' +
-      '    <type>Datastore</type>' +
-      '    <recursive>true</recursive>' +
-      '</CreateContainerView>'
-  )
-  // Send the SOAP request and extract the container ID from the response.
-  return sendSoapRequest(payload, getContainerIdFromSoap)
+      "    <type>Datastore</type>" +
+      "    <recursive>true</recursive>" +
+      "</CreateContainerView>"
+    );
+    // Send the SOAP request and extract the container ID from the response.
+    return sendSoapRequest(payload, getContainerIdFromSoap);
 }
 
 /**
@@ -168,12 +168,12 @@ function createAllDataStoreContainer() {
  * @returns {*[]} The list of datastore references extracted from the SOAP response.
  */
 function getDataStoreRefFromSoap(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  let datastoreRefs = []
-  $('returnval').find('ManagedObjectReference').each(function () {
-    datastoreRefs.push($(this).text())
-  })
-  return datastoreRefs
+    const $ = D.htmlParse(soapResponse);
+    let datastoreRefs = [];
+    $("returnval").find("ManagedObjectReference").each(function () {
+        datastoreRefs.push($(this).text());
+    });
+    return datastoreRefs;
 }
 
 /**
@@ -182,14 +182,14 @@ function getDataStoreRefFromSoap(soapResponse) {
  * @returns {Promise} A promise that resolves with the host reference extracted from the SOAP response.
  */
 function fetchContainer(containerId) {
-  const payload = createSoapPayload(
-      '<Fetch xmlns="urn:vim25">' +
-      '    <_this type="ContainerView">' + containerId + '</_this>' +
-      '    <prop>view</prop>' +
-      '</Fetch>'
-  )
-  // Send the SOAP request and extract the host reference from the response.
-  return sendSoapRequest(payload, getDataStoreRefFromSoap)
+    const payload = createSoapPayload(
+        '<Fetch xmlns="urn:vim25">' +
+      '    <_this type="ContainerView">' + containerId + "</_this>" +
+      "    <prop>view</prop>" +
+      "</Fetch>"
+    );
+    // Send the SOAP request and extract the host reference from the response.
+    return sendSoapRequest(payload, getDataStoreRefFromSoap);
 }
 
 /**
@@ -199,11 +199,11 @@ function fetchContainer(containerId) {
  * @returns {string} XML-formatted string of object sets suitable for vSphere SOAP requests.
  */
 function generateXmlObjectSetByMoRefAndType(refs, type) {
-  return refs.map(function (ref) {
-    return '<vim25:objectSet>' +
-        '   <vim25:obj type="' + type + '">' + ref + '</vim25:obj>' +
-        '</vim25:objectSet>'
-  }).join('')
+    return refs.map(function (ref) {
+        return "<vim25:objectSet>" +
+        '   <vim25:obj type="' + type + '">' + ref + "</vim25:obj>" +
+        "</vim25:objectSet>";
+    }).join("");
 }
 
 /**
@@ -212,44 +212,44 @@ function generateXmlObjectSetByMoRefAndType(refs, type) {
  * @returns {Promise} A promise that resolves with the properties of the host as extracted from the SOAP response.
  */
 function retrieveProprieties(dataStoresRef) {
-  const payload = createSoapPayload(
-      '<vim25:RetrieveProperties>' +
+    const payload = createSoapPayload(
+        "<vim25:RetrieveProperties>" +
       '   <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' +
-      '   <vim25:specSet>' +
-      '      <vim25:propSet>' +
-      '         <vim25:type>Datastore</vim25:type>\n' +
-      '         <vim25:pathSet>name</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.capacity</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.freeSpace</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.uncommitted</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.url</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.accessible</vim25:pathSet>\n' +
-      '         <vim25:pathSet>summary.type</vim25:pathSet>\n' +
-      '         <vim25:pathSet>host</vim25:pathSet>\n' +
-      '         <vim25:pathSet>vm</vim25:pathSet>' +
-      '      </vim25:propSet>' +
+      "   <vim25:specSet>" +
+      "      <vim25:propSet>" +
+      "         <vim25:type>Datastore</vim25:type>\n" +
+      "         <vim25:pathSet>name</vim25:pathSet>\n" +
+      "         <vim25:pathSet>summary.capacity</vim25:pathSet>\n" +
+      "         <vim25:pathSet>summary.freeSpace</vim25:pathSet>\n" +
+      "         <vim25:pathSet>summary.uncommitted</vim25:pathSet>\n" +
+      "         <vim25:pathSet>summary.url</vim25:pathSet>\n" +
+      "         <vim25:pathSet>summary.accessible</vim25:pathSet>\n" +
+      "         <vim25:pathSet>summary.type</vim25:pathSet>\n" +
+      "         <vim25:pathSet>host</vim25:pathSet>\n" +
+      "         <vim25:pathSet>vm</vim25:pathSet>" +
+      "      </vim25:propSet>" +
       generateXmlObjectSetByMoRefAndType(dataStoresRef, "Datastore") +
-      '   </vim25:specSet>' +
-      '</vim25:RetrieveProperties>'
-  )
-  // Send the SOAP request and handle the response to generate the desired variables.
-  return sendSoapRequest(payload, generateTableOutput)
+      "   </vim25:specSet>" +
+      "</vim25:RetrieveProperties>"
+    );
+    // Send the SOAP request and handle the response to generate the desired variables.
+    return sendSoapRequest(payload, generateTableOutput);
 }
 
 /**
  * Populates a table with Datastore Details.
  */
 function populateTable(datastoreDetails) {
-  datastoreDetailsTable.insertRecord(datastoreDetails.id, [
-    datastoreDetails.name,
-    datastoreDetails.accessible,
-    convertBytesToGb(datastoreDetails.capacity),
-    convertBytesToGb(datastoreDetails.freeSpace),
-    convertBytesToGb(datastoreDetails.uncommitted),
-    datastoreDetails.type,
-    datastoreDetails.url,
-    datastoreDetails.virtualMachines
-  ]);
+    datastoreDetailsTable.insertRecord(datastoreDetails.id, [
+        datastoreDetails.name,
+        datastoreDetails.accessible,
+        convertBytesToGb(datastoreDetails.capacity),
+        convertBytesToGb(datastoreDetails.freeSpace),
+        convertBytesToGb(datastoreDetails.uncommitted),
+        datastoreDetails.type,
+        datastoreDetails.url,
+        datastoreDetails.virtualMachines
+    ]);
 }
 
 /**
@@ -258,15 +258,15 @@ function populateTable(datastoreDetails) {
  * @returns {string} VM names.
  */
 function extractVmNames(soapResponse) {
-  const $ = D.htmlParse(soapResponse);
-  const vmNames = [];
-  $('propSet:has(name:contains("name"))').each(function () {
-    const vmName = $(this).find('val').text();
-    if (vmName) {
-      vmNames.push(vmName);
-    }
-  });
-  return vmNames.join(', ');
+    const $ = D.htmlParse(soapResponse);
+    const vmNames = [];
+    $('propSet:has(name:contains("name"))').each(function () {
+        const vmName = $(this).find("val").text();
+        if (vmName) {
+            vmNames.push(vmName);
+        }
+    });
+    return vmNames.join(", ");
 }
 
 /**
@@ -275,20 +275,20 @@ function extractVmNames(soapResponse) {
  * @returns {Promise<string[]>} A promise that resolves to an array of VM names.
  */
 function getVmNamesByMoRefs(vmMoRefs) {
-  const payload = createSoapPayload(
-      '<vim25:RetrieveProperties>' +
+    const payload = createSoapPayload(
+        "<vim25:RetrieveProperties>" +
       '   <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' +
-      '   <vim25:specSet>' +
-      '      <vim25:propSet>' +
-      '         <vim25:type>VirtualMachine</vim25:type>' +
-      '         <vim25:pathSet>name</vim25:pathSet>' +
-      '      </vim25:propSet>' +
+      "   <vim25:specSet>" +
+      "      <vim25:propSet>" +
+      "         <vim25:type>VirtualMachine</vim25:type>" +
+      "         <vim25:pathSet>name</vim25:pathSet>" +
+      "      </vim25:propSet>" +
       generateXmlObjectSetByMoRefAndType(vmMoRefs, "VirtualMachine") +
-      '   </vim25:specSet>' +
-      '</vim25:RetrieveProperties>'
-  )
-  // Send the SOAP request and handle the response to generate the desired variables.
-  return sendSoapRequest(payload, extractVmNames)
+      "   </vim25:specSet>" +
+      "</vim25:RetrieveProperties>"
+    );
+    // Send the SOAP request and handle the response to generate the desired variables.
+    return sendSoapRequest(payload, extractVmNames);
 }
 
 /**
@@ -297,7 +297,7 @@ function getVmNamesByMoRefs(vmMoRefs) {
  * @returns {string} The value converted to gigabytes, rounded to two decimal places.
  */
 function convertBytesToGb(bytesValue) {
-  return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
+    return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
 }
 
 /**
@@ -306,35 +306,35 @@ function convertBytesToGb(bytesValue) {
  * @returns {Array} the output tabel created from the extracted properties.
  */
 function generateTableOutput(soapResponse) {
-  const $ = D.htmlParse(soapResponse);
-    console.log('soapResponse : ', soapResponse)
-  const promises = [];
+    const $ = D.htmlParse(soapResponse);
+    console.log("soapResponse : ", soapResponse);
+    const promises = [];
 
-  $('returnval').each(function () {
-    const datastoreInfo = $(this);
-    const vmRefs = datastoreInfo.find('propSet:has(name:contains("vm")) ManagedObjectReference').map(function () {
-      return $(this).text();
-    }).get();
+    $("returnval").each(function () {
+        const datastoreInfo = $(this);
+        const vmRefs = datastoreInfo.find('propSet:has(name:contains("vm")) ManagedObjectReference').map(function () {
+            return $(this).text();
+        }).get();
 
-    const promise = getVmNamesByMoRefs(vmRefs).then(function (vmNames) {
-      populateTable({
-        id: datastoreInfo.find('obj').text(),
-        name: datastoreInfo.find('propSet:has(name:contains("name")) val').text() || "N/A",
-        accessible: datastoreInfo.find('propSet:has(name:contains("summary.accessible")) val').text() === 'true' ? 'Yes' : 'No',
-        capacity: datastoreInfo.find('propSet:has(name:contains("summary.capacity")) val').text() || "N/A",
-        freeSpace: datastoreInfo.find('propSet:has(name:contains("summary.freeSpace")) val').text() || "N/A",
-        uncommitted: datastoreInfo.find('propSet:has(name:contains("summary.uncommitted")) val').text() || "N/A",
-        type: datastoreInfo.find('propSet:has(name:contains("summary.type")) val').text() || "N/A",
-        url: datastoreInfo.find('propSet:has(name:contains("summary.url")) val').text() || "N/A",
-        virtualMachines: vmNames
-      });
+        const promise = getVmNamesByMoRefs(vmRefs).then(function (vmNames) {
+            populateTable({
+                id: datastoreInfo.find("obj").text(),
+                name: datastoreInfo.find('propSet:has(name:contains("name")) val').text() || "N/A",
+                accessible: datastoreInfo.find('propSet:has(name:contains("summary.accessible")) val').text() === "true" ? "Yes" : "No",
+                capacity: datastoreInfo.find('propSet:has(name:contains("summary.capacity")) val').text() || "N/A",
+                freeSpace: datastoreInfo.find('propSet:has(name:contains("summary.freeSpace")) val').text() || "N/A",
+                uncommitted: datastoreInfo.find('propSet:has(name:contains("summary.uncommitted")) val').text() || "N/A",
+                type: datastoreInfo.find('propSet:has(name:contains("summary.type")) val').text() || "N/A",
+                url: datastoreInfo.find('propSet:has(name:contains("summary.url")) val').text() || "N/A",
+                virtualMachines: vmNames
+            });
+        });
+        promises.push(promise);
     });
-    promises.push(promise);
-  });
 
-  Promise.all(promises).then(function () {
-    D.success(datastoreDetailsTable);
-  });
+    Promise.all(promises).then(function () {
+        D.success(datastoreDetailsTable);
+    });
 }
 
 /**
@@ -343,15 +343,15 @@ function generateTableOutput(soapResponse) {
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
 function validate() {
-  login()
-      .then(function (sessionKey) {
-        if (sessionKey && sessionKey.length > 0) {
-          D.success();
-        }
-      })
-      .catch(function () {
-        D.failure(D.errorType.GENERIC_ERROR);
-      });
+    login()
+        .then(function (sessionKey) {
+            if (sessionKey && sessionKey.length > 0) {
+                D.success();
+            }
+        })
+        .catch(function () {
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -360,12 +360,12 @@ function validate() {
  * @documentation This procedure retrieves the ESXi host Datastore details
  */
 function get_status() {
-  login()
-      .then(createAllDataStoreContainer)
-      .then(fetchContainer)
-      .then(retrieveProprieties)
-      .catch(function (err) {
-        console.error(err);
-        D.failure(D.errorType.GENERIC_ERROR);
-      });
+    login()
+        .then(createAllDataStoreContainer)
+        .then(fetchContainer)
+        .then(retrieveProprieties)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

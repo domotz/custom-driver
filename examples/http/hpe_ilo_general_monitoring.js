@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
- * Name: HPE ILO General Monitoring 
+ * Domotz Custom Driver
+ * Name: HPE ILO General Monitoring
  * Description: Monitors the general information for HPE ILO (Integrated Lights-Out) systems using the Redfish API
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with HPE iLO 5
  *
  * Creates a Custom Driver variables:
@@ -12,7 +12,7 @@
  *      - BIOS Version
  *      - Serial Number
  *      - System Status
- * 
+ *
  **/
 
 // Function to make an HTTP GET request to retrieve HPE iLO device information
@@ -20,8 +20,8 @@ function getHPEILOInformation() {
     return new Promise(function (resolve) {
         D.device.http.get({
             url: "/redfish/v1/Systems/1",
-            username: D.device.username(), 
-            password: D.device.password(), 
+            username: D.device.username(),
+            password: D.device.password(),
             protocol: "https",
             auth: "basic",
             jar: true,
@@ -67,7 +67,7 @@ function extractData(data) {
  * @label Validate HPE iLo device
  * @documentation This procedure is used to validate the presence of a HPE iLo device by checking the availability of a specific Redfish API endpoint
  */
-function validate(){
+function validate() {
     getHPEILOInformation()
         .then(function (response) {
             if (response && response["@odata.id"].indexOf("/redfish/v1/Systems/1") !== -1) {

@@ -1,18 +1,18 @@
-const TFTP_FILENAME = Date.now() + '_running_config_backup.cfg';
+const TFTP_FILENAME = Date.now() + "_running_config_backup.cfg";
 const SSH_TIMEOUT = 10000;  // SSH timeout in milliseconds
 const TFTP_TIMEOUT = 20000; // TFTP server timeout in milliseconds
 
 const sshOptions = {
     username: D.device.username(),
     password: D.device.password(),
-    prompt: '#',
-    inter_command_timeout_ms: '5000',
+    prompt: "#",
+    inter_command_timeout_ms: "5000",
     timeout: SSH_TIMEOUT,
     commands: []
 };
 
 function handleSshError(error) {
-    console.error("SSH error:", error ? error.message : 'Unknown error');
+    console.error("SSH error:", error ? error.message : "Unknown error");
     if (error && error.code === 5) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (error && (error.code === 255 || error.code === 1)) {
@@ -24,15 +24,15 @@ function handleSshError(error) {
 
 function getPrompt(output) {
     if (!output || !output[0]) {
-        console.error('No SSH output received to extract prompt.');
+        console.error("No SSH output received to extract prompt.");
         D.failure(D.errorType.GENERIC_ERROR);
     }
-    const lines = output[0].split('\r\n');
+    const lines = output[0].split("\r\n");
     return lines.length >= 3 ? lines[2] : sshOptions.prompt;
 }
 
 function sendTftpCommandCallback(output, error) {
-    console.info("tftp callback")
+    console.info("tftp callback");
     console.info("sendTftpCommandCallback output:", output);
     console.error("sendTftpCommandCallback error:", error);
     if (error) {
@@ -42,8 +42,8 @@ function sendTftpCommandCallback(output, error) {
 
     console.info("TFTP command output:", output);
 
-    const confirmation = output.join('\n');
-    if (confirmation.includes('bytes copied')) {
+    const confirmation = output.join("\n");
+    if (confirmation.includes("bytes copied")) {
         console.info("TFTP backup command completed successfully, upload confirmed.");
     } else {
         console.error("TFTP backup may have failed, no confirmation of bytes copied.");
@@ -53,10 +53,10 @@ function sendTftpCommandCallback(output, error) {
 
 function sendTftpCopyCommand(host) {
     const tftpCommands = [
-        'copy running-config tftp:\r' + host + '\r' + TFTP_FILENAME,
-    ]
+        "copy running-config tftp:\r" + host + "\r" + TFTP_FILENAME
+    ];
     sshOptions.commands = tftpCommands;
-    console.info("Sending command to copy running config to TFTP server:",tftpCommands );
+    console.info("Sending command to copy running config to TFTP server:", tftpCommands);
     D.device.sendSSHCommands(sshOptions, sendTftpCommandCallback);
 }
 
@@ -64,7 +64,7 @@ function startTftpServerAndSync() {
     const serverOptions = {
         port: 69,
         filePath: TFTP_FILENAME,
-        timeout: TFTP_TIMEOUT,
+        timeout: TFTP_TIMEOUT
     };
 
     function onReady(error, host, port) {
@@ -73,8 +73,8 @@ function startTftpServerAndSync() {
             D.failure(D.errorType.GENERIC_ERROR);
             return;
         }
-        console.info('TFTP server ready on %s:%s', host, port);
-        
+        console.info("TFTP server ready on %s:%s", host, port);
+
         sendTftpCopyCommand(host);
     }
 
@@ -85,11 +85,11 @@ function startTftpServerAndSync() {
             return;
         }
 
-        console.info('Received file upload, length of content: %d bytes', content.length);
+        console.info("Received file upload, length of content: %d bytes", content.length);
         const snippet = content.substring(0, 100);
-        console.info('Snippet of uploaded file:', snippet);
+        console.info("Snippet of uploaded file:", snippet);
         var backup = D.createBackup({
-            label: "Running Config Backup", 
+            label: "Running Config Backup",
             running: content
         });
         D.success(backup);
@@ -101,7 +101,7 @@ function startTftpServerAndSync() {
 }
 
 function validate() {
-    D.device.sendSSHCommands(sshOptions, function(output, error) {
+    D.device.sendSSHCommands(sshOptions, function (output, error) {
         if (error) {
             handleSshError(error);
         } else {
@@ -115,7 +115,6 @@ function startBackup() {
     console.info("Starting the TFTP server and SSH copy process...");
     startTftpServerAndSync();
 }
-
 
 function backup() {
     startBackup();

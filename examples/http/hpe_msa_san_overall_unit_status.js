@@ -1,12 +1,12 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE MSA SAN Overall Unit Status
  * Description: This script retrieves the overall unit status of an HPE MSA SAN device
- * 
- * Communication protocol is HTTPS 
- * 
+ *
+ * Communication protocol is HTTPS
+ *
  * Tested with HPE MSA 2050 SAN version: VL270P005
- * 
+ *
  * Creates a Custom Driver variables for overall unit status
  */
 
@@ -29,7 +29,7 @@ function processResponse(resolve, reject) {
         }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if(sessionKey == "Authentication Unsuccessful"){
+            if (sessionKey == "Authentication Unsuccessful") {
                 console.error("Session key not found in response headers");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
@@ -65,7 +65,7 @@ function getOverallUnitStatus() {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "sessionKey": sessionKey 
+            "sessionKey": sessionKey
         }
     };
     return new Promise(function (resolve, reject) {
@@ -74,10 +74,10 @@ function getOverallUnitStatus() {
 }
 
 // Sanitize sensor name to create a recordId
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response
@@ -90,7 +90,7 @@ function extractData(data) {
         if (sensorName === "Overall Unit Status") {
             var status = $(element).find("PROPERTY[name=\"status\"]").text();
             var uid = sanitize(sensorName);
-            variables.push(D.createVariable(uid, sensorName, status, null, D.valueType.STRING));           
+            variables.push(D.createVariable(uid, sensorName, status, null, D.valueType.STRING));
         }
     });
     D.success(variables);
@@ -101,7 +101,7 @@ function extractData(data) {
  * @label Validate HPE MSA SAN Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     login()
         .then(getOverallUnitStatus)
         .then(function (response) {
@@ -131,7 +131,7 @@ function get_status() {
     login()
         .then(getOverallUnitStatus)
         .then(extractData)
-        .catch(function(error) {
+        .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         });

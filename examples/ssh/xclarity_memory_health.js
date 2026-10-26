@@ -1,15 +1,15 @@
 /**
  * Name: XClarity Memory Health
  * Description: This script can monitor memory health on Lenovo XClarity servers.
- *             
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under Lenovo XClarity version 8.42
- * 
+ *
  * Creates a Custom Driver table with the following columns:
  *      - ID (FRU Name): The identifier for the memory
  *      - Status: The current health status of the memory
- *      - Type: The type or model of the memory 
+ *      - Type: The type or model of the memory
  *      - Capacity: The total capacity of the memory
  */
 
@@ -27,17 +27,17 @@ var sshConfig = {
 var memoryHealthTable = D.createTable(
     "Memory Health Info",
     [
-        { label: "Status", valueType: D.valueType.STRING},
+        { label: "Status", valueType: D.valueType.STRING },
         { label: "Type", valueType: D.valueType.STRING },
-        { label: "Capacity", unit: "GB", valueType: D.valueType.NUMBER },      
+        { label: "Capacity", unit: "GB", valueType: D.valueType.NUMBER }
     ]
 );
 
 // Function to handle SSH errors and failure cases
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -51,13 +51,13 @@ function executeCommand(command) {
                 checkSshError(err);
             } else {
                 resolve(output);
-            }                  
+            }
         });
     });
 }
 
 /**
- * 
+ *
  * @remote_procedure
  * @label Validate Memory Health
  * @documentation Validates the connection and command execution
@@ -73,7 +73,7 @@ function parseValidateOutput(output) {
     if (output && output.indexOf("Error: Command not recognized") !== -1) {
         console.info("Validation failed: Command not supported");
         D.failure(D.errorType.PARSING_ERROR);
-    }else {
+    } else {
         console.info("Validation successful: Command is supported");
     }
 }
@@ -92,13 +92,13 @@ function get_status() {
 // Parse and insert memory health data into the custom table
 function parseData(output) {
     var lines = output.split("\n");
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    for (var i = 2; i < lines.length-1; i++) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    for (var i = 2; i < lines.length - 1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
-        var status =  values[2]; 
+        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+        var status =  values[2];
         var type = values[3];
         var capacity = parseInt(values[4]);
         memoryHealthTable.insertRecord(

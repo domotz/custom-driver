@@ -123,7 +123,7 @@ var redisTelnetParams = {
 };
 
 /**
- * 
+ *
  * @returns Promise wait for redis information
  */
 function getRedisInfo() {
@@ -145,7 +145,7 @@ function getRedisInfo() {
 }
 
 /**
- * 
+ *
  * @param {[string]} results redis info result
  * @returns redis info result grouped by sections
  */
@@ -165,7 +165,7 @@ function splitToSections(results) {
 }
 
 /**
- * 
+ *
  * @param {{[key]: [string]}} groupedResult list of information returned by redis server
  * @returns monitoring variables
  */
@@ -190,7 +190,6 @@ function parseInfo(groupedResult) {
         });
 }
 
-
 function failure(err) {
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
@@ -207,7 +206,6 @@ function validate() {
         .catch(failure);
 
 }
-
 
 /**
 * @remote_procedure

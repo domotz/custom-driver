@@ -1,12 +1,9 @@
-
-
 /**
  * This driver extracts information about top processes running under freebsd os
  * The communication protocol is SSH
  * This driver create a dynamic monitoring variables for the system statistics and top 10 processes
  * Tested under freebsd 12.3-STABLE
  */
-
 
 var _var = D.device.createVariable;
 // top rows to show
@@ -53,9 +50,9 @@ function exec_command(command, callback) {
 
 function convertToK(count, unit) {
     switch (unit) {
-    case "K": return count;
-    case "M": return count * 1000;
-    case "G": return count * 1000000;
+        case "K": return count;
+        case "M": return count * 1000;
+        case "G": return count * 1000000;
     }
 }
 
@@ -69,8 +66,6 @@ function validate() {
         D.success();
     });
 }
-
-
 
 /**
 * @remote_procedure
@@ -113,7 +108,7 @@ function get_status() {
             _var("arc_compressed", "ARC Compressed", convertToK(line5_data[1], line5_data[2]), "K"),
             _var("arc_uncompressed", "ARC Uncompressed", convertToK(line5_data[3], line5_data[4]), "K"),
             _var("swap_total", "SWAP Total", convertToK(line6_data[1], line6_data[2]), "K"),
-            _var("swap_free", "SWAP Free", convertToK(line6_data[3], line6_data[4]), "K"),
+            _var("swap_free", "SWAP Free", convertToK(line6_data[3], line6_data[4]), "K")
 
         ];
 

@@ -23,21 +23,21 @@
 
 const endpointDetails = {
     "endpoint": "lsquorum"
-}
+};
 
 const quorumInfoTable = D.createTable(
-    'Quorum Information Details',
+    "Quorum Information Details",
     [
-        {label: "Quorum Index", valueType: D.valueType.STRING},
-        {label: "Status", valueType: D.valueType.STRING},
-        {label: "Name", valueType: D.valueType.STRING},
-        {label: "Controller ID", valueType: D.valueType.STRING},
-        {label: "Controller Name", valueType: D.valueType.STRING},
-        {label: "Active", valueType: D.valueType.STRING},
-        {label: "Object Type", valueType: D.valueType.STRING},
-        {label: "Override", valueType: D.valueType.STRING},
-        {label: "Site ID", valueType: D.valueType.STRING},
-        {label: "Site Name", valueType: D.valueType.STRING}
+        { label: "Quorum Index", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Controller ID", valueType: D.valueType.STRING },
+        { label: "Controller Name", valueType: D.valueType.STRING },
+        { label: "Active", valueType: D.valueType.STRING },
+        { label: "Object Type", valueType: D.valueType.STRING },
+        { label: "Override", valueType: D.valueType.STRING },
+        { label: "Site ID", valueType: D.valueType.STRING },
+        { label: "Site Name", valueType: D.valueType.STRING }
     ]
 );
 
@@ -58,20 +58,19 @@ function callHttps(endpoint, headers) {
     return new Promise(function (resolve) {
         D.device.http.post(config, function (error, response, body) {
             if (error) {
-                console.error(error)
-                D.failure(D.errorType.GENERIC_ERROR)
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
             } else if (!response || response.statusCode === 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             } else if (response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR)
-            }
-            else if (response.statusCode !== 200) {
-                D.failure(D.errorType.GENERIC_ERROR)
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
             } else {
                 resolve(JSON.parse(body));
             }
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -81,8 +80,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -90,13 +89,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -107,16 +106,16 @@ function populateTable(quorumInfoList) {
     for (let i = 0; i < quorumInfoList.length; i++) {
         const quorumDetails = quorumInfoList[i];
         quorumInfoTable.insertRecord("" + (i + 1), [
-            quorumDetails['quorum_index'] || "N/A",
-            quorumDetails['status'] || "N/A",
-            quorumDetails['name'] || "N/A",
-            quorumDetails['controller_id'] || "N/A",
-            quorumDetails['controller_name'] || "N/A",
-            quorumDetails['active'] || "N/A",
-            quorumDetails['object_type'] || "N/A",
-            quorumDetails['override'] || "N/A",
-            quorumDetails['site_id'] || "N/A",
-            quorumDetails['site_name'] || "N/A"
+            quorumDetails["quorum_index"] || "N/A",
+            quorumDetails["status"] || "N/A",
+            quorumDetails["name"] || "N/A",
+            quorumDetails["controller_id"] || "N/A",
+            quorumDetails["controller_name"] || "N/A",
+            quorumDetails["active"] || "N/A",
+            quorumDetails["object_type"] || "N/A",
+            quorumDetails["override"] || "N/A",
+            quorumDetails["site_id"] || "N/A",
+            quorumDetails["site_name"] || "N/A"
         ]);
     }
 }
@@ -131,11 +130,11 @@ function validate() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function () {
-                    D.success()
-                })
+                    D.success();
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -150,12 +149,12 @@ function get_status() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function (response) {
-                    populateTable(response)
-                    D.success(quorumInfoTable)
-                })
+                    populateTable(response);
+                    D.success(quorumInfoTable);
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver gets queues from RabbitMQ management plugin provided an HTTP-based API using HTTP agent
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
@@ -27,8 +27,8 @@
  * Memory: The bytes of memory consumed by the Erlang process associated with the queue, including stack, heap and internal structures.
  * Consumers: The number of consumers.
  * -----------------------------------------
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
- * 
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
+ *
  */
 
 var port = 15672;
@@ -103,14 +103,13 @@ function getQueues(page) {
             queues = queues.concat(data.items);
             if (data.page < data.page_count) {
                 return getQueues(++page);
-            }
-            else {
+            } else {
                 return queues;
             }
         });
 }
 
-//fill the dynamic table with data related to queues  
+//fill the dynamic table with data related to queues
 function fillTable(queues) {
     queues.forEach(function (d) {
         d.forEach(function (item) {
@@ -193,7 +192,7 @@ function success() {
  * @remote_procedure
  * @label Get Device Variables
  * @documentation This procedure is used to extract monitoring parameters from RabbitMQ queues.
- * 
+ *
  */
 function get_status() {
     loadData()

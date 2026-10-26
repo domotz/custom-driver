@@ -20,45 +20,45 @@
  */
 
 // The VM ID for which you want to display the Integration Services.
-const vmIdFilter = D.getParameter('vmId')
+const vmIdFilter = D.getParameter("vmId");
 
 // WinRM command to retrieve VM Integration Services
-const getVmIntegrationServices = 'Get-VMIntegrationService -vm (get-vm -id "' + vmIdFilter + '")  | select-object id, name, enabled | ConvertTo-json'
+const getVmIntegrationServices = 'Get-VMIntegrationService -vm (get-vm -id "' + vmIdFilter + '")  | select-object id, name, enabled | ConvertTo-json';
 
 // Define the WinRM options when running the commands
 const winrmConfig = {
-  command: getVmIntegrationServices,
-  username: D.device.username(),
-  password: D.device.password(),
+    command: getVmIntegrationServices,
+    username: D.device.username(),
+    password: D.device.password(),
     // WinRM transport options:
     port: 5985,                // 5985 = HTTP, 5986 = HTTPS
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
-}
+    timeout: 30000               // per-command timeout in milliseconds
+};
 
 const booleanCodes = {
-  true: 'Yes',
-  false: 'No'
-}
+    true: "Yes",
+    false: "No"
+};
 
 // Creation of custom Integration Services table
 const integrationServicesTable = D.createTable(
-  'integration services',
-  [
-    { label: 'Name' },
-    { label: 'Enabled' }
-  ]
-)
+    "integration services",
+    [
+        { label: "Name" },
+        { label: "Enabled" }
+    ]
+);
 
 // Check for Errors on the WinRM command response
-function checkWinRmError (err) {
-  if (err.message) console.error(err.message)
-  if (err.code === 401) D.failure(D.errorType.AUTHENTICATION_ERROR)
-  if (err.code === 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-  console.error(err)
-  D.failure(D.errorType.GENERIC_ERROR)
+function checkWinRmError(err) {
+    if (err.message) console.error(err.message);
+    if (err.code === 401) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code === 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
@@ -66,15 +66,15 @@ function checkWinRmError (err) {
  * @label Validate WinRM is working on device
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate () {
-  winrmConfig.command = 'Get-vm'
-  D.device.sendWinRMCommand(winrmConfig, function (output) {
-    if (output.error === null) {
-      D.success()
-    } else {
-      checkWinRmError(output.error)
-    }
-  })
+function validate() {
+    winrmConfig.command = "Get-vm";
+    D.device.sendWinRMCommand(winrmConfig, function (output) {
+        if (output.error === null) {
+            D.success();
+        } else {
+            checkWinRmError(output.error);
+        }
+    });
 }
 
 /**
@@ -82,8 +82,8 @@ function validate () {
  * @label Retrieve list of VM integration services
  * @documentation This procedure retrieves a list of integration services for the target virtual Machine
  */
-function get_status () {
-  D.device.sendWinRMCommand(winrmConfig, parseOutput)
+function get_status() {
+    D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
 /**
@@ -92,10 +92,10 @@ function get_status () {
  * @param {string} output - The string to be sanitized.
  * @returns {string} - The sanitized string.
  */
-function sanitize (output) {
-  const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+function sanitize(output) {
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -105,12 +105,12 @@ function sanitize (output) {
  * @param {string} input - The input string to extract the integration service ID from.
  * @returns {string} - The extracted integration service ID or the original input string.
  */
-function extractNetworkAdaptersId (input) {
-  if (input.indexOf('\\') !== -1) {
-    return input.split('\\').pop()
-  } else {
-    return input
-  }
+function extractNetworkAdaptersId(input) {
+    if (input.indexOf("\\") !== -1) {
+        return input.split("\\").pop();
+    } else {
+        return input;
+    }
 }
 
 /**
@@ -118,41 +118,41 @@ function extractNetworkAdaptersId (input) {
  * The function sanitizes the ID, converts boolean indicators to codes, ensures the PoolName is not empty,
  * and inserts the record into the table
  */
-function populateTable (id, Name, Enabled) {
-  const recordId = sanitize(extractNetworkAdaptersId(id))
-  Enabled = booleanCodes[Enabled]
-  Name = Name || 'N/A'
-  integrationServicesTable.insertRecord(recordId, [Name, Enabled])
+function populateTable(id, Name, Enabled) {
+    const recordId = sanitize(extractNetworkAdaptersId(id));
+    Enabled = booleanCodes[Enabled];
+    Name = Name || "N/A";
+    integrationServicesTable.insertRecord(recordId, [Name, Enabled]);
 }
 
 /**
  * @description Parses the output of the WinRM command and fill the integration services table.
  * @param {object} output - The output of the WinRM command.
  */
-function parseOutput (output) {
-  if (output.error === null) {
-    const jsonOutput = JSON.parse(JSON.stringify(output))
-    let listOfIntegrationServices = []
-    let result = null
-    if (!jsonOutput.outcome.stdout) {
-      console.log('There are no integration services related to this virtual machine.')
+function parseOutput(output) {
+    if (output.error === null) {
+        const jsonOutput = JSON.parse(JSON.stringify(output));
+        let listOfIntegrationServices = [];
+        let result = null;
+        if (!jsonOutput.outcome.stdout) {
+            console.log("There are no integration services related to this virtual machine.");
+        } else {
+            result = JSON.parse(jsonOutput.outcome.stdout);
+        }
+        if (Array.isArray(result)) {
+            listOfIntegrationServices = result;
+        } else if (typeof result === "object") {
+            listOfIntegrationServices.push(result);
+        }
+        for (let k = 0; k < listOfIntegrationServices.length; k++) {
+            populateTable(
+                listOfIntegrationServices[k].Id,
+                listOfIntegrationServices[k].Name,
+                listOfIntegrationServices[k].Enabled
+            );
+        }
+        D.success(integrationServicesTable);
     } else {
-      result = JSON.parse(jsonOutput.outcome.stdout)
+        checkWinRmError(output.error);
     }
-    if (Array.isArray(result)) {
-      listOfIntegrationServices = result
-    } else if (typeof result === 'object') {
-      listOfIntegrationServices.push(result)
-    }
-    for (let k = 0; k < listOfIntegrationServices.length; k++) {
-      populateTable(
-        listOfIntegrationServices[k].Id,
-        listOfIntegrationServices[k].Name,
-        listOfIntegrationServices[k].Enabled
-      )
-    }
-    D.success(integrationServicesTable)
-  } else {
-    checkWinRmError(output.error)
-  }
 }

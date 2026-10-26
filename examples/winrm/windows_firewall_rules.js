@@ -28,26 +28,25 @@
  *    - Administrator
  */
 
-// List of firewall rules Display Name you want to show 
+// List of firewall rules Display Name you want to show
 // firewallFilter = ["Skype", "AnyDesk"] to display firewall rules related to Skype and AnyDesk
 // or
 // firewallFilter = ["All"] to display all firewall rules.
-const firewallFilter = D.getParameter('firewallFilter');
+const firewallFilter = D.getParameter("firewallFilter");
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 var getFirewallRules;
-if (firewallFilter.length === 1 && firewallFilter[0].toLowerCase() === 'all') {
-    getFirewallRules = 'Get-NetFirewallRule | Select-Object Name, DisplayName, Group, Direction, Action, Enabled | ConvertTo-Json -Compress';
-}else{
-    const firewallConditions = firewallFilter.map(function(str){return '$_.DisplayName -like "'+str+'"';});
-    const firewallFilterExpression = firewallConditions.join(' -or ');
-    getFirewallRules = 'Get-NetFirewallRule | Where-Object {' + firewallFilterExpression + '} | Select-Object Name, DisplayName, Group, Direction, Action, Enabled | ConvertTo-Json -Compress';
+if (firewallFilter.length === 1 && firewallFilter[0].toLowerCase() === "all") {
+    getFirewallRules = "Get-NetFirewallRule | Select-Object Name, DisplayName, Group, Direction, Action, Enabled | ConvertTo-Json -Compress";
+} else {
+    const firewallConditions = firewallFilter.map(function (str) {return '$_.DisplayName -like "' + str + '"';});
+    const firewallFilterExpression = firewallConditions.join(" -or ");
+    getFirewallRules = "Get-NetFirewallRule | Where-Object {" + firewallFilterExpression + "} | Select-Object Name, DisplayName, Group, Direction, Action, Enabled | ConvertTo-Json -Compress";
 }
-
 
 // Define the WinRM options when running the commands
 const config = {
@@ -58,26 +57,26 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 const directionCodes = {
     "1": "Inbound",
-    "2": "Outbound",
+    "2": "Outbound"
 };
 
 const actionCodes = {
     "1": "NotConfigured",
     "2": "Allow",
-    "3": "Block",
+    "3": "Block"
 };
 
 const enabledCodes = {
     "1": "Yes",
-    "2": "No",
+    "2": "No"
 };
 
-// Creation of custom driver table 
+// Creation of custom driver table
 const firewallTable = D.createTable(
     "FireWall rules",
     [
@@ -124,19 +123,19 @@ function get_status() {
         .catch(instance.checkError);
 }
 
-function sanitize(output){
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 function populateTable(row) {
-    const recordId = sanitize(row.Name)
-    const displayName = row.DisplayName
-    const group = row.Group
-    const direction = directionCodes[row.Direction]
-    const action = actionCodes[row.Action]
-    const enabled = enabledCodes[row.Enabled]
+    const recordId = sanitize(row.Name);
+    const displayName = row.DisplayName;
+    const group = row.Group;
+    const direction = directionCodes[row.Direction];
+    const action = actionCodes[row.Action];
+    const enabled = enabledCodes[row.Enabled];
     firewallTable.insertRecord(recordId, [displayName || "N/A", group || "N/A", direction, action, enabled]);
 }
 
@@ -150,10 +149,10 @@ function parseOutput(listOfFirewallRules) {
             for (let k = 0; k < listOfFirewallRules.length; k++) {
                 populateTable(listOfFirewallRules[k]);
             }
-        } else if (typeof listOfFirewallRules === 'object') {
+        } else if (typeof listOfFirewallRules === "object") {
             populateTable(listOfFirewallRules);
         }
-    }else{
+    } else {
         console.log("There are no firewall rules related to this filter.");
     }
     D.success(firewallTable);
@@ -173,7 +172,7 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
@@ -188,17 +187,17 @@ WinRMHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
 
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {}
@@ -212,7 +211,7 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
     const self = this;
@@ -234,12 +233,12 @@ SSHHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

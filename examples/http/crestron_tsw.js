@@ -1,11 +1,11 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Crestron Touch Screen (TSW)
  * Description: This custom driver is designed to collect information for Crestron Touch Screen device's calendar synchronizations.
- *   
+ *
  * Communication protocol is HTTPS
- * 
- * Tested with Crestron TSW-760 version: 3.002.1025 
+ *
+ * Tested with Crestron TSW-760 version: 3.002.1025
  *
  * Custom Driver Variables:
  *      - CalendarSyncStatus: Monitors the synchronization status of the device's calendar.
@@ -45,7 +45,7 @@ function login() {
         },
         form: {
             login: D.device.username(),
-            passwd: D.device.password(),
+            passwd: D.device.password()
         },
         protocol: "https",
         jar: true,
@@ -74,10 +74,10 @@ function getDevice() {
 function extractVars(body) {
     var data = JSON.parse(body);
     return [
-        D.createVariable("calendar_sync_status", "CalendarSyncStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.CalendarSyncStatus, null, D.valueType.STRING ),
+        D.createVariable("calendar_sync_status", "CalendarSyncStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.CalendarSyncStatus, null, D.valueType.STRING),
         D.createVariable("connection_status", "ConnectionStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatus, null, D.valueType.STRING),
         D.createVariable("connection_status_message", "ConnectionStatusMessage", data.Device.SchedulingPanel.Monitoring.Scheduling.ConnectionStatusMessage, null, D.valueType.STRING),
-        D.createVariable("exchange_registration_status", "ExchangeRegistrationStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.Exchange.Registration.ExchangeRegistrationStatus, null, D.valueType.STRING),
+        D.createVariable("exchange_registration_status", "ExchangeRegistrationStatus", data.Device.SchedulingPanel.Monitoring.Scheduling.Exchange.Registration.ExchangeRegistrationStatus, null, D.valueType.STRING)
     ];
 }
 
@@ -86,7 +86,7 @@ function extractVars(body) {
  * @label Validate TSW Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     login()
         .then(getDevice)
         .then(function (deviceResponse) {
@@ -106,7 +106,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Device 
+ * @label Get Device
  * @documentation This procedure is used to extract monitoring parameters from Crestron TSW.
  */
 function get_status() {

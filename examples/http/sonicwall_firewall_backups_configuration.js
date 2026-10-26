@@ -250,7 +250,7 @@ function backup() {
                     "\\n\\s*\"pop_pass\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"client_password\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"identity_dn_password\"\\s*:\\s*\"6,.*\",?",
-                    "\\n\\s*\"admin_user_password\"\\s*:\\s*\"6,.*\",?",
+                    "\\n\\s*\"admin_user_password\"\\s*:\\s*\"6,.*\",?"
                 ]
             }));
         })
@@ -263,7 +263,7 @@ function prettifyJSON(json) {
     const normalized = json.replaceAll(/(?<!")(\b0x(\d|[a-f])+\b)(?!")/gi, function (res) {
         return '"' + res + '"';
     });
-    return JSON.stringify(JSON.parse(normalized), null, 2).replaceAll(/"0x[0-9a-fA-F]+"/gi, function(res){
-        return res.replaceAll('"', '');
-    })
+    return JSON.stringify(JSON.parse(normalized), null, 2).replaceAll(/"0x[0-9a-fA-F]+"/gi, function (res) {
+        return res.replaceAll('"', "");
+    });
 }

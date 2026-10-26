@@ -1,7 +1,7 @@
 /**
  * The driver uses the AWS CloudWatch API to monitor the CloudWatch metrics for an AWS billing.
  * Is retrieving billing metrics from AWS to monitor AWS cost and usage to ensure that the cost of AWS usage does not exceed the allocated budget.
- * 
+ *
  * Communication protocol is https.
  */
 
@@ -61,7 +61,7 @@ var body = JSON.stringify({
                         ]
                     }
                 }
-            ],
+            ]
         }
     },
 
@@ -111,7 +111,7 @@ function httpPost() {
                 "X-Amz-Target": "AWSInsightsIndexService.GetCostAndUsage",
                 "Content-Type": "application/x-amz-json-1.0",
                 "Authorization": auth,
-                "Host": host,
+                "Host": host
             },
             body: body
         },
@@ -135,7 +135,7 @@ function httpPost() {
 }
 
 /**
- * @returns promise for http response containing billing metrics 
+ * @returns promise for http response containing billing metrics
  */
 function getBillingMetrics() {
     var payload = {};
@@ -166,7 +166,7 @@ function fillConfig() {
             unit: "USD"
         },
         {
-            //The total cost of your usage, including any discounts or credits that have been applied. 
+            //The total cost of your usage, including any discounts or credits that have been applied.
             uid: "BlendedCost",
             label: "BlendedCost",
             execute: getBilling("BlendedCost"),
@@ -187,14 +187,14 @@ function fillConfig() {
             unit: "USD"
         },
         {
-            //The normalized usage amount for a specific resource, factoring in any differences in resource usage across different instance sizes, regions, or other dimensions. 
+            //The normalized usage amount for a specific resource, factoring in any differences in resource usage across different instance sizes, regions, or other dimensions.
             uid: "NormalizedUsageAmount",
             label: "NormalizedUsageAmount",
             execute: getBilling("NormalizedUsageAmount"),
             unit: "N/A"
         },
         {
-            //The total cost of your usage, without blending across usage types or operations. 
+            //The total cost of your usage, without blending across usage types or operations.
             uid: "UnblendedCost",
             label: "UnblendedCost",
             execute: getBilling("UnblendedCost"),
@@ -206,12 +206,12 @@ function fillConfig() {
             label: "UsageQuantity",
             execute: getBilling("UsageQuantity"),
             unit: "N/A"
-        },
+        }
     ];
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

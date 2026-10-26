@@ -12,7 +12,7 @@ var lastLoginUnit = "line";
 
 /**
  * The SSH Command Options
- * @property {string} [prompt]  - The SSH prompt must be set if different than # 
+ * @property {string} [prompt]  - The SSH prompt must be set if different than #
  * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
@@ -60,13 +60,13 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used to collect 
+* @documentation This procedure is used to collect
 * the last user string and store it in a custom driver variable
 */
 function get_status() {
     console.info("Getting last login ... ");
     /**
-     *  'grep' matches expressions 
+     *  'grep' matches expressions
      * in the '/var/log/auth.log' file:
      *'login' for a login at the console;
     *'accepted' for a successful SSH login;
@@ -74,14 +74,14 @@ function get_status() {
     * option '-e' gives the [e]xpression
     * that follows;
     * '|' pipes the output
-    * as input for the next command; 
+    * as input for the next command;
     * 'tail' takes the last lines of input;
-    * option '-n2' takes the last 
-    * '2' [n]umber of lines, as the 
+    * option '-n2' takes the last
+    * '2' [n]umber of lines, as the
     * last line will be your current login;
     * '|' pipes once again;
     * 'head' takes the first lines of input;
-    * option '-n1' takes the first '1' line 
+    * option '-n1' takes the first '1' line
     * (the last login before your current one);
     */
     var commandLastLogin = "grep -i -e login -e accepted /var/log/auth.log | grep -v \"grep\" | tail -n2 | head -n1";

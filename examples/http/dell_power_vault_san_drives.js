@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Dell PowerVault SAN Drives
  * Description: This script retrieves information about the drives of a Dell PowerVault SAN system using the Redfish API.
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on Dell PowerVault ME5024
  *
  * Creates a Custom Driver table with the following columns:
@@ -15,7 +15,7 @@
  **/
 
 var table = D.createTable(
-    "Drives",[
+    "Drives", [
         { label: "Serial Number", valueType: D.valueType.STRING },
         { label: "Rack", valueType: D.valueType.NUMBER },
         { label: "Rack Offset", valueType: D.valueType.NUMBER },
@@ -35,14 +35,14 @@ function login() {
         rejectUnauthorized: false,
         body: JSON.stringify({
             "UserName": D.device.username(),
-            "Password": D.device.password() 
+            "Password": D.device.password()
         })
     };
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body){
-            if (error) {  
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
-                D.failure(D.errorType.GENERIC_ERROR);                     
+                D.failure(D.errorType.GENERIC_ERROR);
             } else {
                 if (response.headers && response.headers["command-status"] && response.headers["command-status"].indexOf("Invalid session key") !== -1) {
                     console.error("Invalid session key found in response headers");
@@ -52,10 +52,10 @@ function login() {
                     console.error("Command failed found in response headers");
                     D.failure(D.errorType.AUTHENTICATION_ERROR);
                 }
-            
+
                 var sessionToken = response.headers["x-auth-token"];
                 resolve(sessionToken);
-            }            
+            }
         });
     });
 }
@@ -73,18 +73,18 @@ function httpGet(url, sessionToken) {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            'X-Auth-Token': sessionToken
+            "X-Auth-Token": sessionToken
         }
     };
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body){
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error(error);
-                return D.failure(D.errorType.GENERIC_ERROR);  
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode !== 200) {
                 console.error(error);
-                D.failure(D.errorType.GENERIC_ERROR);  
+                D.failure(D.errorType.GENERIC_ERROR);
             }
             resolve(JSON.parse(body));
         });
@@ -92,21 +92,21 @@ function httpGet(url, sessionToken) {
 }
 
 // Function to make an HTTP GET request to retrieve controllers from the Dell PowerVault SAN system
-function getControllers(sessionToken){
+function getControllers(sessionToken) {
     return httpGet("/redfish/v1/Storage", sessionToken)
-        .then(function(controllers){
+        .then(function (controllers) {
             if (controllers && controllers.Members) {
                 var promises = controllers.Members.map(function (member) {
-                    return getControllerInfo(member['@odata.id'], sessionToken);
+                    return getControllerInfo(member["@odata.id"], sessionToken);
                 });
                 return Promise.all(promises);
             } else {
                 console.error("Invalid response or missing Members array");
-                D.failure(D.errorType.GENERIC_ERROR);                     
+                D.failure(D.errorType.GENERIC_ERROR);
 
-            } 
+            }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Error retrieving controller info " + err);
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         });
@@ -119,19 +119,19 @@ function getControllers(sessionToken){
  */
 function getControllerInfo(controllerUrl, sessionToken) {
     return httpGet(controllerUrl, sessionToken)
-        .then(function(controller) {
+        .then(function (controller) {
             if (controller && controller.Name && controller.Drives) {
-                var drivePromises = controller.Drives.map(function(drive) {
-                    return getDriveInfo(drive['@odata.id'], controller.Name, sessionToken);
+                var drivePromises = controller.Drives.map(function (drive) {
+                    return getDriveInfo(drive["@odata.id"], controller.Name, sessionToken);
                 });
                 return Promise.all(drivePromises);
             } else {
                 console.error("Controller name or drives not found");
-                D.failure(D.errorType.GENERIC_ERROR);                     
+                D.failure(D.errorType.GENERIC_ERROR);
 
             }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Error retrieving controllers " + err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
@@ -145,29 +145,29 @@ function getControllerInfo(controllerUrl, sessionToken) {
  */
 function getDriveInfo(driveUrl, controllerName, sessionToken) {
     return httpGet(driveUrl, sessionToken)
-        .then(function(drive) {
+        .then(function (drive) {
             if (drive && drive.Name) {
                 return { controllerName: controllerName, drive: drive };
             } else {
                 console.error("Drive name not found");
-                D.failure(D.errorType.GENERIC_ERROR);                     
+                D.failure(D.errorType.GENERIC_ERROR);
             }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Error retrieving drive info: " + err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 function extractData(data) {
-    data.forEach(function(driveData) {
-        driveData.forEach(function(drives){
+    data.forEach(function (driveData) {
+        driveData.forEach(function (drives) {
             var controllerName = drives.controllerName;
             var drive = drives.drive;
             if (!controllerName || !drive) {
@@ -179,14 +179,14 @@ function extractData(data) {
             var rack = drive.PhysicalLocation.Placement.Rack;
             var rackOffset = drive.PhysicalLocation.Placement.RackOffset;
             var health = drive.Status.State == "Enabled" ? drive.Status.Health : "N/A";
-            var recordId = sanitize(controllerName + " " + name); 
+            var recordId = sanitize(controllerName + " " + name);
             table.insertRecord(recordId, [
                 serialNumber,
-                rack, 
+                rack,
                 rackOffset,
                 health
-            ]);    
-        });     
+            ]);
+        });
     });
     D.success(table);
 }
@@ -196,10 +196,10 @@ function extractData(data) {
  * @label Validate Dell PowerVault device
  * @documentation This procedure is used to validate the presence of a Dell PowerVault device by checking the availability of a specific Redfish API endpoint
  */
-function validate(){
+function validate() {
     login()
         .then(getControllers)
-        .then(function(response) {
+        .then(function (response) {
             if (response && response.length > 0) {
                 console.log("Validation successful");
                 D.success();
@@ -208,12 +208,11 @@ function validate(){
                 D.failure(D.errorType.PARSING_ERROR);
             }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
-
 
 /**
  * @remote_procedure

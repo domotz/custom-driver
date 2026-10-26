@@ -18,14 +18,14 @@
  * Tested devices: Shure Ceiling Array Microphone
  */
 
-var varPort = D.getParameter('port') || 2202; // Default Shure telnet port
+var varPort = D.getParameter("port") || 2202; // Default Shure telnet port
 console.info("port:", varPort);
 
 // Shure commands to retrieve information
 var SHURE_COMMANDS = {
     MUTE_STATUS: "GET DEVICE_AUDIO_MUTE",
     SERIAL_NUMBER: "GET SERIAL_NUM",
-    FIRMWARE_VERSION: "GET FW_VER",
+    FIRMWARE_VERSION: "GET FW_VER"
     // DEVICE_ID: "GET DEVICE_ID",
     // LED_MUTED: "GET LED_COLOR_MUTED",
     // LED_UNMUTED: "GET LED_COLOR_UNMUTED"
@@ -36,8 +36,8 @@ var telnetParams = {
     port: varPort,
     negotiationMandatory: true,
     timeout: 2000,  // Base timeout
-    shellPrompt: '>',
-    enterKey: '\r\n',
+    shellPrompt: ">",
+    enterKey: "\r\n",
     echoLines: 0,
     stripShellPrompt: true,
     debug: true
@@ -62,10 +62,10 @@ function delay(ms) {
  * @label Mute
  * @documentation Mute the microphone
  */
-function custom_1(){
+function custom_1() {
     muteOn()
-        .then(function(){ D.success() })
-        .catch(failure)
+        .then(function () { D.success(); })
+        .catch(failure);
 }
 
 /**
@@ -73,10 +73,10 @@ function custom_1(){
  * @label Unmute
  * @documentation UnMute the microphone
  */
-function custom_2(){
+function custom_2() {
     unMuteOn()
-        .then(function(){ D.success() })
-        .catch(failure)
+        .then(function () { D.success(); })
+        .catch(failure);
 }
 
 /**
@@ -84,10 +84,10 @@ function custom_2(){
  * @label Toggle Mute/Unmute
  * @documentation Toggle the microphone
  */
-function custom_3(){
+function custom_3() {
     toggleMute()
-        .then(function(){ D.success() })
-        .catch(failure)
+        .then(function () { D.success(); })
+        .catch(failure);
 }
 
 /**
@@ -101,12 +101,11 @@ function sendShureCommandWithRetry(command, retryCount, currentTimeout) {
     retryCount = retryCount || 0;
     currentTimeout = currentTimeout || BASE_TIMEOUT;
 
-    
     // Format command with < > brackets and proper line ending
     var formattedCmd = "< " + command + " >\r\n";
-    
+
     console.log("Attempting command:", command, "Retry:", retryCount, "Timeout:", currentTimeout);
-    
+
     var params = Object.assign({}, telnetParams, {
         command: formattedCmd,
         exitOnFirstResponse: true,
@@ -114,7 +113,7 @@ function sendShureCommandWithRetry(command, retryCount, currentTimeout) {
     });
 
     return new Promise(function (resolve, reject) {
-        D.device.sendTelnetCommand(params, function(out, err) {
+        D.device.sendTelnetCommand(params, function (out, err) {
             if (err) {
                 console.error("Error executing command:", command, "Retry:", retryCount, "Error:", err);
                 handleRetry(command, retryCount, currentTimeout, resolve, reject);
@@ -162,13 +161,13 @@ function handleRetry(command, retryCount, currentTimeout, resolve, reject) {
 
     // Add a small delay before retry
     delay(200)
-        .then(function() {
+        .then(function () {
             return sendShureCommandWithRetry(command, retryCount + 1, nextTimeout);
         })
-        .then(function(response) {
+        .then(function (response) {
             resolve(response);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             reject(err);
         });
 }
@@ -182,11 +181,11 @@ function handleRetry(command, retryCount, currentTimeout, resolve, reject) {
 function parseShureResponse(responses, commandIdentifier) {
     var pattern = new RegExp("< REP " + commandIdentifier + "\\s+([^>]+)>");
     var matches = responses.match(pattern);
-    
+
     if (matches && matches[1]) {
-        return matches[1].trim().replace(/^\{|\}$/g, '').trim();
+        return matches[1].trim().replace(/^\{|\}$/g, "").trim();
     }
-    
+
     return "Unknown";
 }
 
@@ -198,7 +197,7 @@ function parseShureResponse(responses, commandIdentifier) {
  */
 function executeCommandSequence(commands, results) {
     results = results || [];
-    
+
     if (commands.length === 0) {
         return Promise.resolve(results);
     }
@@ -207,7 +206,7 @@ function executeCommandSequence(commands, results) {
     var remainingCmds = commands.slice(1);
 
     return sendShureCommandWithRetry("GET " + currentCmd.command)
-        .then(function(response) {
+        .then(function (response) {
             results.push(D.createVariable(
                 currentCmd.id,
                 currentCmd.label,
@@ -217,10 +216,10 @@ function executeCommandSequence(commands, results) {
             // Add a small delay before next command
             return delay(200);
         })
-        .then(function() {
+        .then(function () {
             return executeCommandSequence(remainingCmds, results);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Error executing command", currentCmd.command, err);
             results.push(D.createVariable(
                 currentCmd.id,
@@ -228,7 +227,7 @@ function executeCommandSequence(commands, results) {
                 "Error"
             ));
             // Continue with next command even after error
-            return delay(200).then(function() {
+            return delay(200).then(function () {
                 return executeCommandSequence(remainingCmds, results);
             });
         });
@@ -240,9 +239,9 @@ function executeCommandSequence(commands, results) {
  */
 function getShureInfo() {
     var commandSequence = [
-        {command: "DEVICE_AUDIO_MUTE", id: "Audio Mute", label: "Mute Status"},
-        {command: "SERIAL_NUM", id: "Serial Number", label: "Serial Number"},
-        {command: "FW_VER", id: "Firmware Version", label: "Firmware Version"}
+        { command: "DEVICE_AUDIO_MUTE", id: "Audio Mute", label: "Mute Status" },
+        { command: "SERIAL_NUM", id: "Serial Number", label: "Serial Number" },
+        { command: "FW_VER", id: "Firmware Version", label: "Firmware Version" }
         // {command: "DEVICE_ID", id: "Device ID", label: "Device ID"},
         // {command: "LED_COLOR_MUTED", id: "LED Muted Color", label: "LED Color when Muted"},
         // {command: "LED_COLOR_UNMUTED", id: "LED Unmuted Color", label: "LED Color when Unmuted"}
@@ -263,14 +262,14 @@ function failure(err) {
  */
 function validate() {
     return sendShureCommandWithRetry("GET DEVICE_AUDIO_MUTE")
-        .then(function(response) {
+        .then(function (response) {
             if (response.includes("REP DEVICE_AUDIO_MUTE")) {
                 D.success();
             } else {
                 D.failure(D.errorType.PARSING_ERROR);
             }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
@@ -298,12 +297,11 @@ function sendShureSetCommand(command, retryCount, currentTimeout) {
     retryCount = retryCount || 0;
     currentTimeout = currentTimeout || BASE_TIMEOUT;
 
-    
     console.log("Attempting SET command:", command, "Retry:", retryCount, "Timeout:", currentTimeout);
-    
+
     // Format command with < > brackets and proper line ending
     var formattedCmd = "< " + command + " >\r\n";
-    
+
     var params = Object.assign({}, telnetParams, {
         command: formattedCmd,
         exitOnFirstResponse: true,
@@ -311,7 +309,7 @@ function sendShureSetCommand(command, retryCount, currentTimeout) {
     });
 
     return new Promise(function (resolve, reject) {
-        D.device.sendTelnetCommand(params, function(out, err) {
+        D.device.sendTelnetCommand(params, function (out, err) {
             if (err) {
                 console.error("Error executing SET command:", command, "Retry:", retryCount, "Error:", err);
                 handleSetRetry(command, retryCount, currentTimeout, resolve, reject);
@@ -359,13 +357,13 @@ function handleSetRetry(command, retryCount, currentTimeout, resolve, reject) {
 
     // Add a delay before retry
     delay(500)  // Longer delay for SET commands
-        .then(function() {
+        .then(function () {
             return sendShureSetCommand(command, retryCount + 1, nextTimeout);
         })
-        .then(function(response) {
+        .then(function (response) {
             resolve(response);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             reject(err);
         });
 }
@@ -376,7 +374,7 @@ function handleSetRetry(command, retryCount, currentTimeout, resolve, reject) {
  */
 function muteOn() {
     return sendShureSetCommand("SET DEVICE_AUDIO_MUTE ON")
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Failed to mute:", err);
             throw err;
         });
@@ -388,7 +386,7 @@ function muteOn() {
  */
 function unMuteOn() {
     return sendShureSetCommand("SET DEVICE_AUDIO_MUTE OFF")
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Failed to unmute:", err);
             throw err;
         });
@@ -400,7 +398,7 @@ function unMuteOn() {
  */
 function toggleMute() {
     return sendShureSetCommand("SET DEVICE_AUDIO_MUTE TOGGLE")
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Failed to toggle mute:", err);
             throw err;
         });

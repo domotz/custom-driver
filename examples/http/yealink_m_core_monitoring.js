@@ -26,7 +26,7 @@
  * @type NUMBER
  * @default 443
  */
-var port = D.getParameter('port');
+var port = D.getParameter("port");
 
 // Global variable to store auth token
 var authToken = null;
@@ -71,7 +71,7 @@ function login() {
         user: D.device.username(),
         password: D.device.password()
     };
-    
+
     var config = {
         url: "/centralcontrol/authentication",
         protocol: "https",
@@ -82,27 +82,27 @@ function login() {
         body: JSON.stringify(loginData),
         rejectUnauthorized: false
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body) {
+        D.device.http.post(config, function (error, response, body) {
             if (error) {
                 console.error("Login error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Login failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             try {
                 var responseData = JSON.parse(body);
                 if (responseData.status === 200 && responseData.data && responseData.data.token) {
@@ -121,7 +121,6 @@ function login() {
     });
 }
 
-
 /**
  * Stops a promise chain after D.success/D.failure has already ended the execution.
  * @returns A promise that never settles, so no later step of the chain runs.
@@ -135,13 +134,13 @@ function haltChain() {
  * @returns {Object} A promise that resolves with the device list data.
  */
 function getDeviceList() {
-    
+
     if (!authToken) {
         console.error("No auth token available for device list request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/centralcontrol/system/devices",
         protocol: "https",
@@ -151,27 +150,27 @@ function getDeviceList() {
         },
         rejectUnauthorized: false
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("Device list request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for device list request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Device list request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("Device list retrieved successfully");
             resolve(body);
         });
@@ -183,13 +182,13 @@ function getDeviceList() {
  * @returns {Object} A promise that resolves with the audio status data.
  */
 function getAudioStatus() {
-    
+
     if (!authToken) {
         console.error("No auth token available for audio status request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/centralcontrol/audio/mute",
         protocol: "https",
@@ -200,27 +199,27 @@ function getAudioStatus() {
         },
         rejectUnauthorized: false
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("Audio status request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for audio status request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Audio status request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("Audio status retrieved successfully");
             resolve(body);
         });
@@ -232,13 +231,13 @@ function getAudioStatus() {
  * @returns {Object} A promise that resolves with the camera position data.
  */
 function getCameraPosition() {
-    
+
     if (!authToken) {
         console.error("No auth token available for camera position request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/centralcontrol/camera/position",
         protocol: "https",
@@ -248,27 +247,27 @@ function getCameraPosition() {
         },
         rejectUnauthorized: false
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("Camera position request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for camera position request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Camera position request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("Camera position retrieved successfully");
             resolve(body);
         });
@@ -280,13 +279,13 @@ function getCameraPosition() {
  * @returns {Object} A promise that resolves with the system status data.
  */
 function getSystemStatus() {
-    
+
     if (!authToken) {
         console.error("No auth token available for system status request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var config = {
         url: "/centralcontrol/system/status",
         protocol: "https",
@@ -297,27 +296,27 @@ function getSystemStatus() {
         },
         rejectUnauthorized: false
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body) {
+        D.device.http.get(config, function (error, response, body) {
             if (error) {
                 console.error("System status request error:", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for system status request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("System status request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             console.info("System status retrieved successfully");
             resolve(body);
         });
@@ -330,9 +329,9 @@ function getSystemStatus() {
  * @returns {string} Sanitized string
  */
 function sanitize(output) {
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -341,13 +340,13 @@ function sanitize(output) {
  */
 function createDeviceTable(body) {
     console.info("Creating device table from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
-        if (responseData.status === 200 && responseData.data && responseData.data['device-list']) {
-            var deviceList = responseData.data['device-list'];
-            
+
+        if (responseData.status === 200 && responseData.data && responseData.data["device-list"]) {
+            var deviceList = responseData.data["device-list"];
+
             // Create the table with appropriate columns
             deviceTable = D.createTable(
                 "Connected Devices",
@@ -360,12 +359,12 @@ function createDeviceTable(body) {
                     { label: "ID", valueType: D.valueType.NUMBER }
                 ]
             );
-            
+
             // Populate the table with device data
             for (var i = 0; i < deviceList.length; i++) {
                 var device = deviceList[i];
                 var recordId = sanitize(device.serialnumber || device.macaddress || i.toString());
-                
+
                 deviceTable.insertRecord(recordId, [
                     device.model || "N/A",
                     device.firmware || "N/A",
@@ -375,7 +374,7 @@ function createDeviceTable(body) {
                     device.id !== undefined ? device.id : -1
                 ]);
             }
-            
+
             console.info("Device table created successfully with", deviceList.length, "devices");
         } else {
             console.error("Invalid device list response:", body);
@@ -391,10 +390,10 @@ function createDeviceTable(body) {
  */
 function createAudioStatusVariable(body) {
     console.info("Creating audio status variable from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.status === 200 && responseData.data && responseData.data.status !== undefined) {
             var audioStatus = responseData.data.status;
             variables.push(D.device.createVariable("audio-status", "Audio Status", audioStatus, null, D.valueType.STRING));
@@ -413,10 +412,10 @@ function createAudioStatusVariable(body) {
  */
 function createSystemStatusVariable(body) {
     console.info("Creating system status variable from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.status === 200 && responseData.data && responseData.data.status !== undefined) {
             var systemStatus = responseData.data.status;
             variables.push(D.device.createVariable("system-status", "System Status", systemStatus, null, D.valueType.STRING));
@@ -435,25 +434,25 @@ function createSystemStatusVariable(body) {
  */
 function createCameraPositionVariables(body) {
     console.info("Creating camera position variables from response:", body);
-    
+
     try {
         var responseData = JSON.parse(body);
-        
+
         if (responseData.status === 200 && responseData.data) {
             var position = responseData.data;
-            
+
             if (position.x !== undefined) {
                 variables.push(D.device.createVariable("camera-position-x", "Camera Position X", position.x, null, D.valueType.NUMBER));
             }
-            
+
             if (position.y !== undefined) {
                 variables.push(D.device.createVariable("camera-position-y", "Camera Position Y", position.y, null, D.valueType.NUMBER));
             }
-            
+
             if (position.z !== undefined) {
                 variables.push(D.device.createVariable("camera-position-z", "Camera Position Z", position.z, null, D.valueType.NUMBER));
             }
-            
+
             console.info("Camera position variables created: x=" + position.x + ", y=" + position.y + ", z=" + position.z);
         } else {
             console.error("Invalid camera position response:", body);
@@ -494,11 +493,11 @@ function get_status() {
     // Clear variables array for fresh data
     variables = [];
     deviceTable = null;
-    
+
     login()
-        .then(function(token) {
+        .then(function (token) {
             console.info("Authentication successful, proceeding with data retrieval");
-            
+
             // Fetch all data in parallel
             return Promise.all([
                 getDeviceList(),
@@ -507,20 +506,20 @@ function get_status() {
                 getCameraPosition()
             ]);
         })
-        .then(function(responses) {
+        .then(function (responses) {
             var deviceListResponse = responses[0];
             var audioStatusResponse = responses[1];
             var systemStatusResponse = responses[2];
             var cameraPositionResponse = responses[3];
-            
+
             // Process all responses
             createDeviceTable(deviceListResponse);
             createAudioStatusVariable(audioStatusResponse);
             createSystemStatusVariable(systemStatusResponse);
             createCameraPositionVariables(cameraPositionResponse);
-            
+
             console.info("Data extraction completed successfully");
-            
+
             // Return results with both variables and table
             if (variables.length > 0 && deviceTable) {
                 D.success(variables, deviceTable);
@@ -545,18 +544,18 @@ function get_status() {
  * @returns {Object} A promise that resolves with the reboot status
  */
 function rebootDevice(serialNumber) {
-    
+
     if (!authToken) {
         console.error("No auth token available for reboot request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
         return haltChain();
     }
-    
+
     var rebootData = {
         status: "reboot",
         sn: serialNumber
     };
-    
+
     var config = {
         url: "/centralcontrol/system/status",
         protocol: "https",
@@ -568,27 +567,27 @@ function rebootDevice(serialNumber) {
         body: JSON.stringify(rebootData),
         rejectUnauthorized: false
     };
-    
+
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body) {
+        D.device.http.post(config, function (error, response, body) {
             if (error) {
                 console.error("Reboot request error for device " + serialNumber + ":", error);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             if (response.statusCode == 401) {
                 console.error("Authentication failed for reboot request");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
                 return;
             }
-        
+
             if (response.statusCode != 200) {
                 console.error("Reboot request failed with status code:", response.statusCode);
                 D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
-        
+
             try {
                 var responseData = JSON.parse(body);
                 console.info("Reboot status for device " + serialNumber + ":", responseData.status);
@@ -606,38 +605,38 @@ function rebootDevice(serialNumber) {
 * @label Reboot
 * @documentation Reboots all devices connected to the Yealink M Core system
 */
-function custom_1(){
+function custom_1() {
     login()
-        .then(function(token) {
+        .then(function (token) {
             console.info("Authentication successful, proceeding to get device list");
             return getDeviceList();
         })
-        .then(function(deviceListResponse) {
+        .then(function (deviceListResponse) {
             console.info("Device list retrieved, parsing response");
-            
+
             try {
                 var responseData = JSON.parse(deviceListResponse);
-                
-                if (responseData.status === 200 && responseData.data && responseData.data['device-list']) {
-                    var deviceList = responseData.data['device-list'];
+
+                if (responseData.status === 200 && responseData.data && responseData.data["device-list"]) {
+                    var deviceList = responseData.data["device-list"];
                     var serialNumbers = [];
-                    
+
                     // Extract serial numbers from device list
                     for (var i = 0; i < deviceList.length; i++) {
                         if (deviceList[i].serialnumber) {
                             serialNumbers.push(deviceList[i].serialnumber);
                         }
                     }
-                    
+
                     console.info("Found " + serialNumbers.length + " devices to reboot");
                     console.info("Serial numbers:", serialNumbers);
-                    
+
                     // Create an array of reboot promises
                     var rebootPromises = [];
                     for (var j = 0; j < serialNumbers.length; j++) {
                         rebootPromises.push(rebootDevice(serialNumbers[j]));
                     }
-                    
+
                     // Execute all reboot operations
                     return Promise.all(rebootPromises);
                 } else {
@@ -649,15 +648,13 @@ function custom_1(){
                 D.failure(D.errorType.GENERIC_ERROR);
             }
         })
-        .then(function(rebootResults) {
+        .then(function (rebootResults) {
             console.info("All reboot operations completed successfully");
             console.info("Reboot results:", JSON.stringify(rebootResults));
             D.success();
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("Reboot operation error:", err);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
-
-

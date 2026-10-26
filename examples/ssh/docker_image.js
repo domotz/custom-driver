@@ -1,4 +1,3 @@
-
 /**
  * This driver extracts docker images information
  * The communication protocol is SSH
@@ -16,7 +15,6 @@
  * Tested under Docker version 19.03.15, build 99e3ed8919
  */
 
-
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
@@ -32,7 +30,7 @@ var table = D.createTable(
         { label: "Latest Image Created Date" },
         { label: "Latest Image Size", unit: "kB" },
         { label: "Total Images Size", unit: "kB" },
-        { label: "Total number of Images" },
+        { label: "Total number of Images" }
     ]
 );
 
@@ -45,7 +43,7 @@ function checkSshError(err) {
 }
 
 /**
- * 
+ *
  * @returns Promise wait for docker images result
  */
 function getDockerImages() {
@@ -61,8 +59,8 @@ function getDockerImages() {
 }
 
 /**
- * 
- * @param {string} value 
+ *
+ * @param {string} value
  * @returns convert value to KB
  */
 function convertToKB(value) {
@@ -70,14 +68,14 @@ function convertToKB(value) {
     var val = value.substring(0, value.length - 2);
     var unit = value.substring(value.length - 2, value.length);
     switch (unit.toLowerCase()) {
-    case "mb": return val * 1000;
-    case "gb": return val * 1000000;
-    default: return val;
+        case "mb": return val * 1000;
+        case "gb": return val * 1000000;
+        default: return val;
     }
 }
 
 /**
- * 
+ *
  * @param {[object]} jsonImages list of docker images
  * @returns docker images grouped by repository
  */
@@ -105,9 +103,8 @@ function groupImagesByRepository(jsonImages) {
 
 }
 
-
 /**
- * fill monitoring table with data related to docker 
+ * fill monitoring table with data related to docker
  * %Id: the repository
  * %Latest Tag
  * %Latest Image ID
@@ -116,7 +113,7 @@ function groupImagesByRepository(jsonImages) {
  * %Latest Image Size
  * %Total Images Size
  * %Total number of Images
- * @param {[string]} images 
+ * @param {[string]} images
  */
 function fillTable(images) {
     Object.keys(images).forEach(function (repository) {
@@ -129,7 +126,7 @@ function fillTable(images) {
             image.CreatedAt,
             image.sizeKb,
             totalSize,
-            images[repository].length,
+            images[repository].length
         ]);
     });
     D.success(table);
@@ -150,7 +147,6 @@ function validate() {
         .then(function () { D.success(); })
         .catch(failure);
 }
-
 
 /**
 * @remote_procedure

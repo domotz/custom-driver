@@ -1,16 +1,16 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE MSA SAN HW Sensors Temperature
  * Description: This script retrieves temperature sensor data from an HPE MSA SAN device
- * 
- * Communication protocol is HTTPS 
- * 
+ *
+ * Communication protocol is HTTPS
+ *
  * Tested with HPE MSA 2050 SAN version: VL270P005
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *     - Value: The measured temperature value in degrees Celsius
  *     - Status: The status of the temperature sensor
- * 
+ *
  */
 
 // Variable to store the session key
@@ -20,15 +20,15 @@ var sessionKey;
 var table = D.createTable(
     "Temperature Sensors",
     [
-        { label: "Value", unit: "C", valueType: D.valueType.NUMBER},
-        { label: "Status", valueType: D.valueType.STRING}   
+        { label: "Value", unit: "C", valueType: D.valueType.NUMBER },
+        { label: "Status", valueType: D.valueType.STRING }
     ]
 );
 
 // Process the response from the server
 function processResponse(resolve, reject) {
     return function process(error, response, body) {
-        if (error) {          
+        if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else if (response.statusCode == 404) {
@@ -37,15 +37,15 @@ function processResponse(resolve, reject) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
-        } 
+        }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if(sessionKey == "Authentication Unsuccessful"){
+            if (sessionKey == "Authentication Unsuccessful") {
                 console.error("Session key not found in response headers");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
-        resolve(body);      
+        resolve(body);
     };
 }
 
@@ -76,7 +76,7 @@ function getTemperature() {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "sessionKey": sessionKey 
+            "sessionKey": sessionKey
         }
     };
     return new Promise(function (resolve, reject) {
@@ -85,10 +85,10 @@ function getTemperature() {
 }
 
 // Sanitize sensor name to create a recordId
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response
@@ -99,8 +99,8 @@ function extractData(data) {
         var sensorType = $(element).find("PROPERTY[name=\"sensor-type\"]").text();
         if (sensorType === "Temperature") {
             var sensorName = $(element).find("PROPERTY[name=\"sensor-name\"]").text();
-            var value = $(element).find("PROPERTY[name=\"value\"]").text();  
-            var status = $(element).find("PROPERTY[name=\"status\"]").text();   
+            var value = $(element).find("PROPERTY[name=\"value\"]").text();
+            var status = $(element).find("PROPERTY[name=\"status\"]").text();
             var recordId = sanitize(sensorName);
             table.insertRecord(recordId, [
                 value.replace("C", ""),
@@ -116,7 +116,7 @@ function extractData(data) {
  * @label Validate HPE MSA SAN Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     login()
         .then(getTemperature)
         .then(function (response) {
@@ -146,7 +146,7 @@ function get_status() {
     login()
         .then(getTemperature)
         .then(extractData)
-        .catch(function(error) {
+        .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         });

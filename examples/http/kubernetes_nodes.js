@@ -1,15 +1,12 @@
-
-
 /**
  * This driver extract kubernetes Nodes and Pods information
  * Communication protocol is http
  * dynamically create table with columns specified in nodeTable variable
- * communicate with http api using a jwt token generated with this command: 
+ * communicate with http api using a jwt token generated with this command:
  * # kubectl -n kube-system create token default --duration=8760h
  * this command returns a jwt token valid for a year for kube-system user
- * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS 
+ * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS
  */
-
 
 var token = D.device.password();
 var port = 80;
@@ -51,12 +48,12 @@ var nodeTable = D.createTable(
         { label: "Pod Containers: Restarts" },
         { label: "Pod Status: Phase" },
         { label: "Pod Start time" },
-        { label: "Pod IP" },
+        { label: "Pod IP" }
     ]
 );
 
 /**
- * 
+ *
  * @param {object} params http request parameters
  * @returns http api response
  */
@@ -98,8 +95,7 @@ var Kube = {
             if (response !== null) {
                 try {
                     response = JSON.parse(response.body);
-                }
-                catch (error) {
+                } catch (error) {
                     throw "Failed to parse response received from Kubernetes API. Check debug log for more information.";
                 }
             }
@@ -108,7 +104,6 @@ var Kube = {
                 response: response
             };
         });
-
 
     },
 
@@ -185,7 +180,7 @@ var Fmt = {
         Ki: 1024, K: 1000,
         Mi: Math.pow(1024, 2), M: Math.pow(1000, 2),
         Gi: Math.pow(1024, 3), G: Math.pow(1000, 3),
-        Ti: Math.pow(1024, 4), T: Math.pow(1000, 4),
+        Ti: Math.pow(1024, 4), T: Math.pow(1000, 4)
     },
 
     cpuFormat: function (cpu) {
@@ -222,9 +217,8 @@ var Fmt = {
 
 };
 
-
 /**
- * 
+ *
  * @returns object containing the nodes and pods information
  */
 function parse() {
@@ -320,7 +314,7 @@ function parse() {
 }
 
 /**
- * 
+ *
  * @param {function} filterFn array filter function
  * @param {object} _default default value to return if the filter function doesn't return any thing
  * @returns object after the filter applied the the array
@@ -331,7 +325,7 @@ function _find(arr, filterFn, _default) {
 }
 
 /**
- * 
+ *
  * @param {object} data for pods informations
  */
 function fillTable(data) {
@@ -430,7 +424,6 @@ function validate() {
     });
 }
 
-
 /**
 * @remote_procedure
 * @label Get Kubernetes Nodes Data
@@ -445,4 +438,3 @@ function get_status() {
         D.failure(D.errorType.GENERIC_ERROR);
     });
 }
-

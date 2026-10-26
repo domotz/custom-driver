@@ -34,70 +34,70 @@
  **/
 
 // URL endpoint for accessing the vSphere SDK
-const url = '/sdk'
+const url = "/sdk";
 
 // This parameter specifies which VMs to monitor
 // Example usage:
 // filteredVMIds = ["11", "22"] to monitor specific VMs
 // or
 // filteredVMIds = ["All"] to monitor all VMs.
-const filteredVMIds = D.getParameter('vmID')
+const filteredVMIds = D.getParameter("vmID");
 
 // Table to store virtual machine details
 var table = D.createTable(
-  'Virtual Machines',[
-    { label: 'Name', valueType: D.valueType.STRING},
-    { label: 'Power State', valueType: D.valueType.STRING },
-    { label: 'Overall Status', valueType: D.valueType.STRING },
-    { label: 'Number MKS Connections', valueType: D.valueType.NUMBER },
-    { label: 'Guest Full Name', valueType: D.valueType.STRING },
-    { label: 'Guest State', valueType: D.valueType.STRING },
-    { label: 'Guest OS ID', valueType: D.valueType.STRING },
-    { label: 'Number of CPUs', valueType: D.valueType.NUMBER },
-    { label: 'Memory Usage', valueType: D.valueType.NUMBER, unit:'%'},
-    { label: 'Free Memory', valueType: D.valueType.NUMBER, unit:'GB'},
-    { label: 'Memory', valueType: D.valueType.NUMBER, unit:'GB'},
-    { label: 'VMware Tools Status', valueType: D.valueType.STRING },
-    { label: 'VMware Tools Version Status', valueType: D.valueType.STRING },
-    { label: 'VMware Tools Running Status', valueType: D.valueType.STRING },
-    { label: 'VM Path Name', valueType: D.valueType.STRING },
-    { label: 'Host', valueType: D.valueType.STRING },
-    { label: 'Connection State', valueType: D.valueType.STRING },
-    { label: 'Maximum Memory Usage', valueType: D.valueType.NUMBER, unit:'GB'},
-    { label: 'Maximum CPU Usage', valueType: D.valueType.NUMBER, unit:'MHz'},
-    { label: 'Template', valueType: D.valueType.STRING },
-    { label: 'Number Ethernet Cards', valueType: D.valueType.NUMBER },
-    { label: 'Number Virtual Disks', valueType: D.valueType.NUMBER }
-  ]
-)
+    "Virtual Machines", [
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Power State", valueType: D.valueType.STRING },
+        { label: "Overall Status", valueType: D.valueType.STRING },
+        { label: "Number MKS Connections", valueType: D.valueType.NUMBER },
+        { label: "Guest Full Name", valueType: D.valueType.STRING },
+        { label: "Guest State", valueType: D.valueType.STRING },
+        { label: "Guest OS ID", valueType: D.valueType.STRING },
+        { label: "Number of CPUs", valueType: D.valueType.NUMBER },
+        { label: "Memory Usage", valueType: D.valueType.NUMBER, unit: "%" },
+        { label: "Free Memory", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Memory", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "VMware Tools Status", valueType: D.valueType.STRING },
+        { label: "VMware Tools Version Status", valueType: D.valueType.STRING },
+        { label: "VMware Tools Running Status", valueType: D.valueType.STRING },
+        { label: "VM Path Name", valueType: D.valueType.STRING },
+        { label: "Host", valueType: D.valueType.STRING },
+        { label: "Connection State", valueType: D.valueType.STRING },
+        { label: "Maximum Memory Usage", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Maximum CPU Usage", valueType: D.valueType.NUMBER, unit: "MHz" },
+        { label: "Template", valueType: D.valueType.STRING },
+        { label: "Number Ethernet Cards", valueType: D.valueType.NUMBER },
+        { label: "Number Virtual Disks", valueType: D.valueType.NUMBER }
+    ]
+);
 
 /**
  * An array of property paths to retrieve details for each VM
  * Each path corresponds to a specific VM attribute that we want to include in the results
  */
 const paths = [
-  'config.name', 
-  'runtime.powerState',
-  'summary.overallStatus',
-  'runtime.numMksConnections',
-  'config.guestFullName',
-  'guest.guestState',
-  'summary.config.guestId',
-  'config.hardware.numCPU',
-  'summary.quickStats.hostMemoryUsage',
-  'config.hardware.memoryMB',
-  'guest.toolsStatus',
-  'guest.toolsVersionStatus2',
-  'guest.toolsRunningStatus',
-  'summary.config.vmPathName',
-  'summary.runtime.host',
-  'runtime.connectionState',
-  'summary.runtime.maxMemoryUsage',
-  'summary.runtime.maxCpuUsage',
-  'config.template',
-  'summary.config.numEthernetCards',
-  'summary.config.numVirtualDisks'
-]
+    "config.name",
+    "runtime.powerState",
+    "summary.overallStatus",
+    "runtime.numMksConnections",
+    "config.guestFullName",
+    "guest.guestState",
+    "summary.config.guestId",
+    "config.hardware.numCPU",
+    "summary.quickStats.hostMemoryUsage",
+    "config.hardware.memoryMB",
+    "guest.toolsStatus",
+    "guest.toolsVersionStatus2",
+    "guest.toolsRunningStatus",
+    "summary.config.vmPathName",
+    "summary.runtime.host",
+    "runtime.connectionState",
+    "summary.runtime.maxMemoryUsage",
+    "summary.runtime.maxCpuUsage",
+    "config.template",
+    "summary.config.numEthernetCards",
+    "summary.config.numVirtualDisks"
+];
 
 /**
  * Sends a SOAP request and returns a promise with the parsed response
@@ -105,39 +105,39 @@ const paths = [
  * @param {function} extractData  A call back function to extract data from body and response
  * @returns A promise that resolves with the parsed response
  */
-function sendSoapRequest (body, extractData) {
-  const config ={
-    url,
-    protocol: 'https',
-    body,
-    jar: true,
-    rejectUnauthorized: false
-  }
-  return new Promise(function (resolve) {
-    D.device.http.post(config, function (error, response, body) {
-      if (error) {
-        console.log(error)
-        return D.failure(D.errorType.GENERIC_ERROR)
-      }
-      const $ = D.htmlParse(body)
-      const faultCode = $('faultcode').text()
-      const faultString = $('faultstring').text()
-      if (faultCode && faultString) {
-        if (faultCode.includes('ServerFaultCode') && faultString.includes('Cannot complete login due to an incorrect user name or password.')) {
-          D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else {
-          D.failure(D.errorType.GENERIC_ERROR)
-        }
-      } else if (!body) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
-      } else {
-        const result = extractData(body)
-        resolve(result)
-      }
-    })
-  })
+function sendSoapRequest(body, extractData) {
+    const config = {
+        url,
+        protocol: "https",
+        body,
+        jar: true,
+        rejectUnauthorized: false
+    };
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.log(error);
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            const $ = D.htmlParse(body);
+            const faultCode = $("faultcode").text();
+            const faultString = $("faultstring").text();
+            if (faultCode && faultString) {
+                if (faultCode.includes("ServerFaultCode") && faultString.includes("Cannot complete login due to an incorrect user name or password.")) {
+                    D.failure(D.errorType.AUTHENTICATION_ERROR);
+                } else {
+                    D.failure(D.errorType.GENERIC_ERROR);
+                }
+            } else if (!body) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                const result = extractData(body);
+                resolve(result);
+            }
+        });
+    });
 }
 
 /**
@@ -145,9 +145,9 @@ function sendSoapRequest (body, extractData) {
  * @param {string} soapBody The content to be included in the SOAP body
  * @returns {string} The complete SOAP payload as a string, including the envelope and body
  */
-function createSoapPayload (soapBody) {
-  return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
-         + soapBody + '</soapenv:Body></soapenv:Envelope>'
+function createSoapPayload(soapBody) {
+    return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
+         + soapBody + "</soapenv:Body></soapenv:Envelope>";
 }
 
 /**
@@ -156,8 +156,8 @@ function createSoapPayload (soapBody) {
  * @returns {string} The Session Key extracted from the SOAP response
  */
 function getSessionKey(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').find('key').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("key").first().text();
 }
 
 /**
@@ -166,26 +166,26 @@ function getSessionKey(soapResponse) {
  * @param {string} value - The text to escape.
  * @returns {string} The escaped text.
  */
-function escapeXml (value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+function escapeXml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
 /**
  * Constructs and sends a SOAP login request to the ESXi server.
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
-function login () {
-  const payload = createSoapPayload(
-    '<vim25:Login>' +
+function login() {
+    const payload = createSoapPayload(
+        "<vim25:Login>" +
     '  <_this type="SessionManager">ha-sessionmgr</_this>' +
-    '  <userName>' + escapeXml(D.device.username()) + '</userName>' +
-    '  <password>' + escapeXml(D.device.password()) + '</password>' +
-    '</vim25:Login>'
-  )
-  return sendSoapRequest(payload, getSessionKey)
+    "  <userName>" + escapeXml(D.device.username()) + "</userName>" +
+    "  <password>" + escapeXml(D.device.password()) + "</password>" +
+    "</vim25:Login>"
+    );
+    return sendSoapRequest(payload, getSessionKey);
 }
 
 /**
@@ -194,10 +194,10 @@ function login () {
  * @returns {string} The ManagedObjectReference IDs of VMs
  */
 function getVMs(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('ManagedObjectReference').map(function() {
-    return $(this).text()
-  }).get()
+    const $ = D.htmlParse(soapResponse);
+    return $("ManagedObjectReference").map(function () {
+        return $(this).text();
+    }).get();
 }
 
 /**
@@ -205,23 +205,23 @@ function getVMs(soapResponse) {
  * @returns {Promise} A promise that resolves with the list of VM IDs
  */
 function retrieveProprieties() {
-  const payload = createSoapPayload(
-    '<vim25:RetrieveProperties>' +
+    const payload = createSoapPayload(
+        "<vim25:RetrieveProperties>" +
     '  <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' +
-    '  <vim25:specSet>' +
-    '    <vim25:propSet>' +
-    '      <vim25:type>Folder</vim25:type>' +
-    '      <vim25:all>false</vim25:all>' +
-    '      <vim25:pathSet>childEntity</vim25:pathSet>' +
-    '    </vim25:propSet>' +
-    '    <vim25:objectSet>' +
+    "  <vim25:specSet>" +
+    "    <vim25:propSet>" +
+    "      <vim25:type>Folder</vim25:type>" +
+    "      <vim25:all>false</vim25:all>" +
+    "      <vim25:pathSet>childEntity</vim25:pathSet>" +
+    "    </vim25:propSet>" +
+    "    <vim25:objectSet>" +
     '      <vim25:obj type="Folder">ha-folder-vm</vim25:obj>' +
-    '      <vim25:skip>false</vim25:skip>' +
-    '    </vim25:objectSet>' +
-    '  </vim25:specSet>' +
-    '</vim25:RetrieveProperties>' 
-  )
-  return sendSoapRequest(payload, getVMs)
+    "      <vim25:skip>false</vim25:skip>" +
+    "    </vim25:objectSet>" +
+    "  </vim25:specSet>" +
+    "</vim25:RetrieveProperties>"
+    );
+    return sendSoapRequest(payload, getVMs);
 }
 
 /**
@@ -229,35 +229,35 @@ function retrieveProprieties() {
  * @returns {string} The path set XML elements
  */
 function generatesPathSet() {
-  return paths.map(function(path) {
-    return '<vim25:pathSet>' + path + '</vim25:pathSet>'
-  }).join(' ')
+    return paths.map(function (path) {
+        return "<vim25:pathSet>" + path + "</vim25:pathSet>";
+    }).join(" ");
 }
 
 /**
- * Retrieves detailed information about VMs 
+ * Retrieves detailed information about VMs
  * @param {Array} vmIds The IDs of the VMs to retrieve details for
  * @returns {Promise} A promise that resolves with the detailed VM information
  */
 function retrieveVMDetails(vmIds) {
-  const objectSets = (filteredVMIds.length === 1 && filteredVMIds[0].toLowerCase() === 'all' ? vmIds : vmIds.filter(function(vmID) { return filteredVMIds.includes(vmID)}))
-  .map(function(vmID) { 
-    return '<vim25:objectSet>' + 
-    '  <vim25:obj type="VirtualMachine">' + vmID + '</vim25:obj>' +
-    '</vim25:objectSet>'
-  }).join('')
-  const payload = createSoapPayload(
-    '<vim25:RetrieveProperties>' + 
-    '  <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' + 
-    '  <vim25:specSet>' + 
-    '    <vim25:propSet>' + 
-    '      <vim25:type>VirtualMachine</vim25:type>' + 
+    const objectSets = (filteredVMIds.length === 1 && filteredVMIds[0].toLowerCase() === "all" ? vmIds : vmIds.filter(function (vmID) { return filteredVMIds.includes(vmID);}))
+        .map(function (vmID) {
+            return "<vim25:objectSet>" +
+    '  <vim25:obj type="VirtualMachine">' + vmID + "</vim25:obj>" +
+    "</vim25:objectSet>";
+        }).join("");
+    const payload = createSoapPayload(
+        "<vim25:RetrieveProperties>" +
+    '  <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' +
+    "  <vim25:specSet>" +
+    "    <vim25:propSet>" +
+    "      <vim25:type>VirtualMachine</vim25:type>" +
     generatesPathSet() +
-    '    </vim25:propSet>' + objectSets +
-    '  </vim25:specSet>' + 
-    '</vim25:RetrieveProperties>' 
-  )
-  return sendSoapRequest(payload, parseVMDetails)
+    "    </vim25:propSet>" + objectSets +
+    "  </vim25:specSet>" +
+    "</vim25:RetrieveProperties>"
+    );
+    return sendSoapRequest(payload, parseVMDetails);
 }
 
 /**
@@ -266,32 +266,32 @@ function retrieveVMDetails(vmIds) {
  * @returns {Object} An array of objects containing VM details
  */
 function parseVMDetails(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  const vmDetailsList = []
-  $('returnval').each(function() {
-    const recordId = $(this).find('obj').text()
-    const properties = {}
-    $(this).find('propSet').each(function() {
-      const name = $(this).find('name').text()
-      const val = $(this).find('val').text()
-      properties[name] = val
-    })
-    const vmDetails = { recordId }
-    paths.forEach(function(path) {
-      vmDetails[path] = properties[path]
-    })
-    const totalMemory = vmDetails['config.hardware.memoryMB'] || 'N/A'
-    const memoryUsage = vmDetails['summary.quickStats.hostMemoryUsage'] || 0
-    const freeMemory = totalMemory - memoryUsage
-    const memoryUsagePercent = totalMemory > 0 ? (memoryUsage / totalMemory * 100).toFixed(2) : 'N/A'
-    vmDetails['Memory Usage Percentage'] = memoryUsagePercent
-    vmDetails['Free Memory'] = freeMemory >= 0 ? (freeMemory / 1000).toFixed(2) : 'N/A'
-    vmDetails['Total Memory'] = totalMemory >= 0 ? (totalMemory / 1000).toFixed(2) : 'N/A'
-    vmDetails['Max Memory Usage'] = vmDetails['summary.runtime.maxMemoryUsage'] ? (vmDetails['summary.runtime.maxMemoryUsage'] / 1000).toFixed(2) :' N/A'
-    vmDetailsList.push(vmDetails)
-  })
-  vmDetailsList.forEach(populateTable)
-  D.success(table)
+    const $ = D.htmlParse(soapResponse);
+    const vmDetailsList = [];
+    $("returnval").each(function () {
+        const recordId = $(this).find("obj").text();
+        const properties = {};
+        $(this).find("propSet").each(function () {
+            const name = $(this).find("name").text();
+            const val = $(this).find("val").text();
+            properties[name] = val;
+        });
+        const vmDetails = { recordId };
+        paths.forEach(function (path) {
+            vmDetails[path] = properties[path];
+        });
+        const totalMemory = vmDetails["config.hardware.memoryMB"] || "N/A";
+        const memoryUsage = vmDetails["summary.quickStats.hostMemoryUsage"] || 0;
+        const freeMemory = totalMemory - memoryUsage;
+        const memoryUsagePercent = totalMemory > 0 ? (memoryUsage / totalMemory * 100).toFixed(2) : "N/A";
+        vmDetails["Memory Usage Percentage"] = memoryUsagePercent;
+        vmDetails["Free Memory"] = freeMemory >= 0 ? (freeMemory / 1000).toFixed(2) : "N/A";
+        vmDetails["Total Memory"] = totalMemory >= 0 ? (totalMemory / 1000).toFixed(2) : "N/A";
+        vmDetails["Max Memory Usage"] = vmDetails["summary.runtime.maxMemoryUsage"] ? (vmDetails["summary.runtime.maxMemoryUsage"] / 1000).toFixed(2) : " N/A";
+        vmDetailsList.push(vmDetails);
+    });
+    vmDetailsList.forEach(populateTable);
+    D.success(table);
 }
 
 /**
@@ -299,30 +299,30 @@ function parseVMDetails(soapResponse) {
  * @param {Object} vmDetails The details of VM
  */
 function populateTable(vmDetails) {
-  table.insertRecord(vmDetails.recordId, [
-    vmDetails['config.name'] || 'N/A',
-    vmDetails['runtime.powerState'] || 'N/A',
-    vmDetails['summary.overallStatus'] || 'N/A',
-    vmDetails['runtime.numMksConnections'] || 'N/A',
-    vmDetails['config.guestFullName'] || 'N/A',
-    vmDetails['guest.guestState'] || 'N/A',
-    vmDetails['summary.config.guestId'] || 'N/A',
-    vmDetails['config.hardware.numCPU'] || 'N/A',
-    vmDetails['Memory Usage Percentage'],
-    vmDetails['Free Memory'],
-    vmDetails['Total Memory'],
-    vmDetails['guest.toolsStatus'] || 'N/A',
-    vmDetails['guest.toolsVersionStatus2'] || 'N/A',
-    vmDetails['guest.toolsRunningStatus'] || 'N/A',
-    vmDetails['summary.config.vmPathName'] || 'N/A',
-    vmDetails['summary.runtime.host'] || 'N/A',
-    vmDetails['runtime.connectionState'] || 'N/A',
-    vmDetails['Max Memory Usage'],
-    vmDetails['summary.runtime.maxCpuUsage']  || 'N/A',
-    vmDetails['config.template'] || 'N/A',
-    vmDetails['summary.config.numEthernetCards'] || 'N/A',
-    vmDetails['summary.config.numVirtualDisks'] || 'N/A'
-  ])
+    table.insertRecord(vmDetails.recordId, [
+        vmDetails["config.name"] || "N/A",
+        vmDetails["runtime.powerState"] || "N/A",
+        vmDetails["summary.overallStatus"] || "N/A",
+        vmDetails["runtime.numMksConnections"] || "N/A",
+        vmDetails["config.guestFullName"] || "N/A",
+        vmDetails["guest.guestState"] || "N/A",
+        vmDetails["summary.config.guestId"] || "N/A",
+        vmDetails["config.hardware.numCPU"] || "N/A",
+        vmDetails["Memory Usage Percentage"],
+        vmDetails["Free Memory"],
+        vmDetails["Total Memory"],
+        vmDetails["guest.toolsStatus"] || "N/A",
+        vmDetails["guest.toolsVersionStatus2"] || "N/A",
+        vmDetails["guest.toolsRunningStatus"] || "N/A",
+        vmDetails["summary.config.vmPathName"] || "N/A",
+        vmDetails["summary.runtime.host"] || "N/A",
+        vmDetails["runtime.connectionState"] || "N/A",
+        vmDetails["Max Memory Usage"],
+        vmDetails["summary.runtime.maxCpuUsage"]  || "N/A",
+        vmDetails["config.template"] || "N/A",
+        vmDetails["summary.config.numEthernetCards"] || "N/A",
+        vmDetails["summary.config.numVirtualDisks"] || "N/A"
+    ]);
 }
 
 /**
@@ -330,25 +330,25 @@ function populateTable(vmDetails) {
  * @label Validate Association
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate () {
-  login()
-    .then(function (sessionKey) {
-      console.log('Login successful')
-      if(sessionKey && sessionKey.length > 0){
-        return retrieveProprieties()
-      }
-    })
-    .then(function(vmIds) {
-      if (vmIds.length > 0) {
-        console.log('VMs found. Validation successful')
-        D.success()
-      } else {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      }
-    })
-    .catch(function () {
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+function validate() {
+    login()
+        .then(function (sessionKey) {
+            console.log("Login successful");
+            if (sessionKey && sessionKey.length > 0) {
+                return retrieveProprieties();
+            }
+        })
+        .then(function (vmIds) {
+            if (vmIds.length > 0) {
+                console.log("VMs found. Validation successful");
+                D.success();
+            } else {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+        })
+        .catch(function () {
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -357,11 +357,11 @@ function validate () {
  * @documentation This procedure retrieves details for all VMs
  */
 function get_status() {
-  login()
-    .then(retrieveProprieties)
-    .then(retrieveVMDetails)  
-    .catch(function (err) {
-      console.error(err)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(retrieveProprieties)
+        .then(retrieveVMDetails)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

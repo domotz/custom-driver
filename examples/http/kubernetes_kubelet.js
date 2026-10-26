@@ -1,12 +1,11 @@
-
 /**
  * This driver extract Kubernetes kubelet metrics by HTTP agent from Prometheus metrics endpoint.
  * Communication protocol is http
  * dynamically create kubelet metrics for Kubernetes depending from response of the service
- * communicate with http api using a jwt token generated with this command: 
+ * communicate with http api using a jwt token generated with this command:
  * # kubectl -n kube-system create token default --duration=8760h
  * this command returns a jwt token valid for a year for kube-system user
- * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS 
+ * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS
  */
 
 var _var = D.device.createVariable;
@@ -15,11 +14,11 @@ var port = 80;
 var podsInfo, nodes, metrics, config;
 var vars = [];
 var table = D.createTable("Kubelets", [
-    {label: "node"},
-    {label: "namespace"},
-    {label: "CPU: usage rate", type: D.valueType.RATE},
-    {label: "CPU: System seconds"},
-    {label: "CPU: User seconds"},
+    { label: "node" },
+    { label: "namespace" },
+    { label: "CPU: usage rate", type: D.valueType.RATE },
+    { label: "CPU: System seconds" },
+    { label: "CPU: User seconds" }
 ]);
 function _first(arr) {
     return arr.length ? arr[0] : null;
@@ -28,8 +27,7 @@ function _find(arr, filterFn) {
     return _first(arr.filter(filterFn));
 }
 
-
-function httpGet(url){
+function httpGet(url) {
     return new Promise(function (resolve) {
         D.device.http.get({
             url: url,
@@ -43,13 +41,13 @@ function httpGet(url){
                 console.error(err);
                 return D.failure(D.errorType.GENERIC_ERROR);
             }
-            if(response.statusCode == 404){
+            if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
-            if(response.statusCode == 401){
+            if (response.statusCode == 401) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
-            if(response.statusCode != 200){
+            if (response.statusCode != 200) {
                 D.failure(D.errorType.GENERIC_ERROR);
             }
             resolve(body);
@@ -59,73 +57,73 @@ function httpGet(url){
 }
 
 /**
- * 
+ *
  * @returns promise for http response body containig Kubernetes API metrics in PROMETHEUS format
  */
 function getMetrics() {
     return httpGet("/metrics")
         .then(convert)
-        .then(function(data){
+        .then(function (data) {
             metrics = data;
         });
 }
 
 /**
- * 
+ *
  * @param {string} node kubernetes node
  * @returns promise for metrics for the specific node
  */
-function getCadvisorMetrics(node){
-    return httpGet("/api/v1/nodes/"+node+"/proxy/metrics/cadvisor")
+function getCadvisorMetrics(node) {
+    return httpGet("/api/v1/nodes/" + node + "/proxy/metrics/cadvisor")
         .then(convert);
 }
 
 /**
- * 
+ *
  * @returns promise containing pods info
  */
-function getPods(){
+function getPods() {
     return httpGet("/api/v1/pods")
         .then(JSON.parse)
         .then(extractPodsInfo);
 }
 
 /**
- * 
+ *
  * @returns load all kubernetes node metrics
  */
-function getNodesMetrics(){
+function getNodesMetrics() {
     return httpGet("/api/v1/nodes")
         .then(JSON.parse)
-        .then(function(data){
-            nodes = data.items.map(function(item){
-                var ii = _find(item.status.addresses, function(a) {return a.type == "InternalIP";});
-                if(ii.address)
+        .then(function (data) {
+            nodes = data.items.map(function (item) {
+                var ii = _find(item.status.addresses, function (a) {return a.type == "InternalIP";});
+                if (ii.address)
                     return {
                         name: item.metadata.name,
                         ip: ii.address
                     };
                 return null;
-            }).filter(function(d) { return d; });
+            }).filter(function (d) { return d; });
             return nodes;
-        }).then(function(nodes){
-            return Promise.all(nodes.map(function(node){
+        }).then(function (nodes) {
+            return Promise.all(nodes.map(function (node) {
                 return getCadvisorMetrics(node.name);
             }));
-        }).then(function(metrics){
-            for(var i = 0; i<metrics.length; i++){
+        }).then(function (metrics) {
+            for (var i = 0; i < metrics.length; i++) {
                 nodes[i].metrics = metrics[i];
             }
         });
 }
 
 /**
- * 
+ *
  * @param {object} body pods api response body
  * @returns parsed pods infos
  */
-function extractPodsInfo(body){
-    podsInfo = body.items.map(function(e){
+function extractPodsInfo(body) {
+    podsInfo = body.items.map(function (e) {
         return {
             podName: e.metadata.name,
             namespace: e.metadata.namespace,
@@ -138,7 +136,7 @@ function extractPodsInfo(body){
 }
 
 /**
- * 
+ *
  * @param {string} body containing metrics api response in PROMETHEUS format
  * @returns convert PROMETHEUS format to Javascript object
  */
@@ -161,7 +159,7 @@ function convert(body) {
 }
 
 /**
- * 
+ *
  * @param {string} key parameter key
  * @param {string} statusFirstNumber http status prefix
  * @returns value
@@ -175,144 +173,142 @@ function statusFilter(key, statusFirstNumber) {
 }
 
 /**
- * 
+ *
  * @param {string} key parameter key
  * @param {function} filterFn filter function
  * @returns sum of returned data based on the key and the filter function
  */
-function getValueSum(metrics, key, filterFn){
-    return function(){
+function getValueSum(metrics, key, filterFn) {
+    return function () {
         return metrics
-            .filter(function(d){return d.key == key && (filterFn ? filterFn(d) : true);})
-            .map(function(d){return parseFloat(d.value.split(" ")[0]);})
-            .reduce(function(a,b){return a + b;}, 0);
+            .filter(function (d) {return d.key == key && (filterFn ? filterFn(d) : true);})
+            .map(function (d) {return parseFloat(d.value.split(" ")[0]);})
+            .reduce(function (a, b) {return a + b;}, 0);
     };
 }
 
 // config variable containing the list of monitoring parameters
-function fillConfig(){
+function fillConfig() {
     config = [
 
         {
             uid: "containers_terminated",
             label: "Containers last state terminated",
-            execute: function(){
-                var terminatedContainers = podsInfo.map(function(item){
-                    var res = item.containerStatuses.filter(function(cs){
+            execute: function () {
+                var terminatedContainers = podsInfo.map(function (item) {
+                    var res = item.containerStatuses.filter(function (cs) {
                         return cs.lastState && cs.lastState.terminated && cs.lastState.terminated.exitCode;
                     });
                     return res.length;
-                }).reduce(function(a,b){return a+b;}, 0);
+                }).reduce(function (a, b) {return a + b;}, 0);
                 return terminatedContainers;
-            },
+            }
         },
         {
             uid: "containers_restarts",
             label: "Containers restarts",
-            execute: function(){
-                var restartCount = podsInfo.map(function(item){
-                    var res = item.containerStatuses.reduce(function(a,b){return a+b.restartCount;},0);
+            execute: function () {
+                var restartCount = podsInfo.map(function (item) {
+                    var res = item.containerStatuses.reduce(function (a, b) {return a + b.restartCount;}, 0);
                     return res;
-                }).reduce(function(a,b){return a+b;}, 0);
+                }).reduce(function (a, b) {return a + b;}, 0);
                 return restartCount;
-            },
+            }
         },
         {
             uid: "containers_running",
             label: "Containers running",
-            execute: function(){
-                var runningCount = podsInfo.map(function(item){
-                    var res = item.containerStatuses.filter(function(cs){
+            execute: function () {
+                var runningCount = podsInfo.map(function (item) {
+                    var res = item.containerStatuses.filter(function (cs) {
                         return cs.state && cs.state.running;
                     });
                     return res.length;
-                }).reduce(function(a,b){return a+b;}, 0);
+                }).reduce(function (a, b) {return a + b;}, 0);
                 return runningCount;
-            },
+            }
         },
         {
             uid: "pods_running",
             label: "Pods running",
-            execute: function(){
-                return podsInfo.filter(function(item){
+            execute: function () {
+                return podsInfo.filter(function (item) {
                     return item.running;
                 }).length;
-            },
+            }
         },
         {
             uid: "cpu_cores",
             label: "CPU cores, total",
-            execute: getValueSum(metrics,"machine_cpu_cores"),
+            execute: getValueSum(metrics, "machine_cpu_cores")
         },
         {
             uid: "process_max_fds",
             label: "File descriptors, max",
-            execute: getValueSum(metrics,"process_max_fds"),
+            execute: getValueSum(metrics, "process_max_fds")
         },
         {
             uid: "process_open_fds",
             label: "File descriptors, open",
-            execute: getValueSum(metrics,"process_open_fds"),
+            execute: getValueSum(metrics, "process_open_fds")
         },
         {
             uid: "machine_memory",
             label: "Machine memory",
-            execute: getValueSum(metrics,"process_resident_memory_bytes"),
+            execute: getValueSum(metrics, "process_resident_memory_bytes"),
             unit: "B"
         },
         {
             uid: "virtual_memory",
             label: "Virtual memory",
-            execute: getValueSum(metrics,"process_virtual_memory_bytes"),
+            execute: getValueSum(metrics, "process_virtual_memory_bytes"),
             unit: "B"
-        },
-       
+        }
+
     ];
 }
 
 function fillTable() {
-    podsInfo.map(function(item){
-        var node = _find(nodes, function(n) {return n.ip == item.hostIp;});
+    podsInfo.map(function (item) {
+        var node = _find(nodes, function (n) {return n.ip == item.hostIp;});
         return {
             id: item.podName,
             row: [
                 node.name,
                 item.namespace,
-                getValueSum(node.metrics, "container_cpu_usage_seconds_total", function(d){
-                    return d.desc.pod==item.podName && d.desc.namespace == item.namespace;
+                getValueSum(node.metrics, "container_cpu_usage_seconds_total", function (d) {
+                    return d.desc.pod == item.podName && d.desc.namespace == item.namespace;
                 })(),
-                getValueSum(node.metrics, "container_cpu_system_seconds_total", function(d){
-                    return d.desc.pod==item.podName && d.desc.namespace == item.namespace;
+                getValueSum(node.metrics, "container_cpu_system_seconds_total", function (d) {
+                    return d.desc.pod == item.podName && d.desc.namespace == item.namespace;
                 })(),
-                getValueSum(node.metrics, "container_cpu_user_seconds_total", function(d){
-                    return d.desc.pod==item.podName && d.desc.namespace == item.namespace;
-                })(),
+                getValueSum(node.metrics, "container_cpu_user_seconds_total", function (d) {
+                    return d.desc.pod == item.podName && d.desc.namespace == item.namespace;
+                })()
 
             ]
         };
-    }).forEach(function(item){
+    }).forEach(function (item) {
         table.insertRecord(item.id, item.row);
     });
 }
 
 /**
- * 
+ *
  * @param {string} number to convert to float
  * @returns float number
  */
-function toFloat(number){
-    if(number == "+Inf"){
+function toFloat(number) {
+    if (number == "+Inf") {
         return Infinity;
-    }else{
+    } else {
         return parseFloat(number);
     }
 }
 
-
-
 /**
- * 
- * @param {[object]} data array of objects 
+ *
+ * @param {[object]} data array of objects
  * @returns list of domotz variables
  */
 function extract(data) {
@@ -323,22 +319,22 @@ function extract(data) {
         } else if (typeof (c.execute) == "function") {
             result = c.execute(data);
         }
-        if(result){
+        if (result) {
             return _var(c.uid, c.label, result, c.unit, c.type);
-        }else{
+        } else {
             return null;
         }
-    }).filter(function(v){
+    }).filter(function (v) {
         return v != null;
     });
 }
 
-function loadData(){
+function loadData() {
     return Promise.all([
         getMetrics(),
         getPods(),
         getNodesMetrics()
-    ]).then(function(){
+    ]).then(function () {
         fillConfig();
     });
 }
@@ -350,7 +346,7 @@ function loadData(){
 */
 function validate() {
     loadData()
-        .then(function(){
+        .then(function () {
             D.success();
         })
         .catch(function (err) {
@@ -359,7 +355,7 @@ function validate() {
         });
 }
 
-function success(){
+function success() {
     D.success(vars, table);
 }
 
@@ -373,7 +369,7 @@ function get_status() {
         .then(extract)
         .then(fillTable)
         .then(success)
-        .catch(function(err){
+        .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);
         });

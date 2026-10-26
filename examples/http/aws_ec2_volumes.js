@@ -1,5 +1,5 @@
 /**
- * This driver retrieves information about AWS EC2 instances and attached EBS volumes using the DescribeVolumes API action. 
+ * This driver retrieves information about AWS EC2 instances and attached EBS volumes using the DescribeVolumes API action.
  * Uses HTTPS to communicate with the API, and computes hash-based message authentication codes (HMAC) using the SHA256 algorithm to sign requests.
  *
  * Communication protocol is https
@@ -42,8 +42,7 @@ function prepareParams(params) {
         if (!params[key]) return;
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
-        }
-        else {
+        } else {
             result.push(prepareObject(key, params[key]));
         }
     });
@@ -51,7 +50,7 @@ function prepareParams(params) {
 }
 
 /**
- * @returns  HTTP GET request to an AWS EC2 API to retrieve information about DB instances. 
+ * @returns  HTTP GET request to an AWS EC2 API to retrieve information about DB instances.
  */
 function httpGet(params) {
     var service = "ec2";
@@ -103,7 +102,7 @@ function httpGet(params) {
 }
 
 /**
- * @returns promise for http response containing EC2 metrics 
+ * @returns promise for http response containing EC2 metrics
  */
 function getVolumesData(nextToken) {
     var payload = {};
@@ -162,7 +161,7 @@ function fillConfig() {
             //The state of the volume.
             uid: "status",
             label: "Status",
-            execute: extractVolumes("status"),
+            execute: extractVolumes("status")
         },
         {
             //The device name specified in the block device mapping.
@@ -191,7 +190,7 @@ function fillConfig() {
             }
         },
         {
-            //The attachment state of the volume. 
+            //The attachment state of the volume.
             uid: "attachment_status",
             label: "Attachment state",
             execute: function () {
@@ -200,12 +199,12 @@ function fillConfig() {
                 });
 
             }
-        },
+        }
     ];
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

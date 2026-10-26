@@ -22,56 +22,56 @@
  *
  **/
 
-const accountId = D.getParameter("accountId")
-const clientId = D.getParameter("clientId")
-const clientSecret = D.getParameter("clientSecret")
+const accountId = D.getParameter("accountId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
 
-const locationName = D.getParameter("locationName")
+const locationName = D.getParameter("locationName");
 
-const zoomLogin = D.createExternalDevice("zoom.us")
-const zoomResources = D.createExternalDevice("api.zoom.us")
+const zoomLogin = D.createExternalDevice("zoom.us");
+const zoomResources = D.createExternalDevice("api.zoom.us");
 
-let accessToken
-let locations = []
-let workspaceUsage = {}
+let accessToken;
+let locations = [];
+let workspaceUsage = {};
 
 const variablesDetails = [{
     uid: "workspace-in-use",
     name: "Workspace In Use",
     valueType: D.valueType.NUMBER,
     unit: null,
-    extract: function () {return getInUseByKey("total_usage")}
+    extract: function () {return getInUseByKey("total_usage");}
 }, {
     uid: "workspace-not-in-use",
     name: "Workspace Not In Use",
     valueType: D.valueType.NUMBER,
     unit: null,
-    extract: function() {return getNotInUseByKey("total_usage")}
+    extract: function () {return getNotInUseByKey("total_usage");}
 }, {
     uid: "desk-in-use",
     name: "Desk In Use",
     valueType: D.valueType.NUMBER,
     unit: null,
-    extract: function() {return getInUseByKey("desk_usage")}
+    extract: function () {return getInUseByKey("desk_usage");}
 }, {
     uid: "desk-not-in-use",
     name: "Desk Not In Use",
     valueType: D.valueType.NUMBER,
     unit: null,
-    extract: function() {return getNotInUseByKey("desk_usage")}
+    extract: function () {return getNotInUseByKey("desk_usage");}
 }, {
     uid: "room-in-use",
     name: "Room In Use",
     valueType: D.valueType.NUMBER,
     unit: null,
-    extract: function() {return getInUseByKey("room_usage")}
+    extract: function () {return getInUseByKey("room_usage");}
 }, {
     uid: "room-not-in-use",
     name: "Room Not In Use",
     valueType: D.valueType.NUMBER,
     unit: null,
-    extract: function() {return getNotInUseByKey("room_usage")}
-}]
+    extract: function () {return getNotInUseByKey("room_usage");}
+}];
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -80,14 +80,14 @@ const variablesDetails = [{
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
@@ -99,16 +99,16 @@ function checkHTTPError(error, response) {
  */
 function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
-            accessToken = bodyAsJSON.access_token
-            resolve()
+            accessToken = bodyAsJSON.access_token;
+            resolve();
         } else {
-            console.error("Access token not found in response body")
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -120,20 +120,20 @@ function processLoginResponse(resolve, reject) {
  * @param {string} body - The raw response body as a JSON string.
  */
 function processLocations(error, response, resolve, reject, body) {
-    checkHTTPError(error, response)
+    checkHTTPError(error, response);
     if (error) {
-        reject(error)
-        return
+        reject(error);
+        return;
     }
-    const bodyAsJSON = JSON.parse(body)
+    const bodyAsJSON = JSON.parse(body);
 
     if (!(bodyAsJSON.locations && bodyAsJSON.locations.length > 0)) {
-        console.error("No Locations found.")
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
+        console.error("No Locations found.");
+        D.failure(D.errorType.GENERIC_ERROR);
+        return;
     }
-    locations = bodyAsJSON.locations
-    resolve()
+    locations = bodyAsJSON.locations;
+    resolve();
 }
 
 /**
@@ -145,23 +145,23 @@ function processLocations(error, response, resolve, reject, body) {
  * @param {string} body - The raw response body as a JSON string.
  */
 function processWorkspacesUsage(resolve, reject, error, response, body) {
-    checkHTTPError(error, response)
+    checkHTTPError(error, response);
     if (error) {
-        reject(error)
-        return
+        reject(error);
+        return;
     }
     try {
-        const bodyAsJSON = JSON.parse(body)
+        const bodyAsJSON = JSON.parse(body);
         if (!(bodyAsJSON.desk_usage && bodyAsJSON.room_usage && bodyAsJSON.total_usage)) {
-            console.error("No WorkspacesUsage found.")
-            D.failure(D.errorType.GENERIC_ERROR)
-            return
+            console.error("No WorkspacesUsage found.");
+            D.failure(D.errorType.GENERIC_ERROR);
+            return;
         }
-        workspaceUsage = bodyAsJSON
-        resolve(workspaceUsage)
+        workspaceUsage = bodyAsJSON;
+        resolve(workspaceUsage);
     } catch (parseError) {
-        console.error("Error parsing Workspaces Usage:", parseError)
-        reject("Failed to parse response")
+        console.error("Error parsing Workspaces Usage:", parseError);
+        reject("Failed to parse response");
     }
 }
 
@@ -172,12 +172,12 @@ function processWorkspacesUsage(resolve, reject, error, response, body) {
  */
 function getLocationIdByName() {
     const matchingLocation = locations.filter(function (location) {
-        return location.name === locationName
-    })
+        return location.name === locationName;
+    });
     if (matchingLocation.length === 1) {
-        return matchingLocation[0].id
+        return matchingLocation[0].id;
     }
-    return null
+    return null;
 }
 
 /**
@@ -193,7 +193,7 @@ function generateConfig(url) {
         },
         rejectUnauthorized: false,
         jar: true
-    }
+    };
 }
 
 /**
@@ -201,13 +201,13 @@ function generateConfig(url) {
  * @returns {promise}
  */
 function retrieveLocations() {
-    const url = "/v2/rooms/locations"
-    const config = generateConfig(url)
+    const url = "/v2/rooms/locations";
+    const config = generateConfig(url);
     return new Promise(function (resolve, reject) {
         zoomResources.http.get(config, function (error, response, body) {
-            processLocations(error, response, resolve, reject, body)
-        })
-    })
+            processLocations(error, response, resolve, reject, body);
+        });
+    });
 }
 
 /**
@@ -215,17 +215,17 @@ function retrieveLocations() {
  * @returns {promise}
  */
 function retrieveWorkspacesUsage(locationId) {
-    if (locationId){
-        const url = "/v2/workspaces/usage?location_id=" + locationId
-        const config = generateConfig(url)
+    if (locationId) {
+        const url = "/v2/workspaces/usage?location_id=" + locationId;
+        const config = generateConfig(url);
         return new Promise(function (resolve, reject) {
             zoomResources.http.get(config, function (error, response, body) {
-                processWorkspacesUsage(resolve, reject, error, response, body)
-            })
-        })
+                processWorkspacesUsage(resolve, reject, error, response, body);
+            });
+        });
     }
-    console.error("No valid locationId found")
-    D.failure(D.errorType.GENERIC_ERROR)
+    console.error("No valid locationId found");
+    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
@@ -244,7 +244,7 @@ function generateLoginConf() {
             "grant_type": "account_credentials", "account_id": accountId
         },
         rejectUnauthorized: false, jar: true
-    }
+    };
 }
 
 /**
@@ -252,10 +252,10 @@ function generateLoginConf() {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-    const config = generateLoginConf()
+    const config = generateLoginConf();
     return new Promise(function (resolve, reject) {
-        zoomLogin.http.post(config, processLoginResponse(resolve, reject))
-    })
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -266,7 +266,7 @@ function login() {
 function getInUseByKey(key) {
     return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["in_use"] !== undefined
         ? workspaceUsage[key]["in_use"]
-        : "N/A"
+        : "N/A";
 }
 
 /**
@@ -277,7 +277,7 @@ function getInUseByKey(key) {
 function getNotInUseByKey(key) {
     return workspaceUsage && workspaceUsage[key] && workspaceUsage[key]["not_in_use"] !== undefined
         ? workspaceUsage[key]["not_in_use"]
-        : "N/A"
+        : "N/A";
 }
 
 /**
@@ -285,8 +285,8 @@ function getNotInUseByKey(key) {
  */
 function extractVariables() {
     return variablesDetails.map(function (detail) {
-        return D.createVariable(detail.uid, detail.name, detail.extract(), detail.unit, detail.valueType)
-    })
+        return D.createVariable(detail.uid, detail.name, detail.extract(), detail.unit, detail.valueType);
+    });
 }
 
 /**
@@ -301,9 +301,9 @@ function validate() {
         .then(retrieveWorkspacesUsage)
         .then(D.success)
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -319,7 +319,7 @@ function get_status() {
         .then(extractVariables)
         .then(D.success)
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

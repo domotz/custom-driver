@@ -43,34 +43,34 @@ const endpoints = [
     }
 ];
 
-let httpResponses = []
+let httpResponses = [];
 
 var managedDisksTable = D.createTable(
-    'Managed Disks Details',
+    "Managed Disks Details",
     [
-        {label: "Name", valueType: D.valueType.STRING},
-        {label: "Status", valueType: D.valueType.STRING},
-        {label: "Mode", valueType: D.valueType.STRING},
-        {label: "Managed Disk Group ID", valueType: D.valueType.STRING},
-        {label: "Managed Disk Group Name", valueType: D.valueType.STRING},
-        {label: "Capacity", valueType: D.valueType.NUMBER, unit: "TB"},
-        {label: "Control LUN Number", valueType: D.valueType.STRING},
-        {label: "Controller Name", valueType: D.valueType.STRING},
-        {label: "UID", valueType: D.valueType.STRING},
-        {label: "Tier", valueType: D.valueType.STRING},
-        {label: "Encrypted", valueType: D.valueType.STRING},
-        {label: "Site ID", valueType: D.valueType.STRING},
-        {label: "Site Name", valueType: D.valueType.STRING},
-        {label: "Distributed", valueType: D.valueType.STRING},
-        {label: "Deduplication Enabled", valueType: D.valueType.STRING},
-        {label: "Over Provisioned", valueType: D.valueType.STRING},
-        {label: "Supports Unmap", valueType: D.valueType.STRING},
-        {label: "RAID Status", valueType: D.valueType.STRING},
-        {label: "RAID Level", valueType: D.valueType.STRING},
-        {label: "Redundancy", valueType: D.valueType.STRING},
-        {label: "Strip Size", valueType: D.valueType.STRING}
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Mode", valueType: D.valueType.STRING },
+        { label: "Managed Disk Group ID", valueType: D.valueType.STRING },
+        { label: "Managed Disk Group Name", valueType: D.valueType.STRING },
+        { label: "Capacity", valueType: D.valueType.NUMBER, unit: "TB" },
+        { label: "Control LUN Number", valueType: D.valueType.STRING },
+        { label: "Controller Name", valueType: D.valueType.STRING },
+        { label: "UID", valueType: D.valueType.STRING },
+        { label: "Tier", valueType: D.valueType.STRING },
+        { label: "Encrypted", valueType: D.valueType.STRING },
+        { label: "Site ID", valueType: D.valueType.STRING },
+        { label: "Site Name", valueType: D.valueType.STRING },
+        { label: "Distributed", valueType: D.valueType.STRING },
+        { label: "Deduplication Enabled", valueType: D.valueType.STRING },
+        { label: "Over Provisioned", valueType: D.valueType.STRING },
+        { label: "Supports Unmap", valueType: D.valueType.STRING },
+        { label: "RAID Status", valueType: D.valueType.STRING },
+        { label: "RAID Level", valueType: D.valueType.STRING },
+        { label: "Redundancy", valueType: D.valueType.STRING },
+        { label: "Strip Size", valueType: D.valueType.STRING }
     ]
-)
+);
 
 /**
  * Sends an HTTPS POST request and returns the parsed JSON response.
@@ -89,20 +89,19 @@ function callHttps(endpoint, headers) {
     return new Promise(function (resolve) {
         D.device.http.post(config, function (error, response, body) {
             if (error) {
-                console.error(error)
-                D.failure(D.errorType.GENERIC_ERROR)
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
             } else if (!response || response.statusCode === 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             } else if (response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR)
-            }
-            else if (response.statusCode !== 200) {
-                D.failure(D.errorType.GENERIC_ERROR)
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
             } else {
                 resolve(JSON.parse(body));
             }
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -112,8 +111,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -121,13 +120,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -136,7 +135,7 @@ function login() {
  * @returns {number|string} Cleaned value.
  */
 function cleanFloatValue(value) {
-    return parseFloat(value.replace(/[^0-9.]/g, ''))
+    return parseFloat(value.replace(/[^0-9.]/g, ""));
 }
 
 /**
@@ -145,29 +144,29 @@ function cleanFloatValue(value) {
  */
 function populateEndpointVariables(managedDisksDetailsList) {
     for (let i = 0; i < managedDisksDetailsList.length; i++) {
-        const managedDiskDetails = managedDisksDetailsList[i]
-        managedDisksTable.insertRecord(managedDiskDetails['id'], [
-            managedDiskDetails['name'] || "N/A",
-            managedDiskDetails['status'] || "N/A",
-            managedDiskDetails['mode'] || "N/A",
-            managedDiskDetails['mdisk_grp_id'] || "N/A",
-            managedDiskDetails['mdisk_grp_name'] || "N/A",
-            managedDiskDetails['capacity'] ? cleanFloatValue(managedDiskDetails['capacity']) : "N/A",
-            managedDiskDetails['ctrl_LUN_#'] || "N/A",
-            managedDiskDetails['controller_name'] || "N/A",
-            managedDiskDetails['UID'] || "N/A",
-            managedDiskDetails['tier'] || "N/A",
-            managedDiskDetails['encrypt'] || "N/A",
-            managedDiskDetails['site_id'] || "N/A",
-            managedDiskDetails['site_name'] || "N/A",
-            managedDiskDetails['distributed'] || "N/A",
-            managedDiskDetails['dedupe'] || "N/A",
-            managedDiskDetails['over_provisioned'] || "N/A",
-            managedDiskDetails['supports_unmap'] || "N/A",
-            managedDiskDetails['raid_status'] || "N/A",
-            managedDiskDetails['raid_level'] || "N/A",
-            managedDiskDetails['redundancy'] || "N/A",
-            managedDiskDetails['strip_size'] || "N/A"
+        const managedDiskDetails = managedDisksDetailsList[i];
+        managedDisksTable.insertRecord(managedDiskDetails["id"], [
+            managedDiskDetails["name"] || "N/A",
+            managedDiskDetails["status"] || "N/A",
+            managedDiskDetails["mode"] || "N/A",
+            managedDiskDetails["mdisk_grp_id"] || "N/A",
+            managedDiskDetails["mdisk_grp_name"] || "N/A",
+            managedDiskDetails["capacity"] ? cleanFloatValue(managedDiskDetails["capacity"]) : "N/A",
+            managedDiskDetails["ctrl_LUN_#"] || "N/A",
+            managedDiskDetails["controller_name"] || "N/A",
+            managedDiskDetails["UID"] || "N/A",
+            managedDiskDetails["tier"] || "N/A",
+            managedDiskDetails["encrypt"] || "N/A",
+            managedDiskDetails["site_id"] || "N/A",
+            managedDiskDetails["site_name"] || "N/A",
+            managedDiskDetails["distributed"] || "N/A",
+            managedDiskDetails["dedupe"] || "N/A",
+            managedDiskDetails["over_provisioned"] || "N/A",
+            managedDiskDetails["supports_unmap"] || "N/A",
+            managedDiskDetails["raid_status"] || "N/A",
+            managedDiskDetails["raid_level"] || "N/A",
+            managedDiskDetails["redundancy"] || "N/A",
+            managedDiskDetails["strip_size"] || "N/A"
         ]);
     }
 }
@@ -178,7 +177,7 @@ function populateEndpointVariables(managedDisksDetailsList) {
  * @param {string} key - The key used to identify the response.
  */
 function storeResponse(response, key) {
-    httpResponses.push({response: response, key: key});
+    httpResponses.push({ response: response, key: key });
 }
 
 /**
@@ -207,14 +206,14 @@ function mergeOutputs() {
 function retrieveAndStoreData(body) {
     const promises = [];
     for (let i = 0; i < endpoints.length; i++) {
-        const endpointDetails = endpoints[i]
+        const endpointDetails = endpoints[i];
         const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
             .then(function (response) {
-                storeResponse(response, endpointDetails.endpoint, endpointDetails.key)
-            })
-        promises.push(promise)
+                storeResponse(response, endpointDetails.endpoint, endpointDetails.key);
+            });
+        promises.push(promise);
     }
-    return Promise.all(promises)
+    return Promise.all(promises);
 }
 
 /**
@@ -225,13 +224,13 @@ function retrieveAndStoreData(body) {
 function validate() {
     login()
         .then(retrieveAndStoreData)
-        .then(function(){
-            D.success()
+        .then(function () {
+            D.success();
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error("Validation failed: ", error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -244,11 +243,11 @@ function get_status() {
         .then(retrieveAndStoreData)
         .then(mergeOutputs)
         .then(function (managedDisksDetailsList) {
-            populateEndpointVariables(managedDisksDetailsList)
-            D.success(managedDisksTable)
+            populateEndpointVariables(managedDisksDetailsList);
+            D.success(managedDisksTable);
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error("Validation failed: ", error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

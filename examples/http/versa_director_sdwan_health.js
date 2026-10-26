@@ -91,22 +91,22 @@
  * USED percentages (derived from the free values Versa returns), so a full bar means a problem.
  **/
 
-const DEFAULT_PORT = "9183"
-const DEFAULT_PAGE_SIZE = 100
-const INVENTORY_PATH = "/vnms/appliance/appliance"
-const TOKEN_PATH = "/auth/token"
-const MILLISECONDS_PER_DAY = 86400000
+const DEFAULT_PORT = "9183";
+const DEFAULT_PAGE_SIZE = 100;
+const INVENTORY_PATH = "/vnms/appliance/appliance";
+const TOKEN_PATH = "/auth/token";
+const MILLISECONDS_PER_DAY = 86400000;
 
-const clientIdParam = D.getParameter("clientId")
-const clientSecretParam = D.getParameter("clientSecret")
-const authPortParam = D.getParameter("authPort")
-const apiPortParam = D.getParameter("apiPort")
-const directorHostParam = D.getParameter("directorHost")
-const maxAppliancesParam = D.getParameter("maxAppliances")
+const clientIdParam = D.getParameter("clientId");
+const clientSecretParam = D.getParameter("clientSecret");
+const authPortParam = D.getParameter("authPort");
+const apiPortParam = D.getParameter("apiPort");
+const directorHostParam = D.getParameter("directorHost");
+const maxAppliancesParam = D.getParameter("maxAppliances");
 
-const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10)
-const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10)
-const pageSize = maxAppliancesParam ? parseInt(maxAppliancesParam, 10) : DEFAULT_PAGE_SIZE
+const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10);
+const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10);
+const pageSize = maxAppliancesParam ? parseInt(maxAppliancesParam, 10) : DEFAULT_PAGE_SIZE;
 
 /**
  * Reduces whatever was entered for directorHost to a bare hostname. People reasonably paste a
@@ -117,14 +117,14 @@ const pageSize = maxAppliancesParam ? parseInt(maxAppliancesParam, 10) : DEFAULT
  * @returns {string|null} a bare hostname, or null when nothing usable was given
  */
 function normalizeHost(raw) {
-  if (!raw) return null
-  let host = String(raw).trim()
-  host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "")
-  host = host.split("/")[0].split("?")[0]
-  // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
-  if (host.charAt(0) !== "[") host = host.split(":")[0]
-  host = host.trim()
-  return host.length > 0 ? host : null
+    if (!raw) return null;
+    let host = String(raw).trim();
+    host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "");
+    host = host.split("/")[0].split("?")[0];
+    // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
+    if (host.charAt(0) !== "[") host = host.split(":")[0];
+    host = host.trim();
+    return host.length > 0 ? host : null;
 }
 
 /**
@@ -144,72 +144,72 @@ function normalizeHost(raw) {
  * at parse time with "Identifier 'directorHost' has already been declared" - before a single line
  * runs. Never name a variable after a parameter; read the parameter into a distinctly named one.
  */
-const resolvedHost = normalizeHost(directorHostParam)
-const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device
+const resolvedHost = normalizeHost(directorHostParam);
+const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device;
 
-let accessToken
-let authenticatedOrg
+let accessToken;
+let authenticatedOrg;
 
 const appliancesTable = D.createTable(
-  "SD-WAN Appliances",
-  [
+    "SD-WAN Appliances",
+    [
     // Ownership and role
-    { label: "Organization", valueType: D.valueType.STRING },
-    { label: "Org UUID", valueType: D.valueType.STRING },
-    { label: "Appliance UUID", valueType: D.valueType.STRING },
-    { label: "Type", valueType: D.valueType.STRING },
-    { label: "Deployment", valueType: D.valueType.STRING },
-    { label: "Connector", valueType: D.valueType.STRING },
-    { label: "Connector Type", valueType: D.valueType.STRING },
-    { label: "Branch ID", valueType: D.valueType.STRING },
-    { label: "CMS Org", valueType: D.valueType.STRING },
-    { label: "Services", valueType: D.valueType.STRING },
-    { label: "SNG Count", valueType: D.valueType.NUMBER },
+        { label: "Organization", valueType: D.valueType.STRING },
+        { label: "Org UUID", valueType: D.valueType.STRING },
+        { label: "Appliance UUID", valueType: D.valueType.STRING },
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Deployment", valueType: D.valueType.STRING },
+        { label: "Connector", valueType: D.valueType.STRING },
+        { label: "Connector Type", valueType: D.valueType.STRING },
+        { label: "Branch ID", valueType: D.valueType.STRING },
+        { label: "CMS Org", valueType: D.valueType.STRING },
+        { label: "Services", valueType: D.valueType.STRING },
+        { label: "SNG Count", valueType: D.valueType.NUMBER },
 
-    // Operational status
-    { label: "Reachability", valueType: D.valueType.STRING },
-    { label: "Config Sync", valueType: D.valueType.STRING },
-    { label: "Path Status", valueType: D.valueType.STRING },
-    { label: "Controller", valueType: D.valueType.STRING },
-    { label: "Services Status", valueType: D.valueType.STRING },
-    { label: "Overall Status", valueType: D.valueType.STRING },
-    { label: "Template", valueType: D.valueType.STRING },
-    { label: "YANG Compatibility", valueType: D.valueType.STRING },
-    { label: "Inter-Chassis HA", valueType: D.valueType.STRING },
-    { label: "Intra-Chassis HA", valueType: D.valueType.STRING },
-    { label: "Stolen Suspected", valueType: D.valueType.STRING },
+        // Operational status
+        { label: "Reachability", valueType: D.valueType.STRING },
+        { label: "Config Sync", valueType: D.valueType.STRING },
+        { label: "Path Status", valueType: D.valueType.STRING },
+        { label: "Controller", valueType: D.valueType.STRING },
+        { label: "Services Status", valueType: D.valueType.STRING },
+        { label: "Overall Status", valueType: D.valueType.STRING },
+        { label: "Template", valueType: D.valueType.STRING },
+        { label: "YANG Compatibility", valueType: D.valueType.STRING },
+        { label: "Inter-Chassis HA", valueType: D.valueType.STRING },
+        { label: "Intra-Chassis HA", valueType: D.valueType.STRING },
+        { label: "Stolen Suspected", valueType: D.valueType.STRING },
 
-    // Software
-    { label: "Software Version", valueType: D.valueType.STRING },
-    { label: "Build", valueType: D.valueType.STRING },
-    { label: "Firmware Version", valueType: D.valueType.STRING },
+        // Software
+        { label: "Software Version", valueType: D.valueType.STRING },
+        { label: "Build", valueType: D.valueType.STRING },
+        { label: "Firmware Version", valueType: D.valueType.STRING },
 
-    // Hardware identity
-    { label: "Model", valueType: D.valueType.STRING },
-    { label: "Manufacturer", valueType: D.valueType.STRING },
-    { label: "Serial Number", valueType: D.valueType.STRING },
-    { label: "Hardware Serial", valueType: D.valueType.STRING },
+        // Hardware identity
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Manufacturer", valueType: D.valueType.STRING },
+        { label: "Serial Number", valueType: D.valueType.STRING },
+        { label: "Hardware Serial", valueType: D.valueType.STRING },
 
-    // Resources
-    { label: "CPU Cores", valueType: D.valueType.NUMBER },
-    { label: "Total Memory", unit: "GiB", valueType: D.valueType.NUMBER },
-    { label: "Used Memory", unit: "%", valueType: D.valueType.NUMBER },
-    { label: "Total Disk", unit: "GiB", valueType: D.valueType.NUMBER },
-    { label: "Used Disk", unit: "%", valueType: D.valueType.NUMBER },
+        // Resources
+        { label: "CPU Cores", valueType: D.valueType.NUMBER },
+        { label: "Total Memory", unit: "GiB", valueType: D.valueType.NUMBER },
+        { label: "Used Memory", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Total Disk", unit: "GiB", valueType: D.valueType.NUMBER },
+        { label: "Used Disk", unit: "%", valueType: D.valueType.NUMBER },
 
-    // Location
-    { label: "IP Address", valueType: D.valueType.STRING },
-    { label: "Location", valueType: D.valueType.STRING },
-    { label: "Latitude", valueType: D.valueType.NUMBER },
-    { label: "Longitude", valueType: D.valueType.NUMBER },
+        // Location
+        { label: "IP Address", valueType: D.valueType.STRING },
+        { label: "Location", valueType: D.valueType.STRING },
+        { label: "Latitude", valueType: D.valueType.NUMBER },
+        { label: "Longitude", valueType: D.valueType.NUMBER },
 
-    // Lifecycle
-    { label: "Uptime", unit: "days", valueType: D.valueType.NUMBER },
-    { label: "Start Time", valueType: D.valueType.STRING },
-    { label: "Last Updated", valueType: D.valueType.STRING },
-    { label: "Created At", valueType: D.valueType.STRING }
-  ]
-)
+        // Lifecycle
+        { label: "Uptime", unit: "days", valueType: D.valueType.NUMBER },
+        { label: "Start Time", valueType: D.valueType.STRING },
+        { label: "Last Updated", valueType: D.valueType.STRING },
+        { label: "Created At", valueType: D.valueType.STRING }
+    ]
+);
 
 // ------------------------------------------------------------------------------------------
 // Helpers
@@ -226,12 +226,12 @@ const appliancesTable = D.createTable(
  * @returns {*} the resolved value, or the fallback
  */
 function pick(source, keys, fallback) {
-  if (!source) return fallback
-  for (let i = 0; i < keys.length; i++) {
-    const value = source[keys[i]]
-    if (value !== undefined && value !== null && value !== "") return value
-  }
-  return fallback
+    if (!source) return fallback;
+    for (let i = 0; i < keys.length; i++) {
+        const value = source[keys[i]];
+        if (value !== undefined && value !== null && value !== "") return value;
+    }
+    return fallback;
 }
 
 /**
@@ -241,10 +241,10 @@ function pick(source, keys, fallback) {
  * @returns {string} display text
  */
 function asText(value, fallback) {
-  if (value === undefined || value === null || value === "") return fallback
-  if (typeof value === "boolean") return value ? "Yes" : "No"
-  if (Array.isArray(value)) return value.length ? value.join(", ") : fallback
-  return String(value)
+    if (value === undefined || value === null || value === "") return fallback;
+    if (typeof value === "boolean") return value ? "Yes" : "No";
+    if (Array.isArray(value)) return value.length ? value.join(", ") : fallback;
+    return String(value);
 }
 
 /**
@@ -253,10 +253,10 @@ function asText(value, fallback) {
  * @returns {string} "Configured", "Not configured", or "N/A"
  */
 function haState(haStatus) {
-  if (!haStatus || typeof haStatus !== "object") return "N/A"
-  const configured = pick(haStatus, ["ha-configured", "haConfigured"], null)
-  if (configured === null) return "N/A"
-  return configured ? "Configured" : "Not configured"
+    if (!haStatus || typeof haStatus !== "object") return "N/A";
+    const configured = pick(haStatus, ["ha-configured", "haConfigured"], null);
+    if (configured === null) return "N/A";
+    return configured ? "Configured" : "Not configured";
 }
 
 /**
@@ -265,14 +265,14 @@ function haState(haStatus) {
  * @returns {number|null} size in GiB, or null when unparseable
  */
 function toGiB(value) {
-  if (!value) return null
-  const amount = parseFloat(value)
-  if (isNaN(amount)) return null
-  const text = String(value).toLowerCase()
-  if (text.indexOf("tib") !== -1) return amount * 1024
-  if (text.indexOf("mib") !== -1) return amount / 1024
-  if (text.indexOf("kib") !== -1) return amount / (1024 * 1024)
-  return amount
+    if (!value) return null;
+    const amount = parseFloat(value);
+    if (isNaN(amount)) return null;
+    const text = String(value).toLowerCase();
+    if (text.indexOf("tib") !== -1) return amount * 1024;
+    if (text.indexOf("mib") !== -1) return amount / 1024;
+    if (text.indexOf("kib") !== -1) return amount / (1024 * 1024);
+    return amount;
 }
 
 /**
@@ -281,7 +281,7 @@ function toGiB(value) {
  * @returns {number|null} the rounded value, or null
  */
 function round1(value) {
-  return value === null ? null : Math.round(value * 10) / 10
+    return value === null ? null : Math.round(value * 10) / 10;
 }
 
 /**
@@ -294,12 +294,12 @@ function round1(value) {
  * @returns {number|null} used percentage to one decimal place, or null
  */
 function usedPercent(totalRaw, freeRaw) {
-  const total = toGiB(totalRaw)
-  const free = toGiB(freeRaw)
-  if (total === null || free === null || total <= 0) return null
-  const used = total - free
-  if (used < 0) return null
-  return round1((used / total) * 100)
+    const total = toGiB(totalRaw);
+    const free = toGiB(freeRaw);
+    if (total === null || free === null || total <= 0) return null;
+    const used = total - free;
+    if (used < 0) return null;
+    return round1((used / total) * 100);
 }
 
 /**
@@ -308,9 +308,9 @@ function usedPercent(totalRaw, freeRaw) {
  * @returns {number|null} the parsed number, or null
  */
 function toNumber(value) {
-  if (value === undefined || value === null || value === "") return null
-  const parsed = parseFloat(value)
-  return isNaN(parsed) ? null : parsed
+    if (value === undefined || value === null || value === "") return null;
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? null : parsed;
 }
 
 /**
@@ -323,8 +323,8 @@ function toNumber(value) {
  * @returns {number|null} the parsed number when above zero, otherwise null
  */
 function toPositiveNumber(value) {
-  const parsed = toNumber(value)
-  return parsed !== null && parsed > 0 ? parsed : null
+    const parsed = toNumber(value);
+    return parsed !== null && parsed > 0 ? parsed : null;
 }
 
 /**
@@ -334,12 +334,12 @@ function toPositiveNumber(value) {
  * @returns {Object} { release, build }
  */
 function splitVersion(raw) {
-  if (!raw) return { release: "N/A", build: "N/A" }
-  const parts = String(raw).trim().split(/\s+/)
-  return {
-    release: parts[0] || "N/A",
-    build: parts.length > 1 ? parts.slice(1, 3).join(" ") : "N/A"
-  }
+    if (!raw) return { release: "N/A", build: "N/A" };
+    const parts = String(raw).trim().split(/\s+/);
+    return {
+        release: parts[0] || "N/A",
+        build: parts.length > 1 ? parts.slice(1, 3).join(" ") : "N/A"
+    };
 }
 
 /**
@@ -350,12 +350,12 @@ function splitVersion(raw) {
  * @returns {number|null} uptime in days to one decimal place, or null
  */
 function uptimeDays(startTime) {
-  if (!startTime) return null
-  const started = Date.parse(startTime)
-  if (isNaN(started)) return null
-  const elapsed = Date.now() - started
-  if (elapsed < 0) return null
-  return round1(elapsed / MILLISECONDS_PER_DAY)
+    if (!startTime) return null;
+    const started = Date.parse(startTime);
+    if (isNaN(started)) return null;
+    const elapsed = Date.now() - started;
+    if (elapsed < 0) return null;
+    return round1(elapsed / MILLISECONDS_PER_DAY);
 }
 
 /**
@@ -364,9 +364,9 @@ function uptimeDays(startTime) {
  * @returns {string} a safe record id
  */
 function sanitize(value) {
-  const reservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  const sanitizationRegex = new RegExp(reservedWords.join('|'), 'g')
-  return value.replace(sanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const reservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const sanitizationRegex = new RegExp(reservedWords.join("|"), "g");
+    return value.replace(sanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -377,17 +377,17 @@ function sanitize(value) {
  * @returns {Array<Object>|null} the first array of objects found, or null
  */
 function findFirstObjectArray(node, depth) {
-  if (!node || depth > 4) return null
-  if (Array.isArray(node)) {
-    return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null
-  }
-  if (typeof node !== "object") return null
-  const keys = Object.keys(node)
-  for (let i = 0; i < keys.length; i++) {
-    const found = findFirstObjectArray(node[keys[i]], depth + 1)
-    if (found) return found
-  }
-  return null
+    if (!node || depth > 4) return null;
+    if (Array.isArray(node)) {
+        return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null;
+    }
+    if (typeof node !== "object") return null;
+    const keys = Object.keys(node);
+    for (let i = 0; i < keys.length; i++) {
+        const found = findFirstObjectArray(node[keys[i]], depth + 1);
+        if (found) return found;
+    }
+    return null;
 }
 
 /**
@@ -396,9 +396,9 @@ function findFirstObjectArray(node, depth) {
  * @returns {string} a D.errorType constant
  */
 function errorTypeForStatus(statusCode) {
-  if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR
-  if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE
-  return D.errorType.GENERIC_ERROR
+    if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR;
+    if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE;
+    return D.errorType.GENERIC_ERROR;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -410,60 +410,60 @@ function errorTypeForStatus(statusCode) {
  * @returns {Promise} resolves once a token has been obtained
  */
 function login() {
-  const config = {
-    url: TOKEN_PATH,
-    protocol: "https",
-    port: authPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: D.device.username(),
-      password: D.device.password(),
-      grant_type: "password",
-      client_id: clientIdParam,
-      client_secret: clientSecretParam
-    }),
-    rejectUnauthorized: false,
-    jar: true
-  }
-  console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
-    (resolvedHost ? " (directorHost)" : " (device IP)"))
-  return new Promise(function (resolve) {
-    target.http.post(config, function (error, response, body) {
-      if (error) {
-        console.log("Token request failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("Token endpoint returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      let payload
-      try {
-        payload = JSON.parse(body)
-      } catch (parseError) {
-        console.log("Token response was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-        return
-      }
-      const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token
-      if (!token) {
-        console.log("No access token in the response. Keys returned: " +
-          Object.keys(payload).join(", "))
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-        return
-      }
-      accessToken = token
-      authenticatedOrg = (payload.user && payload.user.organization) || null
-      resolve()
-    })
-  })
+    const config = {
+        url: TOKEN_PATH,
+        protocol: "https",
+        port: authPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: D.device.username(),
+            password: D.device.password(),
+            grant_type: "password",
+            client_id: clientIdParam,
+            client_secret: clientSecretParam
+        }),
+        rejectUnauthorized: false,
+        jar: true
+    };
+    console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
+    (resolvedHost ? " (directorHost)" : " (device IP)"));
+    return new Promise(function (resolve) {
+        target.http.post(config, function (error, response, body) {
+            if (error) {
+                console.log("Token request failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("Token endpoint returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            let payload;
+            try {
+                payload = JSON.parse(body);
+            } catch (parseError) {
+                console.log("Token response was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
+            const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token;
+            if (!token) {
+                console.log("No access token in the response. Keys returned: " +
+          Object.keys(payload).join(", "));
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+            accessToken = token;
+            authenticatedOrg = (payload.user && payload.user.organization) || null;
+            resolve();
+        });
+    });
 }
 
 /**
@@ -472,39 +472,39 @@ function login() {
  * @returns {Promise<Object>} resolves with the parsed JSON body
  */
 function apiGet(path) {
-  const config = {
-    url: path,
-    protocol: "https",
-    port: apiPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Authorization": "Bearer " + accessToken
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
-  return new Promise(function (resolve) {
-    target.http.get(config, function (error, response, body) {
-      if (error) {
-        console.log("Request to " + path + " failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("GET " + path + " returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      try {
-        resolve(body ? JSON.parse(body) : {})
-      } catch (parseError) {
-        console.log("Response from " + path + " was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-      }
-    })
-  })
+    const config = {
+        url: path,
+        protocol: "https",
+        port: apiPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve) {
+        target.http.get(config, function (error, response, body) {
+            if (error) {
+                console.log("Request to " + path + " failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("GET " + path + " returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            try {
+                resolve(body ? JSON.parse(body) : {});
+            } catch (parseError) {
+                console.log("Response from " + path + " was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+            }
+        });
+    });
 }
 
 /**
@@ -513,15 +513,15 @@ function apiGet(path) {
  * @returns {Array<Object>} raw appliance objects
  */
 function extractAppliances(payload) {
-  if (Array.isArray(payload)) return payload
-  const container = payload["versanms.ApplianceStatusResult"]
-  if (container) {
-    if (Array.isArray(container.appliance)) return container.appliance
-    const nested = findFirstObjectArray(container, 0)
-    if (nested) return nested
-  }
-  if (Array.isArray(payload.appliance)) return payload.appliance
-  return findFirstObjectArray(payload, 0) || []
+    if (Array.isArray(payload)) return payload;
+    const container = payload["versanms.ApplianceStatusResult"];
+    if (container) {
+        if (Array.isArray(container.appliance)) return container.appliance;
+        const nested = findFirstObjectArray(container, 0);
+        if (nested) return nested;
+    }
+    if (Array.isArray(payload.appliance)) return payload.appliance;
+    return findFirstObjectArray(payload, 0) || [];
 }
 
 /**
@@ -529,21 +529,21 @@ function extractAppliances(payload) {
  * @returns {Promise<Array<Object>>} resolves with the raw appliance objects
  */
 function retrieveAppliances() {
-  return apiGet(INVENTORY_PATH + "?offset=0&limit=" + pageSize).then(function (payload) {
-    const appliances = extractAppliances(payload)
-    if (appliances.length === 0) {
-      console.log("The inventory call succeeded but returned no appliances. Keys returned: " +
-        Object.keys(payload).join(", "))
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      return []
-    }
-    if (appliances.length >= pageSize) {
-      console.log("The inventory response filled the requested page of " + pageSize +
+    return apiGet(INVENTORY_PATH + "?offset=0&limit=" + pageSize).then(function (payload) {
+        const appliances = extractAppliances(payload);
+        if (appliances.length === 0) {
+            console.log("The inventory call succeeded but returned no appliances. Keys returned: " +
+        Object.keys(payload).join(", "));
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            return [];
+        }
+        if (appliances.length >= pageSize) {
+            console.log("The inventory response filled the requested page of " + pageSize +
         " appliances, so the fleet may be larger than reported. Increase the maxAppliances " +
-        "parameter to cover every appliance.")
-    }
-    return appliances
-  })
+        "parameter to cover every appliance.");
+        }
+        return appliances;
+    });
 }
 
 /**
@@ -551,77 +551,77 @@ function retrieveAppliances() {
  * @param {Array<Object>} appliances raw appliance objects
  */
 function populateTable(appliances) {
-  appliances.forEach(function (appliance) {
-    const name = pick(appliance, ["name", "applianceName"], null)
-    if (!name) return
+    appliances.forEach(function (appliance) {
+        const name = pick(appliance, ["name", "applianceName"], null);
+        if (!name) return;
 
-    const hardware = appliance.Hardware || appliance.hardware || {}
-    const geo = appliance.applianceLocation || {}
-    const version = splitVersion(pick(appliance, ["softwareVersion", "software-version"], null))
-    const startTime = pick(appliance, ["startTime", "start-time"], null)
+        const hardware = appliance.Hardware || appliance.hardware || {};
+        const geo = appliance.applianceLocation || {};
+        const version = splitVersion(pick(appliance, ["softwareVersion", "software-version"], null));
+        const startTime = pick(appliance, ["startTime", "start-time"], null);
 
-    const totalMemory = toGiB(pick(hardware, ["memory"], null))
-    const totalDisk = toGiB(pick(hardware, ["diskSize"], null))
+        const totalMemory = toGiB(pick(hardware, ["memory"], null));
+        const totalDisk = toGiB(pick(hardware, ["diskSize"], null));
 
-    appliancesTable.insertRecord(sanitize(name), [
-      // Ownership and role
-      asText(pick(appliance, ["ownerOrg", "owner-org", "org"], authenticatedOrg), "N/A"),
-      asText(pick(appliance, ["ownerOrgUuid", "owner-org-uuid"], null), "N/A"),
-      asText(pick(appliance, ["uuid", "applianceUuid"], null), "N/A"),
-      asText(pick(appliance, ["type"], null), "N/A"),
-      asText(pick(appliance, ["deployment"], null), "N/A"),
-      asText(pick(appliance, ["connector"], null), "N/A"),
-      asText(pick(appliance, ["connectorType", "connector-type"], null), "N/A"),
-      asText(pick(appliance, ["branchId", "branch-id"], null), "N/A"),
-      asText(pick(appliance, ["cmsOrg", "cms-org"], null), "N/A"),
-      asText(pick(appliance, ["services"], null), "N/A"),
-      toNumber(pick(appliance, ["sngCount", "sng-count"], null)),
+        appliancesTable.insertRecord(sanitize(name), [
+            // Ownership and role
+            asText(pick(appliance, ["ownerOrg", "owner-org", "org"], authenticatedOrg), "N/A"),
+            asText(pick(appliance, ["ownerOrgUuid", "owner-org-uuid"], null), "N/A"),
+            asText(pick(appliance, ["uuid", "applianceUuid"], null), "N/A"),
+            asText(pick(appliance, ["type"], null), "N/A"),
+            asText(pick(appliance, ["deployment"], null), "N/A"),
+            asText(pick(appliance, ["connector"], null), "N/A"),
+            asText(pick(appliance, ["connectorType", "connector-type"], null), "N/A"),
+            asText(pick(appliance, ["branchId", "branch-id"], null), "N/A"),
+            asText(pick(appliance, ["cmsOrg", "cms-org"], null), "N/A"),
+            asText(pick(appliance, ["services"], null), "N/A"),
+            toNumber(pick(appliance, ["sngCount", "sng-count"], null)),
 
-      // Operational status
-      asText(pick(appliance, ["ping-status", "pingStatus"], null), "N/A"),
-      asText(pick(appliance, ["sync-status", "syncStatus"], null), "N/A"),
-      asText(pick(appliance, ["path-status", "pathStatus"], null), "N/A"),
-      // Versa spells this key "controll-status" on current releases; both spellings accepted.
-      asText(pick(appliance, ["controll-status", "control-status", "controlStatus"], null), "N/A"),
-      asText(pick(appliance, ["services-status", "servicesStatus"], null), "N/A"),
-      asText(pick(appliance, ["overall-status", "overallStatus"], null), "N/A"),
-      asText(pick(appliance, ["templateStatus", "template-status"], null), "N/A"),
-      asText(pick(appliance, ["yang-compatibility-status", "yangCompatibilityStatus"], null), "N/A"),
-      haState(appliance["inter-chassis-ha-status"] || appliance.interChassisHaStatus),
-      haState(appliance["intra-chassis-ha-status"] || appliance.intraChassisHaStatus),
-      asText(pick(appliance, ["stolenSuspected", "stolen-suspected"], false), "N/A"),
+            // Operational status
+            asText(pick(appliance, ["ping-status", "pingStatus"], null), "N/A"),
+            asText(pick(appliance, ["sync-status", "syncStatus"], null), "N/A"),
+            asText(pick(appliance, ["path-status", "pathStatus"], null), "N/A"),
+            // Versa spells this key "controll-status" on current releases; both spellings accepted.
+            asText(pick(appliance, ["controll-status", "control-status", "controlStatus"], null), "N/A"),
+            asText(pick(appliance, ["services-status", "servicesStatus"], null), "N/A"),
+            asText(pick(appliance, ["overall-status", "overallStatus"], null), "N/A"),
+            asText(pick(appliance, ["templateStatus", "template-status"], null), "N/A"),
+            asText(pick(appliance, ["yang-compatibility-status", "yangCompatibilityStatus"], null), "N/A"),
+            haState(appliance["inter-chassis-ha-status"] || appliance.interChassisHaStatus),
+            haState(appliance["intra-chassis-ha-status"] || appliance.intraChassisHaStatus),
+            asText(pick(appliance, ["stolenSuspected", "stolen-suspected"], false), "N/A"),
 
-      // Software
-      version.release,
-      version.build,
-      asText(pick(hardware, ["firmwareVersion", "firmware-version"], null), "N/A"),
+            // Software
+            version.release,
+            version.build,
+            asText(pick(hardware, ["firmwareVersion", "firmware-version"], null), "N/A"),
 
-      // Hardware identity
-      asText(pick(hardware, ["model"], null), "N/A"),
-      asText(pick(hardware, ["manufacturer"], null), "N/A"),
-      asText(pick(hardware, ["serialNo", "serialNumber"], null), "N/A"),
-      asText(pick(hardware, ["hardWareSerialNo", "hardwareSerialNo"], null), "N/A"),
+            // Hardware identity
+            asText(pick(hardware, ["model"], null), "N/A"),
+            asText(pick(hardware, ["manufacturer"], null), "N/A"),
+            asText(pick(hardware, ["serialNo", "serialNumber"], null), "N/A"),
+            asText(pick(hardware, ["hardWareSerialNo", "hardwareSerialNo"], null), "N/A"),
 
-      // Resources
-      toPositiveNumber(pick(hardware, ["cpuCores", "cpu-cores"], null)),
-      round1(totalMemory),
-      usedPercent(pick(hardware, ["memory"], null), pick(hardware, ["freeMemory"], null)),
-      round1(totalDisk),
-      usedPercent(pick(hardware, ["diskSize"], null), pick(hardware, ["freeDisk"], null)),
+            // Resources
+            toPositiveNumber(pick(hardware, ["cpuCores", "cpu-cores"], null)),
+            round1(totalMemory),
+            usedPercent(pick(hardware, ["memory"], null), pick(hardware, ["freeMemory"], null)),
+            round1(totalDisk),
+            usedPercent(pick(hardware, ["diskSize"], null), pick(hardware, ["freeDisk"], null)),
 
-      // Location
-      asText(pick(appliance, ["ipAddress", "ip-address"], null), "N/A"),
-      asText(pick(appliance, ["locationId", "location"], null), "N/A"),
-      toNumber(pick(geo, ["latitude"], null)),
-      toNumber(pick(geo, ["longitude"], null)),
+            // Location
+            asText(pick(appliance, ["ipAddress", "ip-address"], null), "N/A"),
+            asText(pick(appliance, ["locationId", "location"], null), "N/A"),
+            toNumber(pick(geo, ["latitude"], null)),
+            toNumber(pick(geo, ["longitude"], null)),
 
-      // Lifecycle
-      uptimeDays(startTime),
-      asText(startTime, "N/A"),
-      asText(pick(appliance, ["last-updated-time", "lastUpdatedTime"], null), "N/A"),
-      asText(pick(appliance, ["createdAt", "created-at"], null), "N/A")
-    ])
-  })
+            // Lifecycle
+            uptimeDays(startTime),
+            asText(startTime, "N/A"),
+            asText(pick(appliance, ["last-updated-time", "lastUpdatedTime"], null), "N/A"),
+            asText(pick(appliance, ["createdAt", "created-at"], null), "N/A")
+        ]);
+    });
 }
 
 // ------------------------------------------------------------------------------------------
@@ -635,15 +635,15 @@ function populateTable(appliances) {
  * and OAuth client, and that the appliance inventory endpoint returns data for this account
  */
 function validate() {
-  login()
-    .then(retrieveAppliances)
-    .then(function () {
-      D.success()
-    })
-    .catch(function (error) {
-      console.log("Validation failed: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(retrieveAppliances)
+        .then(function () {
+            D.success();
+        })
+        .catch(function (error) {
+            console.log("Validation failed: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -654,14 +654,14 @@ function validate() {
  * hardware identity, resource usage, uptime and location
  */
 function get_status() {
-  login()
-    .then(retrieveAppliances)
-    .then(function (appliances) {
-      populateTable(appliances)
-      D.success(appliancesTable)
-    })
-    .catch(function (error) {
-      console.log("Failed to retrieve SD-WAN health: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(retrieveAppliances)
+        .then(function (appliances) {
+            populateTable(appliances);
+            D.success(appliancesTable);
+        })
+        .catch(function (error) {
+            console.log("Failed to retrieve SD-WAN health: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

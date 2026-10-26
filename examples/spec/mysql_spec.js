@@ -5,7 +5,6 @@ global.D = {
     }
 };
 
-
 describe("MySQL driver testing", function () {
     describe("Output parsing", function () {
         var parse = require("../ssh/mysql").parse;
@@ -125,7 +124,6 @@ var outputSuccess = "   Active: active (running) since Thu 2022-05-19 08:23:29 C
     "Uptime:                 5 min 19 sec\n" +
     "\n" +
     "Threads: 1  Questions: 1150  Slow queries: 1  Opens: 113  Flush tables: 1  Open tables: 106  Queries per second avg: 3.605";
-
 
 var outputPartialSuccess = "mysql: unrecognized service\n" +
     "sh: 1: pmap: not found\n" +

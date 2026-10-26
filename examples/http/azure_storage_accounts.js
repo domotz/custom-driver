@@ -15,57 +15,57 @@
  * 			- SKU Name
  * 			- SKU Tier
  * 			- Kind
- *      - Availability 
+ *      - Availability
  *      - Egress
  *      - Ingress
  *      - Success E2E Latency
- *      - Success Server Latency 
+ *      - Success Server Latency
  *      - Transactions
- *      - Used Capacity 
- * 
- * 
+ *      - Used Capacity
+ *
+ *
  **/
 
 // Parameters for Azure authentication
-const tenantId = D.getParameter('tenantId')
-const clientId = D.getParameter('clientId')
-const clientSecret = D.getParameter('clientSecret')
-const subscriptionId = D.getParameter('subscriptionId')
+const tenantId = D.getParameter("tenantId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
+const subscriptionId = D.getParameter("subscriptionId");
 
 // List of resource groups to filter
-const resourceGroups = D.getParameter('resourceGroups')
+const resourceGroups = D.getParameter("resourceGroups");
 
 // Create external devices for Azure login and management services
-const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com')
-const azureCloudManagementService = D.createExternalDevice('management.azure.com')
+const azureCloudLoginService = D.createExternalDevice("login.microsoftonline.com");
+const azureCloudManagementService = D.createExternalDevice("management.azure.com");
 
 // Variable to store access token for Azure API calls
-let accessToken
-let storageAccountTable
+let accessToken;
+let storageAccountTable;
 
 // Columns for the storage account table
 const storageAccountColumns = [
-	{ label: 'Resource Group', valueType: D.valueType.STRING },
-	{ label: 'Location', valueType: D.valueType.STRING },
-	{ label: 'Provisioning State', valueType: D.valueType.STRING },
-	{ label: 'Creation Time', valueType: D.valueType.DATETIME },
-	{ label: 'Primary Location', valueType: D.valueType.STRING },
-	{ label: 'Status of Primary', valueType: D.valueType.STRING },
-	{ label: 'SKU Name', valueType: D.valueType.STRING },
-	{ label: 'SKU Tier', valueType: D.valueType.STRING },
-	{ label: 'Kind', valueType: D.valueType.STRING }
-]
+    { label: "Resource Group", valueType: D.valueType.STRING },
+    { label: "Location", valueType: D.valueType.STRING },
+    { label: "Provisioning State", valueType: D.valueType.STRING },
+    { label: "Creation Time", valueType: D.valueType.DATETIME },
+    { label: "Primary Location", valueType: D.valueType.STRING },
+    { label: "Status of Primary", valueType: D.valueType.STRING },
+    { label: "SKU Name", valueType: D.valueType.STRING },
+    { label: "SKU Tier", valueType: D.valueType.STRING },
+    { label: "Kind", valueType: D.valueType.STRING }
+];
 
 // Define metrics to retrieve from Azure storage accounts
 const metricList = [
-  { label: 'Availability', valueType: D.valueType.NUMBER, unit: '%', key: 'Availability' },
-  { label: 'Egress', valueType: D.valueType.NUMBER, unit: 'MB', key: 'Egress', callback: convertToMB },
-  { label: 'Ingress', valueType: D.valueType.NUMBER, unit: 'MB', key: 'Ingress', callback: convertToMB },
-  { label: 'Success E2E Latency', valueType: D.valueType.NUMBER, key: 'SuccessE2ELatency' },
-  { label: 'Success Server Latency', valueType: D.valueType.NUMBER, unit: 'ms', key: 'SuccessServerLatency' },
-  { label: 'Transactions', valueType: D.valueType.NUMBER, key: 'Transactions' },
-  { label: 'Used Capacity', valueType: D.valueType.NUMBER, unit: 'MB', key: 'UsedCapacity', callback: convertToMB }
-]
+    { label: "Availability", valueType: D.valueType.NUMBER, unit: "%", key: "Availability" },
+    { label: "Egress", valueType: D.valueType.NUMBER, unit: "MB", key: "Egress", callback: convertToMB },
+    { label: "Ingress", valueType: D.valueType.NUMBER, unit: "MB", key: "Ingress", callback: convertToMB },
+    { label: "Success E2E Latency", valueType: D.valueType.NUMBER, key: "SuccessE2ELatency" },
+    { label: "Success Server Latency", valueType: D.valueType.NUMBER, unit: "ms", key: "SuccessServerLatency" },
+    { label: "Transactions", valueType: D.valueType.NUMBER, key: "Transactions" },
+    { label: "Used Capacity", valueType: D.valueType.NUMBER, unit: "MB", key: "UsedCapacity", callback: convertToMB }
+];
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -73,16 +73,16 @@ const metricList = [
  * @param {Object} response The HTTP response object
  */
 function checkHTTPError(error, response) {
-  if (error) {
-    console.error(error)
-    D.failure(D.errorType.GENERIC_ERROR)
-  } else if (response.statusCode === 404) {
-    D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-  } else if (response.statusCode === 401 || response.statusCode === 403) {
-    D.failure(D.errorType.AUTHENTICATION_ERROR)
-  } else if (response.statusCode !== 200) {
-    D.failure(D.errorType.GENERIC_ERROR)
-  }
+    if (error) {
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    } else if (response.statusCode === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else if (response.statusCode === 401 || response.statusCode === 403) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (response.statusCode !== 200) {
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 /**
@@ -92,17 +92,17 @@ function checkHTTPError(error, response) {
  * @returns {Function} A function to process the HTTP response
  */
 function processLoginResponse(resolve, reject) {
-  return function process(error, response, body) {
-    checkHTTPError(error, response)
-    const bodyAsJSON = JSON.parse(body)
-    if (bodyAsJSON.access_token) {
-      accessToken = bodyAsJSON.access_token
-      resolve()
-    } else {
-      console.error('Access token not found in response body')
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    }
-  }
+    return function process(error, response, body) {
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
+        if (bodyAsJSON.access_token) {
+            accessToken = bodyAsJSON.access_token;
+            resolve();
+        } else {
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+    };
 }
 
 /**
@@ -111,10 +111,10 @@ function processLoginResponse(resolve, reject) {
  * @returns {Array} The filtered list of network interfaces
  */
 function filterStorageAccountsByRG(storageAccounts) {
-  return storageAccounts.filter(function(storageAccount) {
-    const resourceGroupName = storageAccount.resourceGroupName
-    return  (resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function(resourceGroup) { return resourceGroup.toLowerCase() === resourceGroupName.toLowerCase()})
-	})
+    return storageAccounts.filter(function (storageAccount) {
+        const resourceGroupName = storageAccount.resourceGroupName;
+        return  (resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === "all") || resourceGroups.some(function (resourceGroup) { return resourceGroup.toLowerCase() === resourceGroupName.toLowerCase();});
+    });
 }
 
 /**
@@ -124,18 +124,18 @@ function filterStorageAccountsByRG(storageAccounts) {
  * @returns {Function} A function to process the HTTP response
  */
 function processStorageAccountsResponse(resolve, reject) {
-  return function process(error, response, body) {
-    checkHTTPError(error, response)
-    const bodyAsJSON = JSON.parse(body)
-    if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
-      const storageAccounts = bodyAsJSON.value.map(extracStorageAccountsInfo)
-      const filteredAccounts = filterStorageAccountsByRG(storageAccounts)
-      resolve(filteredAccounts)
-    } else {
-      console.error('No storage accounts found')
-      D.failure(D.errorType.GENERIC_ERROR)
-    }
-  }
+    return function process(error, response, body) {
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
+        if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
+            const storageAccounts = bodyAsJSON.value.map(extracStorageAccountsInfo);
+            const filteredAccounts = filterStorageAccountsByRG(storageAccounts);
+            resolve(filteredAccounts);
+        } else {
+            console.error("No storage accounts found");
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+    };
 }
 
 /**
@@ -145,17 +145,17 @@ function processStorageAccountsResponse(resolve, reject) {
  * @returns {Function} A function to process the HTTP response
  */
 function processStorageAccountsMetricsResponse(resolve, reject) {
-  return function process(error, response, body) {
-    checkHTTPError(error, response);
-    const bodyAsJSON = JSON.parse(body)
-    if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
-      const metricsData = extractMetricsInfo(bodyAsJSON)
-      resolve(metricsData)
-    } else {
-      console.error('No performance metrics found for the storage account')
-      D.failure(D.errorType.GENERIC_ERROR)
-    }
-  }
+    return function process(error, response, body) {
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
+        if (Array.isArray(bodyAsJSON.value) && bodyAsJSON.value.length > 0) {
+            const metricsData = extractMetricsInfo(bodyAsJSON);
+            resolve(metricsData);
+        } else {
+            console.error("No performance metrics found for the storage account");
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+    };
 }
 
 /**
@@ -163,24 +163,24 @@ function processStorageAccountsMetricsResponse(resolve, reject) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-  const config = {
-    url: '/' + tenantId + '/oauth2/token', 
-    protocol: 'https', 
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    }, 
-    form: {
-      grant_type: 'client_credentials',
-      client_id: clientId,
-      client_secret: clientSecret,
-      resource: 'https://management.azure.com\/'
-    }, 
-    rejectUnauthorized: false, 
-    jar: true
-  }
-  return new Promise(function (resolve, reject) {
-    azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject))
-  })
+    const config = {
+        url: "/" + tenantId + "/oauth2/token",
+        protocol: "https",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        form: {
+            grant_type: "client_credentials",
+            client_id: clientId,
+            client_secret: clientSecret,
+            resource: "https://management.azure.com\/"
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -189,27 +189,27 @@ function login() {
  * @returns {Object} An object containing relevant storage account information
  */
 function extracStorageAccountsInfo(storageAccounts) {
-  let resourceGroupName = 'N/A'
-  if (storageAccounts.id) {
-    const matches = storageAccounts.id.match(/resourceGroups\/([^/]+)/)
-    resourceGroupName = matches ? matches[1] : 'N/A'
-  } else {
-    resourceGroupName = 'N/A'
-  }
-  const properties = storageAccounts.properties || {}
-  const sku = storageAccounts.sku || {}
-  return {
-		name: storageAccounts.name || 'N/A', 
-    resourceGroupName, 
-		location: storageAccounts.location || 'N/A',
-		provisioningState: properties.provisioningState || 'N/A',
-		creationTime: properties.creationTime || 'N/A',
-		primaryLocation: properties.primaryLocation || 'N/A',
-		statusOfPrimary: properties.statusOfPrimary || 'N/A',
-		skuName: sku.name || 'N/A',
-		skuTier: sku.tier || 'N/A',
-		kind: storageAccounts.kind || 'N/A'
-  }
+    let resourceGroupName = "N/A";
+    if (storageAccounts.id) {
+        const matches = storageAccounts.id.match(/resourceGroups\/([^/]+)/);
+        resourceGroupName = matches ? matches[1] : "N/A";
+    } else {
+        resourceGroupName = "N/A";
+    }
+    const properties = storageAccounts.properties || {};
+    const sku = storageAccounts.sku || {};
+    return {
+        name: storageAccounts.name || "N/A",
+        resourceGroupName,
+        location: storageAccounts.location || "N/A",
+        provisioningState: properties.provisioningState || "N/A",
+        creationTime: properties.creationTime || "N/A",
+        primaryLocation: properties.primaryLocation || "N/A",
+        statusOfPrimary: properties.statusOfPrimary || "N/A",
+        skuName: sku.name || "N/A",
+        skuTier: sku.tier || "N/A",
+        kind: storageAccounts.kind || "N/A"
+    };
 }
 
 /**
@@ -218,22 +218,21 @@ function extracStorageAccountsInfo(storageAccounts) {
  * @returns {Object} An object mapping metric names to their latest values
  */
 function extractMetricsInfo(metricsResponse) {
-  const metricsInfo = {}
-  metricsResponse.value.forEach(function(metric) {
-    const metricName = metric.name.value
-    const timeseries = metric.timeseries || []
-    if (timeseries.length > 0) {
-      const latestData = timeseries[0].data
-      const latestValue = latestData[latestData.length - 1]
-			const nonTimestampValue = Object.keys(latestValue).find(function(key) { return key !== 'timeStamp' })
-      metricsInfo[metricName] = nonTimestampValue ? latestValue[nonTimestampValue] : 'N/A'
-    } else {
-      metricsInfo[metricName] = 'N/A'
-    }
-  })
-  return metricsInfo
+    const metricsInfo = {};
+    metricsResponse.value.forEach(function (metric) {
+        const metricName = metric.name.value;
+        const timeseries = metric.timeseries || [];
+        if (timeseries.length > 0) {
+            const latestData = timeseries[0].data;
+            const latestValue = latestData[latestData.length - 1];
+            const nonTimestampValue = Object.keys(latestValue).find(function (key) { return key !== "timeStamp"; });
+            metricsInfo[metricName] = nonTimestampValue ? latestValue[nonTimestampValue] : "N/A";
+        } else {
+            metricsInfo[metricName] = "N/A";
+        }
+    });
+    return metricsInfo;
 }
-
 
 /**
  * Generates the configuration object for making API requests to Azure
@@ -241,15 +240,15 @@ function extractMetricsInfo(metricsResponse) {
  * @returns {Object} The configuration object for the HTTP request
  */
 function generateConfig(url) {
-  return {
-    url: '/subscriptions/' + subscriptionId + url,
-    protocol: 'https',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken,
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
+    return {
+        url: "/subscriptions/" + subscriptionId + url,
+        protocol: "https",
+        headers: {
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
 }
 
 /**
@@ -257,10 +256,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the list of storage accounts
  */
 function retrieveStorageAccounts() {
-  const config = generateConfig('/providers/Microsoft.Storage/storageAccounts?api-version=2024-01-01')
-  return new Promise(function (resolve, reject) {
-    azureCloudManagementService.http.get(config, processStorageAccountsResponse(resolve, reject))
-  })
+    const config = generateConfig("/providers/Microsoft.Storage/storageAccounts?api-version=2024-01-01");
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processStorageAccountsResponse(resolve, reject));
+    });
 }
 
 /**
@@ -269,44 +268,44 @@ function retrieveStorageAccounts() {
  * @returns {Promise} A promise that resolves when metrics have been retrieved for all storage accounts
  */
 function retrieveStorageAccountsMetrics(storageAccounts) {
-  const performanceKeyGroups = []
-  const promises = []
-  const maxGroupSize = 20
-  for (let i = 0; i < metricList.length; i += maxGroupSize) {
-    performanceKeyGroups.push(metricList.slice(i, i + maxGroupSize).map(function (metric) {
-        return metric.key
-    }).join(','))
-  }
-  storageAccounts.forEach(function (storageAccount) {
-    performanceKeyGroups.forEach(function (group) {
-      const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + '/providers/Microsoft.Storage/storageAccounts/' + storageAccount.name + '/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=' + group + "&timespan=PT1H")
-      promises.push(new Promise(function (resolve, reject) {
-        azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(resolve, reject, storageAccount))
-      }))
-    })
-  })
-  return Promise.all(promises)
+    const performanceKeyGroups = [];
+    const promises = [];
+    const maxGroupSize = 20;
+    for (let i = 0; i < metricList.length; i += maxGroupSize) {
+        performanceKeyGroups.push(metricList.slice(i, i + maxGroupSize).map(function (metric) {
+            return metric.key;
+        }).join(","));
+    }
+    storageAccounts.forEach(function (storageAccount) {
+        performanceKeyGroups.forEach(function (group) {
+            const config = generateConfig("/resourceGroups/" + storageAccount.resourceGroupName + "/providers/Microsoft.Storage/storageAccounts/" + storageAccount.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1H");
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, processStorageAccountsMetricsResponse(resolve, reject, storageAccount));
+            }));
+        });
+    });
+    return Promise.all(promises);
 }
 
 /**
  * Creates a table to display Azure storage accounts and their associated metrics
  */
 function createStorageAccountTable() {
-  const metricColumns = metricList.map(function (metric) {
-    return {
-      label: metric.label,
-      valueType: metric.valueType,
-      unit: metric.unit || null
-    }
-  })
-  const allColumns = storageAccountColumns.concat(metricColumns)
-  storageAccountTable = D.createTable('Azure Storage Accounts', allColumns.map(function (item) {
-    const tableDef = { label: item.label, valueType: item.valueType }
-    if (item.unit) {
-      tableDef.unit = item.unit
-    }
-    return tableDef
-  }))
+    const metricColumns = metricList.map(function (metric) {
+        return {
+            label: metric.label,
+            valueType: metric.valueType,
+            unit: metric.unit || null
+        };
+    });
+    const allColumns = storageAccountColumns.concat(metricColumns);
+    storageAccountTable = D.createTable("Azure Storage Accounts", allColumns.map(function (item) {
+        const tableDef = { label: item.label, valueType: item.valueType };
+        if (item.unit) {
+            tableDef.unit = item.unit;
+        }
+        return tableDef;
+    }));
 }
 
 /**
@@ -315,14 +314,14 @@ function createStorageAccountTable() {
  * @returns {string} The date string in UTC format
  */
 function convertToUTC(dateToConvert) {
-	var date = new Date(dateToConvert)
-	var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
-	var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
-	var year = date.getUTCFullYear()
-	var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
-	var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
-	var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
-	return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
+    var date = new Date(dateToConvert);
+    var month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1);
+    var day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate();
+    var year = date.getUTCFullYear();
+    var hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours();
+    var minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes();
+    var seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
+    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC";
 }
 
 /**
@@ -332,14 +331,14 @@ function convertToUTC(dateToConvert) {
  * @returns {string} The formatted value, or 'N/A' if the value is invalid
  */
 function formatToTwoDecimals(value) {
-  if (isNaN(value) || value === 'N/A') {
-    return 'N/A'
-  }
-  const numValue = parseFloat(value)
-  if (Number.isInteger(numValue)) {
-    return numValue.toString()
-  }
-  return numValue.toFixed(2)
+    if (isNaN(value) || value === "N/A") {
+        return "N/A";
+    }
+    const numValue = parseFloat(value);
+    if (Number.isInteger(numValue)) {
+        return numValue.toString();
+    }
+    return numValue.toFixed(2);
 }
 
 /**
@@ -348,8 +347,8 @@ function formatToTwoDecimals(value) {
  * @returns {number} The value in megabytes or 'N/A'
  */
 function convertToMB(bytes) {
-  return formatToTwoDecimals(bytes !== 'N/A' ? bytes / 1e6 : bytes)
-} 
+    return formatToTwoDecimals(bytes !== "N/A" ? bytes / 1e6 : bytes);
+}
 
 /**
  * Sanitizes the output by removing reserved words and formatting it.
@@ -357,9 +356,9 @@ function convertToMB(bytes) {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-  const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -368,22 +367,22 @@ function sanitize(output) {
  * @param {Object} metrics The metrics data for the storage account
  */
 function insertRecord(storageAccount, metrics) {
-  const recordValues = [
-    storageAccount.resourceGroupName,
-    storageAccount.location,
-    storageAccount.provisioningState,
-    convertToUTC(storageAccount.creationTime),
-    storageAccount.primaryLocation,
-    storageAccount.statusOfPrimary,
-    storageAccount.skuName,
-    storageAccount.skuTier,
-    storageAccount.kind
-  ]
-  metricList.forEach(function (metric) {
-    const metricValue = metrics[metric.key] || 'N/A'
-    recordValues.push(metric.callback ? formatToTwoDecimals(metric.callback(metricValue)) : formatToTwoDecimals(metricValue))
-  })
-  storageAccountTable.insertRecord(sanitize(storageAccount.name), recordValues)
+    const recordValues = [
+        storageAccount.resourceGroupName,
+        storageAccount.location,
+        storageAccount.provisioningState,
+        convertToUTC(storageAccount.creationTime),
+        storageAccount.primaryLocation,
+        storageAccount.statusOfPrimary,
+        storageAccount.skuName,
+        storageAccount.skuTier,
+        storageAccount.kind
+    ];
+    metricList.forEach(function (metric) {
+        const metricValue = metrics[metric.key] || "N/A";
+        recordValues.push(metric.callback ? formatToTwoDecimals(metric.callback(metricValue)) : formatToTwoDecimals(metricValue));
+    });
+    storageAccountTable.insertRecord(sanitize(storageAccount.name), recordValues);
 }
 
 /**
@@ -392,18 +391,18 @@ function insertRecord(storageAccount, metrics) {
  * @documentation This procedure is used to validate if data is accessible
  */
 function validate() {
-  login()
-    .then(retrieveStorageAccounts)
-    .then(function(storageAccounts) {
-			return retrieveStorageAccountsMetrics(storageAccounts)
-			.then(function() {
-				D.success()
-			})
-	  })
-    .catch(function (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(retrieveStorageAccounts)
+        .then(function (storageAccounts) {
+            return retrieveStorageAccountsMetrics(storageAccounts)
+                .then(function () {
+                    D.success();
+                });
+        })
+        .catch(function (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -412,21 +411,21 @@ function validate() {
  * @documentation This procedure is used to extract Azure storage accounts and their performance metrics
  */
 function get_status() {
-  login()
-    .then(retrieveStorageAccounts)
-    .then(function(storageAccounts) {
-      return retrieveStorageAccountsMetrics(storageAccounts)
-        .then(function(metricsData) {
-          createStorageAccountTable()
-          storageAccounts.forEach(function(storageAccount, index) {
-            const metrics = metricsData[index]
-            insertRecord(storageAccount, metrics)
-          })
-          D.success(storageAccountTable)
+    login()
+        .then(retrieveStorageAccounts)
+        .then(function (storageAccounts) {
+            return retrieveStorageAccountsMetrics(storageAccounts)
+                .then(function (metricsData) {
+                    createStorageAccountTable();
+                    storageAccounts.forEach(function (storageAccount, index) {
+                        const metrics = metricsData[index];
+                        insertRecord(storageAccount, metrics);
+                    });
+                    D.success(storageAccountTable);
+                });
         })
-    })
-    .catch(function (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+        .catch(function (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

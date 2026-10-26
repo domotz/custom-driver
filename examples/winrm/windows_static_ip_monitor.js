@@ -38,7 +38,7 @@ const interfaceAliases = D.getParameter("interfaceAliases");
 const command = generateCmdByAliases(interfaceAliases);
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
@@ -51,22 +51,22 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
-}
+    timeout: 30000            // per-command timeout in milliseconds
+};
 
 // mapping boolean values to human-readable strings.
 const booleanCodes = {
-    0: 'No',
-    1: 'Yes'
-}
+    0: "No",
+    1: "Yes"
+};
 
 // Creation of custom driver table
 const table = D.createTable(
     "Network Interfaces",
     [
-        {label: 'Ip addresses', valueType: D.valueType.STRING},
-        {label: 'Static', valueType: D.valueType.STRING},
-        {label: 'Connection State', valueType: D.valueType.STRING}
+        { label: "Ip addresses", valueType: D.valueType.STRING },
+        { label: "Static", valueType: D.valueType.STRING },
+        { label: "Connection State", valueType: D.valueType.STRING }
     ]
 );
 
@@ -77,7 +77,7 @@ const table = D.createTable(
  */
 function generateCmdByAliases(interfaceAliases) {
     const filter = generateFilterByAliases(interfaceAliases);
-    return 'Get-NetIPInterface -AddressFamily IPv4 ' + filter + '| ForEach-Object { [PSCustomObject]@{ InterfaceAlias = $_.InterfaceAlias; DhcpEnabled = $_.Dhcp; ConnectionState = $_.ConnectionState; IPv4Addresses = (Get-NetIPAddress -InterfaceIndex $_.ifIndex -AddressFamily IPv4).IPAddress } } | ConvertTo-Json';
+    return "Get-NetIPInterface -AddressFamily IPv4 " + filter + "| ForEach-Object { [PSCustomObject]@{ InterfaceAlias = $_.InterfaceAlias; DhcpEnabled = $_.Dhcp; ConnectionState = $_.ConnectionState; IPv4Addresses = (Get-NetIPAddress -InterfaceIndex $_.ifIndex -AddressFamily IPv4).IPAddress } } | ConvertTo-Json";
 }
 
 /**
@@ -86,13 +86,13 @@ function generateCmdByAliases(interfaceAliases) {
  * @returns {string} A PowerShell filter command to filter network interfaces based on the provided aliases.
  */
 function generateFilterByAliases(interfaceAliases) {
-    if (interfaceAliases.length === 1 && interfaceAliases[0].toLowerCase() === 'all') {
-        return ''
+    if (interfaceAliases.length === 1 && interfaceAliases[0].toLowerCase() === "all") {
+        return "";
     } else {
         const stringAliases = interfaceAliases.map(function (alias) {
             return '"' + alias + '"';
-        }).join(', ');
-        return '| Where-Object { (' + stringAliases + ') -contains $_.InterfaceAlias } '
+        }).join(", ");
+        return "| Where-Object { (" + stringAliases + ") -contains $_.InterfaceAlias } ";
     }
 }
 
@@ -145,9 +145,9 @@ function get_status() {
 }
 
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -156,12 +156,12 @@ function sanitize(output) {
  * and inserts the record into the table.
  */
 function populateTable(service) {
-    const id = service.InterfaceAlias
-    const ips = Array.isArray(service.IPv4Addresses) ? service.IPv4Addresses.join(', ') : service.IPv4Addresses;
-    const isStatic = booleanCodes[service.DhcpEnabled]
-    const connectionState = booleanCodes[service.ConnectionState]
-    const recordId = sanitize(id)
-    table.insertRecord(recordId, [ips, isStatic, connectionState])
+    const id = service.InterfaceAlias;
+    const ips = Array.isArray(service.IPv4Addresses) ? service.IPv4Addresses.join(", ") : service.IPv4Addresses;
+    const isStatic = booleanCodes[service.DhcpEnabled];
+    const connectionState = booleanCodes[service.ConnectionState];
+    const recordId = sanitize(id);
+    table.insertRecord(recordId, [ips, isStatic, connectionState]);
 }
 
 /**
@@ -172,15 +172,15 @@ function parseOutput(listOfIntegrationServices) {
     if (listOfIntegrationServices) {
         if (Array.isArray(listOfIntegrationServices)) {
             for (let k = 0; k < listOfIntegrationServices.length; k++) {
-                populateTable(listOfIntegrationServices[k])
+                populateTable(listOfIntegrationServices[k]);
             }
         } else {
-            populateTable(listOfIntegrationServices)
+            populateTable(listOfIntegrationServices);
         }
     } else {
-        console.log('There are no network interfaces related to this virtual machine.');
+        console.log("There are no network interfaces related to this virtual machine.");
     }
-    D.success(table)
+    D.success(table);
 }
 
 // WinRM functions
@@ -197,7 +197,7 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
@@ -212,16 +212,16 @@ WinRMHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {}
@@ -235,7 +235,7 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
     const self = this;
@@ -257,12 +257,12 @@ SSHHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

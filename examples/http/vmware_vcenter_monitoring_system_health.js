@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare vCenter Monitoring System Health
  * Description: This script is designed to retrieve system health information from a VMware vCenter server
- *               
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 8.0.2
  *
  * Creates a Custom Driver table with the system health information
@@ -30,8 +30,8 @@ function login() {
         rejectUnauthorized: false
     };
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body){
-            if (error) {          
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
             } else if (response.statusCode == 404) {
@@ -40,7 +40,7 @@ function login() {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (response.statusCode != 201) {
                 D.failure(D.errorType.GENERIC_ERROR);
-            } 
+            }
             resolve(JSON.parse(body));
         });
     });
@@ -63,8 +63,8 @@ function httpGet(url, sessionId) {
         }
     };
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body){
-            if (error) {          
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
             } else if (response.statusCode == 404) {
@@ -72,7 +72,7 @@ function httpGet(url, sessionId) {
             } else if (response.statusCode != 200) {
                 console.log(response.body);
                 resolve("N/A");
-            } 
+            }
             resolve(JSON.parse(body));
         });
     });
@@ -98,17 +98,17 @@ function getSystemHealthInfo(sessionId) {
     return Promise.all(promises);
 }
 
-// This function extracts data from the response and populates the custom table 
+// This function extracts data from the response and populates the custom table
 function extractData(data) {
     var colorToHealthStatus = {
         "green": "OK",
         "red": "NOT OK",
         "orange": "WARNING"
-    }
+    };
 
     for (var i = 0; i < data.length; i++) {
         var color = data[i] || "N/A";
-        var status = colorToHealthStatus[color] || "N/A"
+        var status = colorToHealthStatus[color] || "N/A";
         var recordId = config[i].id;
         table.insertRecord(recordId, [status]);
     }
@@ -117,10 +117,10 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare vCenter device
  */
-function validate(){
+function validate() {
     login()
         .then(getSystemHealthInfo)
         .then(function (response) {

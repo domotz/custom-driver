@@ -25,20 +25,20 @@
 const hours = D.getParameter("hours");
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 // Command to retrieve failed login attempts
-const command = '$Hours=' + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";' +
-    'ID=4625;' +
-    'StartTime=((Get-Date).AddHours(-($Hours)).Date);' +
-    'EndTime=(Get-Date)} -ErrorAction SilentlyContinue;' +
-    '$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;' +
-    'TargetUserName = $_.properties[5].value;' +
-    'WorkstationName = $_.properties[13].value;' +
-    'IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;' +
-    'if ($GroupByUsers) {Write-Output ($GroupByUsers | select count, values | ConvertTo-Json )' +
+const command = "$Hours=" + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";' +
+    "ID=4625;" +
+    "StartTime=((Get-Date).AddHours(-($Hours)).Date);" +
+    "EndTime=(Get-Date)} -ErrorAction SilentlyContinue;" +
+    "$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;" +
+    "TargetUserName = $_.properties[5].value;" +
+    "WorkstationName = $_.properties[13].value;" +
+    "IpAddress = $_.properties[19].value }} | Group-Object -Property TargetUserName | Sort-Object -Property Count -Descending;" +
+    "if ($GroupByUsers) {Write-Output ($GroupByUsers | select count, values | ConvertTo-Json )" +
     '} else {Write-Output "[]"}';
 
 // configuration
@@ -50,7 +50,7 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 const failedLogonTable = D.createTable(
@@ -79,15 +79,14 @@ function parseOutput(jsonOutput) {
             processRow(jsonOutput[i]);
         }
     } else if (jsonOutput && typeof jsonOutput === "object") {
-        processRow(jsonOutput)
+        processRow(jsonOutput);
     }
 
     const totFailedLogon = [D.device.createVariable("FailedLogonAttempts", "Total failed attempts", totFailed, null, D.valueType.NUMBER)];
     D.success(totFailedLogon, failedLogonTable);
 }
 
-
-function parseValidateOutput (isValidated) {
+function parseValidateOutput(isValidated) {
     if (isValidated) {
         console.info("Validation successful");
         D.success();
@@ -116,10 +115,10 @@ function validate() {
  */
 function get_status() {
     instance.executeCommand(command)
-        .then(function (output){
-            const jsonOutput = instance.parseOutputToJson(output)
-            instance.logServiceErrors(jsonOutput)
-            return jsonOutput
+        .then(function (output) {
+            const jsonOutput = instance.parseOutputToJson(output);
+            instance.logServiceErrors(jsonOutput);
+            return jsonOutput;
         })
         .then(parseOutput)
         .catch(instance.checkError);
@@ -139,7 +138,7 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
@@ -154,30 +153,30 @@ WinRMHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.logServiceErrors = function (jsonOutput) {
     if (jsonOutput.outcome && jsonOutput.outcome.stderr) {
         const stderr = jsonOutput.outcome.stderr;
         if (stderr !== null) {
-            const errorList = stderr.split('Get-Service :');
+            const errorList = stderr.split("Get-Service :");
             for (let j = 0; j < errorList.length; j++) {
-                if (errorList[j] !== '') {
+                if (errorList[j] !== "") {
                     console.error(errorList[j]);
                 }
             }
         }
     }
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {}
@@ -191,7 +190,7 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
     const self = this;
@@ -213,14 +212,14 @@ SSHHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
-    return output ? JSON.parse(output): output;
-}
+    return output ? JSON.parse(output) : output;
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};
 
-SSHHandler.prototype.logServiceErrors = function (jsonOutput) {}
+SSHHandler.prototype.logServiceErrors = function (jsonOutput) {};

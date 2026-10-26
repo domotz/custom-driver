@@ -29,7 +29,7 @@ function validate() {
     console.info("Validating SSH login only...");
     sshOptions.commands = ["echo 'Connected'"];
     return new Promise(function (resolve, reject) {
-        D.device.sendSSHCommands(sshOptions, function(out, err) {
+        D.device.sendSSHCommands(sshOptions, function (out, err) {
             if (err) {
                 console.error("Validation failed with SSH error");
                 checkSshError(err);
@@ -52,24 +52,24 @@ function backup() {
     var backupCommand = "show configuration json | cat";
 
     executeCommand(backupCommand)
-        .then(function(outputArray) {
+        .then(function (outputArray) {
             var configText = extractJsonFromOutputs(outputArray);
             if (!configText) {
                 console.error("Failed to extract valid configuration.");
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
                 return;
             }
-                try {
-                    var parsedJson = JSON.parse(configText);
-                    var formattedJson = JSON.stringify(parsedJson, null, 2); // 2-space indentation
-                    D.success(D.createBackup({
-                label: "VyOS Configuration (JSON)",
-                running: formattedJson
+            try {
+                var parsedJson = JSON.parse(configText);
+                var formattedJson = JSON.stringify(parsedJson, null, 2); // 2-space indentation
+                D.success(D.createBackup({
+                    label: "VyOS Configuration (JSON)",
+                    running: formattedJson
                 }));
-                    } catch (e) {
-                        console.error("Failed to parse JSON for formatting: " + e);
-                        D.failure(D.errorType.GENERIC_ERROR);
-                    }
+            } catch (e) {
+                console.error("Failed to parse JSON for formatting: " + e);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
         })
         .catch(checkSshError);
 }
@@ -105,7 +105,7 @@ function cleanOutput(raw) {
     if (!raw) {
         return "";
     }
-    return raw.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').replace(/[\r\n]+/g, '\n').trim();
+    return raw.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "").replace(/[\r\n]+/g, "\n").trim();
 }
 
 /**
@@ -133,7 +133,7 @@ function executeCommand(command) {
     console.info("Executing command on VyOS device: " + command);
     sshOptions.commands = [command];
     return new Promise(function (resolve, reject) {
-        D.device.sendSSHCommands(sshOptions, function(out, err) {
+        D.device.sendSSHCommands(sshOptions, function (out, err) {
             if (err) {
                 console.error("Error during SSH execution: " + JSON.stringify(err));
                 checkSshError(err);

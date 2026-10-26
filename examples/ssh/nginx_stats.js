@@ -1,4 +1,3 @@
-
 /**
  * this driver is using ssh for the target server
  * the ssh user should have the sudo privilege to access log files
@@ -17,7 +16,7 @@ var nginxStatusStatsCmds = [
     "echo memory:Memory usage:$(echo $PID | sudo xargs pmap | tail -1 | awk '{print $2}')",
     "echo tasks:Tasks:$(echo \"$STATUS\" | grep -i tasks | awk '{print $2}')",
     "echo tasks_limit:Tasks limit:$(echo \"$STATUS\" | grep -i tasks | awk '{print substr($4,1,length($4)-1)}')",
-    "echo up_from:Up from:$(echo \"$STATUS\" | grep -i active | awk '{print \"\\x27\" $6 \" \" $7 \" \" substr($8,1,length($8)-1) \"\\x27\" \" +\\\"%s\\\"\"}' | xargs date -d)date",
+    "echo up_from:Up from:$(echo \"$STATUS\" | grep -i active | awk '{print \"\\x27\" $6 \" \" $7 \" \" substr($8,1,length($8)-1) \"\\x27\" \" +\\\"%s\\\"\"}' | xargs date -d)date"
 ];
 var nginxSystemConfigCmd = "sudo systemctl show nginx --no-pager";
 var nginxRootConfFileLocation = "/etc/nginx/nginx.conf";
@@ -98,7 +97,6 @@ function nginxSystemConfig(next) {
         next(variables);
     });
 }
-
 
 /* parsing all config files and generate an object containing the config */
 function loadConfig(callback) {
@@ -189,7 +187,6 @@ function buildConfigVars(callback) {
         }
         return servers;
     }
-
 
     loadConfig(function (result) {
         var configs = [];

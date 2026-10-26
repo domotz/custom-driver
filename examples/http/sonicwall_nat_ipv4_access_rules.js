@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - NAT IPV4 Access Rules
  * Description: Monitors IPv4 access rules for Sonicwall devices
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL TZ 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
@@ -15,12 +15,12 @@
  *      - Source: Defines the source IP or network for the traffic
  *      - Destination: Specifies the destination IP or network for the traffic
  *      - Action: Describes the action associated with the access rule
- * 
+ *
  **/
 
 // access_rule_name: Set it to 'ALL' to retrieve all access rules,
 // or specify a list of access rules to filter and display only the selected access rules.
-var access_rule_name = D.getParameter('accessRuleName');
+var access_rule_name = D.getParameter("accessRuleName");
 
 var table = D.createTable(
     "Access Rules", [
@@ -88,21 +88,21 @@ function getAccessRules() {
     });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
-                                                            
+
 //Extracts data from the HTTP response and populates the custom table.
 function extractData(body) {
     var data = JSON.parse(body);
     data.access_rules.forEach(function (item) {
         var name = item.ipv4.name;
         var uuid = item.ipv4.uuid;
-        if (access_rule_name[0].toLowerCase() === "all" || access_rule_name.some(function(res) {
+        if (access_rule_name[0].toLowerCase() === "all" || access_rule_name.some(function (res) {
             return res.toLowerCase() === name.toLowerCase();
-        })) {      
+        })) {
             var recordId = sanitize(name + "-" + uuid);
             var description = item.ipv4.comment || "-";
             var enabled;
@@ -110,7 +110,7 @@ function extractData(body) {
                 enabled = "Yes";
             } else {
                 enabled = "No";
-            }                   
+            }
             var from = item.ipv4.from;
             var to = item.ipv4.to;
             var sourceAddress = "Address: (" + extractValue(item.ipv4.source.address) + ")";
@@ -142,10 +142,10 @@ function extractValue(field) {
 }
 
 /**
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getAccessRules)
         .then(function (response) {

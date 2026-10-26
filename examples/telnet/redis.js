@@ -28,7 +28,7 @@ var redisTelnetParams = {
 };
 
 /**
- * 
+ *
  * @returns Promise wait for redis information
  */
 function getRedisInfo() {
@@ -50,7 +50,7 @@ function getRedisInfo() {
 }
 
 /**
- * 
+ *
  * @param {[string]} results list of information returned by redis server
  * @returns monitoring variables
  */
@@ -68,7 +68,6 @@ function parseInfo(results) {
     });
 }
 
-
 function failure(err) {
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
@@ -85,7 +84,6 @@ function validate() {
         .catch(failure);
 
 }
-
 
 /**
 * @remote_procedure

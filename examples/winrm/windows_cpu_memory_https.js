@@ -35,25 +35,25 @@
  */
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 // Variable to store PowerShell command for retrieving total memory
-const totalMemory = '(Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).Sum';
+const totalMemory = "(Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).Sum";
 
 // Variable to store PowerShell command for retrieving available memory
-const availableMemory = 'Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory';
+const availableMemory = "Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory";
 
 // Variable to store PowerShell command for retrieving CPU information
-const cpuInfo = 'Get-CimInstance Win32_processor | Select-Object name, MaxClockSpeed, NumberOfLogicalProcessors, NumberOfCores, Status';
+const cpuInfo = "Get-CimInstance Win32_processor | Select-Object name, MaxClockSpeed, NumberOfLogicalProcessors, NumberOfCores, Status";
 
 // Variable to store PowerShell command for retrieving CPU usage
 const cpuUsage = '(Get-Counter -Counter "\\Processor(_Total)\\% Processor Time" -SampleInterval 2 -MaxSamples 5 | Select-Object -ExpandProperty countersamples | Select-Object -ExpandProperty cookedvalue | Measure-Object -Average).Average';
 
-const command = '@{ TotalMemory = ' + totalMemory + '; AvailableMemory = ' + availableMemory + '; CPUInfo = ' + cpuInfo + '; Average = ' + cpuUsage + '} | ConvertTo-Json -Compress';
+const command = "@{ TotalMemory = " + totalMemory + "; AvailableMemory = " + availableMemory + "; CPUInfo = " + cpuInfo + "; Average = " + cpuUsage + "} | ConvertTo-Json -Compress";
 
-// WinRM configuration 
+// WinRM configuration
 const config = {
     "username": D.device.username(),
     "password": D.device.password(),
@@ -62,7 +62,7 @@ const config = {
     scheme: "https",           // "http" | "https"
     skipVerify: true,          // set to false to enforce TLS certificate verification
     // auth: "auto",           // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 function parseValidateOutput(isValidated) {
@@ -109,7 +109,7 @@ function parseOutput(cpuMemoryInfo) {
     const logicalProcessorsNumber = cpuMemoryInfo.CPUInfo.NumberOfLogicalProcessors;
     const coresNumber = cpuMemoryInfo.CPUInfo.NumberOfCores;
     const cpuStatus = cpuMemoryInfo.CPUInfo.Status;
-    const cpuAverage = cpuMemoryInfo.Average ? cpuMemoryInfo.Average.toFixed(2) : "N/A"
+    const cpuAverage = cpuMemoryInfo.Average ? cpuMemoryInfo.Average.toFixed(2) : "N/A";
 
     const variables = [
         D.device.createVariable("total-memory", "Total Memory", totalMemory, "GiB", D.valueType.NUMBER),
@@ -125,7 +125,6 @@ function parseOutput(cpuMemoryInfo) {
     D.success(variables);
 }
 
-
 // WinRM functions
 function WinRMHandler() {}
 
@@ -140,7 +139,7 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
@@ -155,16 +154,16 @@ WinRMHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {}
@@ -178,7 +177,7 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
     const self = this;
@@ -200,12 +199,12 @@ SSHHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

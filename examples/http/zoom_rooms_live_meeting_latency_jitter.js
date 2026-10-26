@@ -62,17 +62,17 @@
  *
  **/
 
-const accountId = D.getParameter("accountId")
-const clientId = D.getParameter("clientId")
-const clientSecret = D.getParameter("clientSecret")
+const accountId = D.getParameter("accountId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
 
-const roomIds = D.getParameter('roomIds')
+const roomIds = D.getParameter("roomIds");
 
-const zoomLogin = D.createExternalDevice("zoom.us")
-const zoomResources = D.createExternalDevice("api.zoom.us")
+const zoomLogin = D.createExternalDevice("zoom.us");
+const zoomResources = D.createExternalDevice("api.zoom.us");
 
-let accessToken
-let pageSize = 300
+let accessToken;
+let pageSize = 300;
 
 const meetingParticipantQosExtractors = [
     {
@@ -296,13 +296,13 @@ const meetingParticipantQosExtractors = [
         valueType: D.valueType.NUMBER,
         "outputKey": "audio_device_to_rwg_latency"
     }
-]
+];
 
 const meetingParticipantQosProperties = meetingParticipantQosExtractors.filter(function (row) {
-    return row.label
-})
+    return row.label;
+});
 
-const outputTable = D.createTable("Rooms Live Meeting Latency and Jitter", meetingParticipantQosProperties)
+const outputTable = D.createTable("Rooms Live Meeting Latency and Jitter", meetingParticipantQosProperties);
 
 /**
  * Extracts the numeric portion from a string and converts it to a floating-point number.
@@ -311,10 +311,10 @@ const outputTable = D.createTable("Rooms Live Meeting Latency and Jitter", meeti
  */
 function extractNumericValue(value) {
     if (value) {
-        const match = value.match(/[\d.]+/)
-        return match ? parseFloat(match[0]) : 0
+        const match = value.match(/[\d.]+/);
+        return match ? parseFloat(match[0]) : 0;
     }
-    return 0
+    return 0;
 }
 
 /**
@@ -328,20 +328,19 @@ function calculateAverageByMetricName(participants, qosType, metricName) {
     if (participants !== undefined && participants.length) {
         const acc = participants.reduce(function (accumulator, participant) {
             if (participant && participant.user_qos && participant.user_qos.length && participant.user_qos[0][qosType] && participant.user_qos[0][qosType][metricName] !== undefined) {
-                accumulator.sum += extractNumericValue(participant.user_qos[0][qosType][metricName])
-                accumulator.count += 1
+                accumulator.sum += extractNumericValue(participant.user_qos[0][qosType][metricName]);
+                accumulator.count += 1;
             }
-            return accumulator
-        }, { sum: 0, count: 0 })
+            return accumulator;
+        }, { sum: 0, count: 0 });
         if (acc.count === 0) {
-            return 'N/A'
+            return "N/A";
         }
-        return acc.count === 0 ? 0 : acc.sum / acc.count
+        return acc.count === 0 ? 0 : acc.sum / acc.count;
     }
 
-    return undefined
+    return undefined;
 }
-
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -350,16 +349,16 @@ function calculateAverageByMetricName(participants, qosType, metricName) {
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode === 400) {
-        D.failure(response.body)
+        D.failure(response.body);
     } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
@@ -371,16 +370,16 @@ function checkHTTPError(error, response) {
  */
 function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
-            accessToken = bodyAsJSON.access_token
-            resolve()
+            accessToken = bodyAsJSON.access_token;
+            resolve();
         } else {
-            console.error("Access token not found in response body")
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -395,7 +394,7 @@ function generateLoginConf() {
         }, form: {
             "grant_type": "account_credentials", "account_id": accountId
         }, rejectUnauthorized: false, jar: true
-    }
+    };
 }
 
 /**
@@ -403,10 +402,10 @@ function generateLoginConf() {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-    const config = generateLoginConf()
+    const config = generateLoginConf();
     return new Promise(function (resolve, reject) {
-        zoomLogin.http.post(config, processLoginResponse(resolve, reject))
-    })
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -420,7 +419,7 @@ function generateConfig(url) {
         headers: {
             "Authorization": "Bearer " + accessToken
         }, rejectUnauthorized: false, jar: true
-    }
+    };
 }
 
 /**
@@ -429,9 +428,9 @@ function generateConfig(url) {
  */
 function getPaginationUrl(url, pageToken) {
     if (pageToken) {
-        url += "&next_page_token=" + pageToken
+        url += "&next_page_token=" + pageToken;
     }
-    return url
+    return url;
 }
 
 /**
@@ -440,9 +439,9 @@ function getPaginationUrl(url, pageToken) {
  * @returns {string} The sanitized string
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -452,9 +451,9 @@ function sanitize(output) {
  */
 function insertRecord(roomId, roomsQosAverage) {
     const recordValues = meetingParticipantQosProperties.map(function (item) {
-        return  (item.valueType === D.valueType.NUMBER && typeof roomsQosAverage[item.outputKey] !== 'number') ? "N/A" : roomsQosAverage[item.outputKey]
-    })
-    outputTable.insertRecord(sanitize(roomId.toString()), recordValues)
+        return  (item.valueType === D.valueType.NUMBER && typeof roomsQosAverage[item.outputKey] !== "number") ? "N/A" : roomsQosAverage[item.outputKey];
+    });
+    outputTable.insertRecord(sanitize(roomId.toString()), recordValues);
 }
 
 /**
@@ -462,10 +461,10 @@ function insertRecord(roomId, roomsQosAverage) {
  */
 function populateTable(roomsQosAverage) {
     roomsQosAverage.forEach(function (roomsQos) {
-        const roomId = roomsQos.roomId
-        delete roomsQos.roomId
-        insertRecord(roomId, roomsQos)
-    })
+        const roomId = roomsQos.roomId;
+        delete roomsQos.roomId;
+        insertRecord(roomId, roomsQos);
+    });
 }
 
 /**
@@ -475,10 +474,10 @@ function populateTable(roomsQosAverage) {
  */
 function wait(ms) {
     return new Promise(function (resolve) {
-        setTimeout(function() {
-            resolve()
-        }, ms)
-    })
+        setTimeout(function () {
+            resolve();
+        }, ms);
+    });
 }
 
 /**
@@ -486,63 +485,63 @@ function wait(ms) {
  * @returns {Promise} A promise that resolves with the Virtual Machine Scale Set data.
  */
 function callGetHttpRequest(extractDetailsFromBody, checkBodyJsonIsNotEmpty, endpoint) {
-    let output = []
-    let pageToken = null
-    let countCall = 0
+    let output = [];
+    let pageToken = null;
+    let countCall = 0;
 
     return new Promise(function (resolve, reject) {
         function fetchData() {
-            const url = getPaginationUrl(endpoint, pageToken)
-            const config = generateConfig(url)
+            const url = getPaginationUrl(endpoint, pageToken);
+            const config = generateConfig(url);
             zoomResources.http.get(config, function (error, response, body) {
-                countCall++
+                countCall++;
                 if (countCall <= 3) {
                     if (response.statusCode === 429) {
-                        console.log("Rate limit hit, waiting for 1 seconds...")
+                        console.log("Rate limit hit, waiting for 1 seconds...");
                         wait(1000).then(function () {
-                            fetchData()
-                        })
-                        return
+                            fetchData();
+                        });
+                        return;
                     }
-                    checkHTTPError(error, response)
+                    checkHTTPError(error, response);
                     if (error) {
-                        reject(error)
-                        return
+                        reject(error);
+                        return;
                     }
-                    const bodyAsJSON = JSON.parse(body)
+                    const bodyAsJSON = JSON.parse(body);
                     if (checkBodyJsonIsNotEmpty(bodyAsJSON)) {
-                         resolve([])
+                        resolve([]);
                     }
-                    const extractedDetails = extractDetailsFromBody(bodyAsJSON)
-                    pageToken = bodyAsJSON.next_page_token
+                    const extractedDetails = extractDetailsFromBody(bodyAsJSON);
+                    pageToken = bodyAsJSON.next_page_token;
 
                     if (pageToken === undefined) {
-                        output = extractedDetails
-                    }else{
+                        output = extractedDetails;
+                    } else {
                         if (Array.isArray(extractedDetails)) {
-                            output = output.concat(extractedDetails)
+                            output = output.concat(extractedDetails);
                         } else {
                             if (typeof extractedDetails === "object") {
-                                output.push(extractedDetails)
-                            }else{
-                                D.failure(D.errorType.GENERIC_ERROR)
+                                output.push(extractedDetails);
+                            } else {
+                                D.failure(D.errorType.GENERIC_ERROR);
                             }
                         }
                     }
                     if (pageToken) {
-                        fetchData()
+                        fetchData();
                     } else {
-                        console.log("All data retrieved successfully from: " + endpoint)
-                        resolve(output)
+                        console.log("All data retrieved successfully from: " + endpoint);
+                        resolve(output);
                     }
                 } else {
-                    console.error("This endpoint: " + url + " is not reachable for 3 times.")
-                    D.failure(D.errorType.GENERIC_ERROR)
+                    console.error("This endpoint: " + url + " is not reachable for 3 times.");
+                    D.failure(D.errorType.GENERIC_ERROR);
                 }
-            })
+            });
         }
-        fetchData()
-    })
+        fetchData();
+    });
 }
 
 /**
@@ -552,8 +551,8 @@ function callGetHttpRequest(extractDetailsFromBody, checkBodyJsonIsNotEmpty, end
  */
 function calculateQosAverageForEachRoom(roomParticipantQos) {
     return roomParticipantQos.map(function (roomQos) {
-        return extractMetricsQos(roomQos)
-    })
+        return extractMetricsQos(roomQos);
+    });
 }
 
 /**
@@ -562,8 +561,8 @@ function calculateQosAverageForEachRoom(roomParticipantQos) {
  * @returns {Promise} A promise that resolves when the Zoom Rooms are retrieved and processed.
  */
 function retrieveZoomRooms() {
-    let url = "/v2/rooms?page_size=" + pageSize
-    return callGetHttpRequest(extractZoomRoomsId, checkRoomsBodyJsonIsNotEmpty, url)
+    let url = "/v2/rooms?page_size=" + pageSize;
+    return callGetHttpRequest(extractZoomRoomsId, checkRoomsBodyJsonIsNotEmpty, url);
 }
 
 /**
@@ -573,10 +572,10 @@ function retrieveZoomRooms() {
 function retrieveAllMeetingQos(roomDetails) {
     const promises = roomDetails.map(function (room) {
         return retrieveMeetingParticipantQos(room).then(function (responses) {
-                return processMeetingParticipantQos(responses, room)
-            })
-    })
-    return Promise.all(promises)
+            return processMeetingParticipantQos(responses, room);
+        });
+    });
+    return Promise.all(promises);
 }
 
 /**
@@ -584,13 +583,13 @@ function retrieveAllMeetingQos(roomDetails) {
  * @returns {Promise}
  */
 function retrieveMeetingParticipantQos(room) {
-    const meetingId = room.meetingId
+    const meetingId = room.meetingId;
     if (meetingId) {
-        const url = "/v2/metrics/meetings/" + meetingId + "/participants/qos?page_size=" + pageSize
-        return callGetHttpRequest(extractMeetingParticipantQos, checkParticipantQosBodyJsonIsNotEmpty, url)
+        const url = "/v2/metrics/meetings/" + meetingId + "/participants/qos?page_size=" + pageSize;
+        return callGetHttpRequest(extractMeetingParticipantQos, checkParticipantQosBodyJsonIsNotEmpty, url);
     } else {
-        console.log("There is no live meeting related to this room " + room.roomName)
-        return Promise.resolve(meetingParticipantQosExtractors)
+        console.log("There is no live meeting related to this room " + room.roomName);
+        return Promise.resolve(meetingParticipantQosExtractors);
     }
 }
 
@@ -600,8 +599,8 @@ function retrieveMeetingParticipantQos(room) {
  * @returns {Promise} A promise that resolves with the room details.
  */
 function retrieveRoomDetails(roomId) {
-    const url = '/v2/metrics/zoomrooms/' + roomId
-    return callGetHttpRequest(extractRoomDetails, checkRoomDetailsBodyJsonIsNotEmpty, url)
+    const url = "/v2/metrics/zoomrooms/" + roomId;
+    return callGetHttpRequest(extractRoomDetails, checkRoomDetailsBodyJsonIsNotEmpty, url);
 }
 
 /**
@@ -611,9 +610,9 @@ function retrieveRoomDetails(roomId) {
  */
 function retrieveAllRoomsLiveMeetingDetails(zoomRooms) {
     const promises = zoomRooms.map(function (roomId) {
-        return retrieveRoomDetails(roomId)
-    })
-    return Promise.all(promises)
+        return retrieveRoomDetails(roomId);
+    });
+    return Promise.all(promises);
 }
 
 /**
@@ -622,7 +621,7 @@ function retrieveAllRoomsLiveMeetingDetails(zoomRooms) {
  * @param {Object} bodyAsJSON - The JSON object containing the rooms data. */
 function checkParticipantQosBodyJsonIsNotEmpty(bodyAsJSON) {
     if (!Array.isArray(bodyAsJSON.participants) || bodyAsJSON.participants.length === 0) {
-        console.error("No Meeting Participants QoS found.")
+        console.error("No Meeting Participants QoS found.");
     }
 }
 
@@ -634,10 +633,10 @@ function checkParticipantQosBodyJsonIsNotEmpty(bodyAsJSON) {
  */
 function checkRoomsBodyJsonIsNotEmpty(bodyAsJSON) {
     if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
-        console.error("No rooms found.")
-        return true
+        console.error("No rooms found.");
+        return true;
     }
-    return false
+    return false;
 }
 
 /**
@@ -647,7 +646,7 @@ function checkRoomsBodyJsonIsNotEmpty(bodyAsJSON) {
  */
 function checkRoomDetailsBodyJsonIsNotEmpty(bodyAsJSON) {
     if (!(bodyAsJSON.id && bodyAsJSON.room_name && bodyAsJSON.live_meeting && bodyAsJSON.live_meeting)) {
-        console.error("No Room details found.")
+        console.error("No Room details found.");
     }
 }
 
@@ -659,11 +658,11 @@ function checkRoomDetailsBodyJsonIsNotEmpty(bodyAsJSON) {
 function extractMetricsQos(roomQos) {
     return meetingParticipantQosProperties.reduce(function (acc, item) {
         if (item.extract) {
-            acc[item.outputKey] = item.extract(roomQos.participants, item.key, item.metricName)
+            acc[item.outputKey] = item.extract(roomQos.participants, item.key, item.metricName);
         }
-        return acc
+        return acc;
     },
-        {roomId: roomQos.roomId, roomName: roomQos.roomName})
+    { roomId: roomQos.roomId, roomName: roomQos.roomName });
 }
 
 /**
@@ -672,14 +671,14 @@ function extractMetricsQos(roomQos) {
  * @param bodyAsJSON
  */
 function extractZoomRoomsId(bodyAsJSON) {
-    let selectedRoomIds = []
+    let selectedRoomIds = [];
     bodyAsJSON.rooms.forEach(function (zoomRoom) {
-        const id = zoomRoom.room_id
-        if ((roomIds.length === 1 && roomIds[0].toLowerCase() === 'all') || roomIds.includes(id)) {
-            selectedRoomIds.push(id)
+        const id = zoomRoom.room_id;
+        if ((roomIds.length === 1 && roomIds[0].toLowerCase() === "all") || roomIds.includes(id)) {
+            selectedRoomIds.push(id);
         }
-    })
-    return selectedRoomIds
+    });
+    return selectedRoomIds;
 }
 
 /**
@@ -688,7 +687,7 @@ function extractZoomRoomsId(bodyAsJSON) {
  * @returns {Object} The extracted room details including ID, room name, and meeting ID.
  */
 function extractRoomDetails(bodyAsJSON) {
-    return ({id: bodyAsJSON.id, roomName: bodyAsJSON.room_name, meetingId: bodyAsJSON.live_meeting.id ? bodyAsJSON.live_meeting.id : null })
+    return ({ id: bodyAsJSON.id, roomName: bodyAsJSON.room_name, meetingId: bodyAsJSON.live_meeting.id ? bodyAsJSON.live_meeting.id : null });
 }
 
 /**
@@ -697,7 +696,7 @@ function extractRoomDetails(bodyAsJSON) {
  * @returns {Object} The same JSON object.
  */
 function extractMeetingParticipantQos(bodyAsJSON) {
-    return bodyAsJSON
+    return bodyAsJSON;
 }
 
 /**
@@ -708,9 +707,9 @@ function extractMeetingParticipantQos(bodyAsJSON) {
  */
 function processMeetingParticipantQos(responses, room) {
     return responses.reduce(function (acc, response) {
-        acc.participants = acc.participants.concat(response.participants)
-        return acc
-    }, {roomId: room.id, roomName: room.roomName, participants: []})
+        acc.participants = acc.participants.concat(response.participants);
+        return acc;
+    }, { roomId: room.id, roomName: room.roomName, participants: [] });
 }
 
 /**
@@ -726,9 +725,9 @@ function validate() {
         .then(calculateQosAverageForEachRoom)
         .then(D.success)
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -743,11 +742,11 @@ function get_status() {
         .then(retrieveAllMeetingQos)
         .then(calculateQosAverageForEachRoom)
         .then(function (roomsQosAverage) {
-            populateTable(roomsQosAverage)
-            D.success(outputTable)
+            populateTable(roomsQosAverage);
+            D.success(outputTable);
         })
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

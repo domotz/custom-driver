@@ -1,7 +1,7 @@
 /**
  * This driver show apache2 status
  * The communication protocol is http
- * 
+ *
  * This driver create a table for apache2 processes with this columns:
  * %Srv: Child Server number - generation
  * %PID: OS process ID
@@ -18,11 +18,10 @@
  * %Protocol
  * %VHost
  * %Request
- * 
+ *
  * This driver is tested with Apache/2.4.41
  * This driver requires to open server-status path in the apache server (https://httpd.apache.org/docs/current/mod/mod_status.html)
  */
-
 
 var apacheHttpParams = {
     // protocol: "https", // To use if the server under https
@@ -65,12 +64,12 @@ var table = D.createTable(
         { label: "Client" },
         { label: "Protocol" },
         { label: "VHost" },
-        { label: "Request" },
+        { label: "Request" }
     ]
 );
 
 /**
- * 
+ *
  * @returns Promise wait for server-status page to be loaded
  */
 function getApache2Status() {
@@ -79,10 +78,10 @@ function getApache2Status() {
             if (error) {
                 return failure(error);
             }
-            if(response.statusCode == 401){
+            if (response.statusCode == 401) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
-            if(response.statusCode == 404){
+            if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
             resolve(body);
@@ -98,7 +97,7 @@ function buildTable(body) {
     }).forEach(function (node, index) {
         var row = node.children.map(function (td, index) {
             var text = $(td).text().trim();
-            if(index == 3){
+            if (index == 3) {
                 return scoreboardKey[text];
             }
             return text;
@@ -121,10 +120,9 @@ function failure(err) {
 */
 function validate() {
     getApache2Status()
-        .then(function(){ D.success() ;})
+        .then(function () { D.success();})
         .catch(failure);
 }
-
 
 /**
 * @remote_procedure

@@ -1,22 +1,22 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Microsoft Exchange Server - Current Connections
  * Description: This script is used to monitor the number of current connections to a Microsoft Exchange Server
- * 
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on:
  *      - Microsoft Exchange Server 2019 CU12
- * 
+ *
  * Powershell Version:
- *      - 5.1.19041.2364 
- * 
- * create a dynamic monitoring variables 
+ *      - 5.1.19041.2364
+ *
+ * create a dynamic monitoring variables
  *      - Instance Name: The name of the current connection
  *      - Value: Number of current connections
  */
 
-// Define a Performance Counter path to monitor current connections 
+// Define a Performance Counter path to monitor current connections
 var counters = "\\Web Service(*)\\Current Connections";
 
 // WinRM configuration
@@ -29,7 +29,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 // Check for Errors on the WinRM command response
@@ -67,10 +67,10 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Parses the output of the WinRM command and extracts data

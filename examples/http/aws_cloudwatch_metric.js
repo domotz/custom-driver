@@ -1,10 +1,10 @@
 /**
- * The driver is designed to retrieve CloudWatch metrics for various AWS services, including EC2, RDS, ELB, and Lambda. 
+ * The driver is designed to retrieve CloudWatch metrics for various AWS services, including EC2, RDS, ELB, and Lambda.
  * The metrics that can be monitored include CPUUtilization, NetworkIn, NetworkOut, DiskReadOps, DiskWriteOps, DatabaseConnections, and many more.
- * 
+ *
  * For a full list of metrics supported by AWS CloudWatch, please refer to the AWS CloudWatch Metrics documentation.
  * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html
- * 
+ *
  * The driver uses the script item to make HTTP requests to the CloudWatch API.
  * Communication protocol is https
  */
@@ -157,8 +157,7 @@ function prepareParams(params) {
     Object.keys(params).sort().forEach(function (key) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
-        }
-        else {
+        } else {
             result.push(prepareObject(key, params[key]));
         }
     });
@@ -166,7 +165,7 @@ function prepareParams(params) {
 }
 
 /**
- * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost(params) {
@@ -218,7 +217,7 @@ function httpPost(params) {
 }
 
 /**
- * @returns promise for http response containing CloudWatch metrics 
+ * @returns promise for http response containing CloudWatch metrics
  */
 function getMetricsData() {
     var timestamp = new Date().getTime(),
@@ -233,7 +232,7 @@ function getMetricsData() {
 }
 
 // parse aws response for cloudwatch metrics
-function parseData(data){
+function parseData(data) {
     metrics = data.GetMetricDataResponse.GetMetricDataResult.MetricDataResults;
     for (var i = 0; i < cloudWatchMetric.length; i++) {
         var id = cloudWatchMetric[i].Id;
@@ -284,4 +283,4 @@ function get_status() {
         .then(parseData)
         .then(D.success)
         .catch(failure);
-}           
+}

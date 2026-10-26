@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
@@ -10,7 +10,7 @@
  * InitiatorAddress: The address of the device connected to the receiver.
  * HorizontalResolution: The horizontal resolution of the received stream.
  * VerticalResolution: The vertical resolution of the received stream.
- * 
+ *
  * Columns for the table 'Stream Transmit':
  * MulticastAddress: The multicast address of the transmitted stream.
  * StreamLocation: The multicast address of the transmitted stream.
@@ -29,7 +29,7 @@ var tableStreamReceive = D.createTable(
         { label: "MulticastAddress" },
         { label: "InitiatorAddress" },
         { label: "HorizontalResolution" },
-        { label: "VerticalResolution" },
+        { label: "VerticalResolution" }
     ]
 );
 var tableStreamTransmit = D.createTable(
@@ -72,7 +72,7 @@ function login() {
             protocol: "https",
             form: {
                 login: D.device.username(),
-                passwd: D.device.password(),
+                passwd: D.device.password()
             },
             jar: true,
             rejectUnauthorized: false
@@ -109,7 +109,7 @@ function getDeviceSpecific() {
 }
 
 /**
- * @returns promise for http response body containig device information for the DM NVX device.  
+ * @returns promise for http response body containig device information for the DM NVX device.
  */
 function getDeviceInfo() {
     return httpGet("/Device/DeviceInfo")
@@ -189,7 +189,7 @@ function fillConfig() {
         }
     ];
 }
-//Fill the table with data related to reception or transmission stream according on the device mode  
+//Fill the table with data related to reception or transmission stream according on the device mode
 function fillTable() {
     if (deviceSpecific.Device.DeviceSpecific.DeviceMode === "Receiver") {
         table = tableStreamReceive;
@@ -229,7 +229,7 @@ function fillTable() {
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {
@@ -270,7 +270,6 @@ function loadData() {
         });
 }
 
-
 //Indicate the successful execution of the driver and returns the variable list and table data
 function success() {
     D.success(vars, table);
@@ -297,7 +296,7 @@ function validate() {
  * @remote_procedure
  * @label Get Device Variables
  * @documentation This procedure is used to extract monitoring parameters from Crestron DM NVX API.
- * 
+ *
  */
 function get_status() {
     login()

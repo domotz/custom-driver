@@ -1,15 +1,15 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: MikroTik Hardware Sensors
- * Description: This script retrieves hardware sensor data from MikroTik devices 
- * 
- * Communication protocol is ssh 
- * 
- * Tested under MikroTik RouterOS with the following versions: 
+ * Description: This script retrieves hardware sensor data from MikroTik devices
+ *
+ * Communication protocol is ssh
+ *
+ * Tested under MikroTik RouterOS with the following versions:
  *      - CCR2004-1G-12S+2XS
  *      - CRS354-48P-4S+2Q+
  *      - CRS326-24G-2S+
- *      - CRS328-24P-4S+ 
+ *      - CRS328-24P-4S+
  *
  * Creates a Custom Driver Variable with the retrieved hardware sensor data:
  *      - Switch Temperature: Temperature of the switch in degrees Celsius.
@@ -32,9 +32,9 @@ var sshConfig = {
 
 //Handle SSH errors
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255 || err.code == 1) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255 || err.code == 1) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -47,8 +47,8 @@ function executeCommand(command) {
             if (error) {
                 checkSshError(error);
                 reject(error);
-            } else {           
-                resolve(output);      
+            } else {
+                resolve(output);
             }
         });
     });
@@ -66,8 +66,8 @@ function parseData(output) {
         var line = lines[i].trim().split(/\s+/);
         var name = line[nameIndex];
         var value = line[valueIndex];
-        var unit = line[typeIndex];  
-        
+        var unit = line[typeIndex];
+
         if (name === "switch-temperature") {
             variables.push(D.createVariable(name, "Switch Temperature", value, unit, D.valueType.NUMBER));
         }
@@ -87,9 +87,9 @@ function parseData(output) {
             variables.push(D.createVariable(name, "POE Output Consumption", value, unit, D.valueType.NUMBER));
         }
         if (name === "cpu-temperature") {
-            variables.push(D.createVariable(name, "CPU Temperature", value, unit, D.valueType.NUMBER))
+            variables.push(D.createVariable(name, "CPU Temperature", value, unit, D.valueType.NUMBER));
         }
-    } 
+    }
     D.success(variables);
 }
 
@@ -111,7 +111,7 @@ function validate() {
 function parseValidateOutput(output) {
     if (output.trim() !== "") {
         console.info("Validation successful");
-    } 
+    }
 }
 
 /**

@@ -17,32 +17,32 @@
  *
  **/
 
-const TV_STATUS_OFF = "standby"
-const TV_STATUS_ON = "on"
-const TV_STATUS_ACTIVE = "active"
+const TV_STATUS_OFF = "standby";
+const TV_STATUS_ON = "on";
+const TV_STATUS_ACTIVE = "active";
 
-const DAYS_OF_THE_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+const DAYS_OF_THE_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-let videoSource = "N/A"
-let tvStatus
+let videoSource = "N/A";
+let tvStatus;
 
 /**
  * @description Pre-Shared Key for Sony API authentication
  * @type SECRET_TEXT
  */
-const sonyPreSharedKey = D.getParameter('sonyPreSharedKey')
+const sonyPreSharedKey = D.getParameter("sonyPreSharedKey");
 
 /**
  * @description Start time for TV operation (HH:MM format)
  * @type STRING
  */
-const startTime = D.getParameter('startTime')
+const startTime = D.getParameter("startTime");
 
 /**
  * @description End time for TV operation (HH:MM format)
  * @type STRING
  */
-const endTime = D.getParameter('endTime')
+const endTime = D.getParameter("endTime");
 
 /**
  * @description Days of the week when the TV should be active
@@ -50,7 +50,7 @@ const endTime = D.getParameter('endTime')
  * Example: ["Monday", "Wednesday", "Friday"]
  * @type LIST
  */
-const weekDays = D.getParameter('weekDays')
+const weekDays = D.getParameter("weekDays");
 
 /**
  * @description Dates to exclude from the scheduling
@@ -59,17 +59,17 @@ const weekDays = D.getParameter('weekDays')
  * Use ["None"] if you don't want to exclude any dates.
  * @type LIST
  */
-const datesToExclude = D.getParameter('datesToExclude')
+const datesToExclude = D.getParameter("datesToExclude");
 
 /**
  * @remote_procedure
  * @label Validate Association
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate(){
+function validate() {
     retrieveStatus()
-        .then(function(){ D.success()})
-        .catch(failure)
+        .then(function () { D.success();})
+        .catch(failure);
 }
 
 /**
@@ -77,13 +77,13 @@ function validate(){
  * @label Get sony TV power status
  * @documentation This procedure is used to retrieves and publishes the TV power status and video source
  */
-function get_status(){
+function get_status() {
     retrieveStatus()
         .then(applyScheduling)
         .then(retrieveStatus)
         .then(retrieveVideoSource)
         .then(publishStatus)
-        .catch(failure)
+        .catch(failure);
 }
 
 /**
@@ -92,22 +92,22 @@ function get_status(){
  */
 function retrieveStatus() {
 
-    const httpConfig = createBaseHTTPConfig()
-    httpConfig.url = "/sony/system"
+    const httpConfig = createBaseHTTPConfig();
+    httpConfig.url = "/sony/system";
     httpConfig.body = JSON.stringify({
         method: "getPowerStatus",
         params: [{}],
         id: 1,
         version: "1.0"
-    })
+    });
     return new Promise(function (resolve) {
         D.device.http.post(httpConfig, function (err, response, body) {
-            checkHttpError(err, response, body)
-            const responseAsJSON = JSON.parse(body)
-            tvStatus = responseAsJSON.result[0].status
-            resolve()
-        })
-    })
+            checkHttpError(err, response, body);
+            const responseAsJSON = JSON.parse(body);
+            tvStatus = responseAsJSON.result[0].status;
+            resolve();
+        });
+    });
 }
 
 /**
@@ -116,24 +116,24 @@ function retrieveStatus() {
  */
 function retrieveVideoSource() {
 
-    const httpConfig = createBaseHTTPConfig()
-    httpConfig.url = "/sony/avContent"
+    const httpConfig = createBaseHTTPConfig();
+    httpConfig.url = "/sony/avContent";
     httpConfig.body = JSON.stringify({
         method: "getPlayingContentInfo",
         params: [{}],
         id: 1,
         version: "1.0"
-    })
+    });
     return new Promise(function (resolve) {
         D.device.http.post(httpConfig, function (err, response, body) {
-            checkHttpError(err, response, body)
-            const responseAsJSON = JSON.parse(body)
+            checkHttpError(err, response, body);
+            const responseAsJSON = JSON.parse(body);
 
-            if (!responseAsJSON.hasOwnProperty('error'))
-                videoSource = extractVideoSource(responseAsJSON)
-            resolve()
-        })
-    })
+            if (!responseAsJSON.hasOwnProperty("error"))
+                videoSource = extractVideoSource(responseAsJSON);
+            resolve();
+        });
+    });
 }
 
 /**
@@ -142,15 +142,15 @@ function retrieveVideoSource() {
  * @returns {string} The extracted video source
  */
 function extractVideoSource(jsonData) {
-    let videoSource = "N/A"
+    let videoSource = "N/A";
     if (jsonData.result && jsonData.result.length > 0 && jsonData.result[0].source) {
-        const source = jsonData.result[0].source.toUpperCase()
+        const source = jsonData.result[0].source.toUpperCase();
         if (source.includes("TV"))
-            videoSource = source
+            videoSource = source;
         else if (jsonData.result[0].title)
-            videoSource = jsonData.result[0].title.toUpperCase()
+            videoSource = jsonData.result[0].title.toUpperCase();
     }
-    return videoSource
+    return videoSource;
 }
 
 /**
@@ -161,26 +161,26 @@ function applyScheduling() {
 
     let excludedDates = Array.isArray(datesToExclude) && datesToExclude.length &&  typeof datesToExclude[0] === "string" && datesToExclude[0].toLowerCase() !== "none"
         ? datesToExclude
-        : []
-    console.info("dates To Exclude:", datesToExclude)
+        : [];
+    console.info("dates To Exclude:", datesToExclude);
 
-    validateDates(excludedDates)
-    validateWeekDays(weekDays)
+    validateDates(excludedDates);
+    validateWeekDays(weekDays);
 
-    const now = new Date()
-    const currentTime = extractTimeInMinutesFromMidnight(now)
-    const currentDay = extractDayOfTheWeek(now)
-    const currentDate = extractDate(now)
+    const now = new Date();
+    const currentTime = extractTimeInMinutesFromMidnight(now);
+    const currentDay = extractDayOfTheWeek(now);
+    const currentDate = extractDate(now);
 
-    const startTimeInMinutes = timeToMinutes(startTime)
-    const endTimeInMinutes = timeToMinutes(endTime)
+    const startTimeInMinutes = timeToMinutes(startTime);
+    const endTimeInMinutes = timeToMinutes(endTime);
 
-    console.info("TV Status: " + tvStatus)
+    console.info("TV Status: " + tvStatus);
 
     if (tvStatus === TV_STATUS_OFF)
-        return turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes)
-    else if(tvStatus === TV_STATUS_ON || tvStatus === TV_STATUS_ACTIVE)
-        return turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes)
+        return turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes);
+    else if (tvStatus === TV_STATUS_ON || tvStatus === TV_STATUS_ACTIVE)
+        return turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes);
 }
 
 /**
@@ -195,7 +195,7 @@ function applyScheduling() {
  */
 function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
     if (weekDays.includes(currentDay) && currentTime >= startTimeInMinutes && currentTime <= endTimeInMinutes && !datesToExclude.includes(currentDate))
-        return turnOn()
+        return turnOn();
 }
 
 /**
@@ -211,7 +211,7 @@ function turnOnIfSchedulingIsMatched(currentDate, currentDay, currentTime, start
  */
 function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, startTimeInMinutes, endTimeInMinutes) {
     if (!weekDays.includes(currentDay) || currentTime < startTimeInMinutes || currentTime > endTimeInMinutes || datesToExclude.includes(currentDate))
-        return turnOff()
+        return turnOff();
 }
 
 /**
@@ -219,23 +219,22 @@ function turnOffIfSchedulingIsNotMatched(currentDate, currentDay, currentTime, s
  * @returns {Promise} Resolves when the TV is successfully turned on
  */
 function turnOn() {
-    console.info("Turning TV on")
+    console.info("Turning TV on");
 
-
-    const httpConfig = createBaseHTTPConfig()
-    httpConfig.url = "/sony/system"
+    const httpConfig = createBaseHTTPConfig();
+    httpConfig.url = "/sony/system";
     httpConfig.body = JSON.stringify({
         method: "setPowerStatus",
         params: [{ status: true }],
         id: 1,
         version: "1.0"
-    })
+    });
     return new Promise(function (resolve) {
         D.device.http.post(httpConfig, function (err, response, body) {
-            checkHttpError(err, response, body)
-            resolve()
-        })
-    })
+            checkHttpError(err, response, body);
+            resolve();
+        });
+    });
 }
 
 /**
@@ -243,33 +242,32 @@ function turnOn() {
  * @returns {Promise} Resolves when the TV is successfully turned off
  */
 function turnOff() {
-    console.info("Turning TV off")
+    console.info("Turning TV off");
 
-
-    const httpConfig = createBaseHTTPConfig()
-    httpConfig.url = "/sony/system"
+    const httpConfig = createBaseHTTPConfig();
+    httpConfig.url = "/sony/system";
     httpConfig.body = JSON.stringify({
         method: "setPowerStatus",
         params: [{ status: false }],
         id: 1,
         version: "1.0"
-    })
+    });
     return new Promise(function (resolve) {
         D.device.http.post(httpConfig, function (err, response, body) {
-            checkHttpError(err, response, body)
-            resolve()
-        })
-    })
+            checkHttpError(err, response, body);
+            resolve();
+        });
+    });
 }
 
 /**
  * Publishes the TV status and video source as device variables
  */
-function publishStatus(){
+function publishStatus() {
     D.success([
-        D.createVariable("status", "Status", tvStatus ),
-        D.createVariable("video-source", "Video Source", videoSource )
-    ])
+        D.createVariable("status", "Status", tvStatus),
+        D.createVariable("video-source", "Video Source", videoSource)
+    ]);
 }
 
 /**
@@ -280,18 +278,18 @@ function publishStatus(){
  */
 function checkHttpError(err, response, body) {
     if (err) {
-        console.error(err)
-        return D.failure(D.errorType.GENERIC_ERROR)
+        console.error(err);
+        return D.failure(D.errorType.GENERIC_ERROR);
     }
     if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     }
     if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     }
     if (response.statusCode !== 200 && response.statusCode !== 202 && response.statusCode !== 204) {
-        console.error(body)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error(body);
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
@@ -305,7 +303,7 @@ function createBaseHTTPConfig() {
             "Content-Type": "application/json",
             "X-Auth-PSK": sonyPreSharedKey
         }
-    }
+    };
 }
 
 /**
@@ -313,10 +311,10 @@ function createBaseHTTPConfig() {
  * @label On
  * @documentation Turn TV On
  */
-function custom_1(){
+function custom_1() {
     turnOn()
-        .then(function(){ D.success() })
-        .catch(failure)
+        .then(function () { D.success(); })
+        .catch(failure);
 }
 
 /**
@@ -324,10 +322,10 @@ function custom_1(){
  * @label Off
  * @documentation Turn TV Off
  */
-function custom_2(){
+function custom_2() {
     turnOff()
-        .then(function(){ D.success() })
-        .catch(failure)
+        .then(function () { D.success(); })
+        .catch(failure);
 }
 
 /**
@@ -336,7 +334,7 @@ function custom_2(){
  * @returns {number} The time in minutes since midnight
  */
 function extractTimeInMinutesFromMidnight(now) {
-    return now.getHours() * 60 + now.getMinutes()
+    return now.getHours() * 60 + now.getMinutes();
 }
 
 /**
@@ -345,7 +343,7 @@ function extractTimeInMinutesFromMidnight(now) {
  * @returns {string} The day of the week
  */
 function extractDayOfTheWeek(now) {
-    return DAYS_OF_THE_WEEK[now.getDay()]
+    return DAYS_OF_THE_WEEK[now.getDay()];
 }
 
 /**
@@ -354,11 +352,11 @@ function extractDayOfTheWeek(now) {
  * @returns {string} The date in MM/DD/YYYY format
  */
 function extractDate(now) {
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const year = now.getFullYear();
 
-    return month+"/"+day+"/"+year
+    return month + "/" + day + "/" + year;
 }
 
 /**
@@ -367,14 +365,14 @@ function extractDate(now) {
  * @returns {number} The time in minutes
  */
 function timeToMinutes(time) {
-    const timeParts = time.split(":")
-    const hour = parseInt(timeParts[0], 10)
-    const minute = parseInt(timeParts[1], 10)
+    const timeParts = time.split(":");
+    const hour = parseInt(timeParts[0], 10);
+    const minute = parseInt(timeParts[1], 10);
 
     if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
-        throw "Invalid time parameter: " + time
+        throw "Invalid time parameter: " + time;
 
-    return hour * 60 + minute
+    return hour * 60 + minute;
 }
 
 /**
@@ -382,7 +380,7 @@ function timeToMinutes(time) {
  * @param {Array} dates An array of date strings to validate
  */
 function validateDates(dates) {
-    dates.forEach(validateDate)
+    dates.forEach(validateDate);
 }
 
 /**
@@ -390,11 +388,11 @@ function validateDates(dates) {
  * @param {string} dateString The date string to validate in MM/DD/YYYY format
  */
 function validateDate(dateString) {
-    const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(\d{4})$/
+    const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(\d{4})$/;
 
     if (!datePattern.test(dateString))
 
-        throw "Invalid date format: " + dateString + ". Expected format: MM/DD/YYYY"
+        throw "Invalid date format: " + dateString + ". Expected format: MM/DD/YYYY";
 }
 
 /**
@@ -402,10 +400,10 @@ function validateDate(dateString) {
  * @param {Array} daysOfTheWeek An array of days to validate
  */
 function validateWeekDays(daysOfTheWeek) {
-    daysOfTheWeek.forEach(function(day) {
+    daysOfTheWeek.forEach(function (day) {
         if (!DAYS_OF_THE_WEEK.includes(day))
-            throw "Invalid day: "+ day
-    })
+            throw "Invalid day: " + day;
+    });
 }
 
 /**
@@ -413,6 +411,6 @@ function validateWeekDays(daysOfTheWeek) {
  * @param {string} err The error message to log and handle
  */
 function failure(err) {
-    console.error(err)
-    D.failure(D.errorType.GENERIC_ERROR)
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
 }

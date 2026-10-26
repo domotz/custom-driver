@@ -28,25 +28,24 @@
  **/
 
 // URL endpoint for accessing the vSphere SDK
-const url = '/sdk'
-
+const url = "/sdk";
 
 // Creation of Network Physical NIC Configuration table
 var networkPhysicalNicConfigurationTable = D.createTable(
-    'Network Physical NIC Configuration',
+    "Network Physical NIC Configuration",
     [
-        { label: 'Device', valueType: D.valueType.STRING },
-        { label: 'PCI Slot', valueType: D.valueType.STRING },
-        { label: 'Driver', valueType: D.valueType.STRING },
-        { label: 'Link Speed', valueType: D.valueType.NUMBER, unit: "MB" },
-        { label: 'Duplex', valueType: D.valueType.STRING },
-        { label: 'DHCP Enabled', valueType: D.valueType.STRING },
-        { label: 'IP Address', valueType: D.valueType.STRING },
-        { label: 'Subnet Mask', valueType: D.valueType.STRING },
-        { label: 'Wake-on-LAN Supported', valueType: D.valueType.STRING },
-        { label: 'MAC Address', valueType: D.valueType.STRING }
+        { label: "Device", valueType: D.valueType.STRING },
+        { label: "PCI Slot", valueType: D.valueType.STRING },
+        { label: "Driver", valueType: D.valueType.STRING },
+        { label: "Link Speed", valueType: D.valueType.NUMBER, unit: "MB" },
+        { label: "Duplex", valueType: D.valueType.STRING },
+        { label: "DHCP Enabled", valueType: D.valueType.STRING },
+        { label: "IP Address", valueType: D.valueType.STRING },
+        { label: "Subnet Mask", valueType: D.valueType.STRING },
+        { label: "Wake-on-LAN Supported", valueType: D.valueType.STRING },
+        { label: "MAC Address", valueType: D.valueType.STRING }
     ]
-)
+);
 
 /**
  * Sends a SOAP request and returns a promise with the parsed response.
@@ -54,33 +53,33 @@ var networkPhysicalNicConfigurationTable = D.createTable(
  * @param {function} extractData  A call back function to extract data from body and response.
  * @returns A promise that resolves with the parsed response.
  */
-function sendSoapRequest (body, extractData) {
+function sendSoapRequest(body, extractData) {
 
-    let config ={
+    let config = {
         url,
         protocol: "https",
         rejectUnauthorized: false,
         body,
         jar: true
-    }
+    };
 
     return new Promise(function (resolve) {
         D.device.http.post(config, function (error, response, body) {
             if (error) {
-                console.error(error)
-                D.failure(D.errorType.GENERIC_ERROR)
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
             } else if (!response) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             } else if (response.statusCode === 400 || isInvalidLogin(body)) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR)
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (response.statusCode !== 200) {
-                D.failure(D.errorType.GENERIC_ERROR)
+                D.failure(D.errorType.GENERIC_ERROR);
             } else {
-                const result = extractData(body)
-                resolve(result)
+                const result = extractData(body);
+                resolve(result);
             }
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -88,10 +87,10 @@ function sendSoapRequest (body, extractData) {
  * @param {string} soapBody - The content to be included in the SOAP body.
  * @returns {string} The complete SOAP payload as a string, including the envelope and body.
  */
-function createSoapPayload (soapBody) {
+function createSoapPayload(soapBody) {
     return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
         + soapBody +
-        '</soapenv:Body></soapenv:Envelope>'
+        "</soapenv:Body></soapenv:Envelope>";
 }
 
 /**
@@ -100,8 +99,8 @@ function createSoapPayload (soapBody) {
  * @returns {string} The Session Key extracted from the SOAP response.
  */
 function getSessionKey(soapResponse) {
-    const $ = D.htmlParse(soapResponse)
-    return $('returnval').find('key').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("key").first().text();
 }
 
 /**
@@ -110,11 +109,11 @@ function getSessionKey(soapResponse) {
  * @param {string} value - The text to escape.
  * @returns {string} The escaped text.
  */
-function escapeXml (value) {
+function escapeXml(value) {
     return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
 /**
@@ -122,26 +121,26 @@ function escapeXml (value) {
  * @param {string} body - The SOAP response body.
  * @returns {boolean} True if the response is an InvalidLogin fault.
  */
-function isInvalidLogin (body) {
-    const text = String(body || '')
-    return text.indexOf('InvalidLoginFault') !== -1 ||
-      text.indexOf('Cannot complete login due to an incorrect user name or password.') !== -1
+function isInvalidLogin(body) {
+    const text = String(body || "");
+    return text.indexOf("InvalidLoginFault") !== -1 ||
+      text.indexOf("Cannot complete login due to an incorrect user name or password.") !== -1;
 }
 
 /**
  * Constructs and sends a SOAP login request to the ESXi server.
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
-function login () {
+function login() {
     const payload = createSoapPayload(
-        '<vim25:Login>' +
+        "<vim25:Login>" +
         '   <_this type="SessionManager">ha-sessionmgr</_this>' +
-        '   <userName>' + escapeXml(D.device.username()) + '</userName>' +
-        '   <password>' + escapeXml(D.device.password()) + '</password>' +
-        '</vim25:Login>'
-    )
+        "   <userName>" + escapeXml(D.device.username()) + "</userName>" +
+        "   <password>" + escapeXml(D.device.password()) + "</password>" +
+        "</vim25:Login>"
+    );
     // Send the SOAP request and handle the response to extract the Session Key.
-    return sendSoapRequest(payload, getSessionKey)
+    return sendSoapRequest(payload, getSessionKey);
 }
 
 /**
@@ -150,8 +149,8 @@ function login () {
  * @returns {string} The container ID extracted from the SOAP response.
  */
 function getContainerIdFromSoap(soapResponse) {
-    const $ = D.htmlParse(soapResponse)
-    return $('returnval').text();
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").text();
 }
 
 /**
@@ -163,12 +162,12 @@ function createAllHostContainer() {
         '<CreateContainerView xmlns="urn:vim25">' +
         '    <_this type="ViewManager">ViewManager</_this>' +
         '    <container type="Folder">ha-folder-root</container>' +
-        '    <type>HostSystem</type>' +
-        '    <recursive>true</recursive>' +
-        '</CreateContainerView>'
-    )
+        "    <type>HostSystem</type>" +
+        "    <recursive>true</recursive>" +
+        "</CreateContainerView>"
+    );
     // Send the SOAP request and extract the container ID from the response.
-    return sendSoapRequest(payload, getContainerIdFromSoap)
+    return sendSoapRequest(payload, getContainerIdFromSoap);
 }
 
 /**
@@ -177,8 +176,8 @@ function createAllHostContainer() {
  * @returns {string} The host reference extracted from the SOAP response.
  */
 function getHostRefFromSoap(soapResponse) {
-    const $ = D.htmlParse(soapResponse)
-    return $('returnval').find('ManagedObjectReference').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("ManagedObjectReference").first().text();
 }
 
 /**
@@ -189,12 +188,12 @@ function getHostRefFromSoap(soapResponse) {
 function fetchContainer(containerId) {
     const payload = createSoapPayload(
         '<Fetch xmlns="urn:vim25">' +
-        '    <_this type="ContainerView">' + containerId + '</_this>' +
-        '    <prop>view</prop>' +
-        '</Fetch>'
-    )
+        '    <_this type="ContainerView">' + containerId + "</_this>" +
+        "    <prop>view</prop>" +
+        "</Fetch>"
+    );
     // Send the SOAP request and extract the host reference from the response.
-    return sendSoapRequest(payload, getHostRefFromSoap)
+    return sendSoapRequest(payload, getHostRefFromSoap);
 }
 
 /**
@@ -206,19 +205,19 @@ function retrieveProprieties(hostRef) {
     const payload = createSoapPayload(
         '<RetrieveProperties xmlns="urn:vim25">' +
         '    <_this type="PropertyCollector">ha-property-collector</_this>' +
-        '    <specSet>' +
-        '        <propSet>' +
-        '            <type>HostSystem</type>' +
-        '            <pathSet>config.network.pnic</pathSet>' +
-        '        </propSet>' +
-        '        <objectSet>' +
-        '            <obj type="HostSystem">' + hostRef + '</obj>' +
-        '        </objectSet>' +
-        '    </specSet>' +
-        '</RetrieveProperties>'
-    )
+        "    <specSet>" +
+        "        <propSet>" +
+        "            <type>HostSystem</type>" +
+        "            <pathSet>config.network.pnic</pathSet>" +
+        "        </propSet>" +
+        "        <objectSet>" +
+        '            <obj type="HostSystem">' + hostRef + "</obj>" +
+        "        </objectSet>" +
+        "    </specSet>" +
+        "</RetrieveProperties>"
+    );
     // Send the SOAP request and handle the response to generate the desired variables.
-    return sendSoapRequest(payload, generateTableOutput)
+    return sendSoapRequest(payload, generateTableOutput);
 }
 
 /**
@@ -247,23 +246,23 @@ function populateTable(pnicDetails) {
 function generateTableOutput(soapResponse) {
     const $ = D.htmlParse(soapResponse);
 
-    $('propSet:has(name:contains("config.network.pnic")) PhysicalNic').each(function() {
+    $('propSet:has(name:contains("config.network.pnic")) PhysicalNic').each(function () {
         const pnicInfo = $(this);
-        const linkSpeed = pnicInfo.find('linkSpeed');
-        const spec = pnicInfo.find('spec');
+        const linkSpeed = pnicInfo.find("linkSpeed");
+        const spec = pnicInfo.find("spec");
 
         populateTable({
-            id: pnicInfo.find('key').text(),
-            device: pnicInfo.find('device').text() || "N/A",
-            pciSlot: pnicInfo.find('pci').text() || "N/A",
-            driver: pnicInfo.find('driver').text() || "N/A",
-            linkSpeedMb: parseInt(linkSpeed.find('speedMb').text()) || 0,
-            duplex: linkSpeed.find('duplex').text() === 'true' ? 'Full' : 'Half',
-            dhcpEnabled: spec.find('ip dhcp').text() === 'true' ? 'Yes' : 'No',
-            ipAddress: spec.find('ip ipAddress').text() || "N/A",
-            subnetMask: spec.find('ip subnetMask').text() || "N/A",
-            wakeOnLanSupported: pnicInfo.find('wakeOnLanSupported').text() === 'true' ? 'Yes' : 'No',
-            macAddress: pnicInfo.find('mac').text() || "N/A"
+            id: pnicInfo.find("key").text(),
+            device: pnicInfo.find("device").text() || "N/A",
+            pciSlot: pnicInfo.find("pci").text() || "N/A",
+            driver: pnicInfo.find("driver").text() || "N/A",
+            linkSpeedMb: parseInt(linkSpeed.find("speedMb").text()) || 0,
+            duplex: linkSpeed.find("duplex").text() === "true" ? "Full" : "Half",
+            dhcpEnabled: spec.find("ip dhcp").text() === "true" ? "Yes" : "No",
+            ipAddress: spec.find("ip ipAddress").text() || "N/A",
+            subnetMask: spec.find("ip subnetMask").text() || "N/A",
+            wakeOnLanSupported: pnicInfo.find("wakeOnLanSupported").text() === "true" ? "Yes" : "No",
+            macAddress: pnicInfo.find("mac").text() || "N/A"
         });
     });
 
@@ -274,10 +273,10 @@ function generateTableOutput(soapResponse) {
  * @label Validate Association
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate () {
+function validate() {
     login()
         .then(function (sessionKey) {
-            if(sessionKey && sessionKey.length > 0){
+            if (sessionKey && sessionKey.length > 0) {
                 D.success();
             }
         })
@@ -293,10 +292,10 @@ function validate () {
  */
 function get_status() {
     login().
-    then(createAllHostContainer).
-    then(fetchContainer).
-    then(retrieveProprieties).
-    then(D.success)
+        then(createAllHostContainer).
+        then(fetchContainer).
+        then(retrieveProprieties).
+        then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);

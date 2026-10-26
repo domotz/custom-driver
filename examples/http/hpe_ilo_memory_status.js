@@ -1,14 +1,14 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE iLO Memory Status
  * Description: Monitors the memory status for HPE Integrated Lights-Out (iLO) systems using the Redfish API
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with HPE iLO 5
  *
  * Creates a Custom Driver table with memory status
- * 
+ *
  **/
 
 // Create a Custom Driver table to store memory status
@@ -24,8 +24,8 @@ function getMemoryStatus() {
     return new Promise(function (resolve) {
         D.device.http.get({
             url: "/redfish/v1/Systems/1/Memory?$expand=.",
-            username: D.device.username(), 
-            password: D.device.password(), 
+            username: D.device.username(),
+            password: D.device.password(),
             protocol: "https",
             auth: "basic",
             jar: true,
@@ -46,17 +46,17 @@ function getMemoryStatus() {
     });
 }
 
-// Function to sanitize the record ID 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+// Function to sanitize the record ID
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response and populates the Custom Driver Table
 function extractData(data) {
     if (data && data.Members) {
-        data.Members.forEach(function(entry) {
+        data.Members.forEach(function (entry) {
             if (!entry.DeviceLocator || !entry.Status || !entry.Status.State) {
                 console.error("Missing required properties in the data");
             }
@@ -77,7 +77,7 @@ function extractData(data) {
  * @label Validate HPE iLo device
  * @documentation This procedure is used to validate the presence of a HPE iLo device by checking the availability of a specific Redfish API endpoint
  */
-function validate(){
+function validate() {
     getMemoryStatus()
         .then(function (response) {
             if (response && response["@odata.id"].indexOf("/redfish/v1/Systems/1/Memory") !== -1) {

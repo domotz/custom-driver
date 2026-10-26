@@ -1,17 +1,17 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare Monitoring VM Disks
- * Description: This script retrieves information about each disk connected to a Virtual Machine on VMware server 
- * 
+ * Description: This script retrieves information about each disk connected to a Virtual Machine on VMware server
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
  *      - Type: Type of disk
  *      - Capacity: Capacity of the disk in gigabytes
  *      - VMDK File: Path to the VMDK file associated with the disk
- * 
+ *
  **/
 
 // The ID of the virtual machine
@@ -19,7 +19,7 @@ var vmId = D.getParameter("vmId");
 
 // Create a Custom Driver table to store disk information
 var table = D.createTable(
-    "Disks",[
+    "Disks", [
         { label: "Type", valueType: D.valueType.STRING },
         { label: "Capacity", unit: "GB", valueType: D.valueType.NUMBER },
         { label: "VMDK File", valueType: D.valueType.STRING }
@@ -38,8 +38,8 @@ function login() {
         rejectUnauthorized: false
     };
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body){
-            if (error) {          
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
             } else if (response.statusCode == 404) {
@@ -48,7 +48,7 @@ function login() {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (response.statusCode != 201) {
                 D.failure(D.errorType.GENERIC_ERROR);
-            } 
+            }
             resolve(JSON.parse(body));
         });
     });
@@ -62,29 +62,29 @@ function getDisks(sessionId) {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": sessionId 
+            "vmware-api-session-id": sessionId
         }
     };
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body){
-            if (error) {          
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
             } else if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             } else if (response.statusCode != 200) {
                 D.failure(D.errorType.GENERIC_ERROR);
-            } 
+            }
             resolve(JSON.parse(body));
         });
     });
 }
 
 // Sanitize label to create a recordId
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // This function extracts relevant data from the API response
@@ -117,10 +117,10 @@ function extractData(body) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare device
  */
-function validate(){
+function validate() {
     login()
         .then(getDisks)
         .then(function (response) {

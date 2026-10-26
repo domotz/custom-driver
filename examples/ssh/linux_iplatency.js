@@ -1,21 +1,21 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Linux Monitor IP Latency
  * Description: This script its designed to ping a list of IP addresses specified in the 'ipAddresses' variable from a linux host machine and retrieve their average latency and packet loss percentage.
- * 
+ *
  * Communication protocol is SSH
- * 
+ *
  * Tested on Linux Distributions:
  *      - Ubuntu 20.04 LTS
  * Shell Version:
  *      - Bash 5.1.16
- * 
+ *
  * Creates a Custom Driver table with a list of IP addresses, their average latency, and their packet loss.
- * 
+ *
  **/
 
 var packetCount = 2; // Number of packets to send during the ping command.
-var ipAddresses  = D.getParameter('ipAddressesToCheck');
+var ipAddresses  = D.getParameter("ipAddressesToCheck");
 
 // Set up the SSH command options
 var sshCommandOptions = {
@@ -46,7 +46,7 @@ function executeCommand(command) {
         D.device.sendSSHCommand(sshCommandOptions, function (output, error) {
             if (error) {
                 resolve(error);
-            }else{
+            } else {
                 resolve(output);
             }
         });
@@ -59,7 +59,7 @@ function executeCommand(command) {
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as to verify the connectivity using the 'ping' command with specific parameters.
 */
 function validate() {
-    var command = "man -P cat ping"; 
+    var command = "man -P cat ping";
     executeCommand(command)
         .then(parseValidateOutput)
         .then(D.success)
@@ -94,7 +94,7 @@ function get_status() {
             .catch(function (error) {
                 checkSshError(error);
             });
-    });     
+    });
     Promise.all(commands)
         .then(function () {
             D.success(tableColumns);
@@ -103,10 +103,10 @@ function get_status() {
             checkSshError(error);
         });
 }
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 function parseOutput(output, ipAddress) {
@@ -115,13 +115,13 @@ function parseOutput(output, ipAddress) {
     if (matchLatency && matchLatency.length >= 3) {
         latencyValue = matchLatency[2];
     } else {
-        latencyValue = "-1"; 
-    }       
+        latencyValue = "-1";
+    }
     var matchPacketLoss = /(\d+)% packet loss/.exec(output);
     if (matchPacketLoss && matchPacketLoss.length >= 2) {
         packetLossValue = matchPacketLoss[1];
     } else {
-        packetLossValue = "100"; 
+        packetLossValue = "100";
     }
     var recordId = sanitize(ipAddress);
     tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);

@@ -1,22 +1,22 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare Monitoring VM Info
- * Description:  Monitors Virtual Machines running on VMware server 
- * 
+ * Description:  Monitors Virtual Machines running on VMware server
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
  *      - Name: Name of the Virtual machine
  *      - Instance UUID: Unique identifier for the Virtual Machine
- *      - Operating System: Operating system of the Virtual Machine 
+ *      - Operating System: Operating system of the Virtual Machine
  *      - Memory: Memory size in Gigabytes
  *      - Processors: The number of CPU cores
  *      - Cores per socket: The number of CPU cores per socket
  *      - Version: The valid virtual hardware versions for a virtual machine
  *      - Power state: The valid power states for a virtual machine
- * 
+ *
  **/
 
 // The ID of the virtual machine
@@ -34,8 +34,8 @@ function login() {
         rejectUnauthorized: false
     };
     return new Promise(function (resolve) {
-        D.device.http.post(config, function(error, response, body){
-            if (error) {          
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
             } else if (response.statusCode == 404) {
@@ -44,7 +44,7 @@ function login() {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (response.statusCode != 201) {
                 D.failure(D.errorType.GENERIC_ERROR);
-            } 
+            }
             resolve(JSON.parse(body));
         });
     });
@@ -58,28 +58,28 @@ function getVMInfo(sessionId) {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": sessionId 
+            "vmware-api-session-id": sessionId
         }
     };
     return new Promise(function (resolve) {
-        D.device.http.get(config, function(error, response, body){
-            if (error) {          
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
             } else if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             } else if (response.statusCode != 200) {
                 D.failure(D.errorType.GENERIC_ERROR);
-            } 
+            }
             resolve(JSON.parse(body));
         });
     });
 }
 
 // This function extracts relevant data from the Virtual Machine information response
-function extractData(data){
+function extractData(data) {
     if (!data) {
-        console.error("No data available");        
+        console.error("No data available");
         D.failure(D.errorType.GENERIC_ERROR);
     }
     var name = data.name;
@@ -102,13 +102,13 @@ function extractData(data){
     ];
     D.success(variables);
 }
-  
+
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare device
  */
-function validate(){
+function validate() {
     login()
         .then(getVMInfo)
         .then(function (response) {
@@ -128,7 +128,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Virtual Machine Info 
+ * @label Get Virtual Machine Info
  * @documentation This procedure is used to retrieve information about a specific virtual machine running on a VMware server
  */
 function get_status() {

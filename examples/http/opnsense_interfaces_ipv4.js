@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: OPNSense Interfaces Stats IPV4
  * Description: This script is designed for retrieving IPv4 interface statistics from an OPNsense firewall.
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Table with the following columns:
@@ -14,7 +14,7 @@
  *      - Out traffic (block): The amount of outgoing IPv4 traffic that was blocked by the firewall
  *      - Out traffic (pass): The amount of outgoing IPv4 traffic that was allowed or passed by the firewall
  *      - Cleared Time: The timestamp when the statistics were last cleared or reset
- * 
+ *
  **/
 
 // interfaceName: Set it to 'ALL' to retrieve all interfaces,
@@ -68,19 +68,19 @@ function getInterfaces() {
     });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Function to extract and insert Interfaces Stats data into the custom driver table for IPv4
 function extractData(data) {
     for (var iface in data.interfaces) {
-        if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function(name) {
+        if (interfaceName[0].toLowerCase() === "all" || interfaceName.some(function (name) {
             return (iface.toLowerCase().indexOf(name.toLowerCase()) !== -1);
         })) {
-            if (iface !== "all"){
+            if (iface !== "all") {
                 var recordId = sanitize(iface);
                 var references = data.interfaces[iface].references;
                 var in4BlockBytes = data.interfaces[iface].in4_block_bytes;
@@ -88,7 +88,7 @@ function extractData(data) {
                 var out4BlockBytes = data.interfaces[iface].out4_block_bytes;
                 var out4PassBytes = data.interfaces[iface].out4_pass_bytes;
                 var cleared = data.interfaces[iface].cleared;
-    
+
                 table.insertRecord(recordId, [
                     references,
                     in4BlockBytes,
@@ -108,7 +108,7 @@ function extractData(data) {
  * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     getInterfaces()
         .then(function (response) {
             if (response) {

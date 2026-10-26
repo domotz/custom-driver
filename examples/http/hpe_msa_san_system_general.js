@@ -1,18 +1,18 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE MSA SAN System General
  * Description: Monitors the general information for HPE MSA SAN device
- * 
- * Communication protocol is HTTPS 
- * 
+ *
+ * Communication protocol is HTTPS
+ *
  * Tested with HPE MSA 2050 SAN version: VL270P005
- * 
+ *
  * Creates a Custom Driver variables:
  *     - Product ID: The product model identifier of the system
  *     - Midplane Serial Number: The serial number of the controller enclosure midplane
  *     - Health: The health status of the system
  *     - Health Reason: If Health is not OK, the reason for the health state
- * 
+ *
  */
 
 // Variable to store the session key
@@ -21,7 +21,7 @@ var sessionKey;
 // Process the response from the server
 function processResponse(resolve, reject) {
     return function process(error, response, body) {
-        if (error) {          
+        if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else if (response.statusCode == 404) {
@@ -30,15 +30,15 @@ function processResponse(resolve, reject) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
-        } 
+        }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if(sessionKey == "Authentication Unsuccessful"){
+            if (sessionKey == "Authentication Unsuccessful") {
                 console.error("Session key not found in response headers");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
-        resolve(body);      
+        resolve(body);
     };
 }
 
@@ -69,7 +69,7 @@ function getSystemInformation() {
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "sessionKey": sessionKey 
+            "sessionKey": sessionKey
         }
     };
     return new Promise(function (resolve, reject) {
@@ -89,8 +89,8 @@ function extractData(data) {
     sensorObjects.each(function (index, element) {
         var productId = $(element).find("PROPERTY[name=\"product-id\"]").text();
         var midplaneSerialNumber = $(element).find("PROPERTY[name=\"midplane-serial-number\"]").text();
-        var health = $(element).find("PROPERTY[name=\"health\"]").text();   
-        var healthReason = $(element).find("PROPERTY[name=\"health-reason\"]").text();  
+        var health = $(element).find("PROPERTY[name=\"health\"]").text();
+        var healthReason = $(element).find("PROPERTY[name=\"health-reason\"]").text();
         variables.push(D.createVariable("product-id", "Product ID", productId, null, D.valueType.STRING));
         variables.push(D.createVariable("midplane-serial-number", "Midplane Serial Number", midplaneSerialNumber, null, D.valueType.STRING));
         variables.push(D.createVariable("health", "Health", health, null, D.valueType.STRING));
@@ -104,7 +104,7 @@ function extractData(data) {
  * @label Validate HPE MSA SAN Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     login()
         .then(getSystemInformation)
         .then(function (response) {
@@ -134,7 +134,7 @@ function get_status() {
     login()
         .then(getSystemInformation)
         .then(extractData)
-        .catch(function(error) {
+        .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         });

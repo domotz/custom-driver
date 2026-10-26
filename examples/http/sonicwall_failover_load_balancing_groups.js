@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - Failover Load Balancing Groups
- * Description: Monitors Sonicwall failover load balancing groups. 
- * 
+ * Description: Monitors Sonicwall failover load balancing groups.
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL TZ370W, SonicOS 7.1.1-7058-R6162
  *
  * Creates a Custom Driver Table with the following columns:
@@ -85,46 +85,45 @@ function getFailoverLBgroups() {
     });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 //Extracts data from the HTTP response and populates the custom table.
 function extractData(body) {
     var data = JSON.parse(body);
-    if (data)
-    {
+    if (data) {
         data.forEach(function (item) {
-                var groupName = item.group_name? item.group_name: 'N/A';
-                var memberName = item.member_name? item.member_name : 'N/A';
-                var recordId = sanitize(item.group_name ? memberName + groupName : memberName);
-                var linkstatus = item.link_status? item.link_status : 'N/A';
-                var lbstatus = item.lb_status? item.lb_status : 'N/A';
-                var probestatus = item.probe_status? item.probe_status : 'N/A';
-                var maintargetstatus = item.main_target_status? item.main_target_status : 'N/A';
-                var alternatetargetstatus = item.alternate_target_status? item.alternate_target_status : 'N/A';
+            var groupName = item.group_name ? item.group_name : "N/A";
+            var memberName = item.member_name ? item.member_name : "N/A";
+            var recordId = sanitize(item.group_name ? memberName + groupName : memberName);
+            var linkstatus = item.link_status ? item.link_status : "N/A";
+            var lbstatus = item.lb_status ? item.lb_status : "N/A";
+            var probestatus = item.probe_status ? item.probe_status : "N/A";
+            var maintargetstatus = item.main_target_status ? item.main_target_status : "N/A";
+            var alternatetargetstatus = item.alternate_target_status ? item.alternate_target_status : "N/A";
 
-                table.insertRecord(recordId, [
-                    groupName,
-                    memberName,
-                    linkstatus,
-                    lbstatus,
-                    probestatus,
-                    maintargetstatus,
-                    alternatetargetstatus
-                ]);
+            table.insertRecord(recordId, [
+                groupName,
+                memberName,
+                linkstatus,
+                lbstatus,
+                probestatus,
+                maintargetstatus,
+                alternatetargetstatus
+            ]);
         });
     }
     D.success(table);
 }
 
 /**
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getFailoverLBgroups)
         .then(function (response) {

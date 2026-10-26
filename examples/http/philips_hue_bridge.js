@@ -52,7 +52,7 @@ function get_status() {
             { label: "State", unit: null },
             { label: "Brightness", unit: "lux" },
             { label: "Software Version", unit: null },
-            { label: "Update Available", unit: null },
+            { label: "Update Available", unit: null }
         ]
     );
     function callbackMethod(error, response, body) {
@@ -79,4 +79,3 @@ function get_status() {
     httpOptions.url += "/lights";
     D.device.http.get(httpOptions, callbackMethod);
 }
-

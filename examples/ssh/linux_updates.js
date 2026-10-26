@@ -1,23 +1,23 @@
-/** 
+/**
  * Name: Linux Updates List (apt-based)
  * Description: Display the list of Updates available in a Linux host
- * 
+ *
  * Communication protocol is SSH
- * 
+ *
  * Tested on Linux: Ubuntu 22.04.3 LTS"
- * 
+ *
  * Requires:
  *    - requires apt
  *    - requires grep
- *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL 
- * 
+ *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL
+ *
  * Creates a Custom Driver Table with the following columns:
  *      - Current Version
- *      - New Version 
- * 
+ *      - New Version
+ *
 **/
 
-var packagesFilter = D.getParameter('packagesFilter');
+var packagesFilter = D.getParameter("packagesFilter");
 var cmdListUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst";
 
 if (packagesFilter.length > 0) {
@@ -86,19 +86,19 @@ function parseValidateOutput(output) {
 
 function parseData(executionResult) {
     var listOfUpdates = executionResult.split(/\r?\n/);
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
     for (var i = 0; i < listOfUpdates.length; i++) {
         var fields = listOfUpdates[i].replace(/[\[\]()]/g, "").split(" ");
         var pkgName = fields[1];
         var pkgOldV = fields[2];
-        var pkgNewV = fields[3]; 
-        var recordId = pkgName.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();;
+        var pkgNewV = fields[3];
+        var recordId = pkgName.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase(); ;
         updateListTable.insertRecord(
             recordId, [pkgOldV, pkgNewV]
         );
     }
-    D.success(updateListTable); 
+    D.success(updateListTable);
 }
 
 /**
@@ -110,4 +110,4 @@ function get_status() {
     executeCommand(cmdListUpdates)
         .then(parseData)
         .catch(checkSshError);
-}       
+}

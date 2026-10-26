@@ -1,8 +1,8 @@
-/** 
+/**
  * This driver gets nodes and cluster metrics from RabbitMQ management plugin provided an HTTP-based API using HTTP agent.
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
  */
 
 var port = 15672;
@@ -122,7 +122,7 @@ function getHealthcheckVirtualHosts() {
 }
 
 /**
- * @param {value} value to convert to number  
+ * @param {value} value to convert to number
  * @returns numeric value
  */
 function convertToNumber(value) {
@@ -340,7 +340,7 @@ function fillConfig() {
             unit: "B"
         },
         {
-            //Checks if there are classic mirrored queues without synchronized mirrors online 
+            //Checks if there are classic mirrored queues without synchronized mirrors online
             uid: "mirror_sync",
             label: "Healthcheck: classic mirrored queues without synchronized mirrors online",
             execute: extractValue(healthcheck.mirror_sync, "status")
@@ -448,8 +448,8 @@ function fillConfig() {
 }
 
 /**
-* 
-* @param {[object]} data array of objects 
+*
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {
@@ -523,4 +523,3 @@ function get_status() {
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
-

@@ -31,25 +31,25 @@ var parametersConfig = [
         // Service version
         uid: "version",
         label: "Version",
-        path: "json.ServerVersion",
+        path: "json.ServerVersion"
     },
     {
         // Service Multi-Processing Module
         uid: "server_mpm",
         label: "ServerMPM",
-        path: "json.ServerMPM",
+        path: "json.ServerMPM"
     },
     {
         // Server Built
         uid: "server_built",
         label: "Server Built",
-        path: "json['Server Built']",
+        path: "json['Server Built']"
     },
     {
         // Service Restart Time
         uid: "restart_time",
         label: "Restart Time",
-        path: "json.RestartTime",
+        path: "json.RestartTime"
     },
     {
         // CPU Load 1 minute
@@ -168,7 +168,7 @@ var parametersConfig = [
         // Service version
         uid: "version",
         label: "Version",
-        path: "json.ServerVersion",
+        path: "json.ServerVersion"
     },
     {
         // Number of workers in closing state
@@ -239,14 +239,12 @@ var parametersConfig = [
         label: "Workers waiting for connection",
         path: "json.Workers.waiting",
         postProcess: toFloat
-    },
-
+    }
 
 ];
 
-
 /**
- * 
+ *
  * @returns Promise wait for server-status page to be loaded
  */
 function getApache2Status() {
@@ -265,7 +263,6 @@ function getApache2Status() {
         });
     });
 }
-
 
 function convertToJson(value) {
     // Convert Apache status to JSON

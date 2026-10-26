@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - IPv4 DHCP Leases
- * Description: Monitors Sonicwall IPv4 DHCP leases. 
- * 
+ * Description: Monitors Sonicwall IPv4 DHCP leases.
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWall NSA 3500 (SonicOS 6.5.4.14-109n), NSv 270 (SonicOS 7.0.1-5119-R4713)
  *
  * Creates the following variables:
@@ -52,7 +52,6 @@ function processResponse(resolve, reject) {
     };
 }
 
-
 /**
  * Logs in to the SonicWALL device using basic authentication.
  * @returns {promise} The promise for the login operation.
@@ -79,7 +78,7 @@ function getDHCPLeases() {
 }
 
 function getDisplayValue(value) {
-  return (value === undefined || value === null || value === '') ? 'N/A' : value
+    return (value === undefined || value === null || value === "") ? "N/A" : value;
 }
 
 /**
@@ -87,7 +86,7 @@ function getDisplayValue(value) {
  * @param {object} dhcpLeasesBody Body of the DHCP leases API response
  */
 function extractVariables(dhcpLeasesBody) {
-    var dhcpLeases = JSON.parse(dhcpLeasesBody)
+    var dhcpLeases = JSON.parse(dhcpLeasesBody);
 
     var current = getDisplayValue(dhcpLeases.current);
     var avaliable_dynamic = getDisplayValue(dhcpLeases.avaliable_dynamic);
@@ -100,18 +99,17 @@ function extractVariables(dhcpLeasesBody) {
         D.createVariable("avaliable_dynamic", "Available Dynamic", avaliable_dynamic, null, D.valueType.NUMBER),
         D.createVariable("avaliable_static", "Available Static", avaliable_static, null, D.valueType.NUMBER),
         D.createVariable("total_active", "Total Active", total_active, null, D.valueType.NUMBER),
-        D.createVariable("total_configured", "Total Configured", total_configured, null, D.valueType.NUMBER),
+        D.createVariable("total_configured", "Total Configured", total_configured, null, D.valueType.NUMBER)
     ];
     D.success(variables);
 }
 
-
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getDHCPLeases)
         .then(function (response) {

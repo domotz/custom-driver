@@ -1,11 +1,11 @@
 /**
  * Name: XClarity Storage Health
- * Description:This script monitors the health status of storage systems on Lenovo XClarity server 
- *             
+ * Description:This script monitors the health status of storage systems on Lenovo XClarity server
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under Lenovo XClarity version 8.42
- * 
+ *
  * Creates a Custom Driver Variables for the status of the storage system
  */
 
@@ -21,9 +21,9 @@ var sshConfig = {
 
 // Function to handle SSH errors and failure cases
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -37,7 +37,7 @@ function executeCommand(command) {
                 checkSshError(err);
             } else {
                 resolve(output);
-            }                  
+            }
         });
     });
 }
@@ -49,7 +49,7 @@ function executeCommand(command) {
  */
 function validate() {
     executeCommand(command)
-    .then(parseValidateOutput)
+        .then(parseValidateOutput)
         .then(D.success)
         .catch(checkSshError);
 }
@@ -58,7 +58,7 @@ function parseValidateOutput(output) {
     if (output && output.indexOf("Error: Command not recognized") !== -1) {
         console.info("Validation failed: Command not supported");
         D.failure(D.errorType.PARSING_ERROR);
-    }else {
+    } else {
         console.info("Validation successful: Command is supported");
     }
 }
@@ -76,16 +76,16 @@ function get_status() {
 
 // Parse and insert storage health data into the custom driver variables
 function parseData(output) {
-    var cleanedOutput = output.replace(/Flash DIMMs[\s\S]*$/, '');
+    var cleanedOutput = output.replace(/Flash DIMMs[\s\S]*$/, "");
     var lines = cleanedOutput.split("\n");
     var drivesData = [];
-    for (var i = 3; i < lines.length-2; i++) {
+    for (var i = 3; i < lines.length - 2; i++) {
         var line = lines[i].trim();
         var parts = line.split(/\s+/);
         var fruName = parts.slice(0, -1).join(" "); // The FRU (Field Replaceable Unit) name
-        var status = parts.slice(-1)[0]; 
-        var identifier =  fruName.replace(/ /g, '-').toLowerCase();
-        drivesData.push(D.createVariable(identifier, fruName, status, null, D.valueType.STRING ));
+        var status = parts.slice(-1)[0];
+        var identifier =  fruName.replace(/ /g, "-").toLowerCase();
+        drivesData.push(D.createVariable(identifier, fruName, status, null, D.valueType.STRING));
     }
     D.success(drivesData);
 }

@@ -1,7 +1,7 @@
 /**
  * Name: Web Services Performance
  * Description: monitor the performance of web services by measuring their response time
- * 
+ *
  * Return a table with this columns:
  *  - Response Status: The status code of the HTTP response, or -1 if an error occurred
  *  - Response Time: The response time for each urls
@@ -12,14 +12,14 @@ var table = D.createTable(
     "Server Response Time",
     [
         { label: "Response Status" },
-        { label: "Response Time" , unit: "ms", type: D.valueType.NUMBER}
+        { label: "Response Time", unit: "ms", type: D.valueType.NUMBER }
     ]
 );
 
 // List of servers to check the response time
 var urls = D.getParameter("urls");
 
-/** 
+/**
  * @returns promise that resolves when all response times have been obtained
  */
 function getResponseTimes() {
@@ -54,7 +54,7 @@ function responseTime(url) {
             responseTime: -1
         });
     }
-    
+
     var website = D.createExternalDevice(address);
     var start = new Date();
     return new Promise(function (resolve) {
@@ -65,7 +65,7 @@ function responseTime(url) {
             port: port
         }, function (err, resp) {
             var data = {
-                server: hasProtocol ? url : url.replace(/^https?:\/\//i, ''),
+                server: hasProtocol ? url : url.replace(/^https?:\/\//i, ""),
                 statusCode: resp ? resp.statusCode : -1,
                 responseTime: -1
             };
@@ -83,10 +83,10 @@ function responseTime(url) {
     });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -124,7 +124,7 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get Response Times 
+ * @label Get Response Times
  * @documentation This procedure is used for testing the response time of web servecices.
  */
 function get_status() {

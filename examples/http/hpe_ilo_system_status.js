@@ -1,14 +1,14 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE ILO System status
  * Description: Monitors the status for HPE ILO (Integrated Lights-Out) systems using the Redfish API
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with HPE iLO 5
  *
  * Creates a Custom Driver table with system status information
- * 
+ *
  **/
 
 // Function to make an HTTP POST request to retrieve status from the HPE iLO device
@@ -22,15 +22,15 @@ function getSystemStatus() {
     return new Promise(function (resolve) {
         D.device.http.post({
             url: "/redfish/v1/Views",
-            username: D.device.username(), 
-            password: D.device.password(), 
+            username: D.device.username(),
+            password: D.device.password(),
             protocol: "https",
             auth: "basic",
             jar: true,
             rejectUnauthorized: false,
             body: JSON.stringify(payload),
             headers: {
-                "Content-Type":"application/json"
+                "Content-Type": "application/json"
             }
         }, function (error, response, body) {
             if (error) {
@@ -51,14 +51,14 @@ function getSystemStatus() {
 var table = D.createTable(
     "System status",
     [
-        {label: "Status", valueType: D.valueType.STRING}
+        { label: "Status", valueType: D.valueType.STRING }
     ]
 );
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response and populates the Custom Driver Table
@@ -68,10 +68,10 @@ function extractData(data) {
         D.failure(D.errorType.GENERIC_ERROR);
     }
     var systemStatus = [];
-    Object.keys(data.Health).forEach(function(healthKey) {
+    Object.keys(data.Health).forEach(function (healthKey) {
         var healthData = data.Health[healthKey];
         if (typeof healthData === "object") {
-            Object.keys(healthData.Status).forEach(function(statusKey) {
+            Object.keys(healthData.Status).forEach(function (statusKey) {
                 systemStatus.push({
                     id: healthKey,
                     status: healthData.Status[statusKey]
@@ -90,7 +90,7 @@ function extractData(data) {
             });
         }
     });
-    Object.keys(data).forEach(function(key) {
+    Object.keys(data).forEach(function (key) {
         if (key !== "Health") {
             systemStatus.push({
                 id: key,
@@ -99,8 +99,8 @@ function extractData(data) {
         }
     });
 
-    systemStatus.forEach(function(status) {
-        var recordId = status.id.replace(/([a-z])([A-Z])/g, '$1-$2');
+    systemStatus.forEach(function (status) {
+        var recordId = status.id.replace(/([a-z])([A-Z])/g, "$1-$2");
         table.insertRecord(sanitize(recordId), [status.status]);
     });
 
@@ -112,7 +112,7 @@ function extractData(data) {
  * @label Validate HPE iLo device
  * @documentation This procedure is used to validate the presence of a HPE iLo device by checking the availability of a specific Redfish API endpoint
  */
-function validate(){
+function validate() {
     getSystemStatus()
         .then(function (response) {
             if (response) {

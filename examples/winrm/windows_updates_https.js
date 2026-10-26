@@ -28,7 +28,7 @@
  * - User
  */
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
@@ -40,17 +40,17 @@ const config = {
     scheme: "https",           // "http" | "https"
     skipVerify: true,          // set to false to enforce TLS certificate verification
     // auth: "auto",           // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 // Creation of custom driver table
 const missingUpdatesTable = D.createTable(
     "Missing Updates",
     [
-        {label: "Title"},
-        {label: "Severity"},
-        {label: "Categories"},
-        {label: "URL"}
+        { label: "Title" },
+        { label: "Severity" },
+        { label: "Categories" },
+        { label: "URL" }
     ]
 );
 
@@ -100,7 +100,7 @@ function parseOutput(jsonOutput) {
     let ModerateCount = 0;
     let UnspecifiedCount = 0;
     let SecurityCount = 0;
-    if(jsonOutput){
+    if (jsonOutput) {
         let k = 0;
         while (k < jsonOutput.length) {
             const recordId = "KB" + jsonOutput[k].KB;
@@ -141,7 +141,7 @@ function parseOutput(jsonOutput) {
         D.createVariable("2-severity-low", "Severity - Low", LowCount, null, D.valueType.NUMBER),
         D.createVariable("3-severity-important", "Severity - Important", ImportantCount, null, D.valueType.NUMBER),
         D.createVariable("4-severity-critical", "Severity - Critical", CriticalCount, null, D.valueType.NUMBER),
-        D.createVariable("99-category-security", "Category - Security", SecurityCount, null, D.valueType.NUMBER),
+        D.createVariable("99-category-security", "Category - Security", SecurityCount, null, D.valueType.NUMBER)
     ];
     D.success(updateSeverityCounterVariables, missingUpdatesTable);
 }
@@ -160,7 +160,7 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
@@ -175,16 +175,16 @@ WinRMHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {}
@@ -198,7 +198,7 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
     const self = this;
@@ -220,12 +220,12 @@ SSHHandler.prototype.executeCommand = function (command) {
             }
         });
     });
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (jsonString) {
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

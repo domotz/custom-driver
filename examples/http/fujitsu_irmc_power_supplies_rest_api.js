@@ -1,14 +1,14 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Fujitsu iRMC Power Supplies
  * Description: Monitors power supply status of a Fujitsu iRMC (Integrated Remote Management Controller) device using the Redfish API
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with Fujitsu iRMC version: S5
  *
  * Creates a Custom Driver table power supply status information
- * 
+ *
  **/
 
 // Function to make an HTTP GET request to retrieve power supply status from the Fujitsu iRMC device
@@ -16,13 +16,13 @@ function getPowerSupplyStatus() {
     return new Promise(function (resolve) {
         D.device.http.get({
             url: "/redfish/v1/Chassis/0/Power",
-            username: D.device.username(), 
-            password: D.device.password(), 
+            username: D.device.username(),
+            password: D.device.password(),
             protocol: "https",
             auth: "basic",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             },
             jar: true,
             rejectUnauthorized: false
@@ -45,21 +45,21 @@ function getPowerSupplyStatus() {
 // Create a Custom Driver table to store power supply status information
 var table = D.createTable(
     "Power Supply Status",
-    [                                       
+    [
         { label: "Status", valueType: D.valueType.STRING }
     ]
 );
 
-// Function to sanitize the record ID 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+// Function to sanitize the record ID
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response and populates the Custom Driver Table
 function extractData(data) {
-    data.PowerSupplies.forEach(function(output){
+    data.PowerSupplies.forEach(function (output) {
         if (!output.Name || !output.Status || !output.Status.State) {
             console.error("Missing required properties in the data");
         }
@@ -76,7 +76,7 @@ function extractData(data) {
  * @label Validate Fujitsu device
  * @documentation This procedure is used to validate the presence of a Fujitsu device by checking the availability of a specific Redfish API endpoint
  */
-function validate(){
+function validate() {
     getPowerSupplyStatus()
         .then(function (response) {
             if (response && response["@odata.id"].indexOf("/redfish/v1/Chassis/0/Power") !== -1) {

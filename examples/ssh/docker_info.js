@@ -1,4 +1,3 @@
-
 /**
  * This driver extracts docker process info
  * The communication protocol is SSH
@@ -16,24 +15,24 @@ var sshConfig = {
 };
 
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
- * 
+ *
  * @returns Promise wait for docker system information
  */
 function getDockerInfo() {
 
     return new Promise(function (resolve) {
         D.device.sendSSHCommand(sshConfig, function (out, err) {
-            if(err) checkSshError(err);
+            if (err) checkSshError(err);
             resolve({ key: "", value: JSON.parse(out) });
-        
+
         });
     });
 }
@@ -42,7 +41,7 @@ var data = [];
 
 /**
  * parse docker info and create variables to monitor
- * @param {{key: string, value: object}} json 
+ * @param {{key: string, value: object}} json
  * @returns  data to monitor
  */
 function createDockerInfoVariables(json) {

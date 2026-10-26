@@ -1,16 +1,16 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Fujitsu iRMC Components Temperature
  * Description: Monitors component temperature of a Fujitsu iRMC (Integrated Remote Management Controller) device using the Redfish API
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with Fujitsu iRMC version: S5
  *
  * Creates a Custom Driver table with the following columns:
  *      - Temperature: Component temperature in degrees Celsius
  *      - Status: Health status of the component
- * 
+ *
  **/
 
 // Function to make an HTTP GET request to retrieve component temperature from the Fujitsu iRMC device
@@ -18,13 +18,13 @@ function getComponentsTemperature() {
     return new Promise(function (resolve) {
         D.device.http.get({
             url: "/redfish/v1/Chassis/0/Thermal",
-            username: D.device.username(), 
-            password: D.device.password(), 
+            username: D.device.username(),
+            password: D.device.password(),
             protocol: "https",
             auth: "basic",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             },
             jar: true,
             rejectUnauthorized: false
@@ -44,25 +44,25 @@ function getComponentsTemperature() {
     });
 }
 
-// Create a Custom Driver table to store Component temperature 
+// Create a Custom Driver table to store Component temperature
 var table = D.createTable(
     "Component Temperature",
-    [                                       
+    [
         { label: "Temperature", unit: "C", valueType: D.valueType.NUMBER },
         { label: "Status", valueType: D.valueType.STRING }
     ]
 );
 
-// Function to sanitize the record ID 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+// Function to sanitize the record ID
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response and populates the Custom Driver Table
 function extractData(data) {
-    data.Temperatures.forEach(function(output) {
+    data.Temperatures.forEach(function (output) {
         if (!output.Name || !output.ReadingCelsius == null || !output.Status || !output.Status.State) {
             console.error("Missing required properties in the data");
         }
@@ -81,7 +81,7 @@ function extractData(data) {
  * @label Validate Fujitsu device
  * @documentation This procedure is used to validate the presence of a Fujitsu device by checking the availability of a specific Redfish API endpoint
  */
-function validate(){
+function validate() {
     getComponentsTemperature()
         .then(function (response) {
             if (response && response["@odata.id"].indexOf("/redfish/v1/Chassis/0/Thermal") !== -1) {

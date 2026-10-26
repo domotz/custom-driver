@@ -3,47 +3,47 @@
  * Name: Zoom Rooms List
  * Description: This script retrieves information about Zoom Rooms
 
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on Zoom API v2
- * 
+ *
  * requirements:
  *    - Granular Scopes for Zoom Rooms: zoom_rooms:read:list_rooms:admin
  *    - Granular Scopes for Zoom Room location profile: zoom_rooms:read:location:admin
- * 
+ *
  * Creates Custom Driver table with the following columns:
  *    - Room Name: The name of a Zoom Room
  *    - Status: The status of the Zoom Room
  *    - Location Name: The name of the location where the Zoom Room is situated
  *    - Time Zone: The time zone of the Zoom Room's location
- * 
+ *
  **/
 
-const accountId = D.getParameter("accountId")
-const clientId = D.getParameter("clientId")
-const clientSecret = D.getParameter("clientSecret")
+const accountId = D.getParameter("accountId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
 
-const zoomLogin = D.createExternalDevice("zoom.us")
-const zoomResources = D.createExternalDevice("api.zoom.us")
+const zoomLogin = D.createExternalDevice("zoom.us");
+const zoomResources = D.createExternalDevice("api.zoom.us");
 
-const roomId = D.getParameter('roomId')
+const roomId = D.getParameter("roomId");
 
-let accessToken
-let allRooms = []
-let pageSize = 30
-let pageToken
+let accessToken;
+let allRooms = [];
+let pageSize = 30;
+let pageToken;
 
 // Create a table to display Zoom Rooms information
 var zoomRoomsTable = D.createTable(
-  "Zoom Rooms",
-  [
-    { label: "Room Name", valueType: D.valueType.STRING },
-    { label: "Status", valueType: D.valueType.STRING },
-    { label: "Location Name", valueType: D.valueType.STRING },
-    { label: "Time Zone", valueType: D.valueType.STRING }
-  ]
-)
+    "Zoom Rooms",
+    [
+        { label: "Room Name", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Location Name", valueType: D.valueType.STRING },
+        { label: "Time Zone", valueType: D.valueType.STRING }
+    ]
+);
 
 /**
  * Checks for HTTP errors in the response and handles them by triggering appropriate failures
@@ -51,16 +51,16 @@ var zoomRoomsTable = D.createTable(
  * @param {Object} response The HTTP response object
  */
 function checkHTTPError(error, response) {
-  if (error) {
-    console.error(error)
-    D.failure(D.errorType.GENERIC_ERROR)
-  } else if (response.statusCode === 404) {
-    D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-  } else if (response.statusCode === 401 || response.statusCode === 403) {
-    D.failure(D.errorType.AUTHENTICATION_ERROR)
-  } else if (response.statusCode !== 200) {
-    D.failure(D.errorType.GENERIC_ERROR)
-  }
+    if (error) {
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
+    } else if (response.statusCode === 404) {
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    } else if (response.statusCode === 401 || response.statusCode === 403) {
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
+    } else if (response.statusCode !== 200) {
+        D.failure(D.errorType.GENERIC_ERROR);
+    }
 }
 
 /**
@@ -70,17 +70,17 @@ function checkHTTPError(error, response) {
  * @returns {Function} A function to process the HTTP response
  */
 function processLoginResponse(resolve, reject) {
-	return function process(error, response, body) {
-		checkHTTPError(error, response)
-		const bodyAsJSON = JSON.parse(body)
-		if (bodyAsJSON.access_token) {
-			accessToken = bodyAsJSON.access_token
-			resolve()
-		} else {
-			console.error("Access token not found in response body")
-			D.failure(D.errorType.AUTHENTICATION_ERROR)
-		}
-	}
+    return function process(error, response, body) {
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
+        if (bodyAsJSON.access_token) {
+            accessToken = bodyAsJSON.access_token;
+            resolve();
+        } else {
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+    };
 }
 
 /**
@@ -88,23 +88,23 @@ function processLoginResponse(resolve, reject) {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-	const config = {
-		url: "/oauth/token", 
-		protocol: "https", 
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-			"Authorization": "Basic " + D._unsafe.buffer.from(clientId + ":" + clientSecret).toString("base64")
-		}, 
-		form: {
-      "grant_type": "account_credentials",
-      "account_id": accountId
-    },
-		rejectUnauthorized: false, 
-		jar: true
-	}
-	return new Promise(function (resolve, reject) {
-		zoomLogin.http.post(config, processLoginResponse(resolve, reject))
-	})
+    const config = {
+        url: "/oauth/token",
+        protocol: "https",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "Basic " + D._unsafe.buffer.from(clientId + ":" + clientSecret).toString("base64")
+        },
+        form: {
+            "grant_type": "account_credentials",
+            "account_id": accountId
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve, reject) {
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -112,11 +112,11 @@ function login() {
  * @returns {string} The pagination URL for Zoom API request
  */
 function getPaginationUrl() {
-  let url = "/v2/rooms?page_size=" + pageSize
-  if (pageToken) {
-    url += "&next_page_token=" + pageToken
-  }
-  return url
+    let url = "/v2/rooms?page_size=" + pageSize;
+    if (pageToken) {
+        url += "&next_page_token=" + pageToken;
+    }
+    return url;
 }
 
 /**
@@ -125,15 +125,15 @@ function getPaginationUrl() {
  * @returns {Object} The configuration object for the HTTP request
  */
 function generateConfig(url) {
-  return {
-    url: url,
-    protocol: "https",
-    headers: {
-      "Authorization": "Bearer " + accessToken
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
+    return {
+        url: url,
+        protocol: "https",
+        headers: {
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
 }
 
 /**
@@ -143,39 +143,39 @@ function generateConfig(url) {
  * @returns {Promise<Array>} A promise that resolves with all rooms
  */
 function retrieveZoomRooms() {
-  let allRooms = [];
-  let pageToken = null;
+    let allRooms = [];
+    let pageToken = null;
 
-  return new Promise(function (resolve, reject) {
-    function fetchRooms() {
-      const url = getPaginationUrl(pageToken);
-      const config = generateConfig(url);
+    return new Promise(function (resolve, reject) {
+        function fetchRooms() {
+            const url = getPaginationUrl(pageToken);
+            const config = generateConfig(url);
 
-      zoomResources.http.get(config, function(error, response, body) {
-        checkHTTPError(error, response);
-        if (error) {
-          reject(error);
-          return;
+            zoomResources.http.get(config, function (error, response, body) {
+                checkHTTPError(error, response);
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                const bodyAsJSON = JSON.parse(body);
+                if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
+                    console.error("No rooms found.");
+                    D.failure(D.errorType.GENERIC_ERROR);
+                    return;
+                }
+                allRooms = allRooms.concat(extractZoomRoomsInfo(bodyAsJSON));
+                pageToken = bodyAsJSON.next_page_token;
+                if (pageToken) {
+                    fetchRooms(); // Continue fetching if there's a next page
+                } else {
+                    console.log("All rooms retrieved successfully.");
+                    resolve(allRooms);
+                }
+            });
         }
-        const bodyAsJSON = JSON.parse(body);
-        if (!Array.isArray(bodyAsJSON.rooms) || bodyAsJSON.rooms.length === 0) {
-          console.error("No rooms found.");
-          D.failure(D.errorType.GENERIC_ERROR);
-          return;
-        }
-        allRooms = allRooms.concat(extractZoomRoomsInfo(bodyAsJSON));
-        pageToken = bodyAsJSON.next_page_token;
-        if (pageToken) {
-          fetchRooms(); // Continue fetching if there's a next page
-        } else {
-          console.log("All rooms retrieved successfully.");
-          resolve(allRooms);
-        }
-      });
-    }
 
-    fetchRooms();
-  });
+        fetchRooms();
+    });
 }
 
 /**
@@ -184,14 +184,14 @@ function retrieveZoomRooms() {
  * @returns {Object} A simplified object with only necessary fields
  */
 function extractZoomRoomsInfo(zoomRoomsInfo) {
-  return zoomRoomsInfo.rooms.map(function(zoomRoom)  {
-    return {
-      roomId: zoomRoom.room_id, 
-      name: zoomRoom.name,
-      location: zoomRoom.location_id,
-      status: zoomRoom.status
-    }
-  })
+    return zoomRoomsInfo.rooms.map(function (zoomRoom)  {
+        return {
+            roomId: zoomRoom.room_id,
+            name: zoomRoom.name,
+            location: zoomRoom.location_id,
+            status: zoomRoom.status
+        };
+    });
 }
 
 /**
@@ -201,28 +201,28 @@ function extractZoomRoomsInfo(zoomRoomsInfo) {
  * @returns {Promise} A promise that resolves to location data (or null) once the request is complete
  */
 function retrieveLocationInfo(locationId) {
-  return new Promise(function (resolve) {
-    if (locationId === "N/A" || !locationId) {
-      console.log('Invalid location ID: ', locationId)
-      resolve(null)
-      return
-    }
-    const config = generateConfig('/v2/rooms/locations/' + locationId)  
-    zoomResources.http.get(config, function(error, response, body) {
-      if (error) {
-        console.error('Error retrieving location info for location id: ' + locationId, error)
-        resolve(null)
-        return
-      }
-      const bodyAsJSON = JSON.parse(body)
-      if (bodyAsJSON && bodyAsJSON.basic) {
-        resolve(bodyAsJSON.basic)
-      } else {
-        console.error("Location information not foun for location id: " + locationId)
-        resolve(null)
-      }
-    })
-  })
+    return new Promise(function (resolve) {
+        if (locationId === "N/A" || !locationId) {
+            console.log("Invalid location ID: ", locationId);
+            resolve(null);
+            return;
+        }
+        const config = generateConfig("/v2/rooms/locations/" + locationId);
+        zoomResources.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error("Error retrieving location info for location id: " + locationId, error);
+                resolve(null);
+                return;
+            }
+            const bodyAsJSON = JSON.parse(body);
+            if (bodyAsJSON && bodyAsJSON.basic) {
+                resolve(bodyAsJSON.basic);
+            } else {
+                console.error("Location information not foun for location id: " + locationId);
+                resolve(null);
+            }
+        });
+    });
 }
 
 /**
@@ -230,23 +230,23 @@ function retrieveLocationInfo(locationId) {
  * @param {Array} rooms The list of rooms to be enriched with location information
  */
 function attachLocationInfoToRooms(rooms) {
-  const locationPromises = rooms.map(function(room) {
-    return retrieveLocationInfo(room.location)
-    .then(function(locationInfo){
-      if (locationInfo) {
-        room.locationName = locationInfo.name || "N/A"
-        room.timeZone = locationInfo.timezone || "N/A"
-      } 
-    })
-  })
-  Promise.all(locationPromises)
-    .then(function() {
-      insertZoomRooms(rooms)
-    })
-    .catch(function(err) {
-      console.error(err)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    const locationPromises = rooms.map(function (room) {
+        return retrieveLocationInfo(room.location)
+            .then(function (locationInfo) {
+                if (locationInfo) {
+                    room.locationName = locationInfo.name || "N/A";
+                    room.timeZone = locationInfo.timezone || "N/A";
+                }
+            });
+    });
+    Promise.all(locationPromises)
+        .then(function () {
+            insertZoomRooms(rooms);
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -254,15 +254,15 @@ function attachLocationInfoToRooms(rooms) {
  * @param {Array} zoomRooms The list of Zoom Rooms to insert into the table
  */
 function insertZoomRooms(zoomRooms) {
-  zoomRooms.forEach(function(room) {
-    zoomRoomsTable.insertRecord(sanitize(room.roomId), [
-      room.name || 'N/A',
-      room.status || 'N/A',
-      room.locationName || 'N/A',  
-      room.timeZone || 'N/A'    
-    ])
-  })
-  D.success(zoomRoomsTable)
+    zoomRooms.forEach(function (room) {
+        zoomRoomsTable.insertRecord(sanitize(room.roomId), [
+            room.name || "N/A",
+            room.status || "N/A",
+            room.locationName || "N/A",
+            room.timeZone || "N/A"
+        ]);
+    });
+    D.success(zoomRoomsTable);
 }
 
 /**
@@ -271,9 +271,9 @@ function insertZoomRooms(zoomRooms) {
  * @returns {string} The sanitized string
  */
 function sanitize(output) {
-  const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -282,13 +282,13 @@ function sanitize(output) {
  * @returns {Array} A filtered list of rooms
  */
 function filterZoomRooms(zoomRooms) {
-  return zoomRooms.filter(function (zoomRoom) {
-    const associatedRooms = zoomRoom.roomId
-    const roomFilter = (roomId.length === 1 && roomId[0].toLowerCase() === 'all') || roomId.some(function (id) {
-      return id.toLowerCase() === associatedRooms.toLowerCase()
-    }) 
-    return roomFilter
-  })
+    return zoomRooms.filter(function (zoomRoom) {
+        const associatedRooms = zoomRoom.roomId;
+        const roomFilter = (roomId.length === 1 && roomId[0].toLowerCase() === "all") || roomId.some(function (id) {
+            return id.toLowerCase() === associatedRooms.toLowerCase();
+        });
+        return roomFilter;
+    });
 }
 
 /**
@@ -297,15 +297,15 @@ function filterZoomRooms(zoomRooms) {
  * @documentation This procedure is used to validate if the Zoom API is accessible and if the login credentials are correct
  */
 function validate() {
-	login()
-    .then(retrieveZoomRooms)
-		.then(function () {
-			D.success()
-		})
-		.catch(function (error) {
-			console.error(error)
-			D.failure(D.errorType.GENERIC_ERROR)
-		})
+    login()
+        .then(retrieveZoomRooms)
+        .then(function () {
+            D.success();
+        })
+        .catch(function (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -314,14 +314,14 @@ function validate() {
  * @documentation This procedure retrieves the list of Zoom Rooms, filters based on roomId, and populates a table with room details, including location and time zone information
  */
 function get_status() {
-	login()
-    .then(retrieveZoomRooms)
-    .then(function(zoomRooms) {
-      const filteredRooms = filterZoomRooms(zoomRooms)
-      attachLocationInfoToRooms(filteredRooms)
-    })
-		.catch(function (error) {
-			console.error(error)
-			D.failure(D.errorType.GENERIC_ERROR)
-		})
+    login()
+        .then(retrieveZoomRooms)
+        .then(function (zoomRooms) {
+            const filteredRooms = filterZoomRooms(zoomRooms);
+            attachLocationInfoToRooms(filteredRooms);
+        })
+        .catch(function (error) {
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

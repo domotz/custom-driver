@@ -36,7 +36,7 @@ var table = D.createTable(
         { label: "EXP" },
         { label: "PKTS" },
         { label: "BYTES" },
-        { label: "AVG"},
+        { label: "AVG" },
         { label: "RULE" }
     ]
 );
@@ -49,9 +49,9 @@ var sshConfig = {
 };
 
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -59,16 +59,16 @@ function exec_command(command, callback) {
     var config = JSON.parse(JSON.stringify(sshConfig));
     config.command = command;
     D.device.sendSSHCommand(config, function (out, err) {
-        if(err) checkSshError(err);
+        if (err) checkSshError(err);
         callback(out.split("\n"));
     });
 }
 
 function convertToK(count, unit) {
     switch (unit) {
-    case "K": return count;
-    case "M": return count * 1000;
-    case "G": return count * 1000000;
+        case "K": return count;
+        case "M": return count * 1000;
+        case "G": return count * 1000000;
     }
 }
 
@@ -94,11 +94,11 @@ function get_status() {
         var start = 2;
         for (var i = start; i < lines.length; i++) {
             var pftop_data = lines[i].split(/\s+/);
-            if(pftop_data.length == 11){
-                pftop_data.splice(4,0,"");
+            if (pftop_data.length == 11) {
+                pftop_data.splice(4, 0, "");
             }
             table.insertRecord(
-                ""+(i - start), [
+                "" + (i - start), [
                     pftop_data[0],
                     pftop_data[1],
                     pftop_data[2],
@@ -110,7 +110,7 @@ function get_status() {
                     pftop_data[8],
                     pftop_data[9],
                     pftop_data[10],
-                    pftop_data[11],
+                    pftop_data[11]
                 ]
             );
         }

@@ -19,23 +19,23 @@
 // deviceIds: ["34536881", "34536882", "34536883"] to display net devices information by a list of IDs
 // or
 // deviceIds = ["All"] to display all net devices.
-var deviceIdsFilter = D.getParameter('deviceIds')
+var deviceIdsFilter = D.getParameter("deviceIds");
 // headers params
-var X_CP_API_ID = D.getParameter('X_CP_API_ID')
-var X_CP_API_KEY = D.getParameter('X_CP_API_KEY')
-var X_ECM_API_ID = D.getParameter('X_ECM_API_ID')
-var X_ECM_API_KEY = D.getParameter('X_ECM_API_KEY')
+var X_CP_API_ID = D.getParameter("X_CP_API_ID");
+var X_CP_API_KEY = D.getParameter("X_CP_API_KEY");
+var X_ECM_API_ID = D.getParameter("X_ECM_API_ID");
+var X_ECM_API_KEY = D.getParameter("X_ECM_API_KEY");
 
 var headers = {
-    'X-CP-API-ID': X_CP_API_ID,
-    'X-CP-API-KEY': X_CP_API_KEY,
-    'X-ECM-API-ID': X_ECM_API_ID,
-    'X-ECM-API-KEY': X_ECM_API_KEY
-}
+    "X-CP-API-ID": X_CP_API_ID,
+    "X-CP-API-KEY": X_CP_API_KEY,
+    "X-ECM-API-ID": X_ECM_API_ID,
+    "X-ECM-API-KEY": X_ECM_API_KEY
+};
 
 var url =  "/api/v2/net_devices";
-if (deviceIdsFilter.length !== 1 && deviceIdsFilter[0].toLowerCase() !== 'all') {
-    url += "/?id__in=" + deviceIdsFilter.join(',');
+if (deviceIdsFilter.length !== 1 && deviceIdsFilter[0].toLowerCase() !== "all") {
+    url += "/?id__in=" + deviceIdsFilter.join(",");
 }
 
 // call API config
@@ -47,24 +47,24 @@ var httpParams = {
 
 // Creation of network devices status table
 var networkDevicesStatusTable = D.createTable(
-    'Network Devices Status',
+    "Network Devices Status",
     [
-        { label: 'Model', valueType: D.valueType.STRING },
-        { label: 'Product', valueType: D.valueType.STRING },
-        { label: 'Status', valueType: D.valueType.STRING }
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Product", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING }
     ]
-)
+);
 
 // calling get network devices status API
 function getNetworkDevicesStatus() {
-    var device = D.createExternalDevice('www.cradlepointecm.com')
+    var device = D.createExternalDevice("www.cradlepointecm.com");
     return new Promise(function (resolve) {
         device.http.get(httpParams, function (error, response, body) {
             if (error) {
                 console.error(error);
                 return D.failure(D.errorType.GENERIC_ERROR);
             }
-            if(!response){
+            if (!response) {
                 return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode === 401 || response.statusCode === 403) {
@@ -108,10 +108,10 @@ function get_status() {
 
             if (Array.isArray(networkDevicesStatus)) {
                 if (!networkDevicesStatus.length) {
-                    console.info('There are no network devices status related to this filter.');
+                    console.info("There are no network devices status related to this filter.");
                 }
-            }else{
-                if (typeof networkDevicesStatus === 'object'){
+            } else {
+                if (typeof networkDevicesStatus === "object") {
                     networkDevicesStatus = [networkDevicesStatus];
                 }
             }
@@ -135,12 +135,12 @@ function get_status() {
 /**
  * Populates a table with network devices status Table information.
  */
-function populateTable (id, Model, Product, Status) {
-    var recordId = sanitize(id)
-    Model = Model || 'N/A'
-    Product = Product || 'N/A'
-    Status = Status || 'N/A'
-    networkDevicesStatusTable.insertRecord(recordId, [Model, Product, Status])
+function populateTable(id, Model, Product, Status) {
+    var recordId = sanitize(id);
+    Model = Model || "N/A";
+    Product = Product || "N/A";
+    Status = Status || "N/A";
+    networkDevicesStatusTable.insertRecord(recordId, [Model, Product, Status]);
 }
 
 /**
@@ -149,8 +149,8 @@ function populateTable (id, Model, Product, Status) {
  * @param {string} output - The string to be sanitized.
  * @returns {string} - The sanitized string.
  */
-function sanitize (output) {
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }

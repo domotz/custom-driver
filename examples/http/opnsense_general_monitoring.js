@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: OPNSense General / Monitoring
  * Description: This script is designed to retrieve information about an OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage
- *   
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Custom Driver Variables:
@@ -70,8 +70,8 @@ function getActivity() {
 }
 
 function extractHeaders(headers) {
-    return headers.split(',').map(function (item) { 
-        return parseFloat(item.match(/-?\d+(\.\d+)?/)); 
+    return headers.split(",").map(function (item) {
+        return parseFloat(item.match(/-?\d+(\.\d+)?/));
     });
 }
 
@@ -79,7 +79,7 @@ function extractHeaders(headers) {
 function extractData(data) {
     var productVersion = data[0].product_version;
     var firmwareUpdates = data[0].status_msg.indexOf("There are no updates available on the selected mirror.") !== -1 ? "No updates" : data[0].status_msg;
-   
+
     var cpuHeaders = extractHeaders(data[1].headers[2]);
     var cpuUsage = cpuHeaders[0] + cpuHeaders[1] + cpuHeaders[2] + cpuHeaders[3];
 
@@ -103,13 +103,12 @@ function extractData(data) {
     D.success(variables);
 }
 
-
 // Loads firmware status and activity informations
 function loadData() {
     return Promise.all([
         getFirmwareStatus(),
         getActivity()
-    ]);    
+    ]);
 }
 
 /**
@@ -117,7 +116,7 @@ function loadData() {
  * @label Validate OPENSense Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     loadData()
         .then(function (response) {
             if (response) {
@@ -136,7 +135,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense informations 
+ * @label Get OPENSense informations
  * @documentation This procedure is used to extract information about the OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage.
  */
 function get_status() {

@@ -88,21 +88,21 @@
  * Table "SD-WAN Circuits", one row per site and circuit.
  **/
 
-const DEFAULT_PORT = "9183"
-const SITE_PAGE_SIZE = 1000
-const TOKEN_PATH = "/auth/token"
-const INVENTORY_PATH = "/vnms/appliance/appliance"
-const CIRCUIT_YANG_PATH = "/sd-wan/statistics/access-circuit"
+const DEFAULT_PORT = "9183";
+const SITE_PAGE_SIZE = 1000;
+const TOKEN_PATH = "/auth/token";
+const INVENTORY_PATH = "/vnms/appliance/appliance";
+const CIRCUIT_YANG_PATH = "/sd-wan/statistics/access-circuit";
 
-const clientIdParam = D.getParameter("clientId")
-const clientSecretParam = D.getParameter("clientSecret")
-const authPortParam = D.getParameter("authPort")
-const apiPortParam = D.getParameter("apiPort")
-const directorHostParam = D.getParameter("directorHost")
-const sourceApplianceParam = D.getParameter("sourceAppliance")
+const clientIdParam = D.getParameter("clientId");
+const clientSecretParam = D.getParameter("clientSecret");
+const authPortParam = D.getParameter("authPort");
+const apiPortParam = D.getParameter("apiPort");
+const directorHostParam = D.getParameter("directorHost");
+const sourceApplianceParam = D.getParameter("sourceAppliance");
 
-const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10)
-const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10)
+const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10);
+const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10);
 
 /**
  * Reduces whatever was entered for directorHost to a bare hostname. People reasonably paste a
@@ -113,14 +113,14 @@ const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10)
  * @returns {string|null} a bare hostname, or null when nothing usable was given
  */
 function normalizeHost(raw) {
-  if (!raw) return null
-  let host = String(raw).trim()
-  host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "")
-  host = host.split("/")[0].split("?")[0]
-  // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
-  if (host.charAt(0) !== "[") host = host.split(":")[0]
-  host = host.trim()
-  return host.length > 0 ? host : null
+    if (!raw) return null;
+    let host = String(raw).trim();
+    host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "");
+    host = host.split("/")[0].split("?")[0];
+    // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
+    if (host.charAt(0) !== "[") host = host.split(":")[0];
+    host = host.trim();
+    return host.length > 0 ? host : null;
 }
 
 /**
@@ -140,30 +140,30 @@ function normalizeHost(raw) {
  * at parse time with "Identifier 'directorHost' has already been declared" - before a single line
  * runs. Never name a variable after a parameter; read the parameter into a distinctly named one.
  */
-const resolvedHost = normalizeHost(directorHostParam)
-const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device
+const resolvedHost = normalizeHost(directorHostParam);
+const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device;
 
-let accessToken
-let authenticatedOrg
+let accessToken;
+let authenticatedOrg;
 
 const circuitsTable = D.createTable(
-  "SD-WAN Circuits",
-  [
-    { label: "Site", valueType: D.valueType.STRING },
-    { label: "Local Circuit", valueType: D.valueType.STRING },
-    { label: "Remote Circuit", valueType: D.valueType.STRING },
-    { label: "Encapsulation", valueType: D.valueType.STRING },
-    { label: "Local IP", valueType: D.valueType.STRING },
-    { label: "Remote IP", valueType: D.valueType.STRING },
-    { label: "RX Packets", valueType: D.valueType.NUMBER },
-    { label: "RX Bytes", valueType: D.valueType.NUMBER },
-    { label: "TX Packets", valueType: D.valueType.NUMBER },
-    { label: "TX Bytes", valueType: D.valueType.NUMBER },
-    { label: "Latency", unit: "ms", valueType: D.valueType.NUMBER },
-    { label: "Jitter", unit: "ms", valueType: D.valueType.NUMBER },
-    { label: "Packet Loss", unit: "%", valueType: D.valueType.NUMBER }
-  ]
-)
+    "SD-WAN Circuits",
+    [
+        { label: "Site", valueType: D.valueType.STRING },
+        { label: "Local Circuit", valueType: D.valueType.STRING },
+        { label: "Remote Circuit", valueType: D.valueType.STRING },
+        { label: "Encapsulation", valueType: D.valueType.STRING },
+        { label: "Local IP", valueType: D.valueType.STRING },
+        { label: "Remote IP", valueType: D.valueType.STRING },
+        { label: "RX Packets", valueType: D.valueType.NUMBER },
+        { label: "RX Bytes", valueType: D.valueType.NUMBER },
+        { label: "TX Packets", valueType: D.valueType.NUMBER },
+        { label: "TX Bytes", valueType: D.valueType.NUMBER },
+        { label: "Latency", unit: "ms", valueType: D.valueType.NUMBER },
+        { label: "Jitter", unit: "ms", valueType: D.valueType.NUMBER },
+        { label: "Packet Loss", unit: "%", valueType: D.valueType.NUMBER }
+    ]
+);
 
 // ------------------------------------------------------------------------------------------
 // Helpers
@@ -177,12 +177,12 @@ const circuitsTable = D.createTable(
  * @returns {*} the resolved value, or the fallback
  */
 function pick(source, keys, fallback) {
-  if (!source) return fallback
-  for (let i = 0; i < keys.length; i++) {
-    const value = source[keys[i]]
-    if (value !== undefined && value !== null && value !== "") return value
-  }
-  return fallback
+    if (!source) return fallback;
+    for (let i = 0; i < keys.length; i++) {
+        const value = source[keys[i]];
+        if (value !== undefined && value !== null && value !== "") return value;
+    }
+    return fallback;
 }
 
 /**
@@ -192,9 +192,9 @@ function pick(source, keys, fallback) {
  * @returns {number|null} the parsed number, or null
  */
 function toNumber(value) {
-  if (value === undefined || value === null || value === "") return null
-  const parsed = parseFloat(value)
-  return isNaN(parsed) ? null : parsed
+    if (value === undefined || value === null || value === "") return null;
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? null : parsed;
 }
 
 /**
@@ -204,11 +204,11 @@ function toNumber(value) {
  * @returns {string} a short base-36 hash
  */
 function shortHash(value) {
-  let hash = 5381
-  for (let i = 0; i < value.length; i++) {
-    hash = ((hash * 33) ^ value.charCodeAt(i)) >>> 0
-  }
-  return hash.toString(36)
+    let hash = 5381;
+    for (let i = 0; i < value.length; i++) {
+        hash = ((hash * 33) ^ value.charCodeAt(i)) >>> 0;
+    }
+    return hash.toString(36);
 }
 
 /**
@@ -234,12 +234,12 @@ function shortHash(value) {
  * @returns {string} a safe, unique, stable record id
  */
 function circuitRecordId(site, localCircuit, remoteCircuit, encapsulation, localIp, remoteIp) {
-  const full = [site, localCircuit, remoteCircuit, encapsulation, localIp, remoteIp]
-    .join("-")
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .toLowerCase()
-  if (full.length <= 50) return full
-  return full.slice(0, 42) + "-" + shortHash(full)
+    const full = [site, localCircuit, remoteCircuit, encapsulation, localIp, remoteIp]
+        .join("-")
+        .replace(/[^a-zA-Z0-9]+/g, "-")
+        .toLowerCase();
+    if (full.length <= 50) return full;
+    return full.slice(0, 42) + "-" + shortHash(full);
 }
 
 /**
@@ -250,17 +250,17 @@ function circuitRecordId(site, localCircuit, remoteCircuit, encapsulation, local
  * @returns {Array<Object>|null} the first array of objects found, or null
  */
 function findFirstObjectArray(node, depth) {
-  if (!node || depth > 4) return null
-  if (Array.isArray(node)) {
-    return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null
-  }
-  if (typeof node !== "object") return null
-  const keys = Object.keys(node)
-  for (let i = 0; i < keys.length; i++) {
-    const found = findFirstObjectArray(node[keys[i]], depth + 1)
-    if (found) return found
-  }
-  return null
+    if (!node || depth > 4) return null;
+    if (Array.isArray(node)) {
+        return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null;
+    }
+    if (typeof node !== "object") return null;
+    const keys = Object.keys(node);
+    for (let i = 0; i < keys.length; i++) {
+        const found = findFirstObjectArray(node[keys[i]], depth + 1);
+        if (found) return found;
+    }
+    return null;
 }
 
 /**
@@ -269,9 +269,9 @@ function findFirstObjectArray(node, depth) {
  * @returns {string} a D.errorType constant
  */
 function errorTypeForStatus(statusCode) {
-  if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR
-  if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE
-  return D.errorType.GENERIC_ERROR
+    if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR;
+    if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE;
+    return D.errorType.GENERIC_ERROR;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -284,65 +284,65 @@ function errorTypeForStatus(statusCode) {
  * @returns {Promise} resolves once a token has been obtained
  */
 function login() {
-  const config = {
-    url: TOKEN_PATH,
-    protocol: "https",
-    port: authPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: D.device.username(),
-      password: D.device.password(),
-      grant_type: "password",
-      client_id: clientIdParam,
-      client_secret: clientSecretParam
-    }),
-    rejectUnauthorized: false,
-    jar: true
-  }
-  console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
-    (resolvedHost ? " (directorHost)" : " (device IP)"))
-  return new Promise(function (resolve) {
-    target.http.post(config, function (error, response, body) {
-      if (error) {
-        console.log("Token request failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("Token endpoint returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      let payload
-      try {
-        payload = JSON.parse(body)
-      } catch (parseError) {
-        console.log("Token response was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-        return
-      }
-      const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token
-      if (!token) {
-        console.log("No access token in the response. Keys returned: " +
-          Object.keys(payload).join(", "))
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-        return
-      }
-      accessToken = token
-      authenticatedOrg = (payload.user && payload.user.organization) || null
-      if (!authenticatedOrg) {
-        console.log("The token response did not name an organization, which the YANG path requires.")
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-        return
-      }
-      resolve()
-    })
-  })
+    const config = {
+        url: TOKEN_PATH,
+        protocol: "https",
+        port: authPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: D.device.username(),
+            password: D.device.password(),
+            grant_type: "password",
+            client_id: clientIdParam,
+            client_secret: clientSecretParam
+        }),
+        rejectUnauthorized: false,
+        jar: true
+    };
+    console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
+    (resolvedHost ? " (directorHost)" : " (device IP)"));
+    return new Promise(function (resolve) {
+        target.http.post(config, function (error, response, body) {
+            if (error) {
+                console.log("Token request failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("Token endpoint returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            let payload;
+            try {
+                payload = JSON.parse(body);
+            } catch (parseError) {
+                console.log("Token response was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
+            const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token;
+            if (!token) {
+                console.log("No access token in the response. Keys returned: " +
+          Object.keys(payload).join(", "));
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+            accessToken = token;
+            authenticatedOrg = (payload.user && payload.user.organization) || null;
+            if (!authenticatedOrg) {
+                console.log("The token response did not name an organization, which the YANG path requires.");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+            resolve();
+        });
+    });
 }
 
 /**
@@ -351,39 +351,39 @@ function login() {
  * @returns {Promise<Object>} resolves with the parsed JSON body
  */
 function apiGet(path) {
-  const config = {
-    url: path,
-    protocol: "https",
-    port: apiPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Authorization": "Bearer " + accessToken
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
-  return new Promise(function (resolve) {
-    target.http.get(config, function (error, response, body) {
-      if (error) {
-        console.log("Request to " + path + " failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("GET " + path + " returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      try {
-        resolve(body ? JSON.parse(body) : {})
-      } catch (parseError) {
-        console.log("Response from " + path + " was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-      }
-    })
-  })
+    const config = {
+        url: path,
+        protocol: "https",
+        port: apiPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve) {
+        target.http.get(config, function (error, response, body) {
+            if (error) {
+                console.log("Request to " + path + " failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("GET " + path + " returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            try {
+                resolve(body ? JSON.parse(body) : {});
+            } catch (parseError) {
+                console.log("Response from " + path + " was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+            }
+        });
+    });
 }
 
 /**
@@ -392,48 +392,48 @@ function apiGet(path) {
  * @returns {Promise<Object>} resolves with { name, uuid }
  */
 function selectSourceAppliance() {
-  return apiGet(INVENTORY_PATH + "?offset=0&limit=" + SITE_PAGE_SIZE).then(function (payload) {
-    const container = payload["versanms.ApplianceStatusResult"]
-    const list = (container && Array.isArray(container.appliance))
-      ? container.appliance
-      : (findFirstObjectArray(payload, 0) || [])
+    return apiGet(INVENTORY_PATH + "?offset=0&limit=" + SITE_PAGE_SIZE).then(function (payload) {
+        const container = payload["versanms.ApplianceStatusResult"];
+        const list = (container && Array.isArray(container.appliance))
+            ? container.appliance
+            : (findFirstObjectArray(payload, 0) || []);
 
-    if (list.length === 0) {
-      console.log("The appliance inventory returned no appliances, so no source can be chosen.")
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      return null
-    }
-
-    let chosen = null
-    if (sourceApplianceParam) {
-      for (let i = 0; i < list.length; i++) {
-        if (String(list[i].name).toLowerCase() === String(sourceApplianceParam).toLowerCase()) {
-          chosen = list[i]
-          break
+        if (list.length === 0) {
+            console.log("The appliance inventory returned no appliances, so no source can be chosen.");
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            return null;
         }
-      }
-      if (!chosen) {
-        console.log("The configured sourceAppliance \"" + sourceApplianceParam + "\" is not in " +
-          "the inventory. Falling back to auto-selection.")
-      }
-    }
-    if (!chosen) {
-      for (let i = 0; i < list.length; i++) {
-        if (String(list[i].name).toUpperCase().indexOf("HUB") !== -1) {
-          chosen = list[i]
-          break
-        }
-      }
-    }
-    if (!chosen) {
-      chosen = list[0]
-      console.log("No appliance with \"HUB\" in its name was found, so the first appliance is " +
-        "used. If this is a hub-and-spoke fabric, set sourceAppliance to a hub for full coverage.")
-    }
 
-    console.log("Querying circuits from appliance \"" + chosen.name + "\".")
-    return { name: chosen.name, uuid: chosen.uuid }
-  })
+        let chosen = null;
+        if (sourceApplianceParam) {
+            for (let i = 0; i < list.length; i++) {
+                if (String(list[i].name).toLowerCase() === String(sourceApplianceParam).toLowerCase()) {
+                    chosen = list[i];
+                    break;
+                }
+            }
+            if (!chosen) {
+                console.log("The configured sourceAppliance \"" + sourceApplianceParam + "\" is not in " +
+          "the inventory. Falling back to auto-selection.");
+            }
+        }
+        if (!chosen) {
+            for (let i = 0; i < list.length; i++) {
+                if (String(list[i].name).toUpperCase().indexOf("HUB") !== -1) {
+                    chosen = list[i];
+                    break;
+                }
+            }
+        }
+        if (!chosen) {
+            chosen = list[0];
+            console.log("No appliance with \"HUB\" in its name was found, so the first appliance is " +
+        "used. If this is a hub-and-spoke fabric, set sourceAppliance to a hub for full coverage.");
+        }
+
+        console.log("Querying circuits from appliance \"" + chosen.name + "\".");
+        return { name: chosen.name, uuid: chosen.uuid };
+    });
 }
 
 /**
@@ -442,32 +442,32 @@ function selectSourceAppliance() {
  * @returns {Promise<Array<Object>>} resolves with one entry per remote site
  */
 function retrieveCircuits(source) {
-  const yangPath = "orgs/org/" + authenticatedOrg + CIRCUIT_YANG_PATH
-  const path = "/vnms/dashboard/appliance/" + encodeURIComponent(source.name) +
-    "/live?uuid=" + encodeURIComponent(source.uuid) + "&command=" + yangPath
+    const yangPath = "orgs/org/" + authenticatedOrg + CIRCUIT_YANG_PATH;
+    const path = "/vnms/dashboard/appliance/" + encodeURIComponent(source.name) +
+    "/live?uuid=" + encodeURIComponent(source.uuid) + "&command=" + yangPath;
 
-  return apiGet(path).then(function (payload) {
-    const collection = payload.collection || payload
-    const sites = collection["sdwan:access-circuit"] ||
+    return apiGet(path).then(function (payload) {
+        const collection = payload.collection || payload;
+        const sites = collection["sdwan:access-circuit"] ||
       collection["access-circuit"] ||
-      findFirstObjectArray(payload, 0) || []
+      findFirstObjectArray(payload, 0) || [];
 
-    if (sites.length === 0) {
-      console.log("The circuit query succeeded but returned no sites. Top-level keys: " +
-        Object.keys(payload).join(", "))
-      return []
-    }
+        if (sites.length === 0) {
+            console.log("The circuit query succeeded but returned no sites. Top-level keys: " +
+        Object.keys(payload).join(", "));
+            return [];
+        }
 
-    console.log("Retrieved circuit data for " + sites.length + " sites from \"" +
-      source.name + "\".")
-    console.log("Site entry fields: " + Object.keys(sites[0]).join(", "))
-    const firstDetail = sites[0]["ackt-detail"] || sites[0].acktDetail
-    if (firstDetail && firstDetail.length > 0) {
-      console.log("Circuit fields: " + Object.keys(firstDetail[0]).join(", "))
-      console.log("First raw circuit: " + JSON.stringify(firstDetail[0]).slice(0, 1200))
-    }
-    return sites
-  })
+        console.log("Retrieved circuit data for " + sites.length + " sites from \"" +
+      source.name + "\".");
+        console.log("Site entry fields: " + Object.keys(sites[0]).join(", "));
+        const firstDetail = sites[0]["ackt-detail"] || sites[0].acktDetail;
+        if (firstDetail && firstDetail.length > 0) {
+            console.log("Circuit fields: " + Object.keys(firstDetail[0]).join(", "));
+            console.log("First raw circuit: " + JSON.stringify(firstDetail[0]).slice(0, 1200));
+        }
+        return sites;
+    });
 }
 
 /**
@@ -477,68 +477,68 @@ function retrieveCircuits(source) {
  * @returns {Array<Object>} the Domotz variables to report alongside the table
  */
 function buildOutput(sites, source) {
-  let circuitCount = 0
-  let sitesWithCircuits = 0
-  // Guards against a duplicate id aborting the whole run. Domotz throws on a repeated record id,
-  // so if the natural key ever fails to be unique on some release, the row is still reported
-  // under a suffixed id and the collision is logged rather than losing the entire table.
-  const usedIds = {}
+    let circuitCount = 0;
+    let sitesWithCircuits = 0;
+    // Guards against a duplicate id aborting the whole run. Domotz throws on a repeated record id,
+    // so if the natural key ever fails to be unique on some release, the row is still reported
+    // under a suffixed id and the collision is logged rather than losing the entire table.
+    const usedIds = {};
 
-  sites.forEach(function (site) {
-    const siteName = String(pick(site, ["site-name", "siteName", "name"], "unknown"))
-    const details = site["ackt-detail"] || site.acktDetail || []
-    if (details.length > 0) sitesWithCircuits++
+    sites.forEach(function (site) {
+        const siteName = String(pick(site, ["site-name", "siteName", "name"], "unknown"));
+        const details = site["ackt-detail"] || site.acktDetail || [];
+        if (details.length > 0) sitesWithCircuits++;
 
-    details.forEach(function (circuit) {
-      const localCircuit = String(pick(circuit,
-        ["local-ackt-name", "localAcktName", "local-name"], "unknown"))
-      const remoteCircuit = String(pick(circuit,
-        ["remote-ackt-name", "remoteAcktName", "remote-name"], "unknown"))
-      const encapsulation = String(pick(circuit,
-        ["encap-type", "encapType", "encapsulation"], "N/A"))
-      const localIp = String(pick(circuit, ["local-ip", "localIp", "local-address"], "N/A"))
-      const remoteIp = String(pick(circuit, ["remote-ip", "remoteIp", "remote-address"], "N/A"))
+        details.forEach(function (circuit) {
+            const localCircuit = String(pick(circuit,
+                ["local-ackt-name", "localAcktName", "local-name"], "unknown"));
+            const remoteCircuit = String(pick(circuit,
+                ["remote-ackt-name", "remoteAcktName", "remote-name"], "unknown"));
+            const encapsulation = String(pick(circuit,
+                ["encap-type", "encapType", "encapsulation"], "N/A"));
+            const localIp = String(pick(circuit, ["local-ip", "localIp", "local-address"], "N/A"));
+            const remoteIp = String(pick(circuit, ["remote-ip", "remoteIp", "remote-address"], "N/A"));
 
-      let recordId = circuitRecordId(siteName, localCircuit, remoteCircuit, encapsulation,
-        localIp, remoteIp)
-      if (usedIds[recordId]) {
-        usedIds[recordId]++
-        const suffixed = recordId.slice(0, 47) + "-" + usedIds[recordId]
-        console.log("Duplicate record id \"" + recordId + "\" for site " + siteName +
-          "; reporting it as \"" + suffixed + "\". The natural key needs another field.")
-        recordId = suffixed
-      } else {
-        usedIds[recordId] = 1
-      }
+            let recordId = circuitRecordId(siteName, localCircuit, remoteCircuit, encapsulation,
+                localIp, remoteIp);
+            if (usedIds[recordId]) {
+                usedIds[recordId]++;
+                const suffixed = recordId.slice(0, 47) + "-" + usedIds[recordId];
+                console.log("Duplicate record id \"" + recordId + "\" for site " + siteName +
+          "; reporting it as \"" + suffixed + "\". The natural key needs another field.");
+                recordId = suffixed;
+            } else {
+                usedIds[recordId] = 1;
+            }
 
-      circuitCount++
-      circuitsTable.insertRecord(recordId, [
-        siteName,
-        localCircuit,
-        remoteCircuit,
-        encapsulation,
-        localIp,
-        remoteIp,
-        toNumber(pick(circuit, ["rx-pkts", "rxPkts", "rx-packets"], null)),
-        toNumber(pick(circuit, ["rx-bytes", "rxBytes"], null)),
-        toNumber(pick(circuit, ["tx-pkts", "txPkts", "tx-packets"], null)),
-        toNumber(pick(circuit, ["tx-bytes", "txBytes"], null)),
-        // Mapped defensively. Confirmed absent from this subtree on 22.1.4-GA, where SLA metrics
-        // live under the sibling sd-wan/sla-monitor subtree instead.
-        toNumber(pick(circuit, ["latency", "delay", "rtt", "latency-ms"], null)),
-        toNumber(pick(circuit, ["jitter", "jitter-ms"], null)),
-        toNumber(pick(circuit, ["loss", "packet-loss", "packetLoss", "loss-percent"], null))
-      ])
-    })
-  })
+            circuitCount++;
+            circuitsTable.insertRecord(recordId, [
+                siteName,
+                localCircuit,
+                remoteCircuit,
+                encapsulation,
+                localIp,
+                remoteIp,
+                toNumber(pick(circuit, ["rx-pkts", "rxPkts", "rx-packets"], null)),
+                toNumber(pick(circuit, ["rx-bytes", "rxBytes"], null)),
+                toNumber(pick(circuit, ["tx-pkts", "txPkts", "tx-packets"], null)),
+                toNumber(pick(circuit, ["tx-bytes", "txBytes"], null)),
+                // Mapped defensively. Confirmed absent from this subtree on 22.1.4-GA, where SLA metrics
+                // live under the sibling sd-wan/sla-monitor subtree instead.
+                toNumber(pick(circuit, ["latency", "delay", "rtt", "latency-ms"], null)),
+                toNumber(pick(circuit, ["jitter", "jitter-ms"], null)),
+                toNumber(pick(circuit, ["loss", "packet-loss", "packetLoss", "loss-percent"], null))
+            ]);
+        });
+    });
 
-  console.log("Reported " + circuitCount + " circuits across " + sitesWithCircuits + " sites.")
+    console.log("Reported " + circuitCount + " circuits across " + sitesWithCircuits + " sites.");
 
-  return [
-    D.createVariable("circuit-count", "Circuits", circuitCount, null, D.valueType.NUMBER),
-    D.createVariable("site-count", "Sites Reached", sitesWithCircuits, null, D.valueType.NUMBER),
-    D.createVariable("source-appliance", "Source Appliance", source.name, null, D.valueType.STRING)
-  ]
+    return [
+        D.createVariable("circuit-count", "Circuits", circuitCount, null, D.valueType.NUMBER),
+        D.createVariable("site-count", "Sites Reached", sitesWithCircuits, null, D.valueType.NUMBER),
+        D.createVariable("source-appliance", "Source Appliance", source.name, null, D.valueType.STRING)
+    ];
 }
 
 // ------------------------------------------------------------------------------------------
@@ -552,16 +552,16 @@ function buildOutput(sites, source) {
  * selected, and that the live-command gateway returns circuit data for it
  */
 function validate() {
-  login()
-    .then(selectSourceAppliance)
-    .then(retrieveCircuits)
-    .then(function () {
-      D.success()
-    })
-    .catch(function (error) {
-      console.log("Validation failed: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(selectSourceAppliance)
+        .then(retrieveCircuits)
+        .then(function () {
+            D.success();
+        })
+        .catch(function (error) {
+            console.log("Validation failed: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -571,16 +571,16 @@ function validate() {
  * hub appliance and reports one row per site and circuit
  */
 function get_status() {
-  login()
-    .then(selectSourceAppliance)
-    .then(function (source) {
-      return retrieveCircuits(source).then(function (sites) {
-        const variables = buildOutput(sites, source)
-        D.success(variables, circuitsTable)
-      })
-    })
-    .catch(function (error) {
-      console.log("Failed to retrieve circuits: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(selectSourceAppliance)
+        .then(function (source) {
+            return retrieveCircuits(source).then(function (sites) {
+                const variables = buildOutput(sites, source);
+                D.success(variables, circuitsTable);
+            });
+        })
+        .catch(function (error) {
+            console.log("Failed to retrieve circuits: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

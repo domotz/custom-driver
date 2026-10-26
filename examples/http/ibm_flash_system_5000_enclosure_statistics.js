@@ -18,19 +18,18 @@
 
 const endpointDetails = {
     "endpoint": "lsenclosurestats"
-}
+};
 
 const statisticsTable = D.createTable(
-    'Statistics Details',
+    "Statistics Details",
     [
-        {label: "Enclosure ID", valueType: D.valueType.STRING},
-        {label: "Statistic Name", valueType: D.valueType.STRING},
-        {label: "Current Value", valueType: D.valueType.NUMBER},
-        {label: "Peak Value", valueType: D.valueType.NUMBER},
-        {label: "Peak Time", valueType: D.valueType.DATETIME}
+        { label: "Enclosure ID", valueType: D.valueType.STRING },
+        { label: "Statistic Name", valueType: D.valueType.STRING },
+        { label: "Current Value", valueType: D.valueType.NUMBER },
+        { label: "Peak Value", valueType: D.valueType.NUMBER },
+        { label: "Peak Time", valueType: D.valueType.DATETIME }
     ]
 );
-
 
 /**
  * Sends an HTTPS POST request and returns the parsed JSON response.
@@ -49,20 +48,19 @@ function callHttps(endpoint, headers) {
     return new Promise(function (resolve) {
         D.device.http.post(config, function (error, response, body) {
             if (error) {
-                console.error(error)
-                D.failure(D.errorType.GENERIC_ERROR)
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
             } else if (!response || response.statusCode === 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             } else if (response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR)
-            }
-            else if (response.statusCode !== 200) {
-                D.failure(D.errorType.GENERIC_ERROR)
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
             } else {
                 resolve(JSON.parse(body));
             }
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -72,8 +70,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -81,13 +79,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -97,12 +95,12 @@ function login() {
 function populateTable(statisticsList) {
     for (let i = 0; i < statisticsList.length; i++) {
         const statDetails = statisticsList[i];
-        statisticsTable.insertRecord("" + (i + 1) , [
-            statDetails['enclosure_id'] || "N/A",
-            statDetails['stat_name'] || "N/A",
-            statDetails['stat_current'] ? cleanFloatValue(statDetails['stat_current']) : "N/A",
-            statDetails['stat_peak'] ? cleanFloatValue(statDetails['stat_peak']) : "N/A",
-            statDetails['stat_peak_time'] ? formatDate(statDetails['stat_peak_time']) : "N/A"
+        statisticsTable.insertRecord("" + (i + 1), [
+            statDetails["enclosure_id"] || "N/A",
+            statDetails["stat_name"] || "N/A",
+            statDetails["stat_current"] ? cleanFloatValue(statDetails["stat_current"]) : "N/A",
+            statDetails["stat_peak"] ? cleanFloatValue(statDetails["stat_peak"]) : "N/A",
+            statDetails["stat_peak_time"] ? formatDate(statDetails["stat_peak_time"]) : "N/A"
 
         ]);
     }
@@ -115,15 +113,15 @@ function populateTable(statisticsList) {
  * @returns {string} The formatted date string.
  */
 function formatDate(timestamp) {
-    if (!timestamp) return 'N/A';
-    const year = parseInt('20' + timestamp.slice(0, 2));
+    if (!timestamp) return "N/A";
+    const year = parseInt("20" + timestamp.slice(0, 2));
     const month = parseInt(timestamp.slice(2, 4)) - 1;
     const day = parseInt(timestamp.slice(4, 6));
     const hour = parseInt(timestamp.slice(6, 8));
     const minute = parseInt(timestamp.slice(8, 10));
     const second = parseInt(timestamp.slice(10, 12));
     const dateTime = new Date(year, month, day, hour, minute, second);
-    return (dateTime.getMonth() + 1) + '-' + dateTime.getDate() + '-' + dateTime.getFullYear() + ' ' + dateTime.getHours() + ':' + dateTime.getMinutes() + ':' + dateTime.getSeconds()
+    return (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + "-" + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
 }
 
 /**
@@ -132,7 +130,7 @@ function formatDate(timestamp) {
  * @returns {number|string} Cleaned value.
  */
 function cleanFloatValue(value) {
-    return parseFloat(value.replace(/[^0-9.]/g, ''))
+    return parseFloat(value.replace(/[^0-9.]/g, ""));
 }
 
 /**
@@ -145,11 +143,11 @@ function validate() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function () {
-                    D.success()
-                })
+                    D.success();
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -164,12 +162,12 @@ function get_status() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function (response) {
-                    populateTable(response)
-                    D.success(statisticsTable)
-                })
+                    populateTable(response);
+                    D.success(statisticsTable);
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

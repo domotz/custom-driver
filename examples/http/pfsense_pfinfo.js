@@ -104,7 +104,7 @@ var table = D.createTable("Pfsense interface statistics", [
     { label: "Out6/Pass (Packets)", unit: "packet" },
     { label: "Out6/Pass (Bytes)", unit: "byte" },
     { label: "Out6/Block (Packets)", unit: "packet" },
-    { label: "Out6/Block (Bytes)", unit: "byte" },
+    { label: "Out6/Block (Bytes)", unit: "byte" }
 ]);
 
 var em1StatsRegex = new RegExp(
@@ -139,7 +139,7 @@ var totalRateParams = [
             "state-limit",
             "src-limit",
             "synproxy",
-            "map-failed",
+            "map-failed"
         ]
     },
     {
@@ -207,10 +207,10 @@ var syncookiesRegex = new RegExp(
     , "m");
 
 /**
- * 
- * @param {string} title 
- * @param {[string]} params 
- * @returns 
+ *
+ * @param {string} title
+ * @param {[string]} params
+ * @returns
  */
 function totalRateStatsRegex(title, params) {
     var regexBuilder = "\n" + title + ".*\n";
@@ -247,7 +247,7 @@ function get_login_form(config) {
 
 /**
  * extract a code used for login
- * @param {*} body html login page 
+ * @param {*} body html login page
  * @returns csrf_magic code
  */
 function get_csrf_magic(body) {
@@ -258,7 +258,7 @@ function get_csrf_magic(body) {
 }
 
 /**
- * 
+ *
  * @param {*} csrf_magic csrf code used to make login
  * @returns promise processing login and add cookie to http config
  */
@@ -287,12 +287,12 @@ function login(csrf_magic) {
 }
 
 /**
- * 
+ *
  * @returns promise contains csrf_magic code to query pfinfo page
  */
 function get_pfinfo_csrf_magic() {
     var config = clone({
-        url: "/diag_pf_info.php",
+        url: "/diag_pf_info.php"
     }, http_config);
     return new Promise(function (resolve) {
         D.device.http.get(config, function (err, response, body) {
@@ -306,7 +306,7 @@ function get_pfinfo_csrf_magic() {
 }
 
 /**
- * 
+ *
  * @param {*} csrf_magic code to query pfinfo page
  * @returns promise for html pfinfo page
  */
@@ -323,7 +323,7 @@ function get_pfinfo_body(csrf_magic) {
                 console.error(err);
                 return D.failure();
             }
-            if(!body || body.indexOf("Hostid") < 0){
+            if (!body || body.indexOf("Hostid") < 0) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
             resolve(body);
@@ -332,9 +332,8 @@ function get_pfinfo_body(csrf_magic) {
 
 }
 
-
 /**
- * 
+ *
  * @param {*} init object initialisation
  * @param {*} object object to clone
  * @returns cloned object
@@ -352,7 +351,7 @@ function trim(s) {
 }
 
 /**
- * 
+ *
  * @param {*} body pfinfo page
  * @param {*} paramName parameter name to extract from pfinfo page
  * @returns the value of the parameter and it's unit
@@ -372,11 +371,9 @@ function extractParameterValue(body, paramName) {
     }
 }
 
-
-
 /**
  * This function extracts variables from the pfinfo page
- * @param {string} body 
+ * @param {string} body
  */
 function extract_variables(body) {
     // extract em1 interface stats
@@ -420,8 +417,8 @@ function extract_variables(body) {
 }
 
 /**
- * 
- * @param {string} body 
+ *
+ * @param {string} body
  */
 function extract_table(body) {
     // get interfaces

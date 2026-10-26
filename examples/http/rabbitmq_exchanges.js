@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver gets exchanges from RabbitMQ management plugin provided an HTTP-based API using HTTP agent.
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
@@ -25,7 +25,7 @@
  * Acknowledged per second: The rate of messages (per second) delivered to clients and acknowledged.
  * Acknowledged: The number of messages delivered to clients and acknowledged.
  * -------------------------------------
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
  */
 
 var port = 15672;
@@ -100,19 +100,18 @@ function getExchanges(page) {
             exchanges = exchanges.concat(data.items);
             if (data.page < data.page_count) {
                 return getExchanges(++page);
-            }
-            else {
+            } else {
                 return exchanges;
             }
         });
 }
 
-//fill the dynamic table with data related to exchanges. 
+//fill the dynamic table with data related to exchanges.
 function fillTable(exchanges) {
     exchanges.forEach(function (d) {
         d.forEach(function (item) {
             var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
-            if (vhost === "/"){
+            if (vhost === "/") {
                 // Igore root level exchanges and only collect vhost child ones.
                 // Remove conditional in case you want to monitor them as well
                 return;

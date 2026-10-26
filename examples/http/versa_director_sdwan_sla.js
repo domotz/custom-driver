@@ -113,20 +113,20 @@
  * Forward/Reverse Loss.
  **/
 
-const DEFAULT_PORT = "9183"
-const DEFAULT_MAX_SLA_SITES = 0
-const SITE_PAGE_SIZE = 1000
-const TOKEN_PATH = "/auth/token"
-const INVENTORY_PATH = "/vnms/appliance/appliance"
+const DEFAULT_PORT = "9183";
+const DEFAULT_MAX_SLA_SITES = 0;
+const SITE_PAGE_SIZE = 1000;
+const TOKEN_PATH = "/auth/token";
+const INVENTORY_PATH = "/vnms/appliance/appliance";
 
 /** Fabric-wide path counts. One record, no per-site detail. */
-const SLA_SUMMARY_PATH = "/sd-wan/sla-monitor/brief"
+const SLA_SUMMARY_PATH = "/sd-wan/sla-monitor/brief";
 
 /** Index of monitored sites: 45 records of { site-name }. Used as the list of sites to walk. */
-const SLA_INDEX_PATH = "/sd-wan/sla-monitor/end-to-end"
+const SLA_INDEX_PATH = "/sd-wan/sla-monitor/end-to-end";
 
 /** Per-site detail. {site} is replaced with a site name to expand that entry. */
-const SLA_SITE_PATH = "/sd-wan/sla-monitor/end-to-end/status/{site}"
+const SLA_SITE_PATH = "/sd-wan/sla-monitor/end-to-end/status/{site}";
 
 /**
  * Bulk candidates, tried once before the per-site walk. Everything else has been eliminated on
@@ -134,27 +134,27 @@ const SLA_SITE_PATH = "/sd-wan/sla-monitor/end-to-end/status/{site}"
  * case it carries data on another deployment; if it ever does, the walk is skipped entirely.
  */
 const SLA_BULK_PATHS = [
-  "/sd-wan/sla-monitor/path"
-]
+    "/sd-wan/sla-monitor/path"
+];
 
 /** Keys that mark a record as describing a site or path rather than an aggregate. */
 const PATH_IDENTITY_KEYS = [
-  "remote-site-name", "site-name", "siteName", "remote-site",
-  "local-access-cktname", "remote-access-cktname", "local-ackt-name", "remote-ackt-name"
-]
+    "remote-site-name", "site-name", "siteName", "remote-site",
+    "local-access-cktname", "remote-access-cktname", "local-ackt-name", "remote-ackt-name"
+];
 
-const clientIdParam = D.getParameter("clientId")
-const clientSecretParam = D.getParameter("clientSecret")
-const authPortParam = D.getParameter("authPort")
-const apiPortParam = D.getParameter("apiPort")
-const directorHostParam = D.getParameter("directorHost")
-const sourceApplianceParam = D.getParameter("sourceAppliance")
-const slaSitesParam = D.getParameter("slaSites")
-const maxSlaSitesParam = D.getParameter("maxSlaSites")
+const clientIdParam = D.getParameter("clientId");
+const clientSecretParam = D.getParameter("clientSecret");
+const authPortParam = D.getParameter("authPort");
+const apiPortParam = D.getParameter("apiPort");
+const directorHostParam = D.getParameter("directorHost");
+const sourceApplianceParam = D.getParameter("sourceAppliance");
+const slaSitesParam = D.getParameter("slaSites");
+const maxSlaSitesParam = D.getParameter("maxSlaSites");
 
-const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10)
-const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10)
-const maxSlaSitesValue = maxSlaSitesParam ? parseInt(maxSlaSitesParam, 10) : DEFAULT_MAX_SLA_SITES
+const authPortValue = parseInt(authPortParam || DEFAULT_PORT, 10);
+const apiPortValue = parseInt(apiPortParam || DEFAULT_PORT, 10);
+const maxSlaSitesValue = maxSlaSitesParam ? parseInt(maxSlaSitesParam, 10) : DEFAULT_MAX_SLA_SITES;
 
 /**
  * Reduces whatever was entered for directorHost to a bare hostname. People reasonably paste a
@@ -165,14 +165,14 @@ const maxSlaSitesValue = maxSlaSitesParam ? parseInt(maxSlaSitesParam, 10) : DEF
  * @returns {string|null} a bare hostname, or null when nothing usable was given
  */
 function normalizeHost(raw) {
-  if (!raw) return null
-  let host = String(raw).trim()
-  host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "")
-  host = host.split("/")[0].split("?")[0]
-  // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
-  if (host.charAt(0) !== "[") host = host.split(":")[0]
-  host = host.trim()
-  return host.length > 0 ? host : null
+    if (!raw) return null;
+    let host = String(raw).trim();
+    host = host.replace(/^[a-zA-Z][a-zA-Z0-9+.\-]*:\/\//, "");
+    host = host.split("/")[0].split("?")[0];
+    // Leave an IPv6 literal in brackets alone; otherwise strip a trailing :port.
+    if (host.charAt(0) !== "[") host = host.split(":")[0];
+    host = host.trim();
+    return host.length > 0 ? host : null;
 }
 
 /**
@@ -192,26 +192,26 @@ function normalizeHost(raw) {
  * at parse time with "Identifier 'directorHost' has already been declared" - before a single line
  * runs. Never name a variable after a parameter; read the parameter into a distinctly named one.
  */
-const resolvedHost = normalizeHost(directorHostParam)
-const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device
+const resolvedHost = normalizeHost(directorHostParam);
+const target = resolvedHost ? D.createExternalDevice(resolvedHost) : D.device;
 
-let accessToken
-let authenticatedOrg
-let loggedSampleRecord = false
+let accessToken;
+let authenticatedOrg;
+let loggedSampleRecord = false;
 
 const slaTable = D.createTable(
-  "SD-WAN SLA",
-  [
-    { label: "Site", valueType: D.valueType.STRING },
-    { label: "Local Circuit", valueType: D.valueType.STRING },
-    { label: "Remote Circuit", valueType: D.valueType.STRING },
-    { label: "Latency", unit: "ms", valueType: D.valueType.NUMBER },
-    { label: "Forward Jitter", unit: "ms", valueType: D.valueType.NUMBER },
-    { label: "Reverse Jitter", unit: "ms", valueType: D.valueType.NUMBER },
-    { label: "Forward Loss", unit: "%", valueType: D.valueType.NUMBER },
-    { label: "Reverse Loss", unit: "%", valueType: D.valueType.NUMBER }
-  ]
-)
+    "SD-WAN SLA",
+    [
+        { label: "Site", valueType: D.valueType.STRING },
+        { label: "Local Circuit", valueType: D.valueType.STRING },
+        { label: "Remote Circuit", valueType: D.valueType.STRING },
+        { label: "Latency", unit: "ms", valueType: D.valueType.NUMBER },
+        { label: "Forward Jitter", unit: "ms", valueType: D.valueType.NUMBER },
+        { label: "Reverse Jitter", unit: "ms", valueType: D.valueType.NUMBER },
+        { label: "Forward Loss", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Reverse Loss", unit: "%", valueType: D.valueType.NUMBER }
+    ]
+);
 
 // ------------------------------------------------------------------------------------------
 // Helpers
@@ -227,12 +227,12 @@ const slaTable = D.createTable(
  * @returns {*} the resolved value, or the fallback
  */
 function pick(source, keys, fallback) {
-  if (!source) return fallback
-  for (let i = 0; i < keys.length; i++) {
-    const value = source[keys[i]]
-    if (value !== undefined && value !== null && value !== "") return value
-  }
-  return fallback
+    if (!source) return fallback;
+    for (let i = 0; i < keys.length; i++) {
+        const value = source[keys[i]];
+        if (value !== undefined && value !== null && value !== "") return value;
+    }
+    return fallback;
 }
 
 /**
@@ -241,9 +241,9 @@ function pick(source, keys, fallback) {
  * @returns {number|null} the parsed number, or null
  */
 function toNumber(value) {
-  if (value === undefined || value === null || value === "") return null
-  const parsed = parseFloat(value)
-  return isNaN(parsed) ? null : parsed
+    if (value === undefined || value === null || value === "") return null;
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? null : parsed;
 }
 
 /**
@@ -252,11 +252,11 @@ function toNumber(value) {
  * @returns {string} a short base-36 hash
  */
 function shortHash(value) {
-  let hash = 5381
-  for (let i = 0; i < value.length; i++) {
-    hash = ((hash * 33) ^ value.charCodeAt(i)) >>> 0
-  }
-  return hash.toString(36)
+    let hash = 5381;
+    for (let i = 0; i < value.length; i++) {
+        hash = ((hash * 33) ^ value.charCodeAt(i)) >>> 0;
+    }
+    return hash.toString(36);
 }
 
 /**
@@ -266,9 +266,9 @@ function shortHash(value) {
  * @returns {string} a safe, unique, stable record id
  */
 function slaRecordId(parts) {
-  const full = parts.join("-").replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()
-  if (full.length <= 50) return full
-  return full.slice(0, 42) + "-" + shortHash(full)
+    const full = parts.join("-").replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
+    if (full.length <= 50) return full;
+    return full.slice(0, 42) + "-" + shortHash(full);
 }
 
 /**
@@ -278,17 +278,17 @@ function slaRecordId(parts) {
  * @returns {Array<Object>|null} the first array of objects found, or null
  */
 function findFirstObjectArray(node, depth) {
-  if (!node || depth > 5) return null
-  if (Array.isArray(node)) {
-    return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null
-  }
-  if (typeof node !== "object") return null
-  const keys = Object.keys(node)
-  for (let i = 0; i < keys.length; i++) {
-    const found = findFirstObjectArray(node[keys[i]], depth + 1)
-    if (found) return found
-  }
-  return null
+    if (!node || depth > 5) return null;
+    if (Array.isArray(node)) {
+        return (node.length > 0 && typeof node[0] === "object" && node[0] !== null) ? node : null;
+    }
+    if (typeof node !== "object") return null;
+    const keys = Object.keys(node);
+    for (let i = 0; i < keys.length; i++) {
+        const found = findFirstObjectArray(node[keys[i]], depth + 1);
+        if (found) return found;
+    }
+    return null;
 }
 
 /**
@@ -299,23 +299,23 @@ function findFirstObjectArray(node, depth) {
  * @returns {Array<Object>} the records found, possibly empty
  */
 function extractRecords(payload) {
-  if (!payload || typeof payload !== "object") return []
-  if (Array.isArray(payload)) return payload
+    if (!payload || typeof payload !== "object") return [];
+    if (Array.isArray(payload)) return payload;
 
-  const asArray = findFirstObjectArray(payload, 0)
-  if (asArray) return asArray
+    const asArray = findFirstObjectArray(payload, 0);
+    if (asArray) return asArray;
 
-  // No array anywhere: unwrap one namespaced container and treat the object as a single record.
-  const keys = Object.keys(payload)
-  if (keys.length === 1) {
-    const inner = payload[keys[0]]
-    if (inner && typeof inner === "object" && !Array.isArray(inner)) {
-      const innerArray = findFirstObjectArray(inner, 0)
-      if (innerArray) return innerArray
-      return Object.keys(inner).length > 0 ? [inner] : []
+    // No array anywhere: unwrap one namespaced container and treat the object as a single record.
+    const keys = Object.keys(payload);
+    if (keys.length === 1) {
+        const inner = payload[keys[0]];
+        if (inner && typeof inner === "object" && !Array.isArray(inner)) {
+            const innerArray = findFirstObjectArray(inner, 0);
+            if (innerArray) return innerArray;
+            return Object.keys(inner).length > 0 ? [inner] : [];
+        }
     }
-  }
-  return Object.keys(payload).length > 0 ? [payload] : []
+    return Object.keys(payload).length > 0 ? [payload] : [];
 }
 
 /**
@@ -325,16 +325,16 @@ function extractRecords(payload) {
  * @returns {boolean} true when the record looks like per-path detail
  */
 function looksLikePathRecord(record) {
-  if (!record) return false
-  let hasIdentity = false
-  for (let i = 0; i < PATH_IDENTITY_KEYS.length; i++) {
-    if (record[PATH_IDENTITY_KEYS[i]] !== undefined) {
-      hasIdentity = true
-      break
+    if (!record) return false;
+    let hasIdentity = false;
+    for (let i = 0; i < PATH_IDENTITY_KEYS.length; i++) {
+        if (record[PATH_IDENTITY_KEYS[i]] !== undefined) {
+            hasIdentity = true;
+            break;
+        }
     }
-  }
-  if (!hasIdentity) return false
-  return Object.keys(record).length > 1
+    if (!hasIdentity) return false;
+    return Object.keys(record).length > 1;
 }
 
 /**
@@ -343,9 +343,9 @@ function looksLikePathRecord(record) {
  * @returns {string} a D.errorType constant
  */
 function errorTypeForStatus(statusCode) {
-  if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR
-  if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE
-  return D.errorType.GENERIC_ERROR
+    if (statusCode === 401 || statusCode === 403) return D.errorType.AUTHENTICATION_ERROR;
+    if (statusCode === 404) return D.errorType.RESOURCE_UNAVAILABLE;
+    return D.errorType.GENERIC_ERROR;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -358,65 +358,65 @@ function errorTypeForStatus(statusCode) {
  * @returns {Promise} resolves once a token has been obtained
  */
 function login() {
-  const config = {
-    url: TOKEN_PATH,
-    protocol: "https",
-    port: authPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: D.device.username(),
-      password: D.device.password(),
-      grant_type: "password",
-      client_id: clientIdParam,
-      client_secret: clientSecretParam
-    }),
-    rejectUnauthorized: false,
-    jar: true
-  }
-  console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
-    (resolvedHost ? " (directorHost)" : " (device IP)"))
-  return new Promise(function (resolve) {
-    target.http.post(config, function (error, response, body) {
-      if (error) {
-        console.log("Token request failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("Token endpoint returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      let payload
-      try {
-        payload = JSON.parse(body)
-      } catch (parseError) {
-        console.log("Token response was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-        return
-      }
-      const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token
-      if (!token) {
-        console.log("No access token in the response. Keys returned: " +
-          Object.keys(payload).join(", "))
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-        return
-      }
-      accessToken = token
-      authenticatedOrg = (payload.user && payload.user.organization) || null
-      if (!authenticatedOrg) {
-        console.log("The token response did not name an organization, which the YANG path requires.")
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
-        return
-      }
-      resolve()
-    })
-  })
+    const config = {
+        url: TOKEN_PATH,
+        protocol: "https",
+        port: authPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: D.device.username(),
+            password: D.device.password(),
+            grant_type: "password",
+            client_id: clientIdParam,
+            client_secret: clientSecretParam
+        }),
+        rejectUnauthorized: false,
+        jar: true
+    };
+    console.log("Authenticating against " + (resolvedHost || D.device.ip()) + ":" + authPortValue +
+    (resolvedHost ? " (directorHost)" : " (device IP)"));
+    return new Promise(function (resolve) {
+        target.http.post(config, function (error, response, body) {
+            if (error) {
+                console.log("Token request failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("Token endpoint returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            let payload;
+            try {
+                payload = JSON.parse(body);
+            } catch (parseError) {
+                console.log("Token response was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
+            const token = (payload.tokenDetails && payload.tokenDetails.accessToken) || payload.access_token;
+            if (!token) {
+                console.log("No access token in the response. Keys returned: " +
+          Object.keys(payload).join(", "));
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+            accessToken = token;
+            authenticatedOrg = (payload.user && payload.user.organization) || null;
+            if (!authenticatedOrg) {
+                console.log("The token response did not name an organization, which the YANG path requires.");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return;
+            }
+            resolve();
+        });
+    });
 }
 
 /**
@@ -425,39 +425,39 @@ function login() {
  * @returns {Promise<Object>} resolves with the parsed JSON body
  */
 function apiGet(path) {
-  const config = {
-    url: path,
-    protocol: "https",
-    port: apiPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Authorization": "Bearer " + accessToken
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
-  return new Promise(function (resolve) {
-    target.http.get(config, function (error, response, body) {
-      if (error) {
-        console.log("Request to " + path + " failed: " + error)
-        D.failure(D.errorType.GENERIC_ERROR)
-        return
-      }
-      const statusCode = response && response.statusCode
-      if (statusCode !== 200) {
-        console.log("GET " + path + " returned HTTP " + statusCode + ": " +
-          (body ? String(body).slice(0, 500) : "<empty response>"))
-        D.failure(errorTypeForStatus(statusCode))
-        return
-      }
-      try {
-        resolve(body ? JSON.parse(body) : {})
-      } catch (parseError) {
-        console.log("Response from " + path + " was not valid JSON: " + parseError)
-        D.failure(D.errorType.PARSING_ERROR)
-      }
-    })
-  })
+    const config = {
+        url: path,
+        protocol: "https",
+        port: apiPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve) {
+        target.http.get(config, function (error, response, body) {
+            if (error) {
+                console.log("Request to " + path + " failed: " + error);
+                D.failure(D.errorType.GENERIC_ERROR);
+                return;
+            }
+            const statusCode = response && response.statusCode;
+            if (statusCode !== 200) {
+                console.log("GET " + path + " returned HTTP " + statusCode + ": " +
+          (body ? String(body).slice(0, 500) : "<empty response>"));
+                D.failure(errorTypeForStatus(statusCode));
+                return;
+            }
+            try {
+                resolve(body ? JSON.parse(body) : {});
+            } catch (parseError) {
+                console.log("Response from " + path + " was not valid JSON: " + parseError);
+                D.failure(D.errorType.PARSING_ERROR);
+            }
+        });
+    });
 }
 
 /**
@@ -466,32 +466,32 @@ function apiGet(path) {
  * @returns {Promise<Object>} resolves with { statusCode, json, body }
  */
 function apiGetSoft(path) {
-  const config = {
-    url: path,
-    protocol: "https",
-    port: apiPortValue,
-    headers: {
-      "Accept": "application/json",
-      "Authorization": "Bearer " + accessToken
-    },
-    rejectUnauthorized: false,
-    jar: true
-  }
-  return new Promise(function (resolve) {
-    target.http.get(config, function (error, response, body) {
-      if (error) {
-        resolve({ statusCode: 0, json: null, body: String(error) })
-        return
-      }
-      let parsed = null
-      try {
-        parsed = body ? JSON.parse(body) : null
-      } catch (parseError) {
-        parsed = null
-      }
-      resolve({ statusCode: response && response.statusCode, json: parsed, body: body })
-    })
-  })
+    const config = {
+        url: path,
+        protocol: "https",
+        port: apiPortValue,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + accessToken
+        },
+        rejectUnauthorized: false,
+        jar: true
+    };
+    return new Promise(function (resolve) {
+        target.http.get(config, function (error, response, body) {
+            if (error) {
+                resolve({ statusCode: 0, json: null, body: String(error) });
+                return;
+            }
+            let parsed = null;
+            try {
+                parsed = body ? JSON.parse(body) : null;
+            } catch (parseError) {
+                parsed = null;
+            }
+            resolve({ statusCode: response && response.statusCode, json: parsed, body: body });
+        });
+    });
 }
 
 /**
@@ -501,9 +501,9 @@ function apiGetSoft(path) {
  * @returns {string} the request path
  */
 function liveCommandUrl(source, yangSuffix) {
-  return "/vnms/dashboard/appliance/" + encodeURIComponent(source.name) +
+    return "/vnms/dashboard/appliance/" + encodeURIComponent(source.name) +
     "/live?uuid=" + encodeURIComponent(source.uuid) +
-    "&command=orgs/org/" + authenticatedOrg + yangSuffix
+    "&command=orgs/org/" + authenticatedOrg + yangSuffix;
 }
 
 /**
@@ -511,47 +511,47 @@ function liveCommandUrl(source, yangSuffix) {
  * @returns {Promise<Object>} resolves with { name, uuid }
  */
 function selectSourceAppliance() {
-  return apiGet(INVENTORY_PATH + "?offset=0&limit=" + SITE_PAGE_SIZE).then(function (payload) {
-    const container = payload["versanms.ApplianceStatusResult"]
-    const list = (container && Array.isArray(container.appliance))
-      ? container.appliance
-      : (findFirstObjectArray(payload, 0) || [])
+    return apiGet(INVENTORY_PATH + "?offset=0&limit=" + SITE_PAGE_SIZE).then(function (payload) {
+        const container = payload["versanms.ApplianceStatusResult"];
+        const list = (container && Array.isArray(container.appliance))
+            ? container.appliance
+            : (findFirstObjectArray(payload, 0) || []);
 
-    if (list.length === 0) {
-      console.log("The appliance inventory returned no appliances, so no source can be chosen.")
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-      return null
-    }
-
-    let chosen = null
-    if (sourceApplianceParam) {
-      for (let i = 0; i < list.length; i++) {
-        if (String(list[i].name).toLowerCase() === String(sourceApplianceParam).toLowerCase()) {
-          chosen = list[i]
-          break
+        if (list.length === 0) {
+            console.log("The appliance inventory returned no appliances, so no source can be chosen.");
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            return null;
         }
-      }
-      if (!chosen) {
-        console.log("The configured sourceAppliance \"" + sourceApplianceParam + "\" is not in " +
-          "the inventory. Falling back to auto-selection.")
-      }
-    }
-    if (!chosen) {
-      for (let i = 0; i < list.length; i++) {
-        if (String(list[i].name).toUpperCase().indexOf("HUB") !== -1) {
-          chosen = list[i]
-          break
-        }
-      }
-    }
-    if (!chosen) {
-      chosen = list[0]
-      console.log("No appliance with \"HUB\" in its name was found, so the first appliance is used.")
-    }
 
-    console.log("Querying SLA from appliance \"" + chosen.name + "\".")
-    return { name: chosen.name, uuid: chosen.uuid }
-  })
+        let chosen = null;
+        if (sourceApplianceParam) {
+            for (let i = 0; i < list.length; i++) {
+                if (String(list[i].name).toLowerCase() === String(sourceApplianceParam).toLowerCase()) {
+                    chosen = list[i];
+                    break;
+                }
+            }
+            if (!chosen) {
+                console.log("The configured sourceAppliance \"" + sourceApplianceParam + "\" is not in " +
+          "the inventory. Falling back to auto-selection.");
+            }
+        }
+        if (!chosen) {
+            for (let i = 0; i < list.length; i++) {
+                if (String(list[i].name).toUpperCase().indexOf("HUB") !== -1) {
+                    chosen = list[i];
+                    break;
+                }
+            }
+        }
+        if (!chosen) {
+            chosen = list[0];
+            console.log("No appliance with \"HUB\" in its name was found, so the first appliance is used.");
+        }
+
+        console.log("Querying SLA from appliance \"" + chosen.name + "\".");
+        return { name: chosen.name, uuid: chosen.uuid };
+    });
 }
 
 /**
@@ -560,24 +560,24 @@ function selectSourceAppliance() {
  * @returns {Promise<Object>} resolves with { up, down, suspended, active }
  */
 function retrieveSummary(source) {
-  return apiGetSoft(liveCommandUrl(source, SLA_SUMMARY_PATH)).then(function (result) {
-    const empty = { up: null, down: null, suspended: null, active: null }
-    if (result.statusCode !== 200 || !result.json) {
-      console.log("SLA summary unavailable: HTTP " + result.statusCode)
-      return empty
-    }
-    const records = extractRecords(result.json)
-    const record = records.length > 0 ? records[0] : result.json
-    const summary = {
-      up: toNumber(pick(record, ["up-path-cnt", "upPathCnt"], null)),
-      down: toNumber(pick(record, ["down-path-cnt", "downPathCnt"], null)),
-      suspended: toNumber(pick(record, ["suspend-path-cnt", "suspendPathCnt"], null)),
-      active: toNumber(pick(record, ["active-path-cnt", "activePathCnt"], null))
-    }
-    console.log("SLA path counts - up: " + summary.up + ", down: " + summary.down +
-      ", suspended: " + summary.suspended + ", active: " + summary.active)
-    return summary
-  })
+    return apiGetSoft(liveCommandUrl(source, SLA_SUMMARY_PATH)).then(function (result) {
+        const empty = { up: null, down: null, suspended: null, active: null };
+        if (result.statusCode !== 200 || !result.json) {
+            console.log("SLA summary unavailable: HTTP " + result.statusCode);
+            return empty;
+        }
+        const records = extractRecords(result.json);
+        const record = records.length > 0 ? records[0] : result.json;
+        const summary = {
+            up: toNumber(pick(record, ["up-path-cnt", "upPathCnt"], null)),
+            down: toNumber(pick(record, ["down-path-cnt", "downPathCnt"], null)),
+            suspended: toNumber(pick(record, ["suspend-path-cnt", "suspendPathCnt"], null)),
+            active: toNumber(pick(record, ["active-path-cnt", "activePathCnt"], null))
+        };
+        console.log("SLA path counts - up: " + summary.up + ", down: " + summary.down +
+      ", suspended: " + summary.suspended + ", active: " + summary.active);
+        return summary;
+    });
 }
 
 /**
@@ -588,28 +588,28 @@ function retrieveSummary(source) {
  * @returns {Promise<Array<Object>>} resolves with { site, record } entries, or an empty array
  */
 function tryBulkPaths(source, index) {
-  if (index >= SLA_BULK_PATHS.length) return Promise.resolve([])
+    if (index >= SLA_BULK_PATHS.length) return Promise.resolve([]);
 
-  const yangSuffix = SLA_BULK_PATHS[index]
-  return apiGetSoft(liveCommandUrl(source, yangSuffix)).then(function (result) {
-    if (result.statusCode !== 200 || !result.json) {
-      console.log("Bulk SLA candidate unavailable: " + yangSuffix + " -> HTTP " + result.statusCode)
-      return tryBulkPaths(source, index + 1)
-    }
-    const records = extractRecords(result.json)
-    if (records.length === 0 || !looksLikePathRecord(records[0])) {
-      console.log("Bulk SLA candidate carried no per-path detail: " + yangSuffix +
+    const yangSuffix = SLA_BULK_PATHS[index];
+    return apiGetSoft(liveCommandUrl(source, yangSuffix)).then(function (result) {
+        if (result.statusCode !== 200 || !result.json) {
+            console.log("Bulk SLA candidate unavailable: " + yangSuffix + " -> HTTP " + result.statusCode);
+            return tryBulkPaths(source, index + 1);
+        }
+        const records = extractRecords(result.json);
+        if (records.length === 0 || !looksLikePathRecord(records[0])) {
+            console.log("Bulk SLA candidate carried no per-path detail: " + yangSuffix +
         " -> " + records.length + " records, fields: " +
-        (records.length > 0 ? Object.keys(records[0]).join(", ") : "<none>"))
-      return tryBulkPaths(source, index + 1)
-    }
-    console.log("Bulk SLA path ACCEPTED: " + yangSuffix + " -> " + records.length + " records. " +
-      "The per-site walk is unnecessary on this deployment.")
-    console.log("SLA record fields: " + Object.keys(records[0]).join(", "))
-    return records.map(function (record) {
-      return { site: pick(record, PATH_IDENTITY_KEYS, "unknown"), record: record }
-    })
-  })
+        (records.length > 0 ? Object.keys(records[0]).join(", ") : "<none>"));
+            return tryBulkPaths(source, index + 1);
+        }
+        console.log("Bulk SLA path ACCEPTED: " + yangSuffix + " -> " + records.length + " records. " +
+      "The per-site walk is unnecessary on this deployment.");
+        console.log("SLA record fields: " + Object.keys(records[0]).join(", "));
+        return records.map(function (record) {
+            return { site: pick(record, PATH_IDENTITY_KEYS, "unknown"), record: record };
+        });
+    });
 }
 
 /**
@@ -618,19 +618,19 @@ function tryBulkPaths(source, index) {
  * @returns {Promise<Array<string>>} resolves with site names
  */
 function retrieveSiteIndex(source) {
-  return apiGetSoft(liveCommandUrl(source, SLA_INDEX_PATH)).then(function (result) {
-    if (result.statusCode !== 200 || !result.json) {
-      console.log("SLA site index unavailable: HTTP " + result.statusCode)
-      return []
-    }
-    const names = extractRecords(result.json).map(function (record) {
-      return pick(record, ["site-name", "siteName", "name"], null)
-    }).filter(function (name) {
-      return !!name
-    })
-    console.log("SLA monitors " + names.length + " sites.")
-    return names
-  })
+    return apiGetSoft(liveCommandUrl(source, SLA_INDEX_PATH)).then(function (result) {
+        if (result.statusCode !== 200 || !result.json) {
+            console.log("SLA site index unavailable: HTTP " + result.statusCode);
+            return [];
+        }
+        const names = extractRecords(result.json).map(function (record) {
+            return pick(record, ["site-name", "siteName", "name"], null);
+        }).filter(function (name) {
+            return !!name;
+        });
+        console.log("SLA monitors " + names.length + " sites.");
+        return names;
+    });
 }
 
 /**
@@ -640,38 +640,38 @@ function retrieveSiteIndex(source) {
  * @returns {Array<string>} the sites to walk
  */
 function selectSites(available) {
-  if (maxSlaSitesValue <= 0 && !slaSitesParam) {
-    console.log("Per-site SLA detail is disabled (maxSlaSites is 0). On Versa Director 22.1.4-GA " +
+    if (maxSlaSitesValue <= 0 && !slaSitesParam) {
+        console.log("Per-site SLA detail is disabled (maxSlaSites is 0). On Versa Director 22.1.4-GA " +
       "the per-site node returns only { site-name } with no metrics, so walking sites costs one " +
       "request each and returns nothing. The fabric-wide path counts above are the SLA signal " +
-      "this API provides. Set maxSlaSites above zero only to re-test on another release.")
-    return []
-  }
-  if (slaSitesParam) {
-    const requested = String(slaSitesParam).split(",").map(function (name) {
-      return name.trim()
-    }).filter(function (name) {
-      return name.length > 0
-    })
-    const matched = requested.filter(function (name) {
-      for (let i = 0; i < available.length; i++) {
-        if (available[i].toLowerCase() === name.toLowerCase()) return true
-      }
-      return false
-    })
-    const missing = requested.length - matched.length
-    if (missing > 0) {
-      console.log(missing + " configured site name(s) are not in the SLA index and were skipped.")
+      "this API provides. Set maxSlaSites above zero only to re-test on another release.");
+        return [];
     }
-    if (matched.length > 0) return matched.slice(0, Math.max(maxSlaSitesValue, matched.length))
-    console.log("No configured site matched the index; falling back to the first sites listed.")
-  }
-  if (available.length > maxSlaSitesValue) {
-    console.log("Collecting detail for the first " + maxSlaSitesValue + " of " + available.length +
+    if (slaSitesParam) {
+        const requested = String(slaSitesParam).split(",").map(function (name) {
+            return name.trim();
+        }).filter(function (name) {
+            return name.length > 0;
+        });
+        const matched = requested.filter(function (name) {
+            for (let i = 0; i < available.length; i++) {
+                if (available[i].toLowerCase() === name.toLowerCase()) return true;
+            }
+            return false;
+        });
+        const missing = requested.length - matched.length;
+        if (missing > 0) {
+            console.log(missing + " configured site name(s) are not in the SLA index and were skipped.");
+        }
+        if (matched.length > 0) return matched.slice(0, Math.max(maxSlaSitesValue, matched.length));
+        console.log("No configured site matched the index; falling back to the first sites listed.");
+    }
+    if (available.length > maxSlaSitesValue) {
+        console.log("Collecting detail for the first " + maxSlaSitesValue + " of " + available.length +
       " sites. Each site costs one request, so raise maxSlaSites deliberately, or set slaSites " +
-      "to name the sites that matter.")
-  }
-  return available.slice(0, maxSlaSitesValue)
+      "to name the sites that matter.");
+    }
+    return available.slice(0, maxSlaSitesValue);
 }
 
 /**
@@ -681,28 +681,28 @@ function selectSites(available) {
  * @returns {Promise<Array<Object>>} resolves with { site, record } entries for that site
  */
 function retrieveSiteDetail(source, siteName) {
-  const yangSuffix = SLA_SITE_PATH.replace("{site}", encodeURIComponent(siteName))
-  return apiGetSoft(liveCommandUrl(source, yangSuffix)).then(function (result) {
-    if (result.statusCode !== 200 || !result.json) {
-      console.log("No SLA detail for " + siteName + ": HTTP " + result.statusCode)
-      return []
-    }
-    const records = extractRecords(result.json)
-    if (records.length === 0) {
-      console.log("Empty SLA detail for " + siteName + " -> " +
-        String(result.body).replace(/\s+/g, " ").slice(0, 300))
-      return []
-    }
-    // Log one complete record per run so the field mapping can be verified against reality.
-    if (!loggedSampleRecord) {
-      loggedSampleRecord = true
-      console.log("SLA detail fields for " + siteName + ": " + Object.keys(records[0]).join(", "))
-      console.log("First raw SLA record: " + JSON.stringify(records[0]).slice(0, 1500))
-    }
-    return records.map(function (record) {
-      return { site: siteName, record: record }
-    })
-  })
+    const yangSuffix = SLA_SITE_PATH.replace("{site}", encodeURIComponent(siteName));
+    return apiGetSoft(liveCommandUrl(source, yangSuffix)).then(function (result) {
+        if (result.statusCode !== 200 || !result.json) {
+            console.log("No SLA detail for " + siteName + ": HTTP " + result.statusCode);
+            return [];
+        }
+        const records = extractRecords(result.json);
+        if (records.length === 0) {
+            console.log("Empty SLA detail for " + siteName + " -> " +
+        String(result.body).replace(/\s+/g, " ").slice(0, 300));
+            return [];
+        }
+        // Log one complete record per run so the field mapping can be verified against reality.
+        if (!loggedSampleRecord) {
+            loggedSampleRecord = true;
+            console.log("SLA detail fields for " + siteName + ": " + Object.keys(records[0]).join(", "));
+            console.log("First raw SLA record: " + JSON.stringify(records[0]).slice(0, 1500));
+        }
+        return records.map(function (record) {
+            return { site: siteName, record: record };
+        });
+    });
 }
 
 /**
@@ -713,18 +713,18 @@ function retrieveSiteDetail(source, siteName) {
  * @returns {Promise<Array<Object>>} resolves with all { site, record } entries
  */
 function walkSites(source, siteNames) {
-  const collected = []
-  return siteNames.reduce(function (chain, siteName) {
-    return chain.then(function () {
-      return retrieveSiteDetail(source, siteName).then(function (entries) {
-        entries.forEach(function (entry) {
-          collected.push(entry)
-        })
-      })
-    })
-  }, Promise.resolve()).then(function () {
-    return collected
-  })
+    const collected = [];
+    return siteNames.reduce(function (chain, siteName) {
+        return chain.then(function () {
+            return retrieveSiteDetail(source, siteName).then(function (entries) {
+                entries.forEach(function (entry) {
+                    collected.push(entry);
+                });
+            });
+        });
+    }, Promise.resolve()).then(function () {
+        return collected;
+    });
 }
 
 /**
@@ -737,79 +737,79 @@ function walkSites(source, siteNames) {
  * @returns {Array<Object>} the Domotz variables to report alongside the table
  */
 function buildOutput(entries, summary, sitesAvailable, sitesSampled, source) {
-  const usedIds = {}
-  let rowCount = 0
-  let worstLatency = null
-  let worstLoss = null
-  let recognisedMetrics = false
+    const usedIds = {};
+    let rowCount = 0;
+    let worstLatency = null;
+    let worstLoss = null;
+    let recognisedMetrics = false;
 
-  entries.forEach(function (entry) {
-    const record = entry.record
-    const site = String(pick(record,
-      ["remote-site-name", "site-name", "siteName", "remote-site"], entry.site))
-    const localCircuit = String(pick(record,
-      ["local-access-cktname", "local-ackt-name", "local-circuit", "localCircuit"], "N/A"))
-    const remoteCircuit = String(pick(record,
-      ["remote-access-cktname", "remote-ackt-name", "remote-circuit", "remoteCircuit"], "N/A"))
+    entries.forEach(function (entry) {
+        const record = entry.record;
+        const site = String(pick(record,
+            ["remote-site-name", "site-name", "siteName", "remote-site"], entry.site));
+        const localCircuit = String(pick(record,
+            ["local-access-cktname", "local-ackt-name", "local-circuit", "localCircuit"], "N/A"));
+        const remoteCircuit = String(pick(record,
+            ["remote-access-cktname", "remote-ackt-name", "remote-circuit", "remoteCircuit"], "N/A"));
 
-    // Versa names these differently across releases; every known spelling is listed.
-    const latency = toNumber(pick(record,
-      ["delay", "latency", "two-way-delay", "rtt", "avg-delay", "latency-ms"], null))
-    const forwardJitter = toNumber(pick(record,
-      ["fwd-delay-var", "forward-jitter", "jitter", "delay-variation", "fwd-jitter"], null))
-    const reverseJitter = toNumber(pick(record,
-      ["rev-delay-var", "reverse-jitter", "rev-jitter"], null))
-    const forwardLoss = toNumber(pick(record,
-      ["fwd-loss-ratio", "forward-loss", "loss-ratio", "packet-loss", "loss", "pdu-loss-ratio"], null))
-    const reverseLoss = toNumber(pick(record,
-      ["rev-loss-ratio", "reverse-loss"], null))
+        // Versa names these differently across releases; every known spelling is listed.
+        const latency = toNumber(pick(record,
+            ["delay", "latency", "two-way-delay", "rtt", "avg-delay", "latency-ms"], null));
+        const forwardJitter = toNumber(pick(record,
+            ["fwd-delay-var", "forward-jitter", "jitter", "delay-variation", "fwd-jitter"], null));
+        const reverseJitter = toNumber(pick(record,
+            ["rev-delay-var", "reverse-jitter", "rev-jitter"], null));
+        const forwardLoss = toNumber(pick(record,
+            ["fwd-loss-ratio", "forward-loss", "loss-ratio", "packet-loss", "loss", "pdu-loss-ratio"], null));
+        const reverseLoss = toNumber(pick(record,
+            ["rev-loss-ratio", "reverse-loss"], null));
 
-    if (latency !== null || forwardLoss !== null || reverseLoss !== null) recognisedMetrics = true
-    if (latency !== null && (worstLatency === null || latency > worstLatency)) worstLatency = latency
-    const loss = forwardLoss !== null ? forwardLoss : reverseLoss
-    if (loss !== null && (worstLoss === null || loss > worstLoss)) worstLoss = loss
+        if (latency !== null || forwardLoss !== null || reverseLoss !== null) recognisedMetrics = true;
+        if (latency !== null && (worstLatency === null || latency > worstLatency)) worstLatency = latency;
+        const loss = forwardLoss !== null ? forwardLoss : reverseLoss;
+        if (loss !== null && (worstLoss === null || loss > worstLoss)) worstLoss = loss;
 
-    let recordId = slaRecordId([site, localCircuit, remoteCircuit])
-    if (usedIds[recordId]) {
-      usedIds[recordId]++
-      recordId = recordId.slice(0, 47) + "-" + usedIds[recordId]
-    } else {
-      usedIds[recordId] = 1
+        let recordId = slaRecordId([site, localCircuit, remoteCircuit]);
+        if (usedIds[recordId]) {
+            usedIds[recordId]++;
+            recordId = recordId.slice(0, 47) + "-" + usedIds[recordId];
+        } else {
+            usedIds[recordId] = 1;
+        }
+
+        rowCount++;
+        slaTable.insertRecord(recordId, [
+            site,
+            localCircuit,
+            remoteCircuit,
+            latency,
+            forwardJitter,
+            reverseJitter,
+            forwardLoss,
+            reverseLoss
+        ]);
+    });
+
+    console.log("Reported " + rowCount + " SLA rows from " + sitesSampled + " of " +
+    sitesAvailable + " monitored sites.");
+    if (rowCount > 0 && !recognisedMetrics) {
+        console.log("Rows were returned but no latency or loss field was recognised. Compare the " +
+      "\"SLA detail fields\" line above with the candidate names in buildOutput and extend them.");
     }
 
-    rowCount++
-    slaTable.insertRecord(recordId, [
-      site,
-      localCircuit,
-      remoteCircuit,
-      latency,
-      forwardJitter,
-      reverseJitter,
-      forwardLoss,
-      reverseLoss
-    ])
-  })
-
-  console.log("Reported " + rowCount + " SLA rows from " + sitesSampled + " of " +
-    sitesAvailable + " monitored sites.")
-  if (rowCount > 0 && !recognisedMetrics) {
-    console.log("Rows were returned but no latency or loss field was recognised. Compare the " +
-      "\"SLA detail fields\" line above with the candidate names in buildOutput and extend them.")
-  }
-
-  return [
+    return [
     // Fabric-wide counts cover every path regardless of how many sites were sampled, so these
     // stay meaningful even with the walk disabled. "Paths Down" is the headline alertable number.
-    D.createVariable("paths-up", "Paths Up", summary.up, null, D.valueType.NUMBER),
-    D.createVariable("paths-down", "Paths Down", summary.down, null, D.valueType.NUMBER),
-    D.createVariable("paths-suspended", "Paths Suspended", summary.suspended, null, D.valueType.NUMBER),
-    D.createVariable("paths-active", "Paths Active", summary.active, null, D.valueType.NUMBER),
-    D.createVariable("sites-sampled", "Sites Sampled", sitesSampled, null, D.valueType.NUMBER),
-    D.createVariable("sites-available", "Sites Monitored", sitesAvailable, null, D.valueType.NUMBER),
-    D.createVariable("worst-latency", "Worst Latency", worstLatency, "ms", D.valueType.NUMBER),
-    D.createVariable("worst-loss", "Worst Loss", worstLoss, "%", D.valueType.NUMBER),
-    D.createVariable("source-appliance", "Source Appliance", source.name, null, D.valueType.STRING)
-  ]
+        D.createVariable("paths-up", "Paths Up", summary.up, null, D.valueType.NUMBER),
+        D.createVariable("paths-down", "Paths Down", summary.down, null, D.valueType.NUMBER),
+        D.createVariable("paths-suspended", "Paths Suspended", summary.suspended, null, D.valueType.NUMBER),
+        D.createVariable("paths-active", "Paths Active", summary.active, null, D.valueType.NUMBER),
+        D.createVariable("sites-sampled", "Sites Sampled", sitesSampled, null, D.valueType.NUMBER),
+        D.createVariable("sites-available", "Sites Monitored", sitesAvailable, null, D.valueType.NUMBER),
+        D.createVariable("worst-latency", "Worst Latency", worstLatency, "ms", D.valueType.NUMBER),
+        D.createVariable("worst-loss", "Worst Loss", worstLoss, "%", D.valueType.NUMBER),
+        D.createVariable("source-appliance", "Source Appliance", source.name, null, D.valueType.STRING)
+    ];
 }
 
 // ------------------------------------------------------------------------------------------
@@ -823,15 +823,15 @@ function buildOutput(entries, summary, sitesAvailable, sitesSampled, source) {
  * SLA detail is not required to pass, because the fabric-wide counts are useful on their own
  */
 function validate() {
-  login()
-    .then(selectSourceAppliance)
-    .then(function () {
-      D.success()
-    })
-    .catch(function (error) {
-      console.log("Validation failed: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+    login()
+        .then(selectSourceAppliance)
+        .then(function () {
+            D.success();
+        })
+        .catch(function (error) {
+            console.log("Validation failed: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -841,30 +841,30 @@ function validate() {
  * loss for a bounded set of sites when the Director release exposes them
  */
 function get_status() {
-  login()
-    .then(selectSourceAppliance)
-    .then(function (source) {
-      return retrieveSummary(source).then(function (summary) {
-        return tryBulkPaths(source, 0).then(function (bulkEntries) {
-          if (bulkEntries.length > 0) {
-            const variables = buildOutput(bulkEntries, summary, bulkEntries.length,
-              bulkEntries.length, source)
-            D.success(variables, slaTable)
-            return
-          }
-          return retrieveSiteIndex(source).then(function (available) {
-            const chosen = selectSites(available)
-            return walkSites(source, chosen).then(function (entries) {
-              const variables = buildOutput(entries, summary, available.length, chosen.length,
-                source)
-              D.success(variables, slaTable)
-            })
-          })
+    login()
+        .then(selectSourceAppliance)
+        .then(function (source) {
+            return retrieveSummary(source).then(function (summary) {
+                return tryBulkPaths(source, 0).then(function (bulkEntries) {
+                    if (bulkEntries.length > 0) {
+                        const variables = buildOutput(bulkEntries, summary, bulkEntries.length,
+                            bulkEntries.length, source);
+                        D.success(variables, slaTable);
+                        return;
+                    }
+                    return retrieveSiteIndex(source).then(function (available) {
+                        const chosen = selectSites(available);
+                        return walkSites(source, chosen).then(function (entries) {
+                            const variables = buildOutput(entries, summary, available.length, chosen.length,
+                                source);
+                            D.success(variables, slaTable);
+                        });
+                    });
+                });
+            });
         })
-      })
-    })
-    .catch(function (error) {
-      console.log("Failed to retrieve SLA metrics: " + error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    })
+        .catch(function (error) {
+            console.log("Failed to retrieve SLA metrics: " + error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

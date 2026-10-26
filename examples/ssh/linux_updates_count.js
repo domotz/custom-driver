@@ -1,21 +1,21 @@
-/** 
+/**
  * Name: Linux Updates Count (apt-based)
  * Description: Retrieve the count of available updates on a Linux host
- * 
+ *
  * Communication protocol is SSH
- * 
+ *
  * Tested on Linux: Ubuntu 22.04.3 LTS"
- * 
+ *
  * Requires:
  *    - requires apt
  *    - requires grep
- *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL 
- * 
+ *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL
+ *
  * Creates custom driver variables for the count of available updates for specified packages
- * 
+ *
 **/
 
-var packagesFilter = D.getParameter("packagesFilter")
+var packagesFilter = D.getParameter("packagesFilter");
 var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade ";
 
 if (packagesFilter.length > 0) {
