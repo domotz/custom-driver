@@ -1,13 +1,12 @@
-global.D = {
-    device: {
-        createVariable: function () {
-        }
-    }
-};
+var mockD = require("./helpers/mock-d");
+
+// The driver has no module.exports and runs top-level code against D, so it is
+// loaded through the vm harness, which exposes its functions on the sandbox.
+var driver = mockD.loadDriver("ssh/mysql.js", mockD.createMockD());
 
 describe("MySQL driver testing", function () {
     describe("Output parsing", function () {
-        var parse = require("../ssh/mysql").parse;
+        var parse = driver.parse;
         it("Should handle gracefully a total failure", function () {
             var result = parse(outputTotalFail);
             expect(result).toEqual({
@@ -73,7 +72,7 @@ describe("MySQL driver testing", function () {
     });
 
     describe("Running detection", function () {
-        var isRunning = require("../ssh/mysql").isRunning;
+        var isRunning = driver.isRunning;
         it("Should mark as running if version is detected", function () {
             expect(isRunning({ version: "foo" })).toBeTrue();
         });
@@ -89,7 +88,7 @@ describe("MySQL driver testing", function () {
     });
 
     describe("Time parsing", function () {
-        var toHours = require("../ssh/mysql").toHours;
+        var toHours = driver.toHours;
         it("Should parse seconds", function () {
             expect(toHours("4 sec")).toEqual("0");
         });

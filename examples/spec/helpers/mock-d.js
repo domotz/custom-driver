@@ -26,24 +26,6 @@ var vm = require("vm");
 
 var EXAMPLES_ROOT = path.resolve(__dirname, "..", "..");
 
-// A q-compatible deferred backed by a native Promise (drivers use
-// D.q.defer() then .resolve()/.reject()/.promise with .then()/.catch()).
-function makeQ() {
-    return {
-        defer: function () {
-            var deferred = {};
-            deferred.promise = new Promise(function (resolve, reject) {
-                deferred.resolve = resolve;
-                deferred.reject = reject;
-            });
-            return deferred;
-        },
-        all: function (promises) {
-            return Promise.all(promises);
-        }
-    };
-}
-
 function createMockD(options) {
     options = options || {};
 
@@ -88,8 +70,6 @@ function createMockD(options) {
     }
 
     var D = {
-        q: makeQ(),
-
         errorType: {
             AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
             RESOURCE_UNAVAILABLE: "RESOURCE_UNAVAILABLE",
