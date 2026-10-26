@@ -25,7 +25,7 @@ is what catches those typos.
 
 ## The robustness net
 
-For each driver, each entry point (`validate`, `get_status`, ...) and each hostile scenario (device
+For each driver, each entry point (`validate`, `get_status`, `backup`, `custom_N`) and each hostile scenario (device
 refuses, answers empty, answers garbage, never answers, ...), the net runs the driver the way the
 collector sandbox does: a fresh SES Compartment with the same endowments and the same async wrapper,
 against a strict fake `D`. A case passes when the driver reports exactly through `D.success` or
@@ -42,9 +42,15 @@ with one of these reasons:
 | `runaway: more than 200 transport calls ...` | a retry or polling loop that never stops | bound the loop |
 | `never reported: went idle ...` | nothing pending and no report; production runs into the script timeout | report on every path (add the missing `else` or `.catch`) |
 | `timed out after N ms without reporting` | still pending at the time limit with no report | make sure a failed or silent device ends in `D.failure` |
+| `never reported` | the run ended with no report and none of the reasons above (a fallback; the two "never reported"/"timed out" rows above are the usual form) | as for `never reported: went idle ...` |
 
 Known behaviour changes that were deliberately not made are listed under "Needs Andrea" in
 `docs/superpowers/notes/2026-10-26-robustness-baseline.md`.
+
+Size (2026-10-26): 276 drivers, 583 entry points (`validate` 276, `get_status` 265, `backup` 11,
+`custom_N` 31 in 14 drivers) × 8 scenarios = 4,664 net cases; `npm test` runs 4,904 specs in about 45 s.
+Entry points are found by `net/catalogue.js` (`ENTRY_POINT_RE`), which also accepts a declaration
+written right after a JSDoc block (`*/function validate() {`).
 
 ## Wrapped and unwrapped callbacks (7.4.4+)
 
@@ -69,7 +75,7 @@ describe("http/apache2_status driver", function () {
         driver = harnessLib.loadDriver("http/apache2_status.js", harnessLib.createMockD());
     });
     it("parses the status text", function () {
-        expect(driver.convertToJson("Uptime: 3600").Uptime).toEqual(3600);
+        expect(driver.convertToJson("Uptime: 3600").ServerUptimeSeconds).toEqual(3600);
     });
 });
 ```
