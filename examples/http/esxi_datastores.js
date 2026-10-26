@@ -347,6 +347,8 @@ function validate() {
         .then(function (sessionKey) {
             if (sessionKey && sessionKey.length > 0) {
                 D.success();
+            } else {
+                D.failure(D.errorType.GENERIC_ERROR);
             }
         })
         .catch(function () {
