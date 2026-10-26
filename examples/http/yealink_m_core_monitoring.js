@@ -47,7 +47,7 @@ function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -121,6 +121,15 @@ function login() {
     });
 }
 
+
+/**
+ * Stops a promise chain after D.success/D.failure has already ended the execution.
+ * @returns A promise that never settles, so no later step of the chain runs.
+ */
+function haltChain() {
+    return new Promise(function () {});
+}
+
 /**
  * Retrieves the list of connected devices from the Yealink M Core system.
  * @returns {Object} A promise that resolves with the device list data.
@@ -130,7 +139,7 @@ function getDeviceList() {
     if (!authToken) {
         console.error("No auth token available for device list request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -178,7 +187,7 @@ function getAudioStatus() {
     if (!authToken) {
         console.error("No auth token available for audio status request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -227,7 +236,7 @@ function getCameraPosition() {
     if (!authToken) {
         console.error("No auth token available for camera position request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -275,7 +284,7 @@ function getSystemStatus() {
     if (!authToken) {
         console.error("No auth token available for system status request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -540,7 +549,7 @@ function rebootDevice(serialNumber) {
     if (!authToken) {
         console.error("No auth token available for reboot request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var rebootData = {

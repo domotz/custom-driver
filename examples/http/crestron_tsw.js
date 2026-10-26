@@ -20,7 +20,7 @@ function processResponse(resolve, reject) {
     return function process(err, response, body) {
         if (err) {
             console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode >= 400 && response.statusCode < 500) {
             console.error("error status: " + response.statusCode);

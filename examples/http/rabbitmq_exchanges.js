@@ -67,7 +67,7 @@ function httpGet(url) {
 
         }, function (err, response, body) {
             if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -177,8 +177,11 @@ function validate() {
     loadData()
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
-
 }
 
 //Indicate the successful execution for variable list and table

@@ -93,7 +93,7 @@ function getRedisInfo() {
         telnet(redisTelnetParams, function (out, err) {
             if (err) {
                 console.error("error while executing command: " + redisTelnetParams.command);
-                failure(err);
+                return failure(err);
             }
             if (!out) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);

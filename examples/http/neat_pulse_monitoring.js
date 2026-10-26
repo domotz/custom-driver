@@ -131,14 +131,19 @@ function findDevice(endpoints) {
         break;
       }
     }
-    return new Promise(function (resolve) {
+    if (!device) {
+        D.success([D.createVariable("msg", "Message", "Serial " +  D.device.serial() + " not found in Neat inventory", null, D.valueType.STRING)]);
+        return haltChain();
+    }
+    return device.id;
+}
 
-        if (!device)
-            D.success([D.createVariable("msg", "Message", "Serial " +  D.device.serial() + " not found in Neat inventory", null, D.valueType.STRING)]);
-        else   
-            resolve(device.id);
-
-    });
+/**
+ * Stops a promise chain after D.success/D.failure has already ended the execution.
+ * @returns A promise that never settles, so no later step of the chain runs.
+ */
+function haltChain() {
+    return new Promise(function () {});
 }
 
 function retrieveEndpointBasicInfo(deviceID) {
@@ -442,7 +447,7 @@ function checkHttpError(err, response, body) {
     
     if (err) {
         console.error(err);
-        D.failure(D.errorType.GENERIC_ERROR);
+        return D.failure(D.errorType.GENERIC_ERROR);
     }
     if (response.statusCode === 429) { //Too many requests to Neat Pulse API, retry later
         createDeviceInfoVariables({})

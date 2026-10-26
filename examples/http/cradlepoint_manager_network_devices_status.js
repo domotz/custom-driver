@@ -65,14 +65,19 @@ function getNetworkDevicesStatus() {
                 return D.failure(D.errorType.GENERIC_ERROR);
             }
             if(!response){
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode === 401 || response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
+                return D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (response.statusCode !== 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
-            resolve(JSON.parse(body));
+            try {
+                resolve(JSON.parse(body));
+            } catch (e) {
+                console.error(e);
+                D.failure(D.errorType.PARSING_ERROR);
+            }
         });
     });
 }

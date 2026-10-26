@@ -237,6 +237,7 @@ function healthCheck (streamUrisProfiles) {
             D.device.sendTelnetCommand(telnetParams, function (out, err) {
               if (err) {
                 console.log(err)
+                resolve({ healthStatus: 'NOT OK', profileName: stream.profileName })
               } else {
                 resolve({ healthStatus: out, profileName: stream.profileName })
               }

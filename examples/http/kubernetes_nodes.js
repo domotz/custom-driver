@@ -65,7 +65,7 @@ function httpGet(params) {
         D.device.http.get(params, function (err, response) {
             if (err) {
                 console.error(err);
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             resolve(response);
 
@@ -424,6 +424,9 @@ function validate() {
         Kube.getEndpointIPs()
     ]).then(function () {
         D.success();
+    }).catch(function (e) {
+        console.error(e);
+        D.failure(D.errorType.GENERIC_ERROR);
     });
 }
 

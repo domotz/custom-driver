@@ -25,17 +25,17 @@ var sshConfig = {
 // Check for Errors on the SSH command response
 function checkSshError(err) {
     if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if(err.code == 5) return D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) return D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 function executeCommand(command){
     sshConfig.command = command;
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
         D.device.sendSSHCommand(sshConfig, function (out, err) {
-            if(err) checkSshError(err);
+            if(err) return reject(err);
             resolve(out);
         });
     });
@@ -50,7 +50,7 @@ function custom_1() {
     // Command to issued when pressing the button
     executeCommand(cmdReboot).then(function(){
         D.success();
-    });
+    }).catch(checkSshError);
 }
 
 /**
@@ -62,7 +62,7 @@ function validate() {
     console.info("Verifying device can respond correctly to command ... ");
     executeCommand(cmdTemperature).then(function(){
         D.success();
-    });
+    }).catch(checkSshError);
 }
 
 // Create the table definition
@@ -130,5 +130,6 @@ function get_status() {
         .then(parseData)
         .then(function(touchScreenSensorTable){
             D.success(touchScreenSensorTable);
-        });
+        })
+        .catch(checkSshError);
 }

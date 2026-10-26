@@ -253,7 +253,7 @@ function getApache2Status() {
     return new Promise(function (resolve) {
         D.device.http.get(apacheHttpParams, function (error, response, body) {
             if (error) {
-                failure(error);
+                return failure(error);
             }
             if (response.statusCode == 401) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);

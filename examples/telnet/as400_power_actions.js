@@ -39,7 +39,7 @@ function getAS400Info() {
         telnet(telnetParams, function (out, err) {
             if (err) {
                 console.error("error while executing command: " + telnetParams.command);
-                failure(err);
+                return failure(err);
             }
             if (out.indexOf("Spegnimento immediato del sistema") !== -1) {
                 shutdown = true;

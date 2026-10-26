@@ -205,7 +205,7 @@ function retrieveLocationInfo(locationId) {
     if (locationId === "N/A" || !locationId) {
       console.log('Invalid location ID: ', locationId)
       resolve(null)
-    
+      return
     }
     const config = generateConfig('/v2/rooms/locations/' + locationId)  
     zoomResources.http.get(config, function(error, response, body) {

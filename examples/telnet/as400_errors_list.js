@@ -48,7 +48,7 @@ function getAS400Info() {
         telnet(telnetParams, function (out, err) {
             if (err) {
                 console.error("error while executing command: " + telnetParams.command);
-                failure(err);
+                return failure(err);
             }
             resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
         });
@@ -72,7 +72,7 @@ function errorParsing(result) {
         telnet(telnetParams, function (out, err) {
             if (err) {
                 console.error("error while executing command: " + telnetParams.command);
-                failure(err);
+                return failure(err);
             }
             resolve(out.replace(/\\x1B\\[[0-9;]*[a-zA-Z]/g, " "));
         });

@@ -36,7 +36,7 @@ function executeCommand(command) {
         D.device.sendSSHCommand(sshConfig, function (output, error) {
             if (error) {
                 checkSshError(error);
-                reject(error);
+                return reject(error);
             }
             resolve(output);
         });

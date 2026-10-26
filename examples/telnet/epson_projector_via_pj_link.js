@@ -197,6 +197,7 @@ function executeCommand(client, command) {
                 console.error('Error:', responseObject.err);
                 reject(responseObject.err);
                 client.end();
+                return;
             }
             switch (responseObject.cmd) {
             case AUTH:
@@ -219,6 +220,7 @@ function executeCommand(client, command) {
                 client.end();
                 console.info(responseObject.args);
                 resolve();
+                break;
             default:
                 client.write(command);
                 break;

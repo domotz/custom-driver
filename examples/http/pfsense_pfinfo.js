@@ -480,7 +480,7 @@ function execute() {
 function validate() {
     execute().then(function () {
         D.success();
-    });
+    }).catch(failure);
 }
 
 /**

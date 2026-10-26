@@ -86,6 +86,15 @@ function login() {
     });
 }
 
+
+/**
+ * Stops a promise chain after D.success/D.failure has already ended the execution.
+ * @returns A promise that never settles, so no later step of the chain runs.
+ */
+function haltChain() {
+    return new Promise(function () {});
+}
+
 /**
  * Retrieves device configuration from the Logitech device.
  * @returns A promise that resolves with the device configuration data.
@@ -95,7 +104,7 @@ function getDeviceConfig() {
     if (!authToken) {
         console.error("No auth token available for device config request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -146,7 +155,7 @@ function getDeviceInsights() {
     if (!authToken) {
         console.error("No auth token available for device insights request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -197,7 +206,7 @@ function getRoomInsights() {
     if (!authToken) {
         console.error("No auth token available for room insights request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {
@@ -248,7 +257,7 @@ function getPeripheralsData() {
     if (!authToken) {
         console.error("No auth token available for peripherals request");
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-        return new Promise(function () {});
+        return haltChain();
     }
     
     var config = {

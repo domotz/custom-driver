@@ -32,7 +32,7 @@ function getComponentStatus() {
         }, function (error, response, body) {
             if (error) {
                 console.error(error);
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode == 401) {
                 D.failure(D.errorType.AUTHENTICATION_ERROR);

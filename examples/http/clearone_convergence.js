@@ -62,7 +62,7 @@ function httpGet(url) {
         website.http.get(config, function (error, response, body) {
     		if (error) {
                 console.error(error)
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);

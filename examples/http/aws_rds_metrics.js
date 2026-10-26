@@ -171,7 +171,7 @@ function httpPost(data) {
         },
         function (err, response, body) {
             if (err) {
-                D.failure(D.errorType.GENERIC_ERROR);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
             if (response.statusCode == 404) {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);

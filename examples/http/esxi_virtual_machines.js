@@ -117,7 +117,7 @@ function sendSoapRequest (body, extractData) {
     D.device.http.post(config, function (error, response, body) {
       if (error) {
         console.log(error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        return D.failure(D.errorType.GENERIC_ERROR)
       }
       const $ = D.htmlParse(body)
       const faultCode = $('faultcode').text()

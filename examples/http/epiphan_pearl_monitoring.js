@@ -212,76 +212,74 @@ function getSystemStorage() {
 function createVariables() {
     const variables = []
     
-    return new Promise(function (resolve, reject) {
-        // Execute all API calls in parallel
-        Promise.all([
-            getSystemIdent(),
-            getSystemFirmware(),
-            getSystemStatus(),
-            getSystemConnectivity(),
-            getSystemStorage()
-        ]).then(function(responses) {
-            const identData = responses[0]
-            const firmwareData = responses[1]
-            const statusData = responses[2]
-            const connectivityData = responses[3]
-            const storageData = responses[4]
+    // Execute all API calls in parallel
+    return Promise.all([
+        getSystemIdent(),
+        getSystemFirmware(),
+        getSystemStatus(),
+        getSystemConnectivity(),
+        getSystemStorage()
+    ]).then(function(responses) {
+        const identData = responses[0]
+        const firmwareData = responses[1]
+        const statusData = responses[2]
+        const connectivityData = responses[3]
+        const storageData = responses[4]
+    
+        // System Identification variables
+        if (identData && identData.status === "ok" && identData.result) {
+            const ident = identData.result
+            variables.push(D.createVariable("system-name", "System Name", ident.name || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("system-location", "System Location", ident.location || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("system-description", "System Description", ident.description || "N/A", null, D.valueType.STRING))
+        }
+    
+        // Firmware variables
+        if (firmwareData && firmwareData.status === "ok" && firmwareData.result) {
+            const firmware = firmwareData.result
+            variables.push(D.createVariable("firmware-version", "Firmware Version", firmware.version || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("firmware-revision", "Firmware Revision", firmware.revision || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("product-name", "Product Name", firmware.product_name || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("product-id", "Product ID", firmware.product_id || "N/A", null, D.valueType.NUMBER))
+        }
+    
+        // System Status variables
+        if (statusData && statusData.status === "ok" && statusData.result) {
+            const status = statusData.result
+            variables.push(D.createVariable("system-uptime", "System Uptime", status.uptime || 0, "seconds", D.valueType.NUMBER))
+            variables.push(D.createVariable("cpu-load", "CPU Load", status.cpuload || 0, "%", D.valueType.NUMBER))
+            variables.push(D.createVariable("cpu-temperature", "CPU Temperature", status.cputemp || 0, "°C", D.valueType.NUMBER))
+        }
+    
+        // Connectivity variables
+        if (connectivityData && connectivityData.status === "ok" && connectivityData.result) {
+            const connectivity = connectivityData.result
+            variables.push(D.createVariable("external-ip", "External IP", connectivity.external_ip || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("dns-status", "DNS Status", connectivity.dns || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("http-status", "HTTP Status", connectivity.http || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("https-status", "HTTPS Status", connectivity.https || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("mdns-name", "mDNS Name", connectivity.mdns || "N/A", null, D.valueType.STRING))
+        }
+    
+        // Storage variables
+        if (storageData && storageData.status === "ok" && storageData.result) {
+            const storage = storageData.result
+            variables.push(D.createVariable("storage-state", "Storage State", storage.state || "N/A", null, D.valueType.STRING))
+            variables.push(D.createVariable("storage-total", "Storage Total", storage.total || 0, "bytes", D.valueType.NUMBER))
+            variables.push(D.createVariable("storage-free", "Storage Free", storage.free || 0, "bytes", D.valueType.NUMBER))
         
-            // System Identification variables
-            if (identData && identData.status === "ok" && identData.result) {
-                const ident = identData.result
-                variables.push(D.createVariable("system-name", "System Name", ident.name || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("system-location", "System Location", ident.location || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("system-description", "System Description", ident.description || "N/A", null, D.valueType.STRING))
+            // Calculate storage usage percentage
+            if (storage.total && storage.free) {
+                const used = storage.total - storage.free
+                const usagePercent = Math.round((used / storage.total) * 100)
+                variables.push(D.createVariable("storage-usage", "Storage Usage", usagePercent, "%", D.valueType.NUMBER))
             }
-        
-            // Firmware variables
-            if (firmwareData && firmwareData.status === "ok" && firmwareData.result) {
-                const firmware = firmwareData.result
-                variables.push(D.createVariable("firmware-version", "Firmware Version", firmware.version || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("firmware-revision", "Firmware Revision", firmware.revision || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("product-name", "Product Name", firmware.product_name || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("product-id", "Product ID", firmware.product_id || "N/A", null, D.valueType.NUMBER))
-            }
-        
-            // System Status variables
-            if (statusData && statusData.status === "ok" && statusData.result) {
-                const status = statusData.result
-                variables.push(D.createVariable("system-uptime", "System Uptime", status.uptime || 0, "seconds", D.valueType.NUMBER))
-                variables.push(D.createVariable("cpu-load", "CPU Load", status.cpuload || 0, "%", D.valueType.NUMBER))
-                variables.push(D.createVariable("cpu-temperature", "CPU Temperature", status.cputemp || 0, "°C", D.valueType.NUMBER))
-            }
-        
-            // Connectivity variables
-            if (connectivityData && connectivityData.status === "ok" && connectivityData.result) {
-                const connectivity = connectivityData.result
-                variables.push(D.createVariable("external-ip", "External IP", connectivity.external_ip || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("dns-status", "DNS Status", connectivity.dns || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("http-status", "HTTP Status", connectivity.http || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("https-status", "HTTPS Status", connectivity.https || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("mdns-name", "mDNS Name", connectivity.mdns || "N/A", null, D.valueType.STRING))
-            }
-        
-            // Storage variables
-            if (storageData && storageData.status === "ok" && storageData.result) {
-                const storage = storageData.result
-                variables.push(D.createVariable("storage-state", "Storage State", storage.state || "N/A", null, D.valueType.STRING))
-                variables.push(D.createVariable("storage-total", "Storage Total", storage.total || 0, "bytes", D.valueType.NUMBER))
-                variables.push(D.createVariable("storage-free", "Storage Free", storage.free || 0, "bytes", D.valueType.NUMBER))
-            
-                // Calculate storage usage percentage
-                if (storage.total && storage.free) {
-                    const used = storage.total - storage.free
-                    const usagePercent = Math.round((used / storage.total) * 100)
-                    variables.push(D.createVariable("storage-usage", "Storage Usage", usagePercent, "%", D.valueType.NUMBER))
-                }
-            }
-        
-            resolve(variables)
-        }).catch(function(error) {
-            console.error("Error creating variables: " + error)
-            reject(error)
-        })
+        }
+    
+        return variables
+    }).catch(function(error) {
+        console.error("Error creating variables: " + error)
+        throw error
     })
 }
 

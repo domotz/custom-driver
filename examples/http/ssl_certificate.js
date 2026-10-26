@@ -22,7 +22,7 @@ function getCertificateData() {
         D.device.http.getTLSCertificate({}, function (err, resp) {
                 if (err) {
                     console.error(""+err);
-                    D.failure();
+                    return D.failure();
                 }
                 resolve(resp);
             });
