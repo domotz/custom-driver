@@ -107,7 +107,7 @@ function extractFullPrompt() {
                 checkSshError(err);
                 reject(err);
             } else {
-                if (out && out.length > 0) {
+                if (out && out.length > 0 && typeof out[0] === "string" && out[0].split("\n").length > 1) {
                     // Extract the prompt from the output
                     const fullPrompt = out[0].split("\n")[1].trim();
                     console.info("Full prompt extracted: " + fullPrompt);
