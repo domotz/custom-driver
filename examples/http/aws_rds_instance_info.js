@@ -36,8 +36,6 @@ function prepareParams(params) {
     Object.keys(params).sort().forEach(function (key) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
-        } else {
-            result.push(prepareObject(key, params[key]));
         }
     });
     return result.join("&");

@@ -45,7 +45,6 @@ function validate() {
     console.info("Verifying credentials ... ", commandValidate);
     sshCommandOptions["command"] = commandValidate;
     function loginCallback(output, error) {
-        var variables = [];
         if (error) {
             checkForPasswordError(error);
         } else {

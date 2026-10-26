@@ -95,6 +95,7 @@ function getQueues(page) {
     var params = [];
     params.push("page_size=100");
     params.push("page=" + page);
+    // eslint-disable-next-line no-undef -- optional filter, only set if declared in this file
     if (typeof queueNameRegex !== "undefined") params.push("name=" + queueNameRegex + "&use_regex=true");
     query += "?" + params.join("&");
     return httpGet(query)
@@ -127,9 +128,9 @@ function fillTable(queues) {
             var publishDetails = item.message_stats && item.message_stats.publish_details && item.message_stats.publish_details.rate || 0;
             var published = item.message_stats && item.message_stats.publish || 0;
             var messagesDetails = item.messages_details && item.messages_details.rate || 0;
-            var deliverDetails = item.message_stats && item.message_stats.deliver_details && message_stats.deliver_details.rate || 0;
+            var deliverDetails = item.message_stats && item.message_stats.deliver_details && item.message_stats.deliver_details.rate || 0;
             var delivered = item.message_stats && item.message_stats.deliver || 0;
-            var ackDetails = item.message_stats && item.message_stats.ack_details && message_stats.ack_details.rate || 0;
+            var ackDetails = item.message_stats && item.message_stats.ack_details && item.message_stats.ack_details.rate || 0;
             var acknowledged = item.message_stats && item.message_stats.ack || 0;
             var queueMessages = item.messages || 0;
             var queueMemory = item.memory || 0;

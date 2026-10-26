@@ -92,6 +92,7 @@ function getExchanges(page) {
     var params = [];
     params.push("page_size=100");
     params.push("page=" + page);
+    // eslint-disable-next-line no-undef -- optional filter, only set if declared in this file
     if (typeof exchangeNameRegex !== "undefined") params.push("name=" + exchangeNameRegex + "&use_regex=true");
     query += "?" + params.join("&");
     return httpGet(query)

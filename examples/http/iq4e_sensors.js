@@ -32,7 +32,6 @@ function validate() {
         // We first need to validate for any common errors on the http response
         validateHttpResponse(response);
         // Secondly we validate if the http resource we have called contains any table data for the sensors
-        var $ = D.htmlParse(body);
         var dataPath = "body > div[id=wrapper] > div[id=main] > div[id=mainData] > div[id=mainContent] > table > tbody > tr[class=\"data \"]";
         if (dataPath === null || dataPath === undefined || dataPath.length < 1) {
             // Calling failure callback in case of no dataPath content

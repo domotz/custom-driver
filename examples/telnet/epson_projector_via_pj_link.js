@@ -279,15 +279,3 @@ function custom_2() {
         .then(D.success)
         .catch(handleError);
 }
-
-/**
- * @description Projector Password
- * @type SECRET_TEXT
- */
-var pwd = D.getParameter("pwd");
-
-/**
- * @description Default TCP Port
- * @type NUMBER
- */
-var defaultTcpPort = D.getParameter("defaultTcpPort");

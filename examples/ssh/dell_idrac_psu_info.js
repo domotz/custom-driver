@@ -173,8 +173,8 @@ function extractData(output) {
             }
         }
         var powerUsagelines = output.powerUsageOutput.split("\n");
-        for (var i = 0; i < powerUsagelines.length; i++) {
-            var line = powerUsagelines[i].trim();
+        for (i = 0; i < powerUsagelines.length; i++) {
+            line = powerUsagelines[i].trim();
             if (line.indexOf("System Board Pwr Consumption") !== -1) {
                 var parts = line.split(/\s+/);
                 var powerUsage = parseInt(parts[5].replace("Watts", "").trim()) || "N/A";

@@ -63,7 +63,7 @@ function sanitize(output) {
 // Extracts relevant data from the API response and populates the Custom Driver Table
 function extractData(data) {
     data.Temperatures.forEach(function (output) {
-        if (!output.Name || !output.ReadingCelsius == null || !output.Status || !output.Status.State) {
+        if (!output.Name || output.ReadingCelsius == null || !output.Status || !output.Status.State) {
             console.error("Missing required properties in the data");
         }
         var name = output.Name;

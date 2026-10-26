@@ -5,15 +5,15 @@
  * This driver create a table for apache2 processes with this columns:
  * %Srv: Child Server number - generation
  * %PID: OS process ID
- * %Acc:	Number of accesses this connection / this child / this slot
- * %M:	Mode of operation
- * %CPU:	CPU usage, number of seconds
- * %SS:	Seconds since beginning of most recent request
- * %Req:	Milliseconds required to process most recent request
- * %Dur:	Sum of milliseconds required to process all requests
- * %Conn:	Kilobytes transferred this connection
- * %Child:	Megabytes transferred this child
- * %Slot:	Total megabytes transferred this slot
+ * %Acc:    Number of accesses this connection / this child / this slot
+ * %M:  Mode of operation
+ * %CPU:    CPU usage, number of seconds
+ * %SS: Seconds since beginning of most recent request
+ * %Req:    Milliseconds required to process most recent request
+ * %Dur:    Sum of milliseconds required to process all requests
+ * %Conn:   Kilobytes transferred this connection
+ * %Child:  Megabytes transferred this child
+ * %Slot:   Total megabytes transferred this slot
  * %Client
  * %Protocol
  * %VHost

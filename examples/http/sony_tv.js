@@ -129,7 +129,7 @@ function retrieveVideoSource() {
             checkHttpError(err, response, body);
             const responseAsJSON = JSON.parse(body);
 
-            if (!responseAsJSON.hasOwnProperty("error"))
+            if (!Object.prototype.hasOwnProperty.call(responseAsJSON, "error"))
                 videoSource = extractVideoSource(responseAsJSON);
             resolve();
         });

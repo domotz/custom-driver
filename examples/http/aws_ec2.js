@@ -118,7 +118,7 @@ function prepareParams(params) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
         } else {
-            result.push(prepareObject(key, params[key]));
+            result.push(prepareRecursive(key, params[key]));
         }
     });
     return result.join("&");

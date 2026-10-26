@@ -8,9 +8,9 @@
  * Tested on FlashSystem5000 version: 8.5.0.6
  *
  * Creates a Custom Driver table with the following columns:
- * 		- Enclosure ID: The enclosure id that contains the canister
- * 		- Canister ID: Indicates which of the canisters in the enclosure it is
- * 		- Status: The status of the canister
+ *      - Enclosure ID: The enclosure id that contains the canister
+ *      - Canister ID: Indicates which of the canisters in the enclosure it is
+ *      - Status: The status of the canister
  *    - Type: The type of canister
  *    - Node ID: The node id that corresponds to this canister
  *    - Node Name: The node anme that corresponds to this canister

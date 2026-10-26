@@ -93,7 +93,7 @@ function sshFailure(err, fallbackMsg) {
 function makeBackup(obj) {
     try {
         if (typeof D.createBackup === "function") return D.createBackup(obj);
-    } catch (e) {}
+    } catch (e) { /* fall back to the plain object */ }
     return obj;
 }
 

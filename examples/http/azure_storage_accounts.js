@@ -6,15 +6,15 @@
  * Communication protocol is HTTPS
  *
  * Creates Custom Driver table with the following columns:
- * 			- Resource Group
- * 			- Location
- * 			- Provisioning State
- * 			- Creation Time
- * 			- Primary Location
- * 			- Status of Primary
- * 			- SKU Name
- * 			- SKU Tier
- * 			- Kind
+ *          - Resource Group
+ *          - Location
+ *          - Provisioning State
+ *          - Creation Time
+ *          - Primary Location
+ *          - Status of Primary
+ *          - SKU Name
+ *          - SKU Tier
+ *          - Kind
  *      - Availability
  *      - Egress
  *      - Ingress

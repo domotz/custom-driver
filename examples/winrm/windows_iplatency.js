@@ -127,6 +127,7 @@ WinRMHandler.prototype.checkError = function (output) {
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
+    const self = this;
     config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
 
     return new Promise(function (resolve, reject) {

@@ -190,7 +190,6 @@ function buildConfigVars(callback) {
 
     loadConfig(function (result) {
         var configs = [];
-        var a = [].indexOf("hello");
         var servers = findServers([result]);
         servers.forEach(function (config, index) {
             var serverNameConfig = config.filter(function (c) { return c.name == "server_name"; });

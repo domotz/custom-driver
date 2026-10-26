@@ -94,15 +94,15 @@ describe("MySQL driver testing", function () {
             expect(toHours("4 sec")).toEqual("0");
         });
         it("Should parse minutes seconds", function () {
-            result = toHours("5 min 4 sec");
+            var result = toHours("5 min 4 sec");
             expect(result).toEqual("0.08");
         });
         it("Should parse hours minutes seconds", function () {
-            result = toHours("6 hours 5 min 4 sec");
+            var result = toHours("6 hours 5 min 4 sec");
             expect(result).toEqual("6.08");
         });
         it("Should parse days hours minutes seconds", function () {
-            result = toHours("7 days 6 hours 5 min 4 sec");
+            var result = toHours("7 days 6 hours 5 min 4 sec");
             expect(result).toEqual("174.08");
         });
     });

@@ -59,7 +59,7 @@ function sanitize(output) {
 function extractData(data) {
     if (data && data.Temperatures) {
         data.Temperatures.forEach(function (entry) {
-            if (!entry.Name || !entry.ReadingCelsius == null || !entry.Status || !entry.Status.State) {
+            if (!entry.Name || entry.ReadingCelsius == null || !entry.Status || !entry.Status.State) {
                 console.error("Missing required properties in the data");
                 D.failure(D.errorType.PARSING_ERROR);
             }

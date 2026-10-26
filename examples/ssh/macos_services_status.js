@@ -105,7 +105,7 @@ function executeCommand(command) {
     return new Promise(function (resolve, reject) {
         D.device.sendSSHCommand(sshConfig, function (out, err) {
             if (err) {
-                checkSsherr(err);
+                checkSshError(err);
                 reject(err);
             } else {
                 resolve(out);

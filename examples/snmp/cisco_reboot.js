@@ -61,7 +61,7 @@ function custom_1() {
     // The callback functions to determine success or failure of the snmp set call
     function setCallback(output, error) {
         if (error || output[tsMsgSendOid].error) {
-            console.error("Received an error during the SNMP Set ", error || output[sysUptimeOid].error);
+            console.error("Received an error during the SNMP Set ", error || output[tsMsgSendOid].error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else {
             D.success();

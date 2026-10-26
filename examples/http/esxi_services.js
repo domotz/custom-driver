@@ -226,7 +226,6 @@ function populateTable(serviceDetails) {
  */
 function generateTabelOutput(soapResponse) {
     const $ = D.htmlParse(soapResponse);
-    let i = 1;
     $('propSet:has(name:contains("config.service")) val service').each(function () {
         const service = $(this);
         populateTable({

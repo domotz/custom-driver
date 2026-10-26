@@ -359,7 +359,7 @@ function retrieveOngoingMeetings(meetings) {
 function insertRecord(room) {
     const roomData = room["0"] || {};
     const recordValues = roomProperties.map(function (item) {
-        return room[item.key] || "N/A" && roomData[item.key] || "N/A";
+        return room[item.key] || roomData[item.key] || "N/A";
     });
     roomsTable.insertRecord(room.id, recordValues);
 }

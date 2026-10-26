@@ -42,8 +42,6 @@ function prepareParams(params) {
         if (!params[key]) return;
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
-        } else {
-            result.push(prepareObject(key, params[key]));
         }
     });
     return result.join("&");

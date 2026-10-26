@@ -402,7 +402,7 @@ function createDisplayName(pathParts) {
  */
 function traverseRoomInsightsData(data, basePath) {
     for (var property in data) {
-        if (data.hasOwnProperty(property) && data[property] !== undefined) {
+        if (Object.prototype.hasOwnProperty.call(data, property) && data[property] !== undefined) {
             var value = data[property];
             var currentPath = basePath.concat([property]);
 
@@ -472,7 +472,7 @@ function getValueType(value) {
 function createPeripheralsVariables(peripheralsData) {
     // Iterate through all properties in peripheralsData
     for (var peripheralType in peripheralsData) {
-        if (peripheralsData.hasOwnProperty(peripheralType)) {
+        if (Object.prototype.hasOwnProperty.call(peripheralsData, peripheralType)) {
             var peripheralArray = peripheralsData[peripheralType];
 
             // Check if the property is an array (peripheral collection)
@@ -486,7 +486,7 @@ function createPeripheralsVariables(peripheralsData) {
 
                     // Handle all properties of the peripheral item
                     for (var propertyName in peripheralItem) {
-                        if (peripheralItem.hasOwnProperty(propertyName) && peripheralItem[propertyName] !== undefined) {
+                        if (Object.prototype.hasOwnProperty.call(peripheralItem, propertyName) && peripheralItem[propertyName] !== undefined) {
                             var propertyValue = peripheralItem[propertyName];
 
                             // Create the variable ID (sanitized for internal use)
@@ -666,7 +666,7 @@ function get_status() {
         })
         .then(function (deviceConfigResponse) {
             // Extract device config data and get CollabOS version
-            var deviceConfigSuccess = extractDeviceConfigData(deviceConfigResponse);
+            extractDeviceConfigData(deviceConfigResponse);
 
             // Extract CollabOS version from response for room insights check
             try {

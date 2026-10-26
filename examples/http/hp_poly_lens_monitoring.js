@@ -245,9 +245,8 @@ function get_status() {
                 // Retrieve all devices and display them in a table
                 return retrieveInventory()
                     .then(processAllDevicesForTable);
-            }
-            // Check if cloudControllerDeviceID is "error" to show error details
-            else if (cloudControllerDeviceID && cloudControllerDeviceID.trim().toLowerCase() === "error") {
+            } else if (cloudControllerDeviceID && cloudControllerDeviceID.trim().toLowerCase() === "error") {
+                // Check if cloudControllerDeviceID is "error" to show error details
                 console.log("Error mode: retrieving inventory to capture GraphQL errors");
                 // Retrieve inventory to capture errors, then return error variables
                 return retrieveInventory()
@@ -285,9 +284,8 @@ function get_status() {
                             D.success([fallbackError]);
                         }
                     });
-            }
-            // Check if cloudControllerDeviceID is provided and not null/empty/string "null"
-            else if (cloudControllerDeviceID && cloudControllerDeviceID.trim() !== "" && cloudControllerDeviceID !== "null") {
+            } else if (cloudControllerDeviceID && cloudControllerDeviceID.trim() !== "" && cloudControllerDeviceID !== "null") {
+                // Check if cloudControllerDeviceID is provided and not null/empty/string "null"
                 console.log("Using provided cloudControllerDeviceID:", cloudControllerDeviceID);
                 // Skip inventory retrieval and device finding, use provided ID directly
                 return retrieveDeviceDetails(cloudControllerDeviceID);
@@ -588,7 +586,7 @@ function retrieveInventoryByMacAddress() {
                         }
 
                         // Extract the device from the edges array (only one device expected due to pageSize: 1)
-                        var device = bodyAsJSON.data.deviceSearch.edges[0].node;
+                        const device = bodyAsJSON.data.deviceSearch.edges[0].node;
                         console.log("Processing device data directly from MAC address lookup");
 
                         // Process the device data directly (same as retrieveDeviceDetails does)
@@ -609,7 +607,7 @@ function retrieveInventoryByMacAddress() {
                     }
 
                     // Extract the device from the edges array (only one device expected due to pageSize: 1)
-                    var device = bodyAsJSON.data.deviceSearch.edges[0].node;
+                    const device = bodyAsJSON.data.deviceSearch.edges[0].node;
                     console.log("Processing device data directly from MAC address lookup");
 
                     // Process the device data directly (same as retrieveDeviceDetails does)

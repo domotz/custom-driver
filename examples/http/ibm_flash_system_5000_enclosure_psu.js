@@ -8,10 +8,10 @@
  * Tested on FlashSystem5000 version: 8.5.0.6
  *
  * Creates a Custom Driver table with the following columns:
- * 		- Enclosure ID: The ID of the enclosure that contains the PSU
- * 		- PSU ID: The ID of the PSU in the enclosure
- * 		- Status: The status of the power and cooling unit in the enclosure
- * 		- Input Power: The amount of electrical power being supplied to the PSU
+ *      - Enclosure ID: The ID of the enclosure that contains the PSU
+ *      - PSU ID: The ID of the PSU in the enclosure
+ *      - Status: The status of the power and cooling unit in the enclosure
+ *      - Input Power: The amount of electrical power being supplied to the PSU
  *
  **/
 

@@ -284,6 +284,7 @@ WinRMHandler.prototype.checkError = function (output) {
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
+    const self = this;
     config.command = command;
     return new Promise(function (resolve, reject) {
         D.device.sendWinRMCommand(config, function (output) {
