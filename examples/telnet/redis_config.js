@@ -120,7 +120,7 @@ function splitToSections(results) {
             section = line.split(" ")[1].toLowerCase().trim();
             groupedResult[section] = [];
         } else if (section) {
-            groupedResult[section].push(section + ">" + line);
+            groupedResult[section].push(line);
         }
     }
     return groupedResult;

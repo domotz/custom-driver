@@ -1,0 +1,125 @@
+{
+    "tz270 all nat policies validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 all nat policies get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "NAT Policies",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Enabled"
+                },
+                {
+                    "label": "Inbound"
+                },
+                {
+                    "label": "Outbound"
+                },
+                {
+                    "label": "Source"
+                },
+                {
+                    "label": "Destination"
+                }
+            ],
+            "records": [
+                {
+                    "id": "wan-to-lan-masquerade-0a1b2c3d-4e5f-4a6b-8c7d-9e0f",
+                    "values": [
+                        "Default NAT policy",
+                        "Yes",
+                        "any",
+                        "X1",
+                        "original,translated : undefined",
+                        "original,translated : undefined"
+                    ]
+                },
+                {
+                    "id": "web-server-inbound-1b2c3d4e-5f6a-4b7c-9d8e-0f1a2b3",
+                    "values": [
+                        "-",
+                        "Yes",
+                        "X1",
+                        "any",
+                        "original,translated : undefined",
+                        "original,translated : undefined"
+                    ]
+                },
+                {
+                    "id": "legacy-ftp-2c3d4e5f-6a7b-4c8d-ae9f-1a2b3c4d5e03",
+                    "values": [
+                        "disabled after migration",
+                        "No",
+                        "X1",
+                        "any",
+                        "original,translated : undefined",
+                        "original,translated : undefined"
+                    ]
+                }
+            ]
+        }
+    },
+    "tz270 selected nat policies validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 selected nat policies get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "NAT Policies",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Enabled"
+                },
+                {
+                    "label": "Inbound"
+                },
+                {
+                    "label": "Outbound"
+                },
+                {
+                    "label": "Source"
+                },
+                {
+                    "label": "Destination"
+                }
+            ],
+            "records": [
+                {
+                    "id": "web-server-inbound-1b2c3d4e-5f6a-4b7c-9d8e-0f1a2b3",
+                    "values": [
+                        "-",
+                        "Yes",
+                        "X1",
+                        "any",
+                        "original,translated : undefined",
+                        "original,translated : undefined"
+                    ]
+                },
+                {
+                    "id": "legacy-ftp-2c3d4e5f-6a7b-4c8d-ae9f-1a2b3c4d5e03",
+                    "values": [
+                        "disabled after migration",
+                        "No",
+                        "X1",
+                        "any",
+                        "original,translated : undefined",
+                        "original,translated : undefined"
+                    ]
+                }
+            ]
+        }
+    }
+}

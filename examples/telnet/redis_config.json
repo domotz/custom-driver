@@ -1,6 +1,6 @@
 {
     "logo": "redis.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Redis Server General Properties",
     "description": "This script extracts Redis General Properties using telnet over redis port (default 6379)",
     "category": "Software Integration",

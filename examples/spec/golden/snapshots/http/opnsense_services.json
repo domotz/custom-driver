@@ -1,0 +1,73 @@
+{
+    "opnsense 23.7 all services validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 all services get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "configd",
+                "name": "configd",
+                "value": "running",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "dhcpd",
+                "name": "dhcpd",
+                "value": "running",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "unbound",
+                "name": "unbound",
+                "value": "running",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "openvpn",
+                "name": "openvpn",
+                "value": "stopped",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "ntpd",
+                "name": "ntpd",
+                "value": "running",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "opnsense 23.7 services matching a name validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 services matching a name get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "dhcpd",
+                "name": "dhcpd",
+                "value": "running",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "openvpn",
+                "name": "openvpn",
+                "value": "stopped",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

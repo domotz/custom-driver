@@ -1,0 +1,44 @@
+{
+    "two ready problems validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two ready problems get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "errorsNo",
+                "name": "Errors No",
+                "value": 2
+            }
+        ],
+        "table": {
+            "label": "AS400",
+            "columnHeaders": [
+                {
+                    "label": "Error Code"
+                },
+                {
+                    "label": "Error Date"
+                }
+            ],
+            "records": [
+                {
+                    "id": "9190541234",
+                    "values": [
+                        "SRCB6005104",
+                        "10/26/26  22:14:05"
+                    ]
+                },
+                {
+                    "id": "9190541300",
+                    "values": [
+                        "SRCB2003110",
+                        "10/27/26  07:41:30"
+                    ]
+                }
+            ]
+        }
+    }
+}

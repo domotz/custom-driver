@@ -182,9 +182,14 @@ function filtredData(body) {
         var modelInfo = productLifecycle[key];
 
         if (key.indexOf(modelName) !== -1) {
-            for (var type in modelInfo) {
-                info = modelInfo[type];
-                break;
+            // a family lists Firmware and Hardware lifecycles: the device model is a Hardware entry
+            if (modelInfo.Hardware) {
+                info = modelInfo.Hardware;
+            } else {
+                for (var type in modelInfo) {
+                    info = modelInfo[type];
+                    break;
+                }
             }
             break;
         }
@@ -193,6 +198,7 @@ function filtredData(body) {
     if (!info) {
         console.error("Model Name not found in product lifecycle (PLC) data");
         D.failure(D.errorType.PARSING_ERROR);
+        return;
     }
     var foundModelNumber = false;
     for (var subKey in info) {

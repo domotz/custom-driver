@@ -84,7 +84,7 @@ function errorParsing(result) {
  * @returns The populated table with AS400 errors information
  */
 function parseInfo(results) {
-    var srcs = results.match(/SRC[^ ]*/g);
+    var srcs = results.match(/SRC\S*/g);
     var dates = results.match(/\d\d\/\d\d\/\d\d\s+\d\d:\d\d:\d\d/g);
     var problemIds = results.match(/ID problema[\s\.\:]*\d{10}/g);
     for (var i = 0; i < problemIds.length; i++) {
@@ -135,6 +135,5 @@ function get_status() {
     getAS400Info()
         .then(errorParsing)
         .then(parseInfo)
-        .then(D.success)
         .catch(failure);
 }
