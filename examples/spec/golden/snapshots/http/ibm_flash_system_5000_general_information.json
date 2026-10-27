@@ -143,7 +143,7 @@
             {
                 "uid": "remote-support-status",
                 "name": "Remote Support Status",
-                "value": "active",
+                "value": "connected",
                 "unit": null,
                 "valueType": "STRING"
             }

@@ -78,7 +78,7 @@
                         "1",
                         "yes",
                         "yes",
-                        "none",
+                        "yes",
                         "no",
                         "yes"
                     ]
@@ -96,7 +96,7 @@
                         "2",
                         "yes",
                         "yes",
-                        "none",
+                        "yes",
                         "no",
                         "no"
                     ]
@@ -114,7 +114,7 @@
                         "1",
                         "yes",
                         "yes",
-                        "none",
+                        "yes",
                         "no",
                         "yes"
                     ]
@@ -132,7 +132,7 @@
                         "2",
                         "no",
                         "no",
-                        "none",
+                        "yes",
                         "no",
                         "no"
                     ]

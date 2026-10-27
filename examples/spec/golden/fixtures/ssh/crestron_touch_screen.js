@@ -1,33 +1,41 @@
-// Simulated Crestron TSW-1060 (firmware 3.x, Crestron console over SSH) replies. Shape follows the console
-// commands the driver sends: `temperature` prints one "<sensor> Temperature: <n>C" line per sensor and `info`
-// prints "<label>: <value>" lines. Exact wording of the console output is not published by Crestron, so labels
-// are simulated from what the driver parses (names containing Temperature, Web, FTP, SSL, RConsole, System).
+// Crestron TSW-1070 console replies over SSH. The sensor names and values come from the variables production stores
+// for this driver: `temperature` prints one "<sensor> Temperature: <n>C" line per sensor and `info` prints
+// "<label>: <value>" lines. Some info lines have two parts ("Web Server: Enabled: Level 1"); the driver always
+// stored them as "Enabled Level 1". The exact spacing of the console output is inferred.
 const reply = require("../../replies");
 
 const TEMPERATURE = [
-    "Mainboard Temperature: 44C",
-    "Panel Temperature: 39C",
-    "Processor Temperature: 52C",
+    "Current CPU/SATA Temperature: 44C",
+    "Current PMIC Junction Temperature: 43C",
     ""
 ].join("\r\n");
 
 const INFO = [
-    "Host Name: TSW-1060-00107F8A1C2D",
-    "Model: TSW-1060",
-    "Serial Number: 1923456",
-    "Firmware Version: 3.002.1061",
-    "Web Server: Enabled",
-    "FTP Server: Disabled",
-    "SSL: Enabled",
-    "RConsole: Enabled",
-    "System Uptime: 12 days 03:14:07",
-    "Display Brightness: 80",
+    "Category: TouchPanel",
+    "Core3UILevel: 3.00",
+    "DHCP Support: Yes",
+    "DisplayList: YES",
+    "Ethernet Active: Yes",
+    "Ethernet Ports: 1",
+    "Front Panel Slot: 2",
+    "Front Panel Type: TouchScreen",
+    "FTP Transfers: Enabled: Level 1",
+    "IP Masters: 16",
+    "IP Table: Yes",
+    "Max Host Name: 63",
+    "Max IP Entries: 16",
+    "Password: Yes",
+    "RConsole support: SUPPORTED: Level 3",
+    "SSL support: SUPPORTED: Level 1",
+    "System Monitor: SUPPORTED: Level 4",
+    "TJI support: Level 2",
+    "Web Server: Enabled: Level 1",
     ""
 ].join("\r\n");
 
 module.exports = {
     cases: [{
-        name: "tsw-1060",
+        name: "tsw-1070",
         entryPoints: {
             validate: { calls: [{ kind: "ssh", method: "sendSSHCommand", target: "temperature", reply: reply.ssh(TEMPERATURE) }] },
             get_status: {

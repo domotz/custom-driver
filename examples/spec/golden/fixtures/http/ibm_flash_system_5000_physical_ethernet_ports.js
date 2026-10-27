@@ -1,6 +1,6 @@
 // Simulated FlashSystem 5000 (8.5.0.6) replies. Command: lsportethernet (-json), an array.
 // Format notes: speed is value + unit ("10Gb/s", "1Gb/s", "100Mb/s"), empty when no link;
-// link_state active/inactive; host/storage/replication/eth_clustering/management are yes/no/none.
+// link_state active/inactive; host/storage/replication/eth_clustering/management are yes/no.
 const reply = require("../../replies");
 
 const TOKEN = "a1b2c3d4e5f60718293a4b5c6d7e8f90";
@@ -11,7 +11,7 @@ const dataCall = (command, body) => ({ kind: "http", method: "post", target: "/r
 const row = (over) => Object.assign({
     id: "0", node_id: "1", node_name: "node1", port_id: "1", port_status: "configured", port_speed: "10Gb/s",
     MAC: "40:f2:e9:aa:bb:01", duplex: "Full", speed: "10Gb/s", link_state: "active", dcbx_state: "disabled",
-    adapter_location: "0", adapter_port_id: "1", host: "yes", storage: "yes", replication: "none", eth_clustering: "no", management: "yes"
+    adapter_location: "0", adapter_port_id: "1", host: "yes", storage: "yes", replication: "yes", eth_clustering: "no", management: "yes"
 }, over);
 
 const lsportethernet = [

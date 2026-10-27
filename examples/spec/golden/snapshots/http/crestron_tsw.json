@@ -10,7 +10,7 @@
             {
                 "uid": "calendar_sync_status",
                 "name": "CalendarSyncStatus",
-                "value": "Synchronized",
+                "value": "Synced",
                 "unit": null,
                 "valueType": "STRING"
             },
@@ -49,7 +49,7 @@
             {
                 "uid": "calendar_sync_status",
                 "name": "CalendarSyncStatus",
-                "value": "NotSynchronized",
+                "value": "Not Synced",
                 "unit": null,
                 "valueType": "STRING"
             },
@@ -63,14 +63,14 @@
             {
                 "uid": "connection_status_message",
                 "name": "ConnectionStatusMessage",
-                "value": "Unable to reach the Exchange server",
+                "value": "Waiting for connection",
                 "unit": null,
                 "valueType": "STRING"
             },
             {
                 "uid": "exchange_registration_status",
                 "name": "ExchangeRegistrationStatus",
-                "value": "NotRegistered",
+                "value": "Not Registered",
                 "unit": null,
                 "valueType": "STRING"
             }

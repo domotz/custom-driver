@@ -103,8 +103,11 @@ function parseData(executionResult) {
             }
             //creating the id field for the table by concat "id-" with the first element of the array
             var recordId = "id-" + sensorName.replace(/\s/g, "-").toLowerCase();
-            // the value is everything after the first ":" (it may contain ":" itself, e.g. a time)
-            var sensorValue = sensorArray.slice(1).join(":").trim();
+            // the value is everything after the first ":"; some info lines have two parts
+            // ("Web Server: Enabled: Level 1"), which are reported as "Enabled Level 1"
+            var sensorValue = sensorArray.slice(1).map(function (part) {
+                return part.trim();
+            }).join(" ").trim();
 
             if (sensorName.indexOf("Temperature") >= 0) {
                 sensorName = sensorName + " - C";

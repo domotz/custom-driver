@@ -1,10 +1,10 @@
 {
-    "tsw-1060 validate": {
+    "tsw-1070 validate": {
         "type": "success",
         "variables": null,
         "table": null
     },
-    "tsw-1060 get_status": {
+    "tsw-1070 get_status": {
         "type": "success",
         "variables": null,
         "table": {
@@ -19,100 +19,156 @@
             ],
             "records": [
                 {
-                    "id": "id-mainboard-temperature",
+                    "id": "id-current-cpu/sata-temperature",
                     "values": [
-                        "Mainboard Temperature - C",
+                        "Current CPU/SATA Temperature - C",
                         "44"
                     ]
                 },
                 {
-                    "id": "id-panel-temperature",
+                    "id": "id-current-pmic-junction-temperature",
                     "values": [
-                        "Panel Temperature - C",
-                        "39"
+                        "Current PMIC Junction Temperature - C",
+                        "43"
                     ]
                 },
                 {
-                    "id": "id-processor-temperature",
+                    "id": "id-category",
                     "values": [
-                        "Processor Temperature - C",
-                        "52"
+                        "Category",
+                        "TouchPanel"
                     ]
                 },
                 {
-                    "id": "id-host-name",
+                    "id": "id-core3uilevel",
                     "values": [
-                        "Host Name",
-                        "TSW-1060-00107F8A1C2D"
+                        "Core3UILevel",
+                        "3.00"
                     ]
                 },
                 {
-                    "id": "id-model",
+                    "id": "id-dhcp-support",
                     "values": [
-                        "Model",
-                        "TSW-1060"
+                        "DHCP Support",
+                        "Yes"
                     ]
                 },
                 {
-                    "id": "id-serial-number",
+                    "id": "id-displaylist",
                     "values": [
-                        "Serial Number",
-                        "1923456"
+                        "DisplayList",
+                        "YES"
                     ]
                 },
                 {
-                    "id": "id-firmware-version",
+                    "id": "id-ethernet-active",
                     "values": [
-                        "Firmware Version",
-                        "3.002.1061"
+                        "Ethernet Active",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-ethernet-ports",
+                    "values": [
+                        "Ethernet Ports",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "id-front-panel-slot",
+                    "values": [
+                        "Front Panel Slot",
+                        "2"
+                    ]
+                },
+                {
+                    "id": "id-front-panel-type",
+                    "values": [
+                        "Front Panel Type",
+                        "TouchScreen"
+                    ]
+                },
+                {
+                    "id": "id-ftp-transfers",
+                    "values": [
+                        "FTP Transfers",
+                        "Enabled Level 1"
+                    ]
+                },
+                {
+                    "id": "id-ip-masters",
+                    "values": [
+                        "IP Masters",
+                        "16"
+                    ]
+                },
+                {
+                    "id": "id-ip-table",
+                    "values": [
+                        "IP Table",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-max-host-name",
+                    "values": [
+                        "Max Host Name",
+                        "63"
+                    ]
+                },
+                {
+                    "id": "id-max-ip-entries",
+                    "values": [
+                        "Max IP Entries",
+                        "16"
+                    ]
+                },
+                {
+                    "id": "id-password",
+                    "values": [
+                        "Password",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-rconsole-support",
+                    "values": [
+                        "RConsole support",
+                        "SUPPORTED Level 3"
+                    ]
+                },
+                {
+                    "id": "id-ssl-support",
+                    "values": [
+                        "SSL support",
+                        "SUPPORTED Level 1"
+                    ]
+                },
+                {
+                    "id": "id-system-monitor",
+                    "values": [
+                        "System Monitor",
+                        "SUPPORTED Level 4"
+                    ]
+                },
+                {
+                    "id": "id-tji-support",
+                    "values": [
+                        "TJI support",
+                        "Level 2"
                     ]
                 },
                 {
                     "id": "id-web-server",
                     "values": [
                         "Web Server",
-                        "Enabled"
-                    ]
-                },
-                {
-                    "id": "id-ftp-server",
-                    "values": [
-                        "FTP Server",
-                        "Disabled"
-                    ]
-                },
-                {
-                    "id": "id-ssl",
-                    "values": [
-                        "SSL",
-                        "Enabled"
-                    ]
-                },
-                {
-                    "id": "id-rconsole",
-                    "values": [
-                        "RConsole",
-                        "Enabled"
-                    ]
-                },
-                {
-                    "id": "id-system-uptime",
-                    "values": [
-                        "System Uptime",
-                        "12 days 03:14:07"
-                    ]
-                },
-                {
-                    "id": "id-display-brightness",
-                    "values": [
-                        "Display Brightness",
-                        "80"
+                        "Enabled Level 1"
                     ]
                 }
             ]
         }
     },
-    "tsw-1060 custom_1": {
+    "tsw-1070 custom_1": {
         "type": "success",
         "variables": null,
         "table": null

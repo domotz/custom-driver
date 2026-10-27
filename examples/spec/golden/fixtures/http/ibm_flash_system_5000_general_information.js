@@ -35,7 +35,7 @@ const lssra = {
     status: "disabled",
     connected: "no",
     remote_support_enabled: "yes",
-    remote_support_status: "active",
+    remote_support_status: "connected",
     active_monitor_user_count: "1"
 };
 

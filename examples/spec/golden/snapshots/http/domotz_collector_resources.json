@@ -17,7 +17,7 @@
             {
                 "uid": "mode",
                 "name": "Mode",
-                "value": "configured",
+                "value": "CONFIGURED",
                 "unit": null,
                 "valueType": "STRING"
             },

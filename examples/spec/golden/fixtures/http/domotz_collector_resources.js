@@ -5,7 +5,7 @@ const reply = require("../../replies");
 
 const status = {
     status: "ok",
-    mode: "configured",
+    mode: "CONFIGURED",
     package: {
         pkg_platform: "ubuntu_core",
         pkg_architecture: "arm64",
