@@ -196,6 +196,9 @@ function sanitize(output) {
 function parseOutput(jsonOutput) {
     let k = 0;
     if (jsonOutput) {
+        if (!Array.isArray(jsonOutput)) {
+            jsonOutput = [jsonOutput];
+        }
         while (k < jsonOutput.length) {
             const category = jsonOutput[k].category;
             const subcategory = jsonOutput[k].subcat;

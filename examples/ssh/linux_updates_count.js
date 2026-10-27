@@ -16,13 +16,12 @@
 **/
 
 var packagesFilter = D.getParameter("packagesFilter");
-var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade ";
+// apt-get failing (or missing, on non-Debian hosts) exits 1 before grep runs, so it maps to RESOURCE_UNAVAILABLE
+var cmdCountUpdates = "out=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade) || exit 1; printf '%s\\n' \"$out\" | /bin/grep ^Inst";
 
 if (packagesFilter.length > 0) {
     var packages = packagesFilter.join("\\|");
-    cmdCountUpdates += "| /bin/grep ^Inst | grep -E " + packages;
-} else {
-    cmdCountUpdates += "| /bin/grep ^Inst";
+    cmdCountUpdates += " | grep -E " + packages;
 }
 // grep exits 1 when nothing matches, i.e. on an up-to-date host: that is a success with no updates
 cmdCountUpdates += "; test $? -le 1";

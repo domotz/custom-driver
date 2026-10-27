@@ -4,7 +4,7 @@
 const reply = require("../../replies");
 
 // "; test $? -le 1": grep exits 1 on an up-to-date host, which is not an error.
-const CMD = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst; test $? -le 1";
+const CMD = "out=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade) || exit 1; printf '%s\\n' \"$out\" | /bin/grep ^Inst; test $? -le 1";
 
 const INST = [
     "Inst libssl3 [3.0.2-0ubuntu1.10] (3.0.2-0ubuntu1.12 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])",

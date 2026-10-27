@@ -99,6 +99,9 @@ function parseOutput(output) {
         var jsonOutput = JSON.parse(JSON.stringify(output));
         try {
             jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+            if (!Array.isArray(jsonOutput)) {
+                jsonOutput = jsonOutput ? [jsonOutput] : [];
+            }
         } catch (e) {
             console.error("Unable to parse the WinRM output: " + e.message);
             D.failure(D.errorType.PARSING_ERROR);

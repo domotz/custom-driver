@@ -92,6 +92,14 @@ function parseTopMemory(line) {
     return values;
 }
 
+// Returns the top header line starting with the given label (e.g. "Swap:"); on ZFS an "ARC:" line shifts the positions
+function findHeader(headers, label) {
+    for (var i = 0; i < headers.length; i++) {
+        if (headers[i].trim().indexOf(label) === 0) return headers[i];
+    }
+    return "";
+}
+
 // Extracts relevant data from the API response
 function extractData(data) {
     var productVersion = data[0].product_version;
@@ -101,14 +109,14 @@ function extractData(data) {
     var cpuUsage = cpuHeaders[0] + cpuHeaders[1] + cpuHeaders[2] + cpuHeaders[3];
 
     // Memory in use is every field but Free (Buf is kept in, as before)
-    var memory = parseTopMemory(data[1].headers[3]);
+    var memory = parseTopMemory(findHeader(data[1].headers, "Mem:"));
     var freeMem = memory.Free || 0;
     var usedMem = Object.keys(memory).reduce(function (sum, label) {
         return label === "Free" ? sum : sum + memory[label];
     }, 0);
     var memUsage = (usedMem / (usedMem + freeMem) * 100).toFixed(2);
 
-    var swap = parseTopMemory(data[1].headers[4]);
+    var swap = parseTopMemory(findHeader(data[1].headers, "Swap:"));
     var totalSwap = swap.Total || 0;
     var freeSwap = swap.Free || 0;
     var swapUsage = totalSwap ? ((totalSwap - freeSwap) / totalSwap * 100).toFixed(2) : "0.00";

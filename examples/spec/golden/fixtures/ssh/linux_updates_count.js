@@ -5,7 +5,7 @@
 const reply = require("../../replies");
 
 const FILTER = ["openssl", "libssl3", "curl", "linux-image"];
-const CMD = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst | grep -E openssl\\|libssl3\\|curl\\|linux-image; test $? -le 1";
+const CMD = "out=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade) || exit 1; printf '%s\\n' \"$out\" | /bin/grep ^Inst | grep -E openssl\\|libssl3\\|curl\\|linux-image; test $? -le 1";
 
 const INST = [
     "Inst libssl3 [3.0.2-0ubuntu1.10] (3.0.2-0ubuntu1.12 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])",

@@ -53,8 +53,8 @@ const hostUsersTable = D.createTable(
         { label: "Description" }
     ]
 );
-// Get-LocalUser table rows: Name, Enabled (True/False), Description (may be empty)
-const userDetailsRegexp = /^\s*(\S+)\s+(True|False)(?:\s+(.*))?$/;
+// Get-LocalUser table rows: Name (may contain spaces), Enabled (True/False), Description (may be empty)
+const userDetailsRegexp = /^\s*(.*?\S)\s+(True|False)(?:\s+(.*))?$/;
 
 function parseValidateOutput(isValidated) {
     if (isValidated) {
