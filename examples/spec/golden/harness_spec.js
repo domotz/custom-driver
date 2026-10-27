@@ -1,4 +1,4 @@
-const { checkSuccess, parseRange } = require("./success-check");
+const { checkSuccess, normalizeReport, parseRange } = require("./success-check");
 const { createReplay } = require("./replay");
 const { deterministicGlobals, FIXED_NOW } = require("./clock");
 
@@ -47,6 +47,16 @@ describe("golden harness", () => {
             const companion = { expected_variables: { table: "[3]" } };
             expect(checkSuccess(result, { entryPoint: "get_status", companion })).toEqual(["companion expected_variables.table = [3] but the driver reported 2"]);
             expect(checkSuccess(result, { entryPoint: "validate", companion })).toEqual([]);
+        });
+
+        it("checks a backup report and snapshots it as backup", () => {
+            const backup = { label: "Custom Driver Configuration Backup", running: "hostname sw1", startup: null, ignoredLines: null };
+            const result = { firstReport: { type: "success", variables: backup }, reports: [{ type: "success" }] };
+            expect(checkSuccess(result, { entryPoint: "backup" })).toEqual([]);
+            expect(normalizeReport(result.firstReport)).toEqual({ type: "success", backup });
+            expect(checkSuccess(result, { entryPoint: "validate" })).toEqual([jasmine.stringContaining("reported a backup object from validate")]);
+            const empty = { firstReport: { type: "success", variables: { label: "x", running: "" } }, reports: [{}] };
+            expect(checkSuccess(empty, { entryPoint: "backup" })).toEqual([jasmine.stringContaining("backup must report")]);
         });
 
         it("reports more than one report", () => {
