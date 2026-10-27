@@ -1,0 +1,81 @@
+{
+    "control4 2.9.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "control4 2.9.0 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Zigbee Devices",
+            "columnHeaders": [
+                {
+                    "label": "SID"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Version"
+                },
+                {
+                    "label": "Product"
+                },
+                {
+                    "label": "Last Contact"
+                },
+                {
+                    "label": "RBoot"
+                },
+                {
+                    "label": "Node Type"
+                },
+                {
+                    "label": "Best Zap"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "0004",
+                        "online",
+                        "1.32",
+                        "C4-ZIGBEE-LD",
+                        "Tue Oct 14 09:12",
+                        "10",
+                        "Router          ",
+                        "0x5a"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "0007",
+                        "offline",
+                        "1.28",
+                        "C4-KD120",
+                        "Mon Oct 13 22:47",
+                        "4",
+                        "End Device      ",
+                        "0x3c"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "00a1",
+                        "online",
+                        "2.04",
+                        "C4-DIM-WW",
+                        "Tue Oct 14 09:11",
+                        "7",
+                        "Router          ",
+                        "0x61"
+                    ]
+                }
+            ]
+        }
+    }
+}

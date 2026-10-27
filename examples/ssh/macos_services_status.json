@@ -1,6 +1,6 @@
 {
     "logo": "macos.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "macOS Services Monitoring",
     "description": "Monitors the status of services on a Macintoch machine",
     "category": "Software Integration",
@@ -34,7 +34,7 @@
     "parameters": [
         {
             "value_type": "LIST",
-            "name": "sevrices",
+            "name": "services",
             "label": "Service Name",
             "value": [
                 "nsurlsessiond_privileged",

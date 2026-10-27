@@ -1,6 +1,6 @@
 {
     "logo": "lenovo-xclarity.svg",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "name": "XClarity Temperatures",
     "description": "Monitor temperature information on a Lenovo XClarity server",
     "category": "Hardware Integration",
@@ -20,7 +20,7 @@
     "execution_timeout_s": 60,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[5,999]"
+        "table": "[6,999]"
     },
     "protocols": [
         "SSH"

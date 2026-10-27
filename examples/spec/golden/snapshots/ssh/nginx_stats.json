@@ -1,0 +1,196 @@
+{
+    "nginx 1.18 ubuntu 22.04 validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "main->all_requests",
+                "name": "All Requests",
+                "value": "1"
+            },
+            {
+                "uid": "main->successfull_requests",
+                "name": "Successfull Requests",
+                "value": "0"
+            },
+            {
+                "uid": "main->redirected_requests",
+                "name": "Redirected Requests",
+                "value": "0"
+            },
+            {
+                "uid": "main->error_requests",
+                "name": "Error Requests",
+                "value": "0"
+            }
+        ],
+        "table": null
+    },
+    "nginx 1.18 ubuntu 22.04 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status (active(running))",
+                "value": "active(running)",
+                "unit": "active(running)"
+            },
+            {
+                "uid": "pid",
+                "name": "PID",
+                "value": "745",
+                "unit": ""
+            },
+            {
+                "uid": "memory",
+                "name": "Memory usage (K)",
+                "value": "9216",
+                "unit": "K"
+            },
+            {
+                "uid": "tasks",
+                "name": "Tasks",
+                "value": "5",
+                "unit": ""
+            },
+            {
+                "uid": "tasks_limit",
+                "name": "Tasks limit",
+                "value": "4617",
+                "unit": ""
+            },
+            {
+                "uid": "up_from",
+                "name": "Up from (date)",
+                "value": "1710144922",
+                "unit": "date"
+            },
+            {
+                "uid": "cpus",
+                "name": "CPU(s)",
+                "value": "4"
+            },
+            {
+                "uid": "threads_per_core",
+                "name": "Thread(s) per core",
+                "value": "2"
+            },
+            {
+                "uid": "Type",
+                "name": "Type",
+                "value": "forking"
+            },
+            {
+                "uid": "Restart",
+                "name": "Restart",
+                "value": "no"
+            },
+            {
+                "uid": "MainPID",
+                "name": "MainPID",
+                "value": "745"
+            },
+            {
+                "uid": "ControlPID",
+                "name": "ControlPID",
+                "value": "0"
+            },
+            {
+                "uid": "ExecMainStatus",
+                "name": "ExecMainStatus",
+                "value": "0"
+            },
+            {
+                "uid": "ExecStart",
+                "name": "ExecStart",
+                "value": "{ path=/usr/sbin/nginx ; argv[]=/usr/sbin/nginx -g daemon on; master_process on; ; ignore_errors=no ; start_time=[Mon 2024-03-11 08:15:22 UTC] ; stop_time=[n/a] ; pid=745 ; code=(null) ; status=0/0 }"
+            },
+            {
+                "uid": "MemoryCurrent",
+                "name": "MemoryCurrent",
+                "value": "8598323"
+            },
+            {
+                "uid": "TasksCurrent",
+                "name": "TasksCurrent",
+                "value": "5"
+            },
+            {
+                "uid": "TasksMax",
+                "name": "TasksMax",
+                "value": "4617"
+            },
+            {
+                "uid": "LimitNOFILE",
+                "name": "LimitNOFILE",
+                "value": "524288"
+            },
+            {
+                "uid": "ActiveState",
+                "name": "ActiveState",
+                "value": "active"
+            },
+            {
+                "uid": "SubState",
+                "name": "SubState",
+                "value": "running"
+            },
+            {
+                "uid": "UnitFileState",
+                "name": "UnitFileState",
+                "value": "enabled"
+            },
+            {
+                "uid": "FragmentPath",
+                "name": "FragmentPath",
+                "value": "/lib/systemd/system/nginx.service"
+            }
+        ],
+        "table": {
+            "label": "Nginx request stats",
+            "columnHeaders": [
+                {
+                    "label": "Server name"
+                },
+                {
+                    "label": "Server port"
+                },
+                {
+                    "label": "All requests"
+                },
+                {
+                    "label": "Successful requests"
+                },
+                {
+                    "label": "Redirected requests"
+                },
+                {
+                    "label": "Error requests"
+                }
+            ],
+            "records": [
+                {
+                    "id": "example.com_80",
+                    "values": [
+                        "example.com",
+                        "80",
+                        "120",
+                        "100",
+                        "12",
+                        "8"
+                    ]
+                },
+                {
+                    "id": "shop.example.com_443",
+                    "values": [
+                        "shop.example.com",
+                        "443",
+                        "1",
+                        "0",
+                        "0",
+                        "0"
+                    ]
+                }
+            ]
+        }
+    }
+}

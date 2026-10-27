@@ -117,22 +117,22 @@ function reportData(data) {
     if (data.uptime) {
         variables.push(D.createVariable("uptime", "Uptime", toHours(data.uptime), "hours"));
     }
-    if (data.threads) {
+    if (data.threads !== undefined) {
         variables.push(D.createVariable("threads", "Threads", data.threads));
     }
-    if (data.questions) {
+    if (data.questions !== undefined) {
         variables.push(D.createVariable("questions", "Questions", data.questions));
     }
-    if (data.slowQueries) {
+    if (data.slowQueries !== undefined) {
         variables.push(D.createVariable("slowQueries", "Slow Queries", data.slowQueries));
     }
-    if (data.opens) {
+    if (data.opens !== undefined) {
         variables.push(D.createVariable("opens", "Opens", data.opens));
     }
-    if (data.flushTables) {
+    if (data.flushTables !== undefined) {
         variables.push(D.createVariable("flushTables", "Flush Tables", data.flushTables));
     }
-    if (data.openTables) {
+    if (data.openTables !== undefined) {
         variables.push(D.createVariable("openTables", "Open Tables", data.openTables));
     }
     if (data.queriesS) {

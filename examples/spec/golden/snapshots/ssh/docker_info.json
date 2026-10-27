@@ -1,0 +1,403 @@
+{
+    "docker 19.03.15 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "docker 19.03.15 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "ID",
+                "name": "ID",
+                "value": "7TRN:IPZB:QYBB:VPBQ:UWIU:ZRDG:2L5R:MK4W:6VNR:X3V6:N6TD:7YHF"
+            },
+            {
+                "uid": "Containers",
+                "name": "Containers",
+                "value": 14
+            },
+            {
+                "uid": "ContainersRunning",
+                "name": "ContainersRunning",
+                "value": 3
+            },
+            {
+                "uid": "ContainersPaused",
+                "name": "ContainersPaused",
+                "value": 0
+            },
+            {
+                "uid": "ContainersStopped",
+                "name": "ContainersStopped",
+                "value": 11
+            },
+            {
+                "uid": "Images",
+                "name": "Images",
+                "value": 21
+            },
+            {
+                "uid": "Driver",
+                "name": "Driver",
+                "value": "overlay2"
+            },
+            {
+                "uid": "Backing Filesystem",
+                "name": "Backing Filesystem",
+                "value": "extfs"
+            },
+            {
+                "uid": "Supports d_type",
+                "name": "Supports d_type",
+                "value": "true"
+            },
+            {
+                "uid": "Native Overlay Diff",
+                "name": "Native Overlay Diff",
+                "value": "true"
+            },
+            {
+                "uid": "Plugins:Volume",
+                "name": "Plugins:Volume",
+                "value": "local"
+            },
+            {
+                "uid": "Plugins:Network",
+                "name": "Plugins:Network",
+                "value": "bridge,host,ipvlan,macvlan,null,overlay"
+            },
+            {
+                "uid": "Plugins:Log",
+                "name": "Plugins:Log",
+                "value": "awslogs,fluentd,gcplogs,gelf,journald,json-file,local,logentries,splunk,syslog"
+            },
+            {
+                "uid": "MemoryLimit",
+                "name": "MemoryLimit",
+                "value": true
+            },
+            {
+                "uid": "SwapLimit",
+                "name": "SwapLimit",
+                "value": false
+            },
+            {
+                "uid": "KernelMemory",
+                "name": "KernelMemory",
+                "value": true
+            },
+            {
+                "uid": "KernelMemoryTCP",
+                "name": "KernelMemoryTCP",
+                "value": true
+            },
+            {
+                "uid": "CpuCfsPeriod",
+                "name": "CpuCfsPeriod",
+                "value": true
+            },
+            {
+                "uid": "CpuCfsQuota",
+                "name": "CpuCfsQuota",
+                "value": true
+            },
+            {
+                "uid": "CPUShares",
+                "name": "CPUShares",
+                "value": true
+            },
+            {
+                "uid": "CPUSet",
+                "name": "CPUSet",
+                "value": true
+            },
+            {
+                "uid": "PidsLimit",
+                "name": "PidsLimit",
+                "value": true
+            },
+            {
+                "uid": "IPv4Forwarding",
+                "name": "IPv4Forwarding",
+                "value": true
+            },
+            {
+                "uid": "BridgeNfIptables",
+                "name": "BridgeNfIptables",
+                "value": true
+            },
+            {
+                "uid": "BridgeNfIp6tables",
+                "name": "BridgeNfIp6tables",
+                "value": true
+            },
+            {
+                "uid": "Debug",
+                "name": "Debug",
+                "value": false
+            },
+            {
+                "uid": "NFd",
+                "name": "NFd",
+                "value": 33
+            },
+            {
+                "uid": "OomKillDisable",
+                "name": "OomKillDisable",
+                "value": true
+            },
+            {
+                "uid": "NGoroutines",
+                "name": "NGoroutines",
+                "value": 52
+            },
+            {
+                "uid": "SystemTime",
+                "name": "SystemTime",
+                "value": "2024-03-12T10:41:07.123456789Z"
+            },
+            {
+                "uid": "LoggingDriver",
+                "name": "LoggingDriver",
+                "value": "json-file"
+            },
+            {
+                "uid": "CgroupDriver",
+                "name": "CgroupDriver",
+                "value": "cgroupfs"
+            },
+            {
+                "uid": "NEventsListener",
+                "name": "NEventsListener",
+                "value": 0
+            },
+            {
+                "uid": "KernelVersion",
+                "name": "KernelVersion",
+                "value": "5.4.0-170-generic"
+            },
+            {
+                "uid": "OperatingSystem",
+                "name": "OperatingSystem",
+                "value": "Ubuntu 20.04.6 LTS"
+            },
+            {
+                "uid": "OSType",
+                "name": "OSType",
+                "value": "linux"
+            },
+            {
+                "uid": "Architecture",
+                "name": "Architecture",
+                "value": "x86_64"
+            },
+            {
+                "uid": "IndexServerAddress",
+                "name": "IndexServerAddress",
+                "value": "https://index.docker.io/v1/"
+            },
+            {
+                "uid": "RegistryConfig:AllowNondistributableArtifactsCIDRs",
+                "name": "RegistryConfig:AllowNondistributableArtifactsCIDRs",
+                "value": ""
+            },
+            {
+                "uid": "RegistryConfig:AllowNondistributableArtifactsHostn",
+                "name": "RegistryConfig:AllowNondistributableArtifactsHostnames",
+                "value": ""
+            },
+            {
+                "uid": "RegistryConfig:InsecureRegistryCIDRs",
+                "name": "RegistryConfig:InsecureRegistryCIDRs",
+                "value": "127.0.0.0/8"
+            },
+            {
+                "uid": "RegistryConfig:IndexConfigs:docker.io:Name",
+                "name": "RegistryConfig:IndexConfigs:docker.io:Name",
+                "value": "docker.io"
+            },
+            {
+                "uid": "RegistryConfig:IndexConfigs:docker.io:Mirrors",
+                "name": "RegistryConfig:IndexConfigs:docker.io:Mirrors",
+                "value": ""
+            },
+            {
+                "uid": "RegistryConfig:IndexConfigs:docker.io:Secure",
+                "name": "RegistryConfig:IndexConfigs:docker.io:Secure",
+                "value": true
+            },
+            {
+                "uid": "RegistryConfig:IndexConfigs:docker.io:Official",
+                "name": "RegistryConfig:IndexConfigs:docker.io:Official",
+                "value": true
+            },
+            {
+                "uid": "RegistryConfig:Mirrors",
+                "name": "RegistryConfig:Mirrors",
+                "value": ""
+            },
+            {
+                "uid": "NCPU",
+                "name": "NCPU",
+                "value": 4
+            },
+            {
+                "uid": "MemTotal",
+                "name": "MemTotal",
+                "value": 8340316160
+            },
+            {
+                "uid": "DockerRootDir",
+                "name": "DockerRootDir",
+                "value": "/var/lib/docker"
+            },
+            {
+                "uid": "HttpProxy",
+                "name": "HttpProxy",
+                "value": ""
+            },
+            {
+                "uid": "HttpsProxy",
+                "name": "HttpsProxy",
+                "value": ""
+            },
+            {
+                "uid": "NoProxy",
+                "name": "NoProxy",
+                "value": ""
+            },
+            {
+                "uid": "Name",
+                "name": "Name",
+                "value": "docker-host-01"
+            },
+            {
+                "uid": "Labels",
+                "name": "Labels",
+                "value": ""
+            },
+            {
+                "uid": "ExperimentalBuild",
+                "name": "ExperimentalBuild",
+                "value": false
+            },
+            {
+                "uid": "ServerVersion",
+                "name": "ServerVersion",
+                "value": "19.03.15"
+            },
+            {
+                "uid": "ClusterStore",
+                "name": "ClusterStore",
+                "value": ""
+            },
+            {
+                "uid": "ClusterAdvertise",
+                "name": "ClusterAdvertise",
+                "value": ""
+            },
+            {
+                "uid": "Runtimes:runc:path",
+                "name": "Runtimes:runc:path",
+                "value": "runc"
+            },
+            {
+                "uid": "Runtimes:nvidia:path",
+                "name": "Runtimes:nvidia:path",
+                "value": "nvidia-container-runtime"
+            },
+            {
+                "uid": "Runtimes:runsc:path",
+                "name": "Runtimes:runsc:path",
+                "value": "/usr/local/bin/runsc"
+            },
+            {
+                "uid": "DefaultRuntime",
+                "name": "DefaultRuntime",
+                "value": "runc"
+            },
+            {
+                "uid": "Swarm:NodeID",
+                "name": "Swarm:NodeID",
+                "value": ""
+            },
+            {
+                "uid": "Swarm:NodeAddr",
+                "name": "Swarm:NodeAddr",
+                "value": ""
+            },
+            {
+                "uid": "Swarm:LocalNodeState",
+                "name": "Swarm:LocalNodeState",
+                "value": "inactive"
+            },
+            {
+                "uid": "Swarm:ControlAvailable",
+                "name": "Swarm:ControlAvailable",
+                "value": false
+            },
+            {
+                "uid": "Swarm:Error",
+                "name": "Swarm:Error",
+                "value": ""
+            },
+            {
+                "uid": "LiveRestoreEnabled",
+                "name": "LiveRestoreEnabled",
+                "value": false
+            },
+            {
+                "uid": "Isolation",
+                "name": "Isolation",
+                "value": ""
+            },
+            {
+                "uid": "InitBinary",
+                "name": "InitBinary",
+                "value": "docker-init"
+            },
+            {
+                "uid": "ContainerdCommit:ID",
+                "name": "ContainerdCommit:ID",
+                "value": "ea765aba0d05254012b0b9e595e995c09186427f"
+            },
+            {
+                "uid": "ContainerdCommit:Expected",
+                "name": "ContainerdCommit:Expected",
+                "value": "ea765aba0d05254012b0b9e595e995c09186427f"
+            },
+            {
+                "uid": "RuncCommit:ID",
+                "name": "RuncCommit:ID",
+                "value": "v1.0.0-rc10-0-gdc9208a"
+            },
+            {
+                "uid": "RuncCommit:Expected",
+                "name": "RuncCommit:Expected",
+                "value": "v1.0.0-rc10-0-gdc9208a"
+            },
+            {
+                "uid": "InitCommit:ID",
+                "name": "InitCommit:ID",
+                "value": "fec3683"
+            },
+            {
+                "uid": "InitCommit:Expected",
+                "name": "InitCommit:Expected",
+                "value": "fec3683"
+            },
+            {
+                "uid": "SecurityOptions",
+                "name": "SecurityOptions",
+                "value": "name=apparmor,name=seccomp,profile=default"
+            },
+            {
+                "uid": "Warnings",
+                "name": "Warnings",
+                "value": "WARNING: No swap limit support"
+            }
+        ],
+        "table": null
+    }
+}

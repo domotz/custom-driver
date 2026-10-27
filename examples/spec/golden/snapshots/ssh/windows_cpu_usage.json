@@ -1,0 +1,38 @@
+{
+    "server 2019, moderate load validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "server 2019, moderate load get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu-load-average",
+                "name": "CPU Load Average",
+                "value": "23",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "server 2019, saturated validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "server 2019, saturated get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu-load-average",
+                "name": "CPU Load Average",
+                "value": "97",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

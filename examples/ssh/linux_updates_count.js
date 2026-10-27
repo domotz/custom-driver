@@ -24,6 +24,8 @@ if (packagesFilter.length > 0) {
 } else {
     cmdCountUpdates += "| /bin/grep ^Inst";
 }
+// grep exits 1 when nothing matches, i.e. on an up-to-date host: that is a success with no updates
+cmdCountUpdates += "; test $? -le 1";
 
 // SSH options when running the commands
 var sshConfig = {

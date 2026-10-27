@@ -166,13 +166,13 @@ function parseOutput(output) {
             var label = parts.slice(2).join(" ");
             if (status === "0") {
                 status = (pid === "-") ? "Not Running" : "Running";
-            } else if (signalMap[status]) {
-                status = "Terminated (" + signalMap[status] + ")";
             } else if (status.startsWith("-")) {
+                // launchctl list: a negative status is the signal that killed the job
                 var signalNumber = status.substring(1);
                 status = signalMap[signalNumber] ? "Terminated (" + signalMap[signalNumber] + ")" : "Terminated (Unknown Signal " + signalNumber + ")";
-            } else if (status === "255" || status === "78") {
-                status = "Exited with error";
+            } else if (/^\d+$/.test(status)) {
+                // a positive status is the job's last exit code
+                status = "Exited with error (code " + status + ")";
             } else {
                 status = "Unknown";
             }
