@@ -1,0 +1,62 @@
+{
+    "vcenter 7.0.3 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 7.0.3 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual Machines List",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Memory",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "CPU count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Power state",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "vm-101",
+                    "values": [
+                        "web-frontend-01",
+                        8,
+                        4,
+                        "POWERED_ON"
+                    ]
+                },
+                {
+                    "id": "vm-102",
+                    "values": [
+                        "db-backup-02",
+                        4,
+                        2,
+                        "POWERED_OFF"
+                    ]
+                },
+                {
+                    "id": "vm-215",
+                    "values": [
+                        "build-agent-03",
+                        16,
+                        8,
+                        "SUSPENDED"
+                    ]
+                }
+            ]
+        }
+    }
+}

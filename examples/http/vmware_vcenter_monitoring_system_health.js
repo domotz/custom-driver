@@ -102,6 +102,7 @@ function getSystemHealthInfo(sessionId) {
 function extractData(data) {
     var colorToHealthStatus = {
         "green": "OK",
+        "yellow": "WARNING",
         "red": "NOT OK",
         "orange": "WARNING"
     };

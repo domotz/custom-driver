@@ -1,0 +1,34 @@
+{
+    "me5024 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "me5024 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "7T2LQ93",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "health",
+                "name": "Health",
+                "value": "Warning",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "power-state",
+                "name": "Power State",
+                "value": "On",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "drive-0",
+                "name": "Drive 0",
+                "value": "Normal",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "drive-1",
+                "name": "Drive 1",
+                "value": "Normal",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "drive-2",
+                "name": "Drive 2",
+                "value": "Critical",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}
