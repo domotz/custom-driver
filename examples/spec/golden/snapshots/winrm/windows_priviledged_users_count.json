@@ -1,0 +1,111 @@
+{
+    "domain controller, six privileged groups validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "domain controller, six privileged groups get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "PrivilegedUsers",
+                "name": "Total privileged users",
+                "value": 11,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Privileged AD groups members",
+            "columnHeaders": [
+                {
+                    "label": "Group"
+                },
+                {
+                    "label": "Count"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "Domain Admins",
+                        3
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "Enterprise Admins",
+                        1
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "Schema Admins",
+                        1
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "Administrators",
+                        4
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "Account Operators",
+                        0
+                    ]
+                },
+                {
+                    "id": "5",
+                    "values": [
+                        "Backup Operators",
+                        2
+                    ]
+                }
+            ]
+        }
+    },
+    "member server, not a domain controller (bare object) validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "member server, not a domain controller (bare object) get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "PrivilegedUsers",
+                "name": "Total privileged users",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Privileged AD groups members",
+            "columnHeaders": [
+                {
+                    "label": "Group"
+                },
+                {
+                    "label": "Count"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "N/A",
+                        "This computer is not a Domain Controller"
+                    ]
+                }
+            ]
+        }
+    }
+}

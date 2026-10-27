@@ -109,7 +109,7 @@ function validate() {
  * @documentation This procedure Retrieves the occurrences count of selected Windows security events in the last hour.
  */
 function get_status() {
-    const command = "$Hours=" + hours + ";$events=Get-WinEvent -FilterHashTable @{LogName=\"Security\";ID=" + idArray + ";StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {@{name=\"\";count=\"0\"}|ConvertTo-Json};";
+    const command = "$Hours=" + hours + ";$events=Get-WinEvent -FilterHashTable @{LogName=\"Security\";ID=" + idArray + ";StartTime=((Get-Date).AddHours(-($Hours)));EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {@{name=\"\";count=\"0\"}|ConvertTo-Json};";
     instance.executeCommand(command)
         .then(instance.parseOutputToJson)
         .then(parseOutput)

@@ -130,7 +130,6 @@ function ipToNumber(ip) {
 function validate() {
     executePoolCommands()
         .then(parseValidateOutput)
-        .then(D.success)
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);

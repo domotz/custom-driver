@@ -65,9 +65,12 @@ function getDockerImages() {
  */
 function convertToKB(value) {
     if (!value || value === "N/A") return null;
-    var val = value.substring(0, value.length - 2);
-    var unit = value.substring(value.length - 2, value.length);
-    switch (unit.toLowerCase()) {
+    // docker prints decimal units: "800B", "1.84kB", "72.8MB", "1.2GB"
+    var match = /^([\d.]+)\s*([kMG]?B)$/i.exec(value.trim());
+    if (!match) return null;
+    var val = parseFloat(match[1]);
+    switch (match[2].toLowerCase()) {
+        case "b": return val / 1000;
         case "mb": return val * 1000;
         case "gb": return val * 1000000;
         default: return val;
@@ -85,7 +88,7 @@ function groupImagesByRepository(jsonImages) {
             // parsing creation date
             var dateMatch = image.CreatedAt.match(/^(....)-(..)-(..) (..):(..):(..).*$/);
             var date = new Date();
-            date.setFullYear(dateMatch[1], dateMatch[2], dateMatch[3]);
+            date.setFullYear(dateMatch[1], dateMatch[2] - 1, dateMatch[3]);
             date.setHours(dateMatch[4], dateMatch[5], dateMatch[6]);
             image.createAtTimestamp = date.getTime();
             image.sizeKb = convertToKB(image.Size);

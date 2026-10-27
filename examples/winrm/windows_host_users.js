@@ -53,7 +53,8 @@ const hostUsersTable = D.createTable(
         { label: "Description" }
     ]
 );
-const userDetailsRegexp = /([\w\d]+)\s+([\w]+)\s+(.*)/;
+// Get-LocalUser table rows: Name, Enabled (True/False), Description (may be empty)
+const userDetailsRegexp = /^\s*(\S+)\s+(True|False)(?:\s+(.*))?$/;
 
 function parseValidateOutput(isValidated) {
     if (isValidated) {
@@ -100,7 +101,7 @@ function parseOutput(outputLines) {
                     const name = match[1];
                     const recordId = name.toLowerCase().substring(0, 50);
                     const status = match[2];
-                    const description = match[3];
+                    const description = match[3] || "";
                     hostUsersTable.insertRecord(recordId, [name, status, description]);
                 }
             }

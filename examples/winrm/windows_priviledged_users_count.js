@@ -87,9 +87,16 @@ function parseOutput(output) {
             D.failure(D.errorType.PARSING_ERROR);
             return;
         }
+        // ConvertTo-Json writes a single group (or the "not a Domain Controller" notice) as a bare object
+        if (!Array.isArray(jsonOutput)) {
+            jsonOutput = jsonOutput ? [jsonOutput] : [];
+        }
         while (k < jsonOutput.length) {
             privilegedUsersTable.insertRecord(k.toString(), [jsonOutput[k].Name, jsonOutput[k].MemberCount]);
-            totPrivilegedUsers += jsonOutput[k].MemberCount;
+            // a member server answers one row whose MemberCount is a notice, not a number
+            if (typeof jsonOutput[k].MemberCount === "number") {
+                totPrivilegedUsers += jsonOutput[k].MemberCount;
+            }
             k++;
         }
         totPrivilegedUsers = [D.createVariable("PrivilegedUsers", "Total privileged users", totPrivilegedUsers, null, D.valueType.NUMBER)];

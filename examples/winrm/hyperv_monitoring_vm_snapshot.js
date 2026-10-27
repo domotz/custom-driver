@@ -117,6 +117,10 @@ function sanitize(output) {
 // Parse the output of WinRM command and insert it into the table
 function parseOutput(output) {
     var vmSnapshot = JSON.parse(output.outcome.stdout);
+    // ConvertTo-Json writes a single VM as a bare object
+    if (!Array.isArray(vmSnapshot)) {
+        vmSnapshot = vmSnapshot ? [vmSnapshot] : [];
+    }
     vmSnapshot.forEach(function (snapshot) {
         var vmId = snapshot.VMID;
         var vmName = snapshot.VMName;

@@ -1,0 +1,83 @@
+{
+    "path with a blind hop and a lossy destination validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "path with a blind hop and a lossy destination get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "MTR path to device",
+            "columnHeaders": [
+                {
+                    "label": "TTL"
+                },
+                {
+                    "label": "Host"
+                },
+                {
+                    "label": "Loss",
+                    "unit": "%"
+                },
+                {
+                    "label": "Sent"
+                },
+                {
+                    "label": "Avg RTT",
+                    "unit": "ms"
+                },
+                {
+                    "label": "Jitter",
+                    "unit": "ms"
+                }
+            ],
+            "records": [
+                {
+                    "id": "hop_1",
+                    "values": [
+                        1,
+                        "192.168.1.1",
+                        0,
+                        10,
+                        0.8,
+                        0.2
+                    ]
+                },
+                {
+                    "id": "hop_2",
+                    "values": [
+                        2,
+                        "10.20.0.1",
+                        0,
+                        10,
+                        2.4,
+                        0.5
+                    ]
+                },
+                {
+                    "id": "hop_3",
+                    "values": [
+                        3,
+                        "*",
+                        100,
+                        10,
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "id": "hop_4",
+                    "values": [
+                        4,
+                        "192.168.1.50",
+                        10,
+                        10,
+                        3.9,
+                        1.3
+                    ]
+                }
+            ]
+        }
+    }
+}

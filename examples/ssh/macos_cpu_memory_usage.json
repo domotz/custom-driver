@@ -1,6 +1,6 @@
 {
     "logo": "macos.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "macOS - CPU and Memory Usage",
     "description": "Retrieves CPU and memory usage information from a macOS device",
     "category": "Software Integration",
