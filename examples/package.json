@@ -9,6 +9,7 @@
   "scripts": {
     "test": "jasmine",
     "test:net": "jasmine spec/robustness_spec.js",
+    "test:golden": "jasmine spec/golden_spec.js",
     "lint": "eslint ."
   },
   "devDependencies": {

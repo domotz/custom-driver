@@ -1,9 +1,10 @@
 # Driver specs
 
-This folder holds three kinds of specs, all run by Jasmine from `examples/`:
+This folder holds four kinds of specs, all run by Jasmine from `examples/`:
 
 - the robustness net (`robustness_spec.js` plus `net/`), generated for every catalogue driver;
-- the harness specs (`net/*_spec.js`), which test the net itself;
+- the golden success paths (`golden_spec.js` plus `golden/`), for drivers that have a fixture;
+- the harness specs (`net/*_spec.js`, `golden/harness_spec.js`), which test the two harnesses;
 - hand-written legacy and happy-path specs (`apache2_status_spec.js`, `mysql_spec.js`, ...).
 
 ## Running
@@ -13,6 +14,8 @@ cd examples
 npm test                      # the net, the harness specs and the legacy specs
 npm run test:net              # only the net (robustness_spec.js)
 NET_DRIVER=apache2 npm run test:net   # only drivers whose path contains "apache2"
+npm run test:golden           # only the golden success paths
+UPDATE_GOLDEN=1 npm run test:golden   # rewrite the golden snapshots (GOLDEN_DRIVER=<substring> to limit)
 npm run lint
 ```
 
@@ -66,6 +69,47 @@ exception thrown there becomes a `GENERIC_ERROR` report, so it passes (except a 
 is a code bug). Callbacks of every other API (for example `sendWinRMCommand`, `sendWMICommand`, raw
 sockets, timers) are unwrapped: an exception there is a crash. The list is `WRAPPED` in
 `net/fake-d.js`; keep it in sync with remote_pawn_ng.
+
+## Golden success paths
+
+The net proves a driver survives a hostile device; the golden specs prove it still reports the right
+thing for a healthy one. A fixture `golden/fixtures/<dir>/<driver>.js` (same path as the driver) lists,
+for each entry point, the transport calls a healthy device answers and the replies:
+
+```js
+const reply = require("../../replies");
+module.exports = {
+    cases: [{
+        name: "ubuntu 22.04",
+        parameters: {},                       // D.getParameter values
+        entryPoints: {
+            get_status: {
+                calls: [{ kind: "ssh", method: "sendSSHCommand", target: "df -Th", reply: reply.ssh(DF) }],
+                expect: {}                    // optional: nullValues: [uid], allowEmptyTable, skipExpectedVariables
+            }
+        }
+    }],
+    skipEntryPoints: {}                       // optional: { custom_1: "why it has no fixture" }
+};
+```
+
+`target` is the URL (http), the command (ssh, telnet, tcp, winrm) or the OID (snmp), as a string or a
+RegExp; `host` pins an external device. `golden/replies.js` builds the production reply shape of each
+kind. Each entry point runs in the net's production-style runner with a fixed clock (`golden/clock.js`,
+TZ=UTC) and must:
+
+1. pass the net verdict;
+2. make exactly the fixture's calls (an unexpected call gets no answer and is listed);
+3. report one `D.success` that production accepts (uid, name, value, table label and column limits from
+   remote_pawn_ng `library/metric.js`, `library/table.js`, `sandbox.js`) whose variable or column count
+   matches the companion `expected_variables` (`"[N]"` exactly N, `"[N,M]"` N to M, for `get_status`);
+4. equal its snapshot in `golden/snapshots/<dir>/<driver>.json`.
+
+A new fixture has no snapshot and fails until `UPDATE_GOLDEN=1` records one. Update mode records only runs
+that pass checks 1 to 3. Review a snapshot diff like code: it is the driver's output on a healthy device.
+
+Write replies from real device output where possible (a capture, the vendor's API reference examples, the
+command's documented format), and say where they come from in a comment at the top of the fixture.
 
 ## Adding a happy-path spec
 

@@ -1,0 +1,86 @@
+{
+    "organization with four devices validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "organization with four devices get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Meraki Device Statuses",
+            "columnHeaders": [
+                {
+                    "label": "Device Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Device MAC Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Network ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Product Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Tags",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "Q234-ABCD-5678",
+                    "values": [
+                        "My AP",
+                        "online",
+                        "00:11:22:33:44:55",
+                        "N_24329156",
+                        "wireless",
+                        "tag1, tag2"
+                    ]
+                },
+                {
+                    "id": "Q234-ABCD-5679",
+                    "values": [
+                        "Core Switch",
+                        "alerting",
+                        "00:11:22:33:44:56",
+                        "N_24329156",
+                        "switch",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "Q234-ABCD-5680",
+                    "values": [
+                        "N/A",
+                        "offline",
+                        "00:11:22:33:44:57",
+                        "N_24329157",
+                        "appliance",
+                        "branch"
+                    ]
+                },
+                {
+                    "id": "Q234-ABCD-5681",
+                    "values": [
+                        "Spare camera",
+                        "dormant",
+                        "00:11:22:33:44:58",
+                        "N_24329157",
+                        "camera",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}
