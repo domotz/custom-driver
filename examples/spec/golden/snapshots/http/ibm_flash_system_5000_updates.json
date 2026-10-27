@@ -126,7 +126,7 @@
             {
                 "uid": "estimated_completion_time",
                 "name": "Estimated Completion Time",
-                "value": "10-27-2026 14:30:0",
+                "value": "10-27-2026 14:30:00",
                 "unit": null,
                 "valueType": "DATETIME"
             },
@@ -161,7 +161,7 @@
             {
                 "uid": "system_next_node_time",
                 "name": "System Next Node Time",
-                "value": "10-27-2026 14:5:0",
+                "value": "10-27-2026 14:05:00",
                 "unit": null,
                 "valueType": "DATETIME"
             },
@@ -182,7 +182,7 @@
             {
                 "uid": "system_next_pause_time",
                 "name": "System Next Pause Time",
-                "value": "10-27-2026 15:0:0",
+                "value": "10-27-2026 15:00:00",
                 "unit": null,
                 "valueType": "DATETIME"
             }

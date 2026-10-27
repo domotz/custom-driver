@@ -45,7 +45,7 @@
             {
                 "uid": "space_allocated_to_vdisks",
                 "name": "Space Allocated to VDisks",
-                "value": 812.5,
+                "value": 0.7935,
                 "unit": "TB",
                 "valueType": "NUMBER"
             },
@@ -66,7 +66,7 @@
             {
                 "uid": "total_used_capacity",
                 "name": "Total Used Capacity",
-                "value": 790.12,
+                "value": 0.7716,
                 "unit": "TB",
                 "valueType": "NUMBER"
             },
@@ -80,7 +80,7 @@
             {
                 "uid": "total_allocated_extent_capacity",
                 "name": "Total Allocated Extent Capacity",
-                "value": 815,
+                "value": 0.7959,
                 "unit": "TB",
                 "valueType": "NUMBER"
             },

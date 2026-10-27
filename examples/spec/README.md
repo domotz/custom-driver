@@ -55,14 +55,6 @@ Known issues deliberately left alone, because fixing them changes what a driver 
   `timeout` handler resolves), and likewise after a `PJLINK 1` greeting whose seed is not 8 characters.
 - `winrm/windows_host_users.js` has its `@remote_procedure` comment above `parseValidateOutput()` instead of
   `validate()` (the only exception in `catalogue_spec.js`).
-- IBM FlashSystem 5000 drivers (found by the golden fixtures; the snapshots pin today's output, not the right one):
-  - `general_information`, `storage_pools_information`, `physical_drives_info` strip the unit from capacities, so
-    `812.50GB` is reported as 812.5 in a TB (or MB) column;
-  - `managed_disks_information` calls `storeResponse(response, endpoint, key)` with one argument too many, so every
-    MDisk gets the first array's pool, capacity, RAID level and status (a degraded MDisk shows online);
-  - `physical_drives_info` joins `lsdrive.id` with `lsarraymember.member_id` instead of `drive_id`;
-  - `volume_management` merges the volume copy over the volume, so Status always equals Copy Status;
-  - `formatDate` (cloud_call_home_information, enclosure_statistics, updates, volume_management) does not zero-pad.
 
 Size (2026-10-26): 276 drivers, 583 entry points (`validate` 276, `get_status` 265, `backup` 11,
 `custom_N` 31 in 14 drivers) × 8 scenarios = 4,664 net cases; `npm test` runs 4,904 specs in about 45 s.

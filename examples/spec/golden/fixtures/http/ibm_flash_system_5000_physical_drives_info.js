@@ -1,7 +1,7 @@
 // Simulated FlashSystem 5000 (8.5.0.6) replies. Commands: lsdrive (-json, an array, one row per
 // drive, keyed by id) and lsarraymember (-json, an array, one row per array member with mdisk_id,
 // member_id, drive_id, spare_protection, balanced). The driver joins lsdrive.id with
-// lsarraymember.member_id.
+// lsarraymember.drive_id.
 // Format notes: capacity is a string with an automatic unit ("1.09TB", "558.41GB"); status
 // online/offline/degraded; use member/spare/candidate/failed; member_id is the drive's index inside
 // its array (0-based, per mdisk), not a global id; candidate drives have empty mdisk/member fields.

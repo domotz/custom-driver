@@ -1,6 +1,8 @@
 // Simulated FlashSystem 5000 (8.5.0.6) replies. Commands: lsvdisk (-json, an array, keyed by id),
 // lsvdiskanalysis (-json, an array keyed by id, only for analysed volumes) and lsvdiskcopy (-json, an
-// array keyed by vdisk_id, one row per copy). The driver joins the three.
+// array keyed by vdisk_id, one row per copy). The driver joins the three; the copy columns come from the
+// primary copy. vol3 is mirrored with its secondary copy offline: the volume is degraded and of type
+// "many", its primary copy online and striped.
 // Format notes: capacities are strings with an automatic unit ("2.00TB", "100.00GB", "512.00MB"),
 // ratios are bare percentages, analysis_time is YYMMDDHHMMSS; status online/offline/degraded.
 const reply = require("../../replies");
@@ -20,7 +22,8 @@ const vdisk = (over) => Object.assign({
 const lsvdisk = [
     vdisk({}),
     vdisk({ id: "1", name: "vol1", capacity: "100.00GB", vdisk_UID: "600507680C80000000000000000000A1", fc_map_count: "1", se_copy_count: "0", fast_write_state: "not_empty" }),
-    vdisk({ id: "2", name: "vol2", status: "offline", mdisk_grp_id: "1", mdisk_grp_name: "Pool1", parent_mdisk_grp_id: "1", parent_mdisk_grp_name: "Pool1", capacity: "512.00MB", vdisk_UID: "600507680C80000000000000000000A2", encrypt: "no", formatting: "yes" })
+    vdisk({ id: "2", name: "vol2", status: "offline", mdisk_grp_id: "1", mdisk_grp_name: "Pool1", parent_mdisk_grp_id: "1", parent_mdisk_grp_name: "Pool1", capacity: "512.00MB", vdisk_UID: "600507680C80000000000000000000A2", encrypt: "no", formatting: "yes" }),
+    vdisk({ id: "3", name: "vol3", status: "degraded", mdisk_grp_id: "many", mdisk_grp_name: "many", type: "many", capacity: "200.00GB", vdisk_UID: "600507680C80000000000000000000A3", copy_count: "2", se_copy_count: "0" })
 ];
 
 const lsvdiskanalysis = [
@@ -36,14 +39,16 @@ const copy = (over) => Object.assign({
 const lsvdiskcopy = [
     copy({}),
     copy({ vdisk_id: "1", vdisk_name: "vol1", capacity: "100.00GB", se_copy: "no", easy_tier_status: "active" }),
-    copy({ vdisk_id: "2", vdisk_name: "vol2", status: "offline", sync: "no", mdisk_grp_id: "1", mdisk_grp_name: "Pool1", capacity: "512.00MB", se_copy: "no", easy_tier: "off", easy_tier_status: "inactive", encrypt: "no" })
+    copy({ vdisk_id: "2", vdisk_name: "vol2", status: "offline", sync: "no", mdisk_grp_id: "1", mdisk_grp_name: "Pool1", capacity: "512.00MB", se_copy: "no", easy_tier: "off", easy_tier_status: "inactive", encrypt: "no" }),
+    copy({ vdisk_id: "3", vdisk_name: "vol3", copy_id: "0", status: "offline", sync: "no", primary: "no", mdisk_grp_id: "1", mdisk_grp_name: "Pool1", capacity: "200.00GB", se_copy: "no", easy_tier_status: "inactive", encrypt: "no" }),
+    copy({ vdisk_id: "3", vdisk_name: "vol3", copy_id: "1", capacity: "200.00GB", se_copy: "no" })
 ];
 
 const calls = () => [authCall, dataCall("lsvdisk", lsvdisk), dataCall("lsvdiskanalysis", lsvdiskanalysis), dataCall("lsvdiskcopy", lsvdiskcopy)];
 
 module.exports = {
     cases: [{
-        name: "three volumes",
+        name: "four volumes, one mirrored",
         entryPoints: { validate: { calls: calls() }, get_status: { calls: calls() } }
     }]
 };

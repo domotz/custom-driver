@@ -187,6 +187,7 @@ function cleanFloatValue(value) {
 function populateTable(volumeDetailsList) {
     for (let i = 0; i < volumeDetailsList.length; i++) {
         const volumeDetails = volumeDetailsList[i];
+        const copy = volumeDetails.copy;
         volumeTable.insertRecord(volumeDetails["id"], [
             volumeDetails["name"] || "N/A",
             volumeDetails["IO_group_id"] || "N/A",
@@ -217,17 +218,17 @@ function populateTable(volumeDetailsList) {
             volumeDetails["compression_savings_ratio"] ? cleanFloatValue(volumeDetails["compression_savings_ratio"]) : "N/A",
             volumeDetails["total_savings"] ? convertToGigabytes(volumeDetails["total_savings"]) : "N/A",
             volumeDetails["total_savings_ratio"] ? cleanFloatValue(volumeDetails["total_savings_ratio"]) : "N/A",
-            volumeDetails["copy_id"] || "N/A",
-            volumeDetails["status"] || "N/A",
-            volumeDetails["sync"] || "N/A",
-            volumeDetails["primary"] || "N/A",
-            volumeDetails["type"] || "N/A",
-            volumeDetails["se_copy"] || "N/A",
-            volumeDetails["easy_tier"] || "N/A",
-            volumeDetails["easy_tier_status"] || "N/A",
-            volumeDetails["compressed_copy"] || "N/A",
-            volumeDetails["encrypt"] || "N/A",
-            volumeDetails["deduplicated_copy"] || "N/A"
+            copy["copy_id"] || "N/A",
+            copy["status"] || "N/A",
+            copy["sync"] || "N/A",
+            copy["primary"] || "N/A",
+            copy["type"] || "N/A",
+            copy["se_copy"] || "N/A",
+            copy["easy_tier"] || "N/A",
+            copy["easy_tier_status"] || "N/A",
+            copy["compressed_copy"] || "N/A",
+            copy["encrypt"] || "N/A",
+            copy["deduplicated_copy"] || "N/A"
         ]);
     }
 }
@@ -238,16 +239,14 @@ function populateTable(volumeDetailsList) {
  * @returns {Promise} A promise that resolves when all data is retrieved and stored.
  */
 function retrieveAndStoreData(body) {
-    const promises = [];
-    for (let i = 0; i < endpoints.length; i++) {
-        const endpointDetails = endpoints[i];
-        const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-            .then(function (response) {
-                storeResponse(response, endpointDetails.key);
-            });
-        promises.push(promise);
-    }
-    return Promise.all(promises);
+    const promises = endpoints.map(function (endpointDetails) {
+        return callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint);
+    });
+    return Promise.all(promises).then(function (responses) {
+        responses.forEach(function (response, i) {
+            storeResponse(response, endpoints[i].key);
+        });
+    });
 }
 
 /**
@@ -260,26 +259,28 @@ function storeResponse(response, key) {
 }
 
 /**
- * Merges multiple HTTP responses based on a shared key.
+ * Merges the volume analysis into each volume and attaches the volume's copy as "copy" (the primary
+ * one when the volume is mirrored), so that copy fields such as status and type do not overwrite the
+ * volume's own.
  * @returns {Array<Object>} A list of merged response objects.
  */
 function mergeOutputs() {
-    if (!httpResponses || httpResponses.length === 0) return [];
-
-    let baseResponseList = httpResponses[0].response;
-    const baseKey = httpResponses[0].key;
-
-    for (let i = 1; i < httpResponses.length; i++) {
-        const currentResponseList = httpResponses[i].response;
-        const currentKey = httpResponses[i].key;
-        baseResponseList = baseResponseList.map(function (baseObject) {
-            const matchedObject = currentResponseList.find(function (currentObject) {
-                return baseObject[baseKey] === currentObject[currentKey];
-            });
-            return matchedObject ? Object.assign({}, baseObject, matchedObject) : baseObject;
+    if (!httpResponses || httpResponses.length < endpoints.length) return [];
+    const volumes = httpResponses[0];
+    const analyses = httpResponses[1];
+    const copies = httpResponses[2];
+    return volumes.response.map(function (volume) {
+        const analysis = analyses.response.find(function (item) {
+            return item[analyses.key] === volume[volumes.key];
         });
-    }
-    return baseResponseList;
+        const volumeCopies = copies.response.filter(function (item) {
+            return item[copies.key] === volume[volumes.key];
+        });
+        const copy = volumeCopies.find(function (item) {
+            return item.primary === "yes";
+        }) || volumeCopies[0] || {};
+        return Object.assign({}, analysis, volume, { copy: copy });
+    });
 }
 
 /**
@@ -300,17 +301,23 @@ function convertToGigabytes(inputValue) {
 /**
  * Converts a value to gigabytes based on the unit.
  * @param {number} value - The numeric value.
- * @param {string} unit - The unit (MB, GB, TB).
+ * @param {string} unit - The unit (B, KB, MB, GB, TB, PB).
  * @returns {string} Value in gigabytes.
  */
 function formatValueToGigabytes(value, unit) {
     switch (unit.toLowerCase()) {
+        case "b":
+            return (value / 1073741824).toFixed(4);
+        case "kb":
+            return (value / 1048576).toFixed(4);
         case "mb":
             return (value / 1024).toFixed(4);
         case "gb":
             return value.toFixed(2);
         case "tb":
             return (value * 1024).toFixed(2);
+        case "pb":
+            return (value * 1048576).toFixed(2);
         default:
             throw new Error("Unknown unit: " + unit);
     }
@@ -330,7 +337,10 @@ function formatDate(timestamp) {
     const minute = parseInt(timestamp.slice(8, 10));
     const second = parseInt(timestamp.slice(10, 12));
     const dateTime = new Date(year, month, day, hour, minute, second);
-    return (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + "-" + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+    const pad = function (number) {
+        return String(number).padStart(2, "0");
+    };
+    return pad(dateTime.getMonth() + 1) + "-" + pad(dateTime.getDate()) + "-" + dateTime.getFullYear() + " " + pad(dateTime.getHours()) + ":" + pad(dateTime.getMinutes()) + ":" + pad(dateTime.getSeconds());
 }
 
 /**

@@ -1,10 +1,10 @@
 {
-    "three volumes validate": {
+    "four volumes, one mirrored validate": {
         "type": "success",
         "variables": null,
         "table": null
     },
-    "three volumes get_status": {
+    "four volumes, one mirrored get_status": {
         "type": "success",
         "variables": null,
         "table": {
@@ -204,7 +204,7 @@
                         "no",
                         "yes",
                         "N/A",
-                        "10-25-2026 3:0:0",
+                        "10-25-2026 03:00:00",
                         "1536.00",
                         "512.00",
                         25,
@@ -249,7 +249,7 @@
                         "no",
                         "yes",
                         "N/A",
-                        "10-25-2026 3:5:0",
+                        "10-25-2026 03:05:00",
                         "60.00",
                         "40.00",
                         40,
@@ -313,6 +313,51 @@
                         "inactive",
                         "no",
                         "no",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "vol3",
+                        "0",
+                        "io_grp0",
+                        "degraded",
+                        "many",
+                        "many",
+                        "200.00",
+                        "many",
+                        "600507680C80000000000000000000A3",
+                        0,
+                        2,
+                        "empty",
+                        0,
+                        "no",
+                        0,
+                        "0",
+                        "Pool0",
+                        "no",
+                        "yes",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "1",
+                        "online",
+                        "yes",
+                        "yes",
+                        "striped",
+                        "no",
+                        "on",
+                        "balanced",
+                        "no",
+                        "yes",
                         "no"
                     ]
                 }
