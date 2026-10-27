@@ -62,6 +62,15 @@ function getDisplayValue(value) {
 }
 
 /**
+ * Converts a CPU time from milliseconds (as os.cpus() reports it) to seconds
+ * @param {number} value The time in milliseconds
+ * @returns {number|string} The time in seconds, or "N/A"
+ */
+function toSeconds(value) {
+    return typeof value === "number" ? Math.round(value / 1000) : "N/A";
+}
+
+/**
  * Extracts and processes CPU Info from the response
  * @param {Object} data The CPU Info to process
  */
@@ -72,11 +81,11 @@ function extractData(data) {
                 id: (index + 1).toString(),
                 model: getDisplayValue(info.model),
                 speed: getDisplayValue(info.speed),
-                userTime: getDisplayValue(info.times && info.times.user),
-                niceTime: getDisplayValue(info.times && info.times.nice),
-                sysTime: getDisplayValue(info.times && info.times.sys),
-                idleTime: getDisplayValue(info.times && info.times.idle),
-                irqTime: getDisplayValue(info.times && info.times.irq)
+                userTime: toSeconds(info.times && info.times.user),
+                niceTime: toSeconds(info.times && info.times.nice),
+                sysTime: toSeconds(info.times && info.times.sys),
+                idleTime: toSeconds(info.times && info.times.idle),
+                irqTime: toSeconds(info.times && info.times.irq)
             });
         });
         D.success(table);

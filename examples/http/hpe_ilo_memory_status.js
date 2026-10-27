@@ -13,7 +13,7 @@
 
 // Create a Custom Driver table to store memory status
 var table = D.createTable(
-    "Power Supply",
+    "Memory Status",
     [
         { label: "Status", valueType: D.valueType.STRING }
     ]

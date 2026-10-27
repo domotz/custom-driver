@@ -51,6 +51,7 @@ function extractData(data) {
     if (!data.Fans || data.Fans.length === 0) {
         console.error("No fan data available");
         D.failure(D.errorType.GENERIC_ERROR);
+        return;
     }
 
     var unit = data.Fans[0].ReadingUnits;
@@ -66,13 +67,22 @@ function extractData(data) {
     );
 
     data.Fans.forEach(function (output) {
-        if (!output.Name || !output.Reading || !output.Status || !output.Status.State) {
-            console.error("Missing required properties in the data");
-            D.failure(D.errorType.PARSING_ERROR);
+        if (!output.Name) {
+            console.error("Skipping a fan without a name");
+            return;
         }
         var name = output.Name;
-        var speed = output.Reading;
-        var status = output.Status.State == "Enabled" ? output.Status.Health : "Not enabled";
+        // A stopped fan reads 0 and an absent one has no reading
+        var speed = typeof output.Reading === "number" ? output.Reading : "N/A";
+        var state = output.Status && output.Status.State;
+        var status;
+        if (state === "Enabled") {
+            status = output.Status.Health || "N/A";
+        } else if (state === "Absent") {
+            status = "Absent";
+        } else {
+            status = "Not enabled";
+        }
         var recordId = sanitize(name);
         table.insertRecord(recordId, [speed, status]);
     });

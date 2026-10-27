@@ -1,0 +1,97 @@
+{
+    "collector 8.7.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "collector 8.7.0 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "mode",
+                "name": "Mode",
+                "value": "configured",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "platform",
+                "name": "Platform",
+                "value": "ubuntu_core_private",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "architecture",
+                "name": "Architecture",
+                "value": "arm64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "agent-version",
+                "name": "Collector Version",
+                "value": "8.7.0",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "node-version",
+                "name": "Node Version",
+                "value": "v20.18.1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-uptime",
+                "name": "System Uptime",
+                "value": 1209600.45,
+                "unit": "second",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "process-uptime",
+                "name": "Process Uptime",
+                "value": 86400.123,
+                "unit": "second",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "load-average-1-min",
+                "name": "Load Average 1min",
+                "value": 0.52,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "load-average-5-min",
+                "name": "Load Average 5min",
+                "value": 0.47,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "load-average-15-min",
+                "name": "Load Average 15min",
+                "value": 0.41,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "freemem",
+                "name": "Free Mem",
+                "value": "1.84",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}
