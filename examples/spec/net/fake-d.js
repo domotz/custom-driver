@@ -251,25 +251,49 @@ function createFakeD(config) {
             createMetric: (m) => Object.assign({}, m),
             createTable(label, columnHeaders) {
                 const records = [];
-                return {
+                const table = {
                     isTable: true,
                     label,
                     columnHeaders,
                     records,
+                    // library/table.js addMetrics: [{ value, metadata }]; a record keeps metadata only when some is set.
+                    addMetrics(id, metrics) {
+                        validateRecordId(id);
+                        validateRecordValues(metrics, (columnHeaders || []).length);
+                        if (records.some((r) => r.id === id)) {
+                            throw Error("Duplicate record id. Cannot insert record: " + id);
+                        }
+                        const record = { id, values: metrics.map((m) => m.value) };
+                        if (metrics.some((m) => m.metadata !== null && m.metadata !== undefined)) {
+                            record.metadata = metrics.map((m) => (m.metadata === undefined ? null : m.metadata));
+                        }
+                        records.push(record);
+                    },
                     insertRecord(id, values) {
                         // Production builds the metrics with for...of (a non-iterable throws a TypeError).
                         const metrics = [];
                         for (const value of values) {
                             metrics.push({ value, metadata: null });
                         }
+                        table.addMetrics(id, metrics);
+                    },
+                    // library/table.js upsertRecord: an existing id keeps its position and gets the new values.
+                    upsertRecord(id, values) {
+                        const metrics = [];
+                        for (const value of values) {
+                            metrics.push({ value, metadata: null });
+                        }
                         validateRecordId(id);
                         validateRecordValues(metrics, (columnHeaders || []).length);
-                        if (records.some((r) => r.id === id)) {
-                            throw Error("Duplicate record id. Cannot insert record: " + id);
+                        const existing = records.find((r) => r.id === id);
+                        if (existing) {
+                            existing.values = values;
+                        } else {
+                            records.push({ id, values });
                         }
-                        records.push({ id, values });
                     }
                 };
+                return table;
             },
             createBackup: (backup) => ({
                 label: (backup && backup.label) || "Custom Driver Configuration Backup",
