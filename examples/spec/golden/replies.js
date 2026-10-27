@@ -32,4 +32,18 @@ const winrm = (stdout, stderr, exitCode) => [{
 // except Counter64 which is a number.
 const snmp = (varbinds) => [varbinds, null];
 
-module.exports = { http, ssh, sshCommands, telnet, tcp, winrm, snmp };
+// D.device.ping: (result, null), result as network_tools/latency/ping.js builds it:
+// { jitter, avg, packet_loss, min, max, std, samples } (ms, packet_loss in %).
+const ping = (result) => [result, null];
+
+// D.device.mtr: (result, null), result as documented in sandbox/library/device.js:
+// { target, protocol, cycles, packet_size, hop_count, elapsed_ms, hops: [{ ttl, host, hostname, hosts, loss_percent,
+// sent, received, dropped, rtt, jitter, tos, extensions }] }.
+const mtr = (result) => [result, null];
+
+// D.tftpServer.accept: onReady(undefined, host, port), then onUploadEnd(undefined, content) with the uploaded file.
+const tftpUpload = (content, host, port) => Object.assign([undefined, host || "192.168.1.2", port || 69], {
+    onUploadEnd: [undefined, content]
+});
+
+module.exports = { http, ssh, sshCommands, telnet, tcp, winrm, snmp, ping, mtr, tftpUpload };

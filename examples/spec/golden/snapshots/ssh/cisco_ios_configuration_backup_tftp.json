@@ -3,5 +3,14 @@
         "type": "success",
         "variables": null,
         "table": null
+    },
+    "Catalyst IOS 15.2 backup": {
+        "type": "success",
+        "backup": {
+            "label": "Running Config Backup",
+            "running": "!\nversion 15.2\nservice timestamps debug datetime msec\nhostname access-sw-01\n!\ninterface GigabitEthernet0/1\n description uplink\n switchport mode trunk\n!\nend\n",
+            "startup": null,
+            "ignoredLines": null
+        }
     }
 }

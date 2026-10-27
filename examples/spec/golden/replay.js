@@ -4,7 +4,8 @@
  * createReplay(calls) -> { responder, problems() }
  *   calls = [{ kind, method, target, host?, protocol?, headers?, body?, reply }]
  *   target is compared (string equality or RegExp test) with targetOf(call): the URL for http,
- *   the command for ssh/telnet/tcp/winrm, the OID (or OIDs joined by ",") for snmp.
+ *   the command for ssh/telnet/tcp/winrm, the OID (or OIDs joined by ",") for snmp; ping, mtr and tftp
+ *   calls have no target (leave it out).
  *   host, when given, must equal the external device host (D.createExternalDevice).
  *   headers, when given, must each equal the request's header of that name (http only), e.g. to prove
  *   that the token from a login reply is sent on the data calls.

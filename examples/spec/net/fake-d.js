@@ -137,9 +137,9 @@ function createFakeD(config) {
                 return;
             }
             const where = wrapKey.replace(/^snmp\./, "");
-            schedule(() => {
+            const invoke = (fn, fnArgs) => () => {
                 try {
-                    callback(...args);
+                    fn(...fnArgs);
                 } catch (error) {
                     if (WRAPPED.has(wrapKey)) {
                         record.wrappedThrows.push({ method: where, error });
@@ -148,7 +148,13 @@ function createFakeD(config) {
                         record.crashes.push({ where, error });
                     }
                 }
-            });
+            };
+            schedule(invoke(callback, args));
+            // tftpServer.accept: a reply may carry the onUploadEnd(error, content) arguments too
+            const onUploadEnd = rest.filter((arg) => typeof arg === "function")[1];
+            if (onUploadEnd && Array.isArray(args.onUploadEnd)) {
+                schedule(invoke(onUploadEnd, args.onUploadEnd));
+            }
         };
     }
 
