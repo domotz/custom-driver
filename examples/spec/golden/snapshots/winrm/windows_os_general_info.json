@@ -1,0 +1,122 @@
+{
+    "winrm, windows 11 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, windows 11 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "Microsoft Windows 11 Pro",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "10.0.22631",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "build-number",
+                "name": "Build Number",
+                "value": "22631",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "architecture",
+                "name": "Architecture",
+                "value": "64-bit",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "vendor",
+                "name": "Vendor",
+                "value": "Microsoft Corporation",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-id",
+                "name": "OS Product ID",
+                "value": "00330-80000-00000-AA123",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "PF3ABC12",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "ssh, windows 11 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, windows 11 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "Microsoft Windows 11 Pro",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "10.0.22631",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "build-number",
+                "name": "Build Number",
+                "value": "22631",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "architecture",
+                "name": "Architecture",
+                "value": "64-bit",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "vendor",
+                "name": "Vendor",
+                "value": "Microsoft Corporation",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-id",
+                "name": "OS Product ID",
+                "value": "00330-80000-00000-AA123",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "PF3ABC12",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

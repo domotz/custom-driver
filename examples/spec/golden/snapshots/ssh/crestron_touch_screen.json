@@ -1,0 +1,120 @@
+{
+    "tsw-1060 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tsw-1060 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Touchscreen Sensors",
+            "columnHeaders": [
+                {
+                    "label": "Sensor"
+                },
+                {
+                    "label": "Value"
+                }
+            ],
+            "records": [
+                {
+                    "id": "id-mainboard-temperature",
+                    "values": [
+                        "Mainboard Temperature - C",
+                        "44"
+                    ]
+                },
+                {
+                    "id": "id-panel-temperature",
+                    "values": [
+                        "Panel Temperature - C",
+                        "39"
+                    ]
+                },
+                {
+                    "id": "id-processor-temperature",
+                    "values": [
+                        "Processor Temperature - C",
+                        "52"
+                    ]
+                },
+                {
+                    "id": "id-host-name",
+                    "values": [
+                        "Host Name",
+                        "TSW-1060-00107F8A1C2D"
+                    ]
+                },
+                {
+                    "id": "id-model",
+                    "values": [
+                        "Model",
+                        "TSW-1060"
+                    ]
+                },
+                {
+                    "id": "id-serial-number",
+                    "values": [
+                        "Serial Number",
+                        "1923456"
+                    ]
+                },
+                {
+                    "id": "id-firmware-version",
+                    "values": [
+                        "Firmware Version",
+                        "3.002.1061"
+                    ]
+                },
+                {
+                    "id": "id-web-server",
+                    "values": [
+                        "Web Server",
+                        "Enabled"
+                    ]
+                },
+                {
+                    "id": "id-ftp-server",
+                    "values": [
+                        "FTP Server",
+                        "Disabled"
+                    ]
+                },
+                {
+                    "id": "id-ssl",
+                    "values": [
+                        "SSL",
+                        "Enabled"
+                    ]
+                },
+                {
+                    "id": "id-rconsole",
+                    "values": [
+                        "RConsole",
+                        "Enabled"
+                    ]
+                },
+                {
+                    "id": "id-system-uptime",
+                    "values": [
+                        "System Uptime",
+                        "12 days 03:14:07"
+                    ]
+                },
+                {
+                    "id": "id-display-brightness",
+                    "values": [
+                        "Display Brightness",
+                        "80"
+                    ]
+                }
+            ]
+        }
+    },
+    "tsw-1060 custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

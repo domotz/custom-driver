@@ -223,7 +223,7 @@ function populateTable(logicalDiskInfo, bitLockerInfo) {
         convertToGB(size),
         checkEmptyString(logicalDiskInfo.FileSystem),
         type,
-        checkEmptyString(logicalDiskInfo.IsReadOnly),
+        typeof logicalDiskInfo.IsReadOnly === "boolean" ? (logicalDiskInfo.IsReadOnly ? "Yes" : "No") : "N/A",
         bitLockerStatus,
         bitLockerProtectionStatus,
         bitLockerEncryptionPercentage,
@@ -256,7 +256,8 @@ function extractBitLockerInfo(bitLockerOutput, logicalDiskDriveLetter) {
 
 // Parse the output of commands and insert it into the table
 function parseOutput(output) {
-    const logicalDisksOutput = output[0];
+    // ConvertTo-Json writes a single volume as a bare object
+    const logicalDisksOutput = Array.isArray(output[0]) ? output[0] : (output[0] ? [output[0]] : []);
     const bitLockerOutput = Array.isArray(output[1]) ? output[1] : [output[1]];
     for (let i = 0; i < logicalDisksOutput.length; i++) {
         const logicalDiskInfo = logicalDisksOutput[i];

@@ -79,14 +79,15 @@ function parseData(executionResult) {
     // cmdTemperature output is result[0]
     // cmdInfo output is result[1]
     // concatenating the results into one output
-    var output = executionResult[0] + executionResult[1];
+    // the collector trims each output, so keep a line break between them
+    var output = executionResult[0] + "\n" + executionResult[1];
     // processing the output
     var outputArray = output.split(/\r?\n/);
     if (outputArray == null) {
         console.error("Commands output is empty or undefined");
         D.failure(D.errorType.PARSING_ERROR);
     }
-    for (var i = 0; i < outputArray.length - 1; i++) {
+    for (var i = 0; i < outputArray.length; i++) {
         // removing whitespaces
         var fields = outputArray[i].replace(/\s+/g, " ").trim();
         // removing prompts characters before ">"
@@ -102,13 +103,12 @@ function parseData(executionResult) {
             }
             //creating the id field for the table by concat "id-" with the first element of the array
             var recordId = "id-" + sensorName.replace(/\s/g, "-").toLowerCase();
-            var sensorValue = sensorArray[sensorArray.length - 1];
+            // the value is everything after the first ":" (it may contain ":" itself, e.g. a time)
+            var sensorValue = sensorArray.slice(1).join(":").trim();
 
             if (sensorName.indexOf("Temperature") >= 0) {
                 sensorName = sensorName + " - C";
-                sensorValue = sensorValue.slice(0, -1);
-            } else if (sensorName.indexOf("Web") >= 0  || sensorName.indexOf("FTP") >= 0 || sensorName.indexOf("SSL") >= 0 || sensorName.indexOf("RConsole") >= 0 || sensorName.indexOf("System") >= 0) {
-                sensorValue = sensorArray[1] + sensorValue;
+                sensorValue = sensorValue.slice(0, -1).trim();
             }
             touchScreenSensorTable.insertRecord(
                 recordId, [sensorName, sensorValue]

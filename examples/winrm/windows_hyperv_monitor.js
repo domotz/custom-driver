@@ -33,7 +33,7 @@ const cmd = "(Get-VM | ForEach-Object " +
 "{ " +
     'try {$Kvp = Get-WmiObject -namespace root/virtualization/v2 -query ("Associators of {" + (Get-WmiObject -Namespace root/virtualization/v2 -Query "Select * From Msvm_ComputerSystem Where ElementName=`"$($_.Name)`"").path + "} Where ResultClass=Msvm_KvpExchangeComponent")' +
     '} catch {  Write-Error "Failed to execute the query. Error details: $_";}' +
-    '@{ "Id" = $_.Id; "Name" = $_.Name; "State" = $_.State; "osInfo" = $Kvp.GuestIntrinsicExchangeItems; "MemoryAssigned" = [math]::round($_.MemoryAssigned / 1MB, 2); "CPUUsage" = $_.CPUUsage; "Status" = $_.Status; "CreationTime" = $_.CreationTime; "ProcessorCount" = $_.ProcessorCount; "Uptime" = $_.Uptime}' +
+    '@{ "Id" = $_.Id; "Name" = $_.Name; "State" = "$($_.State)"; "osInfo" = $Kvp.GuestIntrinsicExchangeItems; "MemoryAssigned" = [math]::round($_.MemoryAssigned / 1MB, 2); "CPUUsage" = $_.CPUUsage; "Status" = $_.Status; "CreationTime" = $_.CreationTime; "ProcessorCount" = $_.ProcessorCount; "Uptime" = $_.Uptime}' +
 "}) | ConvertTo-Json";
 
 // Define the WinRM options when running the commands
@@ -47,41 +47,6 @@ const winrmConfig = {
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
     timeout: 30000               // per-command timeout in milliseconds
-};
-
-/**
- * Object mapping state codes to their corresponding descriptions.
- */
-const stateCodes = {
-    1: "Other",
-    2: "Running",
-    3: "Off",
-    4: "Stopping",
-    5: "Saved",
-    6: "Paused",
-    7: "Starting",
-    8: "Reset",
-    9: "Saving",
-    10: "Pausing",
-    11: "Resuming",
-    12: "FastSaved",
-    13: "FastSaving",
-    14: "ForceShutdown",
-    15: "ForceReboot",
-    16: "Hibernated",
-    17: "ComponentServicing",
-    18: "RunningCritical",
-    19: "OffCritical",
-    20: "StoppingCritical",
-    21: "SavedCritical",
-    22: "PausedCritical",
-    23: "StartingCritical",
-    24: "ResetCritical",
-    25: "SavingCritical",
-    26: "PausingCritical",
-    27: "ResumingCritical",
-    28: "FastSavedCritical",
-    29: "FastSavingCritical"
 };
 
 // Creation of custom driver table
@@ -152,7 +117,6 @@ function sanitize(output) {
  */
 function populateTable(id, name, state, osName, osVersion, memoryAssigned, CPUUsage, creationTime, processorCount, uptime, status) {
     const recordId = sanitize(id);
-    state = stateCodes[state];
     creationTime = formatDate(new Date(parseInt(creationTime.match(/\d+/)[0], 10)));
     uptime = convertTotalSeconds(uptime.TotalSeconds);
     virtualMachineTable.insertRecord(recordId, [name, state, osName, osVersion, memoryAssigned, CPUUsage, creationTime, processorCount, uptime, status]);

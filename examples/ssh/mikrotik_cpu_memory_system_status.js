@@ -62,20 +62,24 @@ function executeCommand(command) {
 }
 
 function convertToBytes(value) {
-    if (value.indexOf("MiB") !== -1) {
-        return parseFloat(value.replace("MiB", "").trim()) * Math.pow(1024, 2);
-    } else if (value.indexOf("KiB") !== -1) {
-        return parseFloat(value.replace("KiB", "").trim()) * 1024;
+    var units = { KiB: 1, MiB: 2, GiB: 3, TiB: 4 };
+    var match = /^([\d.]+)\s*([KMGT]iB)?$/.exec((value || "").trim());
+    if (!match) {
+        return NaN;
     }
-    return parseFloat(value);
+    return parseFloat(match[1]) * (match[2] ? Math.pow(1024, units[match[2]]) : 1);
 }
 
+// RouterOS prints the uptime as e.g. "2w3d4h5m6s"; every part is optional
 function convertUptimeToSeconds(uptime) {
-    var parts = uptime.split(/[hms]/);
-    var hours = parseInt(parts[0]) || 0;
-    var minutes = parseInt(parts[1]) || 0;
-    var seconds = parseInt(parts[2]) || 0;
-    return hours * 3600 + minutes * 60 + seconds;
+    var unitSeconds = { w: 604800, d: 86400, h: 3600, m: 60, s: 1 };
+    var total = 0;
+    var partRegex = /(\d+)([wdhms])/g;
+    var match;
+    while ((match = partRegex.exec(uptime)) !== null) {
+        total += parseInt(match[1], 10) * unitSeconds[match[2]];
+    }
+    return total;
 }
 
 // Parses the system resource information and creates Custom Driver Variables

@@ -88,7 +88,6 @@ function validate() {
 function get_status() {
     executeCommand(command)
         .then(parseOutput)
-        .then(D.success)
         .catch(checkSshError);
 }
 
