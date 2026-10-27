@@ -5,7 +5,8 @@
  * that production does not have throw, so a driver relying on a missing API
  * fails loudly instead of silently getting `undefined`.
  *
- * createFakeD({ responder, parameters, schedule, device }) -> { D, record }
+ * createFakeD({ responder, parameters, schedule, device, driverType }) -> { D, record }
+ *   driverType GENERIC (default) or CONFIGURATION_MANAGEMENT selects how D.success behaves (sandbox.js buildDomotzContext)
  *   responder(call) -> positional callback args array (or undefined to never call back)
  *   call = { kind, method, options[, host][, sessionOptions] }
  *   schedule(fn) delivers callbacks (default setImmediate)
@@ -94,6 +95,7 @@ function strict(target, path, record) {
 function createFakeD(config) {
     const responder = config.responder;
     const parameters = config.parameters || {};
+    const configurationManagement = config.driverType === "CONFIGURATION_MANAGEMENT";
     const schedule = config.schedule || ((fn) => setImmediate(fn));
     const deviceInfo = Object.assign(
         { ip: "192.0.2.10", username: "user", password: "pass", serial: "SN0001", macAddress: "00:00:5E:00:53:01" },
@@ -210,7 +212,30 @@ function createFakeD(config) {
 
     const D = strict(
         {
+            // sandbox.js successGeneric: a table passed first is the table; variables are then
+            // iterated with for...of (7.4.3+, BT-6098), so a non-iterable throws a TypeError back
+            // into the driver, and a duplicate uid reports PARSING_ERROR instead of the success.
+            // successConfigurationManagement takes the backup as is.
             success(variables, table) {
+                if (configurationManagement) {
+                    report("success", undefined, variables, table);
+                    return;
+                }
+                if (!table && variables && variables.isTable) {
+                    table = variables;
+                    variables = null;
+                }
+                if (variables !== null && variables !== undefined) {
+                    const uids = [];
+                    for (const variable of variables) {
+                        const uid = variable.uid;
+                        if (uids.includes(uid)) {
+                            report("failure", "PARSING_ERROR");
+                            return;
+                        }
+                        uids.push(uid);
+                    }
+                }
                 report("success", undefined, variables, table);
             },
             failure(errorTypeArg) {
@@ -221,6 +246,7 @@ function createFakeD(config) {
             createTable(label, columnHeaders) {
                 const records = [];
                 return {
+                    isTable: true,
                     label,
                     columnHeaders,
                     records,

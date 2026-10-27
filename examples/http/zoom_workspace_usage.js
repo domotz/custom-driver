@@ -299,7 +299,9 @@ function validate() {
         .then(retrieveLocations)
         .then(getLocationIdByName)
         .then(retrieveWorkspacesUsage)
-        .then(D.success)
+        .then(function () {
+            D.success();
+        })
         .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);

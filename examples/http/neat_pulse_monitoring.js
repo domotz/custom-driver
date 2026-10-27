@@ -470,7 +470,9 @@ function custom_1() {
     if (cloudControllerDeviceID && cloudControllerDeviceID !== null && cloudControllerDeviceID.trim() !== "") {
         // Use the provided cloudControllerDeviceID directly
         reboot(cloudControllerDeviceID)
-            .then(D.success)
+            .then(function () {
+                D.success();
+            })
             .catch(function (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);
@@ -480,7 +482,9 @@ function custom_1() {
         retrieveInventory()
             .then(findDevice)
             .then(reboot)
-            .then(D.success)
+            .then(function () {
+                D.success();
+            })
             .catch(function (error) {
                 console.error(error);
                 D.failure(D.errorType.GENERIC_ERROR);

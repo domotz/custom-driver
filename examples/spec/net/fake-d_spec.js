@@ -228,4 +228,41 @@ describe("strict fake D", () => {
             expect(t.records.length).toBe(1);
         });
     });
+
+    describe("D.success validates like sandbox.js successGeneric", () => {
+        const fake = (driverType) => createFakeD({ responder: () => undefined, driverType });
+        const variable = (uid) => ({ uid, name: uid, value: "1" });
+
+        it("accepts variables with unique uids", () => {
+            const { D, record } = fake();
+            D.success([variable("a"), variable("b")]);
+            expect(record.reports[0].type).toBe("success");
+        });
+
+        it("throws a TypeError for non-iterable variables, as production does since 7.4.3", () => {
+            const { D, record } = fake();
+            expect(() => D.success({ "1.3.6.1": "x" })).toThrowError(TypeError);
+            expect(record.reports.length).toBe(0);
+        });
+
+        it("reports PARSING_ERROR for a duplicate uid", () => {
+            const { D, record } = fake();
+            D.success([variable("a"), variable("a")]);
+            expect(record.reports[0]).toEqual(jasmine.objectContaining({ type: "failure", errorType: "PARSING_ERROR" }));
+        });
+
+        it("treats a table passed first as the table", () => {
+            const { D, record } = fake();
+            const table = D.createTable("T", [{ label: "C" }]);
+            D.success(table);
+            expect(record.reports[0].table).toBe(table);
+            expect(record.reports[0].variables).toBeNull();
+        });
+
+        it("takes anything for a configuration-management driver", () => {
+            const { D, record } = fake("CONFIGURATION_MANAGEMENT");
+            D.success({ running: "config" });
+            expect(record.reports[0].type).toBe("success");
+        });
+    });
 });

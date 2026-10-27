@@ -7,7 +7,8 @@
  * wrapper. Transports answer from a scenario responder (scenarios.js) through the strict fake D
  * (fake-d.js); timers and sockets are tracked fakes (sandbox-io.js).
  *
- * runEntryPoint({ source, filename, entryPoint, responder, parameters, timeLimitMs }) -> Promise<CaseResult>
+ * runEntryPoint({ source, filename, entryPoint, responder, parameters, timeLimitMs, globals, driverType }) -> Promise<CaseResult>
+ *   globals replaces endowments by name (the golden specs pass a fixed Date and a seeded Math)
  * CaseResult = { firstReport, reports, crashes, unhandledRejections, syncThrow, wrapperError,
  *                wrappedThrows, sandboxViolations, timedOut, idle, runaway, unknownMembers,
  *                transportCalls, logs, elapsedMs }
@@ -119,7 +120,7 @@ async function scopeGlobalErrors(fn) {
 }
 
 function runCase(options) {
-    const { source, entryPoint, responder, parameters, timeLimitMs } = options;
+    const { source, entryPoint, responder, parameters, timeLimitMs, globals, driverType } = options;
     const started = Date.now();
     const logs = [];
     const unhandledRejections = [];
@@ -228,7 +229,7 @@ function runCase(options) {
         });
     }
 
-    const fake = createFakeD({ responder, parameters, schedule: (fn) => deliver(fn, "callback") });
+    const fake = createFakeD({ responder, parameters, driverType, schedule: (fn) => deliver(fn, "callback") });
     record = fake.record;
     const D = fake.D;
     const ctx = { responder, record, deliver, timer };
@@ -256,6 +257,7 @@ function runCase(options) {
         Math,
         Intl
     };
+    Object.assign(endowments, globals);
 
     process.on("unhandledRejection", onRejection);
     process.on("uncaughtException", onException);

@@ -269,7 +269,9 @@ function failure(err) {
  */
 function validate() {
     getMetricsData()
-        .then(D.success)
+        .then(function () {
+            D.success();
+        })
         .catch(failure);
 }
 

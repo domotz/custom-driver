@@ -28,6 +28,7 @@ describe("robustness net", () => {
                                 entryPoint,
                                 responder: scenario.responder,
                                 parameters: parametersFor(driver),
+                                driverType: driver.driverType,
                                 timeLimitMs: TIME_LIMIT_MS
                             });
                             const v = verdict(result);

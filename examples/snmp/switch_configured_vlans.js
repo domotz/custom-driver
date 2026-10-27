@@ -50,7 +50,9 @@ function parseData(out) {
  */
 function validate() {
     validateAndGetData()
-        .then(D.success)
+        .then(function () {
+            D.success();
+        })
         .catch(function (err) {
             console.error(err);
             D.failure(D.errorType.GENERIC_ERROR);

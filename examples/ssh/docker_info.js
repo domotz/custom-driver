@@ -92,7 +92,9 @@ function failure(err) {
 */
 function validate() {
     getDockerInfo()
-        .then(D.success)
+        .then(function () {
+            D.success();
+        })
         .catch(failure);
 }
 

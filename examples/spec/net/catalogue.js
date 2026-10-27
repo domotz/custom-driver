@@ -1,7 +1,8 @@
 /**
  * Driver discovery and parameter synthesis for the robustness net.
  *
- * discoverDrivers(examplesRoot) -> [{ path, source, entryPoints }]
+ * discoverDrivers(examplesRoot) -> [{ path, source, entryPoints, driverType }]
+ *   driverType is CONFIGURATION_MANAGEMENT for a driver with backup() or restore(), else GENERIC.
  * parametersFor(driver) -> { [name]: value } fed to the fake D's getParameter.
  */
 
@@ -51,11 +52,13 @@ function discoverDrivers(examplesRoot) {
         .flatMap((d) => listJs(path.join(examplesRoot, d)))
         .map((file) => {
             const source = fs.readFileSync(file, "utf8");
+            const entryPoints = entryPointsOf(source);
             return {
                 path: path.relative(examplesRoot, file).split(path.sep).join("/"),
                 file,
                 source,
-                entryPoints: entryPointsOf(source)
+                entryPoints,
+                driverType: entryPoints.includes("backup") || entryPoints.includes("restore") ? "CONFIGURATION_MANAGEMENT" : "GENERIC"
             };
         });
 }
