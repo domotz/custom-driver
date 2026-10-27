@@ -47,8 +47,9 @@ with one of these reasons:
 | `timed out after N ms without reporting` | still pending at the time limit with no report | make sure a failed or silent device ends in `D.failure` |
 | `never reported` | the run ended with no report and none of the reasons above (a fallback; the two "never reported"/"timed out" rows above are the usual form) | as for `never reported: went idle ...` |
 
-Size (2026-10-26): 276 drivers, 583 entry points (`validate` 276, `get_status` 265, `backup` 11,
-`custom_N` 31 in 14 drivers) × 8 scenarios = 4,664 net cases; `npm test` runs 4,904 specs in about 45 s.
+Size (2026-10-27): 276 drivers, 583 entry points (`validate` 276, `get_status` 265, `backup` 11,
+`custom_N` 31 in 14 drivers) × 8 scenarios = 4,664 net cases; every driver also has a golden fixture
+(below); `npm test` runs 6,026 specs in about 55 s.
 Entry points are found by `net/catalogue.js` (`ENTRY_POINT_RE`), which also accepts a declaration
 written right after a JSDoc block (`*/function validate() {`).
 
@@ -85,8 +86,12 @@ module.exports = {
 ```
 
 `target` is the URL (http), the command (ssh, telnet, tcp, winrm) or the OID (snmp), as a string or a
-RegExp; `host` pins an external device. `golden/replies.js` builds the production reply shape of each
-kind. Each entry point runs in the net's production-style runner with a fixed clock (`golden/clock.js`,
+RegExp (ping, mtr and tftp calls have none); `host` pins an external device. For http, `headers` (each
+must equal the request's), `body` (string or RegExp, e.g. to tell SOAP calls to one URL apart) and
+`protocol` (`"http"` when unset, as production defaults it) narrow the match. `golden/replies.js` builds the
+production reply shape of each kind, including `ping`, `mtr` and `tftpUpload` (onReady, then onUploadEnd
+with the file); `reply.ssh` trims stdout as production `sendSSHCommand` does (`sendSSHCommands` does not).
+The driver gets only the case's `parameters` (companion defaults are not merged). Each entry point runs in the net's production-style runner with a fixed clock (`golden/clock.js`,
 TZ=UTC) and must:
 
 1. pass the net verdict;
@@ -96,11 +101,21 @@ TZ=UTC) and must:
    matches the companion `expected_variables` (`"[N]"` exactly N, `"[N,M]"` N to M, for `get_status`);
 4. equal its snapshot in `golden/snapshots/<dir>/<driver>.json`.
 
+A `backup` entry point must instead report `D.createBackup({ running })` with a non-empty running
+configuration; its snapshot stores it as `backup`.
+
 A new fixture has no snapshot and fails until `UPDATE_GOLDEN=1` records one. Update mode records only runs
 that pass checks 1 to 3. Review a snapshot diff like code: it is the driver's output on a healthy device.
 
 Write replies from real device output where possible (a capture, the vendor's API reference examples, the
-command's documented format), and say where they come from in a comment at the top of the fixture.
+command's documented format), and say where they come from in a comment at the top of the fixture. Most
+fixtures are simulated from documentation; their header comment says so, and those without public
+documentation (some console outputs) say the shape was inferred. Where a driver lists items from
+PowerShell `ConvertTo-Json`, add a case with a single item: it arrives as a bare object, not an array.
+
+Every catalogue driver has a fixture. The only skipped entry points are those of
+`telnet/epson_projector_via_pj_link.js`: its raw socket needs a greeting and then an answer after the
+driver writes, which a one-reply replay cannot give; `epson_projector_via_pj_link_spec.js` covers it.
 
 ## Adding a happy-path spec
 
