@@ -155,7 +155,7 @@ function getStreamURIs(profilesInfo) {
                                     "<trt:Protocol>RTSP</trt:Protocol>" +
                                     "</trt:Transport>" +
                                     "</trt:StreamSetup>" +
-                                    "<trt:ProfileToken>" + profile.profiletoken + "</trt:ProfileToken>" +
+                                    "<trt:ProfileToken>" + profile.profileToken + "</trt:ProfileToken>" +
                                     "</trt:GetStreamUri>" + endPayload;
         return sendSoapRequest(payload, function (body) {
             const $ = D.htmlParse(body);

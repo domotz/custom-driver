@@ -1,0 +1,40 @@
+{
+    "two profiles, sub stream refused validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two profiles, sub stream refused get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Video Streaming Status",
+            "columnHeaders": [
+                {
+                    "label": "Profile name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Streaming status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1-mainstream",
+                    "values": [
+                        "MainStream",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "2-substream",
+                    "values": [
+                        "SubStream",
+                        "NOT OK"
+                    ]
+                }
+            ]
+        }
+    }
+}

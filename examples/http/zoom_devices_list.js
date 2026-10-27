@@ -55,14 +55,14 @@ const devicesExtractors = [
     { label: "Device Name", valueType: D.valueType.STRING, key: "device_name", extract: getInfoByKey },
     { label: "Room ID", valueType: D.valueType.STRING, key: "room_id", extract: getInfoByKey },
     { label: "Room Name", valueType: D.valueType.STRING, key: "room_name", extract: getInfoByKey },
-    { label: "Serial Number", valueType: D.valueType.DATETIME, key: "serial_number", extract: getInfoByKey },
-    { label: "Vendor", valueType: D.valueType.DATETIME, key: "vendor", extract: getInfoByKey },
-    { label: "Model", valueType: D.valueType.NUMBER, key: "model", extract: getInfoByKey },
+    { label: "Serial Number", valueType: D.valueType.STRING, key: "serial_number", extract: getInfoByKey },
+    { label: "Vendor", valueType: D.valueType.STRING, key: "vendor", extract: getInfoByKey },
+    { label: "Model", valueType: D.valueType.STRING, key: "model", extract: getInfoByKey },
     { label: "Platform OS", valueType: D.valueType.STRING, key: "platform_os", extract: getInfoByKey },
     { label: "App Version", valueType: D.valueType.STRING, key: "app_version", extract: getInfoByKey },
     { label: "Tag", valueType: D.valueType.STRING, key: "tag", extract: getInfoByKey },
-    { label: "Enrolled in ZDM", valueType: D.valueType.STRING, key: "enrolled_in_zdm", extract: getInfoByKey },
-    { label: "Connected to ZDM", valueType: D.valueType.STRING, key: "connected_to_zdm", extract: getInfoByKey },
+    { label: "Enrolled in ZDM", valueType: D.valueType.STRING, key: "enrolled_in_zdm", extract: getBooleanByKey },
+    { label: "Connected to ZDM", valueType: D.valueType.STRING, key: "connected_to_zdm", extract: getBooleanByKey },
     { label: "Device Type", valueType: D.valueType.STRING, key: "device_type", extract: function (row) {return mapDeviceType(row.device_type);} },
     { label: "Device Status", valueType: D.valueType.STRING, key: "device_status", extract: function (row) {return mapDeviceStatus(row.device_status);} },
     { label: "Last Online", valueType: D.valueType.DATETIME, key: "last_online", extract: function (row) {return formatLastOnlineDate(row.last_online);} }
@@ -78,6 +78,11 @@ const devicesTable = D.createTable("List devices", devicesProperties);
 // Function to retrieve data based on a specific key
 function getInfoByKey(row, key) {
     return row[key];
+}
+
+// Zoom sends these flags as JSON booleans; report them as text so false is not taken for a missing value
+function getBooleanByKey(row, key) {
+    return typeof row[key] === "boolean" ? String(row[key]) : row[key];
 }
 
 /**
@@ -211,11 +216,14 @@ function login() {
  */
 function filterDevices(devices) {
     return devices.filter(function (device) {
-        const associatedDevices = device.device_name;
+        const associatedDevices = [device.device_id, device.device_name];
         const associatedDeviceType = mapDeviceType(device.device_type);
         const associatedRooms = device.room_name;
         const deviceIdFilter = (deviceId.length === 1 && deviceId[0].toLowerCase() === "all") || deviceId.some(function (id) {
-            return id.toLowerCase() === associatedDevices.toLowerCase();
+            // matches the device id or, as before, its name
+            return associatedDevices.some(function (value) {
+                return typeof value === "string" && value.toLowerCase() === id.toLowerCase();
+            });
         });
         const deviceTypeFilter = (deviceType.length === 1 && deviceType[0].toLowerCase() === "all") || deviceType.some(function (type) {
             return type.toLowerCase() === associatedDeviceType.toLowerCase();
@@ -246,7 +254,7 @@ function processdevicesResponse(error, response, resolve, reject, body) {
     if (!Array.isArray(bodyAsJSON.devices) || bodyAsJSON.devices.length === 0) {
         console.error("No devices found.");
         resolve(devicesTable);
-
+        return;
     }
     let filteredDevices = filterDevices(bodyAsJSON.devices);
     devices = devices.concat(extractdevices(filteredDevices));

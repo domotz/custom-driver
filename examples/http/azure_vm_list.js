@@ -46,7 +46,7 @@ const vmInfoExtractors = [{
         return sanitize(vm.properties.vmId);
     }
 }, {
-    label: "Name", valueType: D.valueType.NUMBER, key: "name", extract: function (vm) {
+    label: "Name", valueType: D.valueType.STRING, key: "name", extract: function (vm) {
         return vm.name || "N/A";
     }
 }, { label: "Resource Group", valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup }, {
@@ -79,7 +79,7 @@ const vmInfoExtractors = [{
     }
 }, {
     label: "Data Disks", valueType: D.valueType.STRING, key: "dataDisks", extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks && vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(", ") : "N/A");
+        return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks && vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.map(function (disk) { return disk.name; }).join(", ") : "N/A");
     }
 }, {
     label: "Provisioning State", valueType: D.valueType.STRING, key: "provisioningState", extract: function (vm) {

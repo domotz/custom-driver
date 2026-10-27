@@ -153,7 +153,8 @@ function extractChanelData(data) {
         devices.forEach(function (deviceData) {
             for (const key in deviceData) {
                 const model = deviceData.model;
-                if (Array.isArray(deviceData[key])) {
+                // channel keys are wifi0, wifi1, ...; other arrays (e.g. tags) are not channels
+                if (/^wifi\d+$/.test(key) && Array.isArray(deviceData[key]) && deviceData[key].length > 0) {
                     const channelId = key;
                     const entry = deviceData[channelId][0];
                     const channelUtilization = entry.utilization ? entry.utilization : 0;
