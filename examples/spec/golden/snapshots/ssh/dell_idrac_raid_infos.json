@@ -1,0 +1,83 @@
+{
+    "iDRAC 9 with two PERC controllers validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 with two PERC controllers get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "RAID Info",
+            "columnHeaders": [
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Product Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Description",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Support RAID10 Uneven Spans",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Cache Size",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Driver Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encryption Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Security Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "raid.integrated.1-1",
+                    "values": [
+                        "Controller",
+                        "Ok",
+                        "PERC H730 Mini",
+                        "Integrated RAID Controller 1",
+                        "Supported",
+                        2147483648,
+                        "07.707.03.00",
+                        "None",
+                        "Encryption Capable"
+                    ]
+                },
+                {
+                    "id": "raid.slot.6-1",
+                    "values": [
+                        "Controller",
+                        "Critical",
+                        "PERC H740P Adapter",
+                        "RAID Controller in Slot 6",
+                        "Not Supported",
+                        8589934592,
+                        "07.707.03.00",
+                        "Local Key Management",
+                        "Secured"
+                    ]
+                }
+            ]
+        }
+    }
+}

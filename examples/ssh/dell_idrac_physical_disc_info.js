@@ -137,7 +137,8 @@ function parseData(output) {
             var size = (data["SizeInBytes"] || "").replace(/\D+/g, "");
             size = (size / 1073741824) || "-";
             var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "");
-            usedSize = (usedSize / 1073741824) || "-";
+            // An unused disk reports 0 bytes, which is a value, not a missing one
+            usedSize = usedSize === "" ? "-" : usedSize / 1073741824;
             var freeSize = (data["FreeSizeInBytes"] || "").replace(/\D+/g, "") || "-";
             var manufacturer = data["Manufacturer"] || "-";
             var model = data["Model"] || "-";

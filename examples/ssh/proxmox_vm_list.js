@@ -124,7 +124,8 @@ function parseData(data) {
                         var keyValue = net0Config[i].split("=");
                         var key = keyValue[0].trim();
                         var value = keyValue[1].trim();
-                        if (key === "virtio") {
+                        // The model key (virtio, e1000, rtl8139, vmxnet3, ...) carries the MAC address
+                        if (/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/i.test(value)) {
                             net0MAC = value;
                         } else if (key === "bridge") {
                             net0Bridge = value;
