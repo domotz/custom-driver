@@ -1,0 +1,192 @@
+{
+    "idle validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "idle get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "idle",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "event_sequence_number",
+                "name": "Event Sequence Number",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "progress",
+                "name": "Progress",
+                "value": "N/A",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "estimated_completion_time",
+                "name": "Estimated Completion Time",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "suggested_action",
+                "name": "Suggested Action",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_new_code_level",
+                "name": "System New Code Level",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_forced",
+                "name": "System Forced",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_next_node_status",
+                "name": "System Next Node Status",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_next_node_time",
+                "name": "System Next Node Time",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "system_next_node_id",
+                "name": "System Next Node ID",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "system_next_node_name",
+                "name": "System Next Node Name",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_next_pause_time",
+                "name": "System Next Pause Time",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "DATETIME"
+            }
+        ],
+        "table": null
+    },
+    "updating validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "updating get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "system_updating",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "event_sequence_number",
+                "name": "Event Sequence Number",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "progress",
+                "name": "Progress",
+                "value": "45",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "estimated_completion_time",
+                "name": "Estimated Completion Time",
+                "value": "10-27-2026 14:30:0",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "suggested_action",
+                "name": "Suggested Action",
+                "value": "wait",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_new_code_level",
+                "name": "System New Code Level",
+                "value": "8.5.0.8 (build 157.20.2301101200000)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_forced",
+                "name": "System Forced",
+                "value": "no",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_next_node_status",
+                "name": "System Next Node Status",
+                "value": "pending",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_next_node_time",
+                "name": "System Next Node Time",
+                "value": "10-27-2026 14:5:0",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "system_next_node_id",
+                "name": "System Next Node ID",
+                "value": "2",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "system_next_node_name",
+                "name": "System Next Node Name",
+                "value": "node2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system_next_pause_time",
+                "name": "System Next Pause Time",
+                "value": "10-27-2026 15:0:0",
+                "unit": null,
+                "valueType": "DATETIME"
+            }
+        ],
+        "table": null
+    }
+}

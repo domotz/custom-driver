@@ -1,0 +1,316 @@
+{
+    "parent, degraded and child pools validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "parent, degraded and child pools get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Storage Pools Details",
+            "columnHeaders": [
+                {
+                    "label": "Managed Disk Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Managed Disk Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Virtual Disk Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "TB"
+                },
+                {
+                    "label": "Extent Size",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "TB"
+                },
+                {
+                    "label": "Virtual Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "TB"
+                },
+                {
+                    "label": "Used Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "TB"
+                },
+                {
+                    "label": "Real Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "TB"
+                },
+                {
+                    "label": "Overallocation",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Warning Threshold",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Easy Tier Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Easy Tier Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Compression Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Virtual Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Compressed Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Uncompressed Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Parent MDisk Group ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Parent MDisk Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Child MDisk Group Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Child MDisk Group Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encryption Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Owner Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Owner ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Owner Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Site ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Site Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Data Reduction Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Used Capacity Before Reduction",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Used Capacity After Reduction",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Overhead Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Deduplication Capacity Saving",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Reclaimable Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "FCM Overallocation Max",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Provisioning Policy ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Provisioning Policy Name",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "Pool0",
+                        "online",
+                        2,
+                        12,
+                        21.83,
+                        1024,
+                        21.04,
+                        812.5,
+                        790.12,
+                        815,
+                        3,
+                        80,
+                        "auto",
+                        "balanced",
+                        "no",
+                        0,
+                        0,
+                        0,
+                        "0",
+                        "Pool0",
+                        0,
+                        0,
+                        "parent",
+                        "yes",
+                        "none",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "yes",
+                        1.2,
+                        790.12,
+                        64,
+                        0,
+                        12.5,
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "Pool1",
+                        "degraded",
+                        1,
+                        3,
+                        558.41,
+                        256,
+                        100,
+                        512,
+                        300.25,
+                        458.41,
+                        91,
+                        0,
+                        "off",
+                        "inactive",
+                        "no",
+                        0,
+                        0,
+                        0,
+                        "1",
+                        "Pool1",
+                        1,
+                        100,
+                        "parent",
+                        "no",
+                        "none",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "no",
+                        300.25,
+                        300.25,
+                        512,
+                        0,
+                        0,
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "Pool1_child",
+                        "online",
+                        0,
+                        1,
+                        100,
+                        1024,
+                        60,
+                        40,
+                        40,
+                        40,
+                        40,
+                        80,
+                        "auto",
+                        "balanced",
+                        "no",
+                        0,
+                        0,
+                        0,
+                        "1",
+                        "Pool1",
+                        0,
+                        0,
+                        "child_thick",
+                        "yes",
+                        "none",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "yes",
+                        0,
+                        0,
+                        0,
+                        0,
+                        12.5,
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

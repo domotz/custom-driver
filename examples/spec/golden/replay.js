@@ -2,10 +2,12 @@
  * Replay responder for golden fixtures.
  *
  * createReplay(calls) -> { responder, problems() }
- *   calls = [{ kind, method, target, host?, reply }]
+ *   calls = [{ kind, method, target, host?, headers?, reply }]
  *   target is compared (string equality or RegExp test) with targetOf(call): the URL for http,
  *   the command for ssh/telnet/tcp/winrm, the OID (or OIDs joined by ",") for snmp.
  *   host, when given, must equal the external device host (D.createExternalDevice).
+ *   headers, when given, must each equal the request's header of that name (http only), e.g. to prove
+ *   that the token from a login reply is sent on the data calls.
  *
  * Each transport call consumes the first unused fixture call that matches it. A call with no match
  * gets no callback (the driver then never reports) and is listed by problems(), as is every
@@ -32,6 +34,12 @@ function matches(expected, call) {
     }
     if (expected.host !== undefined && expected.host !== call.host) {
         return false;
+    }
+    if (expected.headers !== undefined) {
+        const sent = (call.options && call.options.headers) || {};
+        if (Object.keys(expected.headers).some((name) => sent[name] !== expected.headers[name])) {
+            return false;
+        }
     }
     const target = targetOf(call);
     return expected.target instanceof RegExp ? expected.target.test(String(target)) : expected.target === target;

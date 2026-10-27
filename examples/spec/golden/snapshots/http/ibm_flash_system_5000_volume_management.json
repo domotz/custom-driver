@@ -1,0 +1,322 @@
+{
+    "three volumes validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three volumes get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Volumes Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IO Group ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IO Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Disk Group ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Disk Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VDisk UID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "FC Map Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Copy Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Fast Write State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "SE Copy Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "RC Change",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Compressed Copy Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Parent Disk Group ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Parent Disk Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Formatting",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encrypted",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Analysis Time",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Thin Size",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Thin Savings",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Thin Savings Ratio",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Compressed Size",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Compression Savings",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Compression Savings Ratio",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Total Savings",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Total Savings Ratio",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Copy ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Copy Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Sync",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Copy Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "SE Copy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Easy Tier",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Easy Tier Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Compressed Copy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encrypted",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Deduplicated Copy",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "vol0",
+                        "0",
+                        "io_grp0",
+                        "online",
+                        "0",
+                        "Pool0",
+                        "2048.00",
+                        "striped",
+                        "600507680C80000000000000000000A0",
+                        0,
+                        1,
+                        "empty",
+                        1,
+                        "no",
+                        0,
+                        "0",
+                        "Pool0",
+                        "no",
+                        "yes",
+                        "N/A",
+                        "10-25-2026 3:0:0",
+                        "1536.00",
+                        "512.00",
+                        25,
+                        "1228.80",
+                        "300.00",
+                        19.53,
+                        "812.00",
+                        39.65,
+                        "0",
+                        "online",
+                        "yes",
+                        "yes",
+                        "striped",
+                        "yes",
+                        "on",
+                        "balanced",
+                        "no",
+                        "yes",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "vol1",
+                        "0",
+                        "io_grp0",
+                        "online",
+                        "0",
+                        "Pool0",
+                        "100.00",
+                        "striped",
+                        "600507680C80000000000000000000A1",
+                        1,
+                        1,
+                        "not_empty",
+                        0,
+                        "no",
+                        0,
+                        "0",
+                        "Pool0",
+                        "no",
+                        "yes",
+                        "N/A",
+                        "10-25-2026 3:5:0",
+                        "60.00",
+                        "40.00",
+                        40,
+                        "0.0000",
+                        "0.0000",
+                        0,
+                        "40.00",
+                        40,
+                        "0",
+                        "online",
+                        "yes",
+                        "yes",
+                        "striped",
+                        "no",
+                        "on",
+                        "active",
+                        "no",
+                        "yes",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "vol2",
+                        "0",
+                        "io_grp0",
+                        "offline",
+                        "1",
+                        "Pool1",
+                        "0.5000",
+                        "striped",
+                        "600507680C80000000000000000000A2",
+                        0,
+                        1,
+                        "empty",
+                        1,
+                        "no",
+                        0,
+                        "1",
+                        "Pool1",
+                        "yes",
+                        "no",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "0",
+                        "offline",
+                        "no",
+                        "yes",
+                        "striped",
+                        "no",
+                        "off",
+                        "inactive",
+                        "no",
+                        "no",
+                        "no"
+                    ]
+                }
+            ]
+        }
+    }
+}

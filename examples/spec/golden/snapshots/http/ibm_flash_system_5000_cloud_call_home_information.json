@@ -1,0 +1,94 @@
+{
+    "connection active validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "connection active get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "enabled",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection",
+                "name": "Connection",
+                "value": "active",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "error_sequence_number",
+                "name": "Error Sequence Number",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "last_success",
+                "name": "Last Success",
+                "value": "10-24-2026 8:30:15",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "last_failure",
+                "name": "Last Failure",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "DATETIME"
+            }
+        ],
+        "table": null
+    },
+    "connection error validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "connection error get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "enabled",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection",
+                "name": "Connection",
+                "value": "error",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "error_sequence_number",
+                "name": "Error Sequence Number",
+                "value": "100",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "last_success",
+                "name": "Last Success",
+                "value": "9-30-2026 21:59:0",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "last_failure",
+                "name": "Last Failure",
+                "value": "10-24-2026 12:5:45",
+                "unit": null,
+                "valueType": "DATETIME"
+            }
+        ],
+        "table": null
+    }
+}

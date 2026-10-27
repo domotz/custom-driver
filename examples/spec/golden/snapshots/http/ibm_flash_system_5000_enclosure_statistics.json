@@ -1,0 +1,78 @@
+{
+    "two enclosures validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two enclosures get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Statistics Details",
+            "columnHeaders": [
+                {
+                    "label": "Enclosure ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Statistic Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Current Value",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Peak Value",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Peak Time",
+                    "valueType": "DATETIME"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "1",
+                        "power_w",
+                        255,
+                        270,
+                        "10-26-2026 10:15:30"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "temp_c",
+                        23,
+                        31,
+                        "10-24-2026 18:45:0"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "2",
+                        "power_w",
+                        0,
+                        148,
+                        "10-20-2026 9:0:0"
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "2",
+                        "temp_c",
+                        24.5,
+                        29.5,
+                        "10-24-2026 18:45:0"
+                    ]
+                }
+            ]
+        }
+    }
+}

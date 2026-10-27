@@ -78,6 +78,12 @@ describe("golden harness", () => {
             ]);
         });
 
+        it("matches http headers when the fixture names them", () => {
+            const replay = createReplay([{ kind: "http", method: "post", target: "/rest/lssystem", headers: { "X-Auth-Token": "t1" }, reply: [null, {}, ""] }]);
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/rest/lssystem", headers: { "X-Auth-Token": "other" } } })).toBeUndefined();
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/rest/lssystem", headers: { "X-Auth-Token": "t1" } } })).toEqual([null, {}, ""]);
+        });
+
         it("matches SNMP calls by OID", () => {
             const replay = createReplay([{ kind: "snmp", method: "get", target: "1.2,1.3", reply: [{}, null] }]);
             expect(replay.responder({ kind: "snmp", method: "get", options: ["1.2", "1.3"] })).toEqual([{}, null]);

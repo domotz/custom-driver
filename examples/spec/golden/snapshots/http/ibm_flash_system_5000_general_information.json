@@ -1,0 +1,153 @@
+{
+    "fs5000 8.5.0.6 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "fs5000 8.5.0.6 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "id",
+                "name": "ID",
+                "value": "0000020420E0C9F2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "FS5000-PROD",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "8.5.0.6 (build 157.12.2209091428000)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "total-mdisk-capacity",
+                "name": "Total MDisk Capacity",
+                "value": 21.83,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "space_in_mdisk_grps",
+                "name": "Space in Mdisk Groups",
+                "value": 21.83,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "space_allocated_to_vdisks",
+                "name": "Space Allocated to VDisks",
+                "value": 812.5,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_free_space",
+                "name": "Total Free Space",
+                "value": 21.04,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_vdiskcopy_capacity",
+                "name": "Total VDisk Copy Capacity",
+                "value": 5,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_used_capacity",
+                "name": "Total Used Capacity",
+                "value": 790.12,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_vdisk_capacity",
+                "name": "Total VDisk Capacity",
+                "value": 5,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_allocated_extent_capacity",
+                "name": "Total Allocated Extent Capacity",
+                "value": 815,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "email_state",
+                "name": "Email State",
+                "value": "running",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "total_drive_raw_capacity",
+                "name": "Total Drive Raw Capacity",
+                "value": 26.19,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "topology_status",
+                "name": "Topology Status",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product_name",
+                "name": "Product Name",
+                "value": "IBM FlashSystem 5000",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "physical_capacity",
+                "name": "Physical Capacity",
+                "value": 21.83,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "physical_free_capacity",
+                "name": "Physical Free Capacity",
+                "value": 21.04,
+                "unit": "TB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "secure-remote-access-status",
+                "name": "Secure Remote Access Status",
+                "value": "disabled",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "active-monitor-user-count",
+                "name": "Active Monitor User Count",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "remote-support-status",
+                "name": "Remote Support Status",
+                "value": "active",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}
