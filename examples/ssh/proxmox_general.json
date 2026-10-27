@@ -1,6 +1,6 @@
 {
     "logo": "proxmox.svg",
-    "version": "1.0.2",
+    "version": "1.0.1",
     "name": "Proxmox VE General",
     "description": "Monitors general and performance properties of a Virtual Machines Proxmox",
     "category": "Software Integration",

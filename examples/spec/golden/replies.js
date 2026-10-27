@@ -10,8 +10,8 @@ const http = (statusCode, body, headers) => {
     return [null, { statusCode, headers: headers || {}, body: text }, text];
 };
 
-// sendSSHCommand: (stdout, null).
-const ssh = (stdout) => [stdout, null];
+// sendSSHCommand: (stdout, null). sshNode.js trims stdout on exit (sendSSHCommands does not).
+const ssh = (stdout) => [stdout.trim(), null];
 
 // sendSSHCommands: one output string per command.
 const sshCommands = (outputs) => [outputs, null];

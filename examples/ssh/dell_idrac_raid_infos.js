@@ -108,7 +108,8 @@ function get_status() {
 }
 
 function parseData(output) {
-    var lines = output.split("\n");
+    // The collector trims stdout, so add back the blank line that ends the last section
+    var lines = (output + "\n").split("\n");
     var data = {};
     var instanceIdRaid = false;
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];

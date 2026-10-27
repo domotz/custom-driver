@@ -92,7 +92,7 @@ function parseData(data) {
         }
     });
     variables = [
-        D.createVariable("version", "Version", data[0].trim()),
+        D.createVariable("version", "Version", data[0]),
         D.createVariable("cpu_bogomips", "CPU bogomips", config["CPU BOGOMIPS"]),
         D.createVariable("regex_second", "Regex Operations per Second", config["REGEX/SECOND"]),
         D.createVariable("hd_size", "Hard Disk Size", config["HD SIZE"], "GB"),

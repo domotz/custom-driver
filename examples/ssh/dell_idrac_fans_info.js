@@ -109,7 +109,8 @@ function get_status() {
 
 // Parse fan information output
 function parseData(output) {
-    var lines = output.split("\n");
+    // The collector trims stdout, so add back the blank line that ends the last section
+    var lines = (output + "\n").split("\n");
     var data = {};
     var instanceIdFan = false;
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];

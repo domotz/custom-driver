@@ -126,7 +126,8 @@ function toMegahertz(value) {
 }
 
 function parseData(output) {
-    var lines = output.split("\n");
+    // The collector trims stdout, so add back the blank line that ends the last section
+    var lines = (output + "\n").split("\n");
     var data = {};
     var instanceIdCpu = false;
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
