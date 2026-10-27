@@ -158,7 +158,8 @@ function sanitize(output) {
 function populateTable(service) {
     const id = service.InterfaceAlias;
     const ips = Array.isArray(service.IPv4Addresses) ? service.IPv4Addresses.join(", ") : service.IPv4Addresses;
-    const isStatic = booleanCodes[service.DhcpEnabled];
+    // Get-NetIPInterface Dhcp is Disabled (0) or Enabled (1): the address is static when DHCP is disabled
+    const isStatic = service.DhcpEnabled === 0 || service.DhcpEnabled === 1 ? booleanCodes[1 - service.DhcpEnabled] : "N/A";
     const connectionState = booleanCodes[service.ConnectionState];
     const recordId = sanitize(id);
     table.insertRecord(recordId, [ips, isStatic, connectionState]);

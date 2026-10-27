@@ -1,0 +1,53 @@
+{
+    "domain controller, two gpos validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "domain controller, two gpos get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Group Policy Objects",
+            "columnHeaders": [
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "AD Version (User)"
+                },
+                {
+                    "label": "SYSVOL Version (User)"
+                },
+                {
+                    "label": "AD Version (Computer)"
+                },
+                {
+                    "label": "SYSVOL Version (Computer)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "Default Domain Policy",
+                    "values": [
+                        "AllSettingsEnabled",
+                        0,
+                        0,
+                        14,
+                        14
+                    ]
+                },
+                {
+                    "id": "Default Domain Controllers Policy",
+                    "values": [
+                        "UserSettingsDisabled",
+                        3,
+                        3,
+                        9,
+                        8
+                    ]
+                }
+            ]
+        }
+    }
+}

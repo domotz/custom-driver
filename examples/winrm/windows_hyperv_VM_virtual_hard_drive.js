@@ -133,7 +133,8 @@ function populateTable(id, Name, PoolName, Path, Attached, Size, ControllerNumbe
     const recordId = sanitize(extractHardDriveId(id));
     IsDeleted = booleanCodes[IsDeleted];
     Attached = booleanCodes[Attached];
-    DiskNumber = DiskNumber || "N/A";
+    // a pass-through disk can be disk 0
+    DiskNumber = DiskNumber === null || DiskNumber === undefined || DiskNumber === "" ? "N/A" : DiskNumber;
     virtualHardDrivesTable.insertRecord(recordId, [Name, PoolName, Path, Attached, Size, ControllerNumber, ControllerLocation, DiskNumber, IsDeleted]);
 }
 

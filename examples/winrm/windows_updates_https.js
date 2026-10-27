@@ -100,6 +100,10 @@ function parseOutput(jsonOutput) {
     let ModerateCount = 0;
     let UnspecifiedCount = 0;
     let SecurityCount = 0;
+    // ConvertTo-Json writes a single update as a bare object
+    if (jsonOutput && !Array.isArray(jsonOutput)) {
+        jsonOutput = [jsonOutput];
+    }
     if (jsonOutput) {
         let k = 0;
         while (k < jsonOutput.length) {

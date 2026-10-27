@@ -1,0 +1,40 @@
+{
+    "exchange, four counters validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, four counters get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "owa-requests",
+                "name": "owa requests",
+                "value": 1.2549,
+                "unit": "rate/s",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "availability-service-requests",
+                "name": "availability service requests",
+                "value": 0,
+                "unit": "rate/s",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "mapihttp-emsmdb-user-count",
+                "name": "mapihttp emsmdb user count",
+                "value": 214,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "autodiscover-requests",
+                "name": "autodiscover requests",
+                "value": 3.5,
+                "unit": "rate/s",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "exchange, two databases validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, two databases get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Database Reads / Writes Average Latency",
+            "columnHeaders": [
+                {
+                    "label": "Instance Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Average Read Latency",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Average Write Latency",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "information-store-mbxdb01",
+                    "values": [
+                        "information store - mbxdb01",
+                        4.25,
+                        1.5
+                    ]
+                },
+                {
+                    "id": "information-store-mbxdb02",
+                    "values": [
+                        "information store - mbxdb02",
+                        31.5,
+                        12
+                    ]
+                }
+            ]
+        }
+    },
+    "exchange, a single sample is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, a single sample is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Database Reads / Writes Average Latency",
+            "columnHeaders": [
+                {
+                    "label": "Instance Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Average Read Latency",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Average Write Latency",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "information-store-mbxdb01",
+                    "values": [
+                        "information store - mbxdb01",
+                        4.25,
+                        null
+                    ]
+                }
+            ]
+        }
+    }
+}

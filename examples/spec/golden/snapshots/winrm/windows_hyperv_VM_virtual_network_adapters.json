@@ -1,0 +1,112 @@
+{
+    "hyper-v vm, two adapters validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hyper-v vm, two adapters get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual network adapters",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Switch Name"
+                },
+                {
+                    "label": "Pool"
+                },
+                {
+                    "label": "Cluster Monitored"
+                },
+                {
+                    "label": "Connected"
+                },
+                {
+                    "label": "Bandwidth Percentage"
+                },
+                {
+                    "label": "Deleted"
+                }
+            ],
+            "records": [
+                {
+                    "id": "c2a3b1d4-7e55-4f0a-9b21-6d8e3f4a5c70",
+                    "values": [
+                        "Network Adapter",
+                        "External-Switch",
+                        "N/A",
+                        "Yes",
+                        "Yes",
+                        0,
+                        "No"
+                    ]
+                },
+                {
+                    "id": "9e1d7c30-2b64-4a8f-8d05-3c7b9a1e6f42",
+                    "values": [
+                        "Management",
+                        null,
+                        "N/A",
+                        "No",
+                        "No",
+                        0,
+                        "No"
+                    ]
+                }
+            ]
+        }
+    },
+    "hyper-v vm, one adapter is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hyper-v vm, one adapter is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual network adapters",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Switch Name"
+                },
+                {
+                    "label": "Pool"
+                },
+                {
+                    "label": "Cluster Monitored"
+                },
+                {
+                    "label": "Connected"
+                },
+                {
+                    "label": "Bandwidth Percentage"
+                },
+                {
+                    "label": "Deleted"
+                }
+            ],
+            "records": [
+                {
+                    "id": "c2a3b1d4-7e55-4f0a-9b21-6d8e3f4a5c70",
+                    "values": [
+                        "Network Adapter",
+                        "External-Switch",
+                        "N/A",
+                        "Yes",
+                        "Yes",
+                        0,
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}

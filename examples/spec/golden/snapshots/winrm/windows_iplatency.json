@@ -1,0 +1,92 @@
+{
+    "winrm, three hosts validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three hosts get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "IP Latency",
+            "columnHeaders": [
+                {
+                    "label": "Latency",
+                    "unit": "ms"
+                },
+                {
+                    "label": "Packet Loss",
+                    "unit": "%"
+                }
+            ],
+            "records": [
+                {
+                    "id": "192.168.1.1",
+                    "values": [
+                        "3",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "192.168.1.50",
+                    "values": [
+                        "21",
+                        "50"
+                    ]
+                },
+                {
+                    "id": "192.168.1.99",
+                    "values": [
+                        "-",
+                        "100"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three hosts validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three hosts get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "IP Latency",
+            "columnHeaders": [
+                {
+                    "label": "Latency",
+                    "unit": "ms"
+                },
+                {
+                    "label": "Packet Loss",
+                    "unit": "%"
+                }
+            ],
+            "records": [
+                {
+                    "id": "192.168.1.1",
+                    "values": [
+                        "3",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "192.168.1.50",
+                    "values": [
+                        "21",
+                        "50"
+                    ]
+                },
+                {
+                    "id": "192.168.1.99",
+                    "values": [
+                        "-",
+                        "100"
+                    ]
+                }
+            ]
+        }
+    }
+}

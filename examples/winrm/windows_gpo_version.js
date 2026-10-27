@@ -43,7 +43,7 @@ var gpArray = ["Default Domain Policy", "Default Domain Controllers Policy"];
 gpArray = "'" + gpArray.join("','") + "'";
 
 var gpoTable = D.createTable(
-    "Security events",
+    "Group Policy Objects",
     [
         { label: "Status" },
         { label: "AD Version (User)" },
