@@ -69,7 +69,8 @@ function extractData(data) {
     const match = data.match(productVersionRegex);
     if (match && match[1]) {
         version = match[1];
-        if (compareVersions(version, "23.9.7") <= 0)
+        // builds are four-part (23.9.7.8804): every 23.9.7.x is affected, so compare major.minor.patch only
+        if (compareVersions(version.split(".").slice(0, 3).join("."), "23.9.7") <= 0)
             vulnerable = "Yes";
         else
             vulnerable = "No";

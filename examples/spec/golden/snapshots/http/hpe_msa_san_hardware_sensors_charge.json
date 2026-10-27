@@ -1,0 +1,41 @@
+{
+    "msa 2050 sensor-status validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 sensor-status get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Charge Capacity",
+            "columnHeaders": [
+                {
+                    "label": "Value",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "capacitor-charge-ctlr-a",
+                    "values": [
+                        "94",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "capacitor-charge-ctlr-b",
+                    "values": [
+                        "62",
+                        "Warning"
+                    ]
+                }
+            ]
+        }
+    }
+}

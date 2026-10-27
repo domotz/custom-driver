@@ -1,0 +1,545 @@
+{
+    "device id given validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "device id given get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "serial",
+                "name": "Serial",
+                "value": "SN0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "Neat Bar Gen 2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connected",
+                "name": "Connected",
+                "value": true,
+                "unit": null
+            },
+            {
+                "uid": "upgrade-status",
+                "name": "Upgrade Status",
+                "value": "UPDATE_AVAILABLE",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "25.10.2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "latest-version",
+                "name": "Latest Version",
+                "value": "25.11.0",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-name",
+                "name": "Room Name",
+                "value": "Boardroom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "pairing-serial",
+                "name": "Pairing Serial",
+                "value": "PD0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "local-ip-address",
+                "name": "Local IP Address",
+                "value": "192.0.2.10",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "in-call-status",
+                "name": "In Call Status",
+                "value": "IN_CALL",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "has-scheduled-firmware-update",
+                "name": "Scheduled Firmware Update",
+                "value": false,
+                "unit": null
+            },
+            {
+                "uid": "ota-channel",
+                "name": "OTA Channel",
+                "value": "stable",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "primary-mode",
+                "name": "Primary Mode",
+                "value": "ZOOM",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "total-system-storage",
+                "name": "Total System Storage",
+                "value": "12",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "free-system-storage",
+                "name": "Free System Storage",
+                "value": "7",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "used-system-storage",
+                "name": "Used System Storage",
+                "value": "41.67",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total-internal-storage",
+                "name": "Total Internal Storage",
+                "value": "64",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "free-internal-storage",
+                "name": "Free Internal Storage",
+                "value": "48.50",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "used-internal-storage",
+                "name": "Used Internal Storage",
+                "value": "24.22",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total-external-storage",
+                "name": "Total External Storage",
+                "value": "32",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "free-external-storage",
+                "name": "Free External Storage",
+                "value": "30",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "used-external-storage",
+                "name": "Used External Storage",
+                "value": "6.25",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "automatic-updates",
+                "name": "Automatic Updates",
+                "value": true,
+                "unit": null
+            },
+            {
+                "uid": "firmware-version-release-name",
+                "name": "Firmware Version Release Name",
+                "value": "Oct 2025",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "latest-version-release-name",
+                "name": "Latest Version Release Name",
+                "value": "Nov 2025",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "is-latest-version-scheduled-for-now",
+                "name": "Latest Version Scheduled For Now",
+                "value": false,
+                "unit": null
+            },
+            {
+                "uid": "timezone",
+                "name": "Timezone",
+                "value": "Europe/Rome",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "temperature",
+                "name": "Temperature",
+                "value": 22.4,
+                "unit": "°C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "humidity",
+                "name": "Humidity",
+                "value": 41,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "co2",
+                "name": "CO2",
+                "value": 612,
+                "unit": "ppm",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "voc",
+                "name": "VOC",
+                "value": 130,
+                "unit": "ppb",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "voc-index",
+                "name": "VOC Index",
+                "value": 85,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "illumination",
+                "name": "Illumination",
+                "value": 340,
+                "unit": "lux",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "people",
+                "name": "People Count",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "shutter-closed",
+                "name": "Shutter Closed",
+                "value": false,
+                "unit": null
+            }
+        ],
+        "table": null
+    },
+    "device id given custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "device found by serial validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "device found by serial get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "serial",
+                "name": "Serial",
+                "value": "SN0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "Neat Board 50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connected",
+                "name": "Connected",
+                "value": true,
+                "unit": null
+            },
+            {
+                "uid": "upgrade-status",
+                "name": "Upgrade Status",
+                "value": "UP_TO_DATE",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "25.10.2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "latest-version",
+                "name": "Latest Version",
+                "value": "25.10.2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-name",
+                "name": "Room Name",
+                "value": "Huddle 4",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "pairing-serial",
+                "name": "Pairing Serial",
+                "value": "PD0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "local-ip-address",
+                "name": "Local IP Address",
+                "value": "192.0.2.10",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "in-call-status",
+                "name": "In Call Status",
+                "value": "NOT_IN_CALL",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "has-scheduled-firmware-update",
+                "name": "Scheduled Firmware Update",
+                "value": false,
+                "unit": null
+            },
+            {
+                "uid": "ota-channel",
+                "name": "OTA Channel",
+                "value": "stable",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "primary-mode",
+                "name": "Primary Mode",
+                "value": "ZOOM",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "total-system-storage",
+                "name": "Total System Storage",
+                "value": "12",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "free-system-storage",
+                "name": "Free System Storage",
+                "value": "7",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "used-system-storage",
+                "name": "Used System Storage",
+                "value": "41.67",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total-internal-storage",
+                "name": "Total Internal Storage",
+                "value": "64",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "free-internal-storage",
+                "name": "Free Internal Storage",
+                "value": "48.50",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "used-internal-storage",
+                "name": "Used Internal Storage",
+                "value": "24.22",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total-external-storage",
+                "name": "Total External Storage",
+                "value": "0",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "free-external-storage",
+                "name": "Free External Storage",
+                "value": "0",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "used-external-storage",
+                "name": "Used External Storage",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "automatic-updates",
+                "name": "Automatic Updates",
+                "value": true,
+                "unit": null
+            },
+            {
+                "uid": "firmware-version-release-name",
+                "name": "Firmware Version Release Name",
+                "value": "Oct 2025",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "latest-version-release-name",
+                "name": "Latest Version Release Name",
+                "value": "Oct 2025",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "is-latest-version-scheduled-for-now",
+                "name": "Latest Version Scheduled For Now",
+                "value": false,
+                "unit": null
+            },
+            {
+                "uid": "timezone",
+                "name": "Timezone",
+                "value": "Europe/Rome",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "temperature",
+                "name": "Temperature",
+                "value": 19.8,
+                "unit": "°C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "humidity",
+                "name": "Humidity",
+                "value": 55,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "co2",
+                "name": "CO2",
+                "value": 480,
+                "unit": "ppm",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "voc",
+                "name": "VOC",
+                "value": 90,
+                "unit": "ppb",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "voc-index",
+                "name": "VOC Index",
+                "value": 40,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "illumination",
+                "name": "Illumination",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "people",
+                "name": "People Count",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "shutter-closed",
+                "name": "Shutter Closed",
+                "value": true,
+                "unit": null
+            }
+        ],
+        "table": null
+    },
+    "device found by serial custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "serial not in the inventory validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "serial not in the inventory get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "msg",
+                "name": "Message",
+                "value": "Serial SN0001 not found in Neat inventory",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "serial not in the inventory custom_1": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "msg",
+                "name": "Message",
+                "value": "Serial SN0001 not found in Neat inventory",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

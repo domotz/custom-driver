@@ -283,6 +283,10 @@ function get_status() {
                             );
                             D.success([fallbackError]);
                         }
+                    })
+                    .then(function () {
+                        // the error mode has already reported
+                        return REPORTED;
                     });
             } else if (cloudControllerDeviceID && cloudControllerDeviceID.trim() !== "" && cloudControllerDeviceID !== "null") {
                 // Check if cloudControllerDeviceID is provided and not null/empty/string "null"
@@ -305,7 +309,10 @@ function get_status() {
                 }
             }
         })
-        .then(function () {
+        .then(function (outcome) {
+            if (outcome === REPORTED) {
+                return;
+            }
             var vars = publishVariables();
             // Show deviceTable if cloudControllerDeviceID is "all", otherwise show connectionsTable
             if (cloudControllerDeviceID && cloudControllerDeviceID.trim().toLowerCase() === "all") {
@@ -319,6 +326,9 @@ function get_status() {
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
+
+// Returned by a get_status branch that has already called D.success
+const REPORTED = "reported";
 
 function getAccessToken() {
     console.log("Getting access token... - execute getAccessToken()");
@@ -1065,8 +1075,7 @@ function createDeviceInfoVariables(deviceData) {
             name: "Poly lens url link",
             value: polyLensUrl,
             metadata: { "url": polyLensUrl },
-            valueType: D.valueType.NUMBER,
-            unit: "%" }));
+            valueType: D.valueType.STRING }));
     }
 
     // Add API response outcomes variable

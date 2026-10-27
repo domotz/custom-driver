@@ -1,0 +1,69 @@
+{
+    "irmc s5 fans validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "irmc s5 fans get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Fan Status",
+            "columnHeaders": [
+                {
+                    "label": "Speed",
+                    "unit": "RPM",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "fan1-sys",
+                    "values": [
+                        4560,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "fan2-sys",
+                    "values": [
+                        4620,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "fan3-sys",
+                    "values": [
+                        1180,
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "fan4-sys",
+                    "values": [
+                        4,
+                        "Not enabled"
+                    ]
+                },
+                {
+                    "id": "fan5-sys",
+                    "values": [
+                        0,
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "fan6-sys",
+                    "values": [
+                        "N/A",
+                        "Absent"
+                    ]
+                }
+            ]
+        }
+    }
+}

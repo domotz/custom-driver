@@ -72,7 +72,6 @@ var variables = [];
             retrieveEndpointBasicInfo(cloudControllerDeviceID)
                 .then(retrieveEndpointSensors)
                 .then(publishVariables)
-                .then(D.success)
                 .catch(function (error) {
                     console.error(error);
                     D.failure(D.errorType.GENERIC_ERROR);
@@ -84,7 +83,6 @@ var variables = [];
                 .then(retrieveEndpointBasicInfo)
                 .then(retrieveEndpointSensors)
                 .then(publishVariables)
-                .then(D.success)
                 .catch(function (error) {
                     console.error(error);
                     D.failure(D.errorType.GENERIC_ERROR);
@@ -293,7 +291,7 @@ function createDeviceInfoVariables(deviceData) {
         pushNotAvailableVariable("free-system-storage", "Free System Storage");
 
     if (deviceData.totalSystemStorage !== undefined && deviceData.freeSystemStorage !== undefined)
-        variables.push(D.device.createVariable("used-system-storage", "Used System Storage", (100 * (deviceData.totalSystemStorage - deviceData.freeSystemStorage) / deviceData.totalSystemStorage), "%", D.valueType.NUMBER));
+        variables.push(D.device.createVariable("used-system-storage", "Used System Storage", (100 * (deviceData.totalSystemStorage - deviceData.freeSystemStorage) / deviceData.totalSystemStorage).toFixed(2), "%", D.valueType.NUMBER));
     else
         pushNotAvailableVariable("used-system-storage", "Used System Storage");
 
@@ -322,7 +320,8 @@ function createDeviceInfoVariables(deviceData) {
     else
         pushNotAvailableVariable("free-external-storage", "Free External Storage");
 
-    if (deviceData.totalExternalStorage !== undefined && deviceData.freeExternalStorage !== undefined)
+    // a device without external storage reports 0 / 0
+    if (deviceData.totalExternalStorage && deviceData.freeExternalStorage !== undefined)
         variables.push(D.device.createVariable("used-external-storage", "Used External Storage", (100 * (deviceData.totalExternalStorage - deviceData.freeExternalStorage) / deviceData.totalExternalStorage).toFixed(2), "%", D.valueType.NUMBER));
     else
         pushNotAvailableVariable("used-external-storage", "Used External Storage");
