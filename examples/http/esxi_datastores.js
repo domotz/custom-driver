@@ -297,6 +297,9 @@ function getVmNamesByMoRefs(vmMoRefs) {
  * @returns {string} The value converted to gigabytes, rounded to two decimal places.
  */
 function convertBytesToGb(bytesValue) {
+    if (bytesValue === "N/A") {
+        return "N/A";
+    }
     return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
 }
 

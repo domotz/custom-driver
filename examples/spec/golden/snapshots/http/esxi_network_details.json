@@ -1,0 +1,61 @@
+{
+    "esxi 8.0.0 three networks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 three networks get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Overall Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Accessible",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Virtual Machines",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "HaNetwork-VM Network",
+                    "values": [
+                        "VM Network",
+                        "green",
+                        "Yes",
+                        "web-01, db-01"
+                    ]
+                },
+                {
+                    "id": "HaNetwork-Isolated Lab",
+                    "values": [
+                        "Isolated Lab",
+                        "yellow",
+                        "Yes",
+                        "build-agent"
+                    ]
+                },
+                {
+                    "id": "HaNetwork-Backup",
+                    "values": [
+                        "Backup",
+                        "green",
+                        "Yes",
+                        "db-01, backup-proxy"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -248,7 +248,8 @@ function generateTableOutput(soapResponse) {
 
     $('propSet:has(name:contains("config.network.pnic")) PhysicalNic').each(function () {
         const pnicInfo = $(this);
-        const linkSpeed = pnicInfo.find("linkSpeed");
+        // linkSpeed is unset while the link is down
+        const linkSpeed = pnicInfo.children("linkSpeed");
         const spec = pnicInfo.find("spec");
 
         populateTable({
@@ -256,8 +257,8 @@ function generateTableOutput(soapResponse) {
             device: pnicInfo.find("device").text() || "N/A",
             pciSlot: pnicInfo.find("pci").text() || "N/A",
             driver: pnicInfo.find("driver").text() || "N/A",
-            linkSpeedMb: parseInt(linkSpeed.find("speedMb").text()) || 0,
-            duplex: linkSpeed.find("duplex").text() === "true" ? "Full" : "Half",
+            linkSpeedMb: linkSpeed.length ? parseInt(linkSpeed.find("speedMb").text()) || 0 : "N/A",
+            duplex: linkSpeed.length ? (linkSpeed.find("duplex").text() === "true" ? "Full" : "Half") : "N/A",
             dhcpEnabled: spec.find("ip dhcp").text() === "true" ? "Yes" : "No",
             ipAddress: spec.find("ip ipAddress").text() || "N/A",
             subnetMask: spec.find("ip subnetMask").text() || "N/A",

@@ -267,7 +267,8 @@ function populateTable(volumeDetails) {
 function generateTabelOutput(soapResponse) {
     const $ = D.htmlParse(soapResponse);
     let i = 1;
-    $('propSet:has(name:contains("config.fileSystemVolume")) val mountInfo').each(function () {
+    // Each HostFileSystemMountInfo (val > mountInfo) holds its own HostMountInfo, also named mountInfo
+    $('propSet:has(name:contains("config.fileSystemVolume")) val > mountInfo').each(function () {
         const mountInfo = $(this);
         const volume = mountInfo.find("volume");
         const extent = volume.find("extent");

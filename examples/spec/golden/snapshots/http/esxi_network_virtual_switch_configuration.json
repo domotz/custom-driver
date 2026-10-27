@@ -1,0 +1,204 @@
+{
+    "esxi 8.0.0 two standard switches validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 two standard switches get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Virtual Switch Configuration",
+            "columnHeaders": [
+                {
+                    "label": "Virtual Switch Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Virtual Switch Key",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Number of Ports",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Number of Available Ports",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "MTU",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Port Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Physical NIC",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Specified Number of Ports",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Bridge NIC Device",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Beacon Interval",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Allow Promiscuous",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Changes",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Forged Transmits",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "NIC Teaming Policy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Reverse Policy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Notify Switches",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Rolling Order",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Failure Criteria Check Speed",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Failure Criteria Speed",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Failure Criteria Check Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Failure Criteria Full Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Failure Criteria Check Error",
+                    "valueType": "STRING",
+                    "unit": "%"
+                },
+                {
+                    "label": "Failure Criteria",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Failure Criteria Check Beacon",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Active NIC",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Checksum Offload",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "TCP Segmentation",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Zero Copy Transmit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Shaping Policy Enabled",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "key-vim.host.virtualswitch-vswitch0-1",
+                    "values": [
+                        "vSwitch0",
+                        "key-vim.host.VirtualSwitch-vSwitch0",
+                        1536,
+                        1519,
+                        1500,
+                        "key-vim.host.PortGroup-Management Network, key-vim.host.PortGroup-VM Network",
+                        "key-vim.host.PhysicalNic-vmnic0",
+                        128,
+                        "vmnic0",
+                        1,
+                        "No",
+                        "Yes",
+                        "Yes",
+                        "loadbalance_srcid",
+                        "Yes",
+                        "Yes",
+                        "No",
+                        "minimum",
+                        10,
+                        "No",
+                        "No",
+                        "No",
+                        0,
+                        "No",
+                        "vmnic0",
+                        "Yes",
+                        "Yes",
+                        "Yes",
+                        "No"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.virtualswitch-vswitch1-2",
+                    "values": [
+                        "vSwitch1",
+                        "key-vim.host.VirtualSwitch-vSwitch1",
+                        1536,
+                        1530,
+                        1500,
+                        "key-vim.host.PortGroup-Storage",
+                        "key-vim.host.PhysicalNic-vmnic2, key-vim.host.PhysicalNic-vmnic3",
+                        128,
+                        "vmnic2, vmnic3",
+                        1,
+                        "Yes",
+                        "Yes",
+                        "Yes",
+                        "loadbalance_ip",
+                        "Yes",
+                        "Yes",
+                        "No",
+                        "minimum",
+                        10,
+                        "No",
+                        "No",
+                        "No",
+                        0,
+                        "No",
+                        "vmnic2, vmnic3",
+                        "Yes",
+                        "Yes",
+                        "Yes",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}

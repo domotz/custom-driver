@@ -324,7 +324,9 @@ function generateTableOutput(soapResponse) {
             checkErrorPercentage: computedPolicy.find("nicTeaming failureCriteria checkErrorPercent").text() || "N/A",
             errorPercentage: parseInt(computedPolicy.find("nicTeaming failureCriteria percentage").text()) || 0,
             checkBeacon: computedPolicy.find("nicTeaming failureCriteria checkBeacon").text() || "N/A",
-            activeNic: computedPolicy.find("nicTeaming nicOrder activeNic").text() || "N/A",
+            activeNic: computedPolicy.find("nicTeaming nicOrder activeNic").map(function () {
+                return $(this).text();
+            }).get().join(", ") || "N/A",
             checksumOffload: computedPolicy.find("offloadPolicy csumOffload").text() || "N/A",
             tcpSegmentation: computedPolicy.find("offloadPolicy tcpSegmentation").text() || "N/A",
             zeroCopyTransmission: computedPolicy.find("offloadPolicy zeroCopyXmit").text() || "N/A",

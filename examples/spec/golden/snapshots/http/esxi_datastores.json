@@ -1,0 +1,92 @@
+{
+    "esxi 8.0.0 three datastores validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 three datastores get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Datastore Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Accessible",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Free Space",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Uncommitted Space",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "URL",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Virtual Machines",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "65013d1a-6f2b8c4e-91aa-b083fee52d10",
+                    "values": [
+                        "datastore1",
+                        "Yes",
+                        "893.00",
+                        "612.39",
+                        "120.00",
+                        "VMFS",
+                        "ds:///vmfs/volumes/65013d1a-6f2b8c4e-91aa-b083fee52d10/",
+                        "web-01, db-01"
+                    ]
+                },
+                {
+                    "id": "65013d9c-2e7f10b3-4d5e-b083fee52d10",
+                    "values": [
+                        "ssd-fast",
+                        "Yes",
+                        "1862.00",
+                        "1500.00",
+                        "0.00",
+                        "VMFS",
+                        "ds:///vmfs/volumes/65013d9c-2e7f10b3-4d5e-b083fee52d10/",
+                        "build-agent"
+                    ]
+                },
+                {
+                    "id": "6501a7e0-00000000-0000-000000000000",
+                    "values": [
+                        "nfs-backup",
+                        "No",
+                        "0.00",
+                        "0.00",
+                        "N/A",
+                        "NFS",
+                        "ds:///vmfs/volumes/6501a7e0-00000000-0000-000000000000/",
+                        "backup-proxy"
+                    ]
+                }
+            ]
+        }
+    }
+}

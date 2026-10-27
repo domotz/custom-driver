@@ -285,9 +285,9 @@ function parseVMDetails(soapResponse) {
         const freeMemory = totalMemory - memoryUsage;
         const memoryUsagePercent = totalMemory > 0 ? (memoryUsage / totalMemory * 100).toFixed(2) : "N/A";
         vmDetails["Memory Usage Percentage"] = memoryUsagePercent;
-        vmDetails["Free Memory"] = freeMemory >= 0 ? (freeMemory / 1000).toFixed(2) : "N/A";
-        vmDetails["Total Memory"] = totalMemory >= 0 ? (totalMemory / 1000).toFixed(2) : "N/A";
-        vmDetails["Max Memory Usage"] = vmDetails["summary.runtime.maxMemoryUsage"] ? (vmDetails["summary.runtime.maxMemoryUsage"] / 1000).toFixed(2) : " N/A";
+        vmDetails["Free Memory"] = freeMemory >= 0 ? (freeMemory / 1024).toFixed(2) : "N/A";
+        vmDetails["Total Memory"] = totalMemory >= 0 ? (totalMemory / 1024).toFixed(2) : "N/A";
+        vmDetails["Max Memory Usage"] = vmDetails["summary.runtime.maxMemoryUsage"] ? (vmDetails["summary.runtime.maxMemoryUsage"] / 1024).toFixed(2) : " N/A";
         vmDetailsList.push(vmDetails);
     });
     vmDetailsList.forEach(populateTable);

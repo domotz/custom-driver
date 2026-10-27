@@ -1,0 +1,119 @@
+{
+    "esxi 8.0.0 four physical nics validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 four physical nics get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Physical NIC Configuration",
+            "columnHeaders": [
+                {
+                    "label": "Device",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "PCI Slot",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Driver",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Link Speed",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "DHCP Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Subnet Mask",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Wake-on-LAN Supported",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "key-vim.host.PhysicalNic-vmnic0",
+                    "values": [
+                        "vmnic0",
+                        "0000:19:00.0",
+                        "ntg3",
+                        1000,
+                        "Full",
+                        "No",
+                        "N/A",
+                        "N/A",
+                        "Yes",
+                        "b0:83:fe:e5:2d:10"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.PhysicalNic-vmnic1",
+                    "values": [
+                        "vmnic1",
+                        "0000:19:00.1",
+                        "ntg3",
+                        1000,
+                        "Full",
+                        "No",
+                        "N/A",
+                        "N/A",
+                        "Yes",
+                        "b0:83:fe:e5:2d:11"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.PhysicalNic-vmnic2",
+                    "values": [
+                        "vmnic2",
+                        "0000:3b:00.0",
+                        "ixgben",
+                        10000,
+                        "Full",
+                        "No",
+                        "N/A",
+                        "N/A",
+                        "No",
+                        "3c:fd:fe:a1:07:20"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.PhysicalNic-vmnic3",
+                    "values": [
+                        "vmnic3",
+                        "0000:3b:00.1",
+                        "ixgben",
+                        "N/A",
+                        "N/A",
+                        "No",
+                        "N/A",
+                        "N/A",
+                        "No",
+                        "3c:fd:fe:a1:07:21"
+                    ]
+                }
+            ]
+        }
+    }
+}
