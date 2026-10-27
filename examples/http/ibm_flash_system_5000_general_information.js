@@ -61,7 +61,7 @@ const endpoints = [{
     ]
 }];
 
-let result = []
+let result = [];
 
 /**
  * Sends an HTTPS POST request and returns the parsed JSON response.
@@ -69,8 +69,7 @@ let result = []
  * @param {Object} headers - The request headers.
  * @returns {Promise<Object>} Parsed JSON response.
  */
-function callHttps(endpoint,headers){
-    const d = D.q.defer();
+function callHttps(endpoint, headers) {
     const config = {
         url: endpoint,
         protocol: "https",
@@ -78,21 +77,22 @@ function callHttps(endpoint,headers){
         rejectUnauthorized: false,
         headers: headers
     };
-    D.device.http.post(config, function (error, response, body) {
-        if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (!response) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 400) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(JSON.parse(body));
-        }
-    })
-    return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 400) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
+    });
 }
 
 /**
@@ -102,8 +102,8 @@ function callHttps(endpoint,headers){
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -111,9 +111,9 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
-    const headers = {"Content-Type": "application/json",'X-Auth-Username': D.device.username(),'X-Auth-Password': D.device.password()}
-    return callHttps(endpoint, headers)
+    const endpoint = "/rest/auth";
+    const headers = { "Content-Type": "application/json", "X-Auth-Username": D.device.username(), "X-Auth-Password": D.device.password() };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -123,10 +123,10 @@ function login() {
  * @returns {number|string} Cleaned value.
  */
 function cleanValue(value, valueType) {
-    if(!value){
-        return "N/A"
+    if (!value) {
+        return "N/A";
     }
-    return valueType === D.valueType.NUMBER ? parseFloat(value.replace(/[^0-9.]/g, '')) : value
+    return valueType === D.valueType.NUMBER ? parseFloat(value.replace(/[^0-9.]/g, "")) : value;
 }
 
 /**
@@ -137,8 +137,8 @@ function cleanValue(value, valueType) {
  */
 function populateEndpointVariables(response, rows) {
     for (let i = 0; i < rows.length; i++) {
-        const row = rows[i]
-        result.push(D.createVariable(row.id, row.name, cleanValue(response[row.extraction], row.valueType), row.unit, row.valueType))
+        const row = rows[i];
+        result.push(D.createVariable(row.id, row.name, cleanValue(response[row.extraction], row.valueType), row.unit, row.valueType));
     }
 }
 
@@ -152,17 +152,17 @@ function validate() {
         .then(function (body) {
             const promises = [];
             for (let i = 0; i < endpoints.length; i++) {
-                const endpointDetails = endpoints[i]
-                const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
+                const endpointDetails = endpoints[i];
+                const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint);
                 promises.push(promise);
             }
-            D.q.all(promises)
+            Promise.all(promises)
                 .then(function () {
-                    D.success()
+                    D.success();
                 });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -177,20 +177,20 @@ function get_status() {
         .then(function (body) {
             const promises = [];
             for (let i = 0; i < endpoints.length; i++) {
-                const endpointDetails = endpoints[i]
+                const endpointDetails = endpoints[i];
                 const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                     .then(function (response) {
-                        populateEndpointVariables(response, endpointDetails.rows)
-                    })
+                        populateEndpointVariables(response, endpointDetails.rows);
+                    });
                 promises.push(promise);
             }
-            D.q.all(promises)
+            Promise.all(promises)
                 .then(function () {
-                    D.success(result)
+                    D.success(result);
                 });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

@@ -1,6 +1,6 @@
 {
     "logo": "epiphan.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Epiphan Pearl - Basic System Monitoring",
     "description": "Monitors basic system information of an Epiphan Pearl encoder/recorder via its REST API with HTTPS basic authentication. Retrieves system identification, firmware version, CPU load and temperature, uptime, network connectivity, and storage status. Exposes seven actions to control recorders, publishers, touch control, presets, and device reboot.",
     "category": "Hardware Integration",

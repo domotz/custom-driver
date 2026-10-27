@@ -1,6 +1,6 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Azure Daily Billing Costs",
     "description": "This script retrieves Azure billing data for the previous day costs and usage, categorized by several key dimensions",
     "category": "Software Integration",

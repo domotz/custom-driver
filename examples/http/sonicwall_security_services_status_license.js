@@ -1,16 +1,16 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall Security Services Status and License
  * Description: Monitors the operational and licensing status of diverse security services on a SonicWALL device
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL NSv 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
  *  - Status: The operational status of the security services
  *  - Licensed: The licensing status of the security services
- * 
+ *
  **/
 
 // The variable "servicesToMonitor" is used to specify the desired services to monitor,
@@ -22,16 +22,16 @@ var servicesToMonitor = D.getParameter("servicesToMonitor");
 var table = D.createTable(
     "Security services status and license", [
         { label: "Status", valueType: D.valueType.STRING },
-        { label: "Licensed", valueType: D.valueType.STRING },
+        { label: "Licensed", valueType: D.valueType.STRING }
     ]
 );
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -48,7 +48,7 @@ function processResponse(d) {
                 }
             }
         }
-        d.resolve(JSON.parse(body));
+        resolve(JSON.parse(body));
     };
 }
 
@@ -57,7 +57,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -67,27 +66,28 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves security services data from the SonicWALL device.
 function getSecurityServices() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/dynamic-file/getDashboardData.json",
         protocol: "https",
         jar: true,
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts data from the retrieved security services data and creates Custom Driver variables.
@@ -100,7 +100,7 @@ function extractData(data) {
         "botnet": "Botnet Filter",
         "appctrl": "Application Control",
         "dpissl": "Deep Packet Inspection SSL",
-        "dpissh": "Deep Packet Inspection SSH", 
+        "dpissh": "Deep Packet Inspection SSH",
         "cfs": "Content Filtering",
         "cass": "Anti-Spam Service",
         "cees": "Endpoint security Client Capture",
@@ -110,8 +110,8 @@ function extractData(data) {
     for (var serviceId in availableServices) {
         var variableId = serviceId;
         var variableName = availableServices[serviceId];
-        if (servicesToMonitor[0].toLowerCase() == "all" || servicesToMonitor.some(function(service) { return service.toLowerCase() === variableId.toLowerCase(); })) {           
-            
+        if (servicesToMonitor[0].toLowerCase() == "all" || servicesToMonitor.some(function (service) { return service.toLowerCase() === variableId.toLowerCase(); })) {
+
             if (variableId in data) {
                 var status = data[variableId]["status"];
                 var serviceStatus = status ? "On" : "Off";
@@ -122,7 +122,7 @@ function extractData(data) {
                     serviceStatus,
                     licenseStatus
                 ]);
-                    
+
             } else {
                 console.error("Failed to retrieve data for " + variableId);
             }
@@ -132,10 +132,10 @@ function extractData(data) {
 }
 
 /**
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getSecurityServices)
         .then(function (response) {

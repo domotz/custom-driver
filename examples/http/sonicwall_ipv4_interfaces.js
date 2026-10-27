@@ -1,12 +1,12 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - IPV4 Interfaces
- * Description: Monitors Sonicwall device interfaces and provides details for each interface. 
- * 
+ * Description: Monitors Sonicwall device interfaces and provides details for each interface.
+ *
  * Specify which interfaces to monitor based on the provided interfaceName parameter.
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL TZ 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
@@ -15,12 +15,12 @@
  *      - Zone: Zone for the interface
  *      - User Login: Login information for the interface
  *      - Management: Management information for the interface
- * 
+ *
  **/
 
 // interface_name set it to 'ALL' to retrieve all interfaces,
-// or specify a list of interface names to filter and display only the selected interfaces 
-var interfacesToMonitor = D.getParameter('interfaceName');
+// or specify a list of interface names to filter and display only the selected interfaces
+var interfacesToMonitor = D.getParameter("interfaceName");
 
 var sonicWallAPIPort = 443;
 
@@ -35,11 +35,11 @@ var table = D.createTable(
 );
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -50,7 +50,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -59,7 +59,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -70,13 +69,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 //Retrieves IPv4 interafces from the SonicWALL device
 function getInterfaces() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/interfaces/ipv4",
         protocol: "https",
@@ -84,14 +83,15 @@ function getInterfaces() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 //Extracts data from the HTTP response and populates the custom table.
@@ -99,7 +99,7 @@ function extractData(body) {
     var data = JSON.parse(body);
     data.interfaces.forEach(function (item) {
         var interfaceName = item.ipv4.name;
-        if (shouldBeMonitored(interfaceName)) {      
+        if (shouldBeMonitored(interfaceName)) {
             var comment = item.ipv4.comment;
             var recordId = sanitize(comment ? interfaceName + "-" + comment : interfaceName);
 
@@ -128,13 +128,12 @@ function extractData(body) {
     D.success(table);
 }
 
-function shouldBeMonitored(interfaceName)
-{
-    return (interfacesToMonitor[0].toLowerCase() === "all" || 
-            interfacesToMonitor.some(function(res) {
+function shouldBeMonitored(interfaceName) {
+    return (interfacesToMonitor[0].toLowerCase() === "all" ||
+            interfacesToMonitor.some(function (res) {
                 return res.toLowerCase() === interfaceName.toLowerCase();
             })
-    ); 
+    );
 }
 
 function populateTable(recordId, ipAddress, gateway, zone, management, userLogin) {
@@ -144,18 +143,18 @@ function populateTable(recordId, ipAddress, gateway, zone, management, userLogin
 function extractValue(data) {
     if (typeof data === "object") {
         var formattedField = Object.keys(data).map(function (key) {
-            return key + ' : ' + data[key] || "-";
-        }).join(' | ');
+            return key + " : " + data[key] || "-";
+        }).join(" | ");
         return formattedField;
     }
     return data;
 }
 
 /**
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getInterfaces)
         .then(function (response) {

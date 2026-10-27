@@ -30,54 +30,54 @@
  *
  **/
 
-const accountId = D.getParameter('accountId')
-const clientId = D.getParameter('clientId')
-const clientSecret = D.getParameter('clientSecret')
+const accountId = D.getParameter("accountId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
 
-const zoomLogin = D.createExternalDevice('zoom.us')
-const zoomResources = D.createExternalDevice('api.zoom.us')
+const zoomLogin = D.createExternalDevice("zoom.us");
+const zoomResources = D.createExternalDevice("api.zoom.us");
 
-const deviceId = D.getParameter('deviceId')
-const deviceType = D.getParameter('deviceType')
-const roomName = D.getParameter('roomName')
+const deviceId = D.getParameter("deviceId");
+const deviceType = D.getParameter("deviceType");
+const roomName = D.getParameter("roomName");
 
-let accessToken
-let pageToken
-let devices = []
-let pageSize = 30
+let accessToken;
+let pageToken;
+let devices = [];
+let pageSize = 30;
 
-// deviceStatus: Default value is 2, which retrieves all devices. 
+// deviceStatus: Default value is 2, which retrieves all devices.
 // Can be modified for specific statuses:-1 for unlinked devices, 0 for offline devices and 1 for online devices
-let deviceStatus = 2
+let deviceStatus = 2;
 
 const devicesExtractors = [
-    {valueType: D.valueType.STRING, key: 'device_id', extract: getInfoByKey},
-    {label: 'Device Name', valueType: D.valueType.STRING, key: 'device_name', extract: getInfoByKey},
-    {label: 'Room ID', valueType: D.valueType.STRING, key: 'room_id', extract: getInfoByKey},
-    {label: 'Room Name', valueType: D.valueType.STRING, key: 'room_name', extract: getInfoByKey},
-    {label: 'Serial Number', valueType: D.valueType.DATETIME, key: 'serial_number', extract: getInfoByKey},
-    {label: 'Vendor', valueType: D.valueType.DATETIME, key: 'vendor', extract: getInfoByKey},
-    {label: 'Model', valueType: D.valueType.NUMBER, key: 'model', extract: getInfoByKey},
-    {label: 'Platform OS', valueType: D.valueType.STRING, key: 'platform_os', extract: getInfoByKey},
-    {label: 'App Version', valueType: D.valueType.STRING, key: 'app_version', extract: getInfoByKey},
-    {label: 'Tag', valueType: D.valueType.STRING, key: 'tag', extract: getInfoByKey},
-    {label: 'Enrolled in ZDM', valueType: D.valueType.STRING, key: 'enrolled_in_zdm', extract: getInfoByKey},
-    {label: 'Connected to ZDM', valueType: D.valueType.STRING, key: 'connected_to_zdm', extract: getInfoByKey},
-    {label: 'Device Type', valueType: D.valueType.STRING, key: 'device_type', extract: function(row){return mapDeviceType(row.device_type)}},
-    {label: 'Device Status', valueType: D.valueType.STRING, key: 'device_status', extract: function(row) {return mapDeviceStatus(row.device_status)}},
-    {label: 'Last Online', valueType: D.valueType.DATETIME, key: 'last_online', extract: function(row) {return formatLastOnlineDate(row.last_online)}}
-]
+    { valueType: D.valueType.STRING, key: "device_id", extract: getInfoByKey },
+    { label: "Device Name", valueType: D.valueType.STRING, key: "device_name", extract: getInfoByKey },
+    { label: "Room ID", valueType: D.valueType.STRING, key: "room_id", extract: getInfoByKey },
+    { label: "Room Name", valueType: D.valueType.STRING, key: "room_name", extract: getInfoByKey },
+    { label: "Serial Number", valueType: D.valueType.DATETIME, key: "serial_number", extract: getInfoByKey },
+    { label: "Vendor", valueType: D.valueType.DATETIME, key: "vendor", extract: getInfoByKey },
+    { label: "Model", valueType: D.valueType.NUMBER, key: "model", extract: getInfoByKey },
+    { label: "Platform OS", valueType: D.valueType.STRING, key: "platform_os", extract: getInfoByKey },
+    { label: "App Version", valueType: D.valueType.STRING, key: "app_version", extract: getInfoByKey },
+    { label: "Tag", valueType: D.valueType.STRING, key: "tag", extract: getInfoByKey },
+    { label: "Enrolled in ZDM", valueType: D.valueType.STRING, key: "enrolled_in_zdm", extract: getInfoByKey },
+    { label: "Connected to ZDM", valueType: D.valueType.STRING, key: "connected_to_zdm", extract: getInfoByKey },
+    { label: "Device Type", valueType: D.valueType.STRING, key: "device_type", extract: function (row) {return mapDeviceType(row.device_type);} },
+    { label: "Device Status", valueType: D.valueType.STRING, key: "device_status", extract: function (row) {return mapDeviceStatus(row.device_status);} },
+    { label: "Last Online", valueType: D.valueType.DATETIME, key: "last_online", extract: function (row) {return formatLastOnlineDate(row.last_online);} }
+];
 
 // Create the devices table with extracted properties
 const devicesProperties = devicesExtractors.filter(function (row) {
-    return row.label
-})
+    return row.label;
+});
 
-const devicesTable = D.createTable('List devices', devicesProperties)
+const devicesTable = D.createTable("List devices", devicesProperties);
 
 // Function to retrieve data based on a specific key
 function getInfoByKey(row, key) {
-    return row[key]
+    return row[key];
 }
 
 /**
@@ -87,16 +87,16 @@ function getInfoByKey(row, key) {
  */
 function mapDeviceType(deviceType) {
     const deviceTypeMap = {
-        '-1': 'All Zoom Room device',
-        0: 'Zoom Rooms Computer',
-        1: 'Zoom Rooms Controller',
-        2: 'Zoom Rooms Scheduling Display',
-        3: 'Zoom Rooms Control System',
-        4: 'Zoom Rooms Whiteboard',
-        5: 'Zoom Phone Appliance',
-        6: 'Zoom Rooms Computer (with Controller)'
-    }
-    return deviceTypeMap[deviceType] || 'N/A'
+        "-1": "All Zoom Room device",
+        0: "Zoom Rooms Computer",
+        1: "Zoom Rooms Controller",
+        2: "Zoom Rooms Scheduling Display",
+        3: "Zoom Rooms Control System",
+        4: "Zoom Rooms Whiteboard",
+        5: "Zoom Phone Appliance",
+        6: "Zoom Rooms Computer (with Controller)"
+    };
+    return deviceTypeMap[deviceType] || "N/A";
 }
 
 /**
@@ -106,11 +106,11 @@ function mapDeviceType(deviceType) {
  */
 function mapDeviceStatus(deviceStatus) {
     const deviceStatusMap = {
-        '-1': 'Unlink',
-        '0': 'Offline',
-        '1': 'Online'
-    }
-    return deviceStatusMap[deviceStatus] || 'N/A'
+        "-1": "Unlink",
+        "0": "Offline",
+        "1": "Online"
+    };
+    return deviceStatusMap[deviceStatus] || "N/A";
 }
 
 /**
@@ -119,17 +119,17 @@ function mapDeviceStatus(deviceStatus) {
  * @returns {string} The formatted date string
  */
 function formatLastOnlineDate(dateString) {
-    const date = new Date(dateString)
-    const year = date.getUTCFullYear()
+    const date = new Date(dateString);
+    const year = date.getUTCFullYear();
     if (isNaN(date.getTime())) {
-        return 'N/A'
+        return "N/A";
     }
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-    const day = String(date.getUTCDate()).padStart(2, '0')
-    const hours = String(date.getUTCHours()).padStart(2, '0')
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0')
-    return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+    return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
 }
 
 /**
@@ -139,36 +139,37 @@ function formatLastOnlineDate(dateString) {
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode === 400) {
-        D.failure(response.body)
+        D.failure(response.body);
     } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
 /**
  * Processes the login response and extracts the access token
- * @param {Object} d The deferred promise object
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @returns {Function} A function to process the HTTP response
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
-            accessToken = bodyAsJSON.access_token
-            d.resolve()
+            accessToken = bodyAsJSON.access_token;
+            resolve();
         } else {
-            console.error('Access token not found in response body')
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -177,19 +178,19 @@ function processLoginResponse(d) {
  */
 function generateLoginConf() {
     return {
-        url: '/oauth/token',
-        protocol: 'https',
+        url: "/oauth/token",
+        protocol: "https",
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + D._unsafe.buffer.from(clientId + ':' + clientSecret).toString('base64')
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "Basic " + D._unsafe.buffer.from(clientId + ":" + clientSecret).toString("base64")
         },
         form: {
-            'grant_type': 'account_credentials',
-            'account_id': accountId
+            "grant_type": "account_credentials",
+            "account_id": accountId
         },
         rejectUnauthorized: false,
         jar: true
-    }
+    };
 }
 
 /**
@@ -197,10 +198,10 @@ function generateLoginConf() {
  * @returns {Promise} A promise that resolves when login is successful
  */
 function login() {
-    const d = D.q.defer()
     const config = generateLoginConf();
-    zoomLogin.http.post(config, processLoginResponse(d))
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        zoomLogin.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -210,20 +211,20 @@ function login() {
  */
 function filterDevices(devices) {
     return devices.filter(function (device) {
-        const associatedDevices = device.device_name
-        const associatedDeviceType = mapDeviceType(device.device_type)
-        const associatedRooms = device.room_name
-        const deviceIdFilter = (deviceId.length === 1 && deviceId[0].toLowerCase() === 'all') || deviceId.some(function (id) {
-            return id.toLowerCase() === associatedDevices.toLowerCase()
-        })
-        const deviceTypeFilter = (deviceType.length === 1 && deviceType[0].toLowerCase() === 'all') || deviceType.some(function (type) {
-            return type.toLowerCase() === associatedDeviceType.toLowerCase()
-        })
-        const roomNameFilter = (roomName.length === 1 && roomName[0].toLowerCase() === 'all') || roomName.some(function (name) {
-            return name.toLowerCase() === associatedRooms.toLowerCase()
-        })
-        return deviceIdFilter && deviceTypeFilter && roomNameFilter
-    })
+        const associatedDevices = device.device_name;
+        const associatedDeviceType = mapDeviceType(device.device_type);
+        const associatedRooms = device.room_name;
+        const deviceIdFilter = (deviceId.length === 1 && deviceId[0].toLowerCase() === "all") || deviceId.some(function (id) {
+            return id.toLowerCase() === associatedDevices.toLowerCase();
+        });
+        const deviceTypeFilter = (deviceType.length === 1 && deviceType[0].toLowerCase() === "all") || deviceType.some(function (type) {
+            return type.toLowerCase() === associatedDeviceType.toLowerCase();
+        });
+        const roomNameFilter = (roomName.length === 1 && roomName[0].toLowerCase() === "all") || roomName.some(function (name) {
+            return name.toLowerCase() === associatedRooms.toLowerCase();
+        });
+        return deviceIdFilter && deviceTypeFilter && roomNameFilter;
+    });
 }
 
 /**
@@ -231,36 +232,37 @@ function filterDevices(devices) {
  * Handles error checking, processes the devices, and fetches additional pages if available
  * @param {Object} error The error returned by the HTTP request
  * @param {Object} response The HTTP response object
- * @param {Object} d The deferred promise object for handling async operations
+ * @param {Function} resolve Resolves the promise
+ * @param {Function} reject Rejects the promise
  * @param {string} body The raw response body from the HTTP request
  */
-function processdevicesResponse(error, response, d, body) {
-    checkHTTPError(error, response)
+function processdevicesResponse(error, response, resolve, reject, body) {
+    checkHTTPError(error, response);
     if (error) {
-        d.reject(error)
-        return
+        reject(error);
+        return;
     }
-    const bodyAsJSON = JSON.parse(body)
+    const bodyAsJSON = JSON.parse(body);
     if (!Array.isArray(bodyAsJSON.devices) || bodyAsJSON.devices.length === 0) {
-        console.error('No devices found.')
-        d.resolve(devicesTable)
+        console.error("No devices found.");
+        resolve(devicesTable);
 
     }
-    let filteredDevices = filterDevices(bodyAsJSON.devices)
-    devices = devices.concat(extractdevices(filteredDevices))
+    let filteredDevices = filterDevices(bodyAsJSON.devices);
+    devices = devices.concat(extractdevices(filteredDevices));
     if (bodyAsJSON.next_page_token) {
-        pageToken = bodyAsJSON.next_page_token
+        pageToken = bodyAsJSON.next_page_token;
         retrieveListDevices()
             .then(function (devices) {
-                d.resolve(devices)
+                resolve(devices);
             })
             .catch(function (err) {
-                console.error('Error fetching next page of devices:', err)
-                d.reject(err)
-            })
+                console.error("Error fetching next page of devices:", err);
+                reject(err);
+            });
     } else {
-        console.log('All devices retrieved successfully.')
-        d.resolve(devices)
+        console.log("All devices retrieved successfully.");
+        resolve(devices);
     }
 }
 
@@ -269,16 +271,16 @@ function processdevicesResponse(error, response, d, body) {
  * @returns {Object} The configuration object for the HTTP request
  */
 function generateConfig() {
-    const url = '/v2/devices?device_status=' + deviceStatus + '&page_size=' + pageSize
+    const url = "/v2/devices?device_status=" + deviceStatus + "&page_size=" + pageSize;
     return {
-        url: pageToken ? url + '&next_page_token=' + pageToken : url,
-        protocol: 'https',
+        url: pageToken ? url + "&next_page_token=" + pageToken : url,
+        protocol: "https",
         headers: {
-            'Authorization': 'Bearer ' + accessToken
+            "Authorization": "Bearer " + accessToken
         },
         rejectUnauthorized: false,
         jar: true
-    }
+    };
 }
 
 /**
@@ -286,12 +288,12 @@ function generateConfig() {
  * @returns {Promise} A promise that resolves with the list of devices
  */
 function retrieveListDevices() {
-    const d = D.q.defer()
-    const config = generateConfig()
-    zoomResources.http.get(config, function (error, response, body) {
-        processdevicesResponse(error, response, d, body)
-    })
-    return d.promise
+    const config = generateConfig();
+    return new Promise(function (resolve, reject) {
+        zoomResources.http.get(config, function (error, response, body) {
+            processdevicesResponse(error, response, resolve, reject, body);
+        });
+    });
 }
 
 /**
@@ -302,10 +304,10 @@ function retrieveListDevices() {
 function extractdevices(listDevices) {
     return listDevices.map(function (device) {
         return devicesExtractors.reduce(function (acc, item) {
-            acc[item.key] = item.extract ? item.extract(device, item.key) : 'N/A'
-            return acc
-        }, {})
-    })
+            acc[item.key] = item.extract ? item.extract(device, item.key) : "N/A";
+            return acc;
+        }, {});
+    });
 }
 
 /**
@@ -314,9 +316,9 @@ function extractdevices(listDevices) {
  * @returns {string} The sanitized string
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -326,9 +328,9 @@ function sanitize(output) {
  */
 function insertRecord(zoomDevices) {
     const recordValues = devicesProperties.map(function (item) {
-        return zoomDevices[item.key] || 'N/A'
-    })
-    devicesTable.insertRecord(sanitize(zoomDevices.device_id), recordValues)
+        return zoomDevices[item.key] || "N/A";
+    });
+    devicesTable.insertRecord(sanitize(zoomDevices.device_id), recordValues);
 }
 
 /**
@@ -337,12 +339,12 @@ function insertRecord(zoomDevices) {
  */
 function populateTable(zoomDevices) {
     if (!Array.isArray(zoomDevices)) {
-        zoomDevices = []
+        zoomDevices = [];
     }
     zoomDevices.map(function (device) {
-        insertRecord(device)
-    })
-    D.success(devicesTable)
+        insertRecord(device);
+    });
+    D.success(devicesTable);
 }
 
 /**
@@ -354,12 +356,12 @@ function validate() {
     login()
         .then(retrieveListDevices)
         .then(function () {
-            D.success()
+            D.success();
         })
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -372,7 +374,7 @@ function get_status() {
         .then(retrieveListDevices)
         .then(populateTable)
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

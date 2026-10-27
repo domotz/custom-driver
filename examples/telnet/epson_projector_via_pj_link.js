@@ -24,52 +24,51 @@
 
 const COMMAND_TIMEOUT = 20000;
 
-const AUTH = 'PJLINK';
-const INFO = '%1INF2';
-const LAMP = '%1LAMP';
-const POWER = '%1POWR';
-const ON = ' 1\r';
-const OFF = ' 0\r';
-const QUERY = ' ?\r';
+const AUTH = "PJLINK";
+const INFO = "%1INF2";
+const LAMP = "%1LAMP";
+const POWER = "%1POWR";
+const ON = " 1\r";
+const OFF = " 0\r";
+const QUERY = " ?\r";
 
 const POWER_STATUS = {
-    '0': 'Power Off',
-    '1': 'Power On',
-    '2': 'Cooling',
-    '3': 'Warm Up',
+    "0": "Power Off",
+    "1": "Power On",
+    "2": "Cooling",
+    "3": "Warm Up"
 };
 
 const ERRORS = {
-    'OK': null,
-    'ERR1': 'Undefined command',
-    'ERR2': 'Out of parameter',
-    'ERR3': 'Unavailable time',
-    'ERR4': 'Projector/Display failure',
-    'ERRA': 'Authorization failed',
-    'ERRM': 'Command reply mismatch',
-    'ERRD': 'Not connected',
+    "OK": null,
+    "ERR1": "Undefined command",
+    "ERR2": "Out of parameter",
+    "ERR3": "Unavailable time",
+    "ERR4": "Projector/Display failure",
+    "ERRA": "Authorization failed",
+    "ERRM": "Command reply mismatch",
+    "ERRD": "Not connected"
 };
 
 const COMMANDS = {
-    'POWER_ON': POWER + ON,
-    'POWER_OFF': POWER + OFF,
-    'LAMP_HOURS': LAMP + QUERY,
-    'SEARCH': '%2SRCH\r',
-    'CHECK_SECURITY': 'PJLINK 2\r\n',
-    'INFO': INFO + QUERY,
+    "POWER_ON": POWER + ON,
+    "POWER_OFF": POWER + OFF,
+    "LAMP_HOURS": LAMP + QUERY,
+    "SEARCH": "%2SRCH\r",
+    "CHECK_SECURITY": "PJLINK 2\r\n",
+    "INFO": INFO + QUERY
 };
-
 
 /**
  * @description Default TCP Port
  * @type NUMBER
  */
-var defaultTcpPort = D.getParameter('defaultTcpPort');
+var defaultTcpPort = D.getParameter("defaultTcpPort");
 /**
  * @description Projector password
  * @type SECRET_TEXT
  */
-var pwd = D.getParameter('pwd');
+var pwd = D.getParameter("pwd");
 
 /**
  *
@@ -77,15 +76,13 @@ var pwd = D.getParameter('pwd');
  * @private
  */
 function _connectToProjector() {
-    const d = D.q.defer();
     const ip = D.device.ip();
-    console.info('Connecting to projector at IP: ', ip);
+    console.info("Connecting to projector at IP: ", ip);
     const client = net.createConnection({
         host: ip,
-        port: defaultTcpPort,
+        port: defaultTcpPort
     });
-    d.resolve(client);
-    return d.promise;
+    return Promise.resolve(client);
 }
 
 /**
@@ -103,15 +100,15 @@ function parseResponse(data) {
         err = ERRORS[args];
     }
     if (cmd === AUTH) {
-        args = args.split(' ');
+        args = args.split(" ");
         if (!err) {
-            if (args[0] === '1') {
+            if (args[0] === "1") {
                 if (args[1].length === 8) {
-                    authVersion = '1';
+                    authVersion = "1";
                 }
             }
-            if (args[0] === '0') {
-                authVersion = '0';
+            if (args[0] === "0") {
+                authVersion = "0";
             }
         }
     }
@@ -120,12 +117,12 @@ function parseResponse(data) {
         cmd: cmd,
         args: args,
         authVersion: authVersion,
-        err: err,
+        err: err
     };
 }
 
 function calcDigest(input) {
-    return D.crypto.hash(input.trim() + pwd, 'md5', 'utf8', 'hex');
+    return D.crypto.hash(input.trim() + pwd, "md5", "utf8", "hex");
 }
 
 /**
@@ -145,18 +142,18 @@ function executeAuthenticatedCommand(client, responseObject, command) {
  */
 function handleLampHours(responseObject) {
     const results = [];
-    const stats = responseObject.args.split(' ');
+    const stats = responseObject.args.split(" ");
     const hasMultipleLamps = stats.length > 2;
-    for(let i = 0; i < stats.length; i += 2) {
+    for (let i = 0; i < stats.length; i += 2) {
         const lampHours = stats[i];
-        const powerStatus = stats[i+1];
-        const suffix = hasMultipleLamps ? i/2 + 1 : '';
-        const uidPowerStatus = 'power-status' + suffix;
-        const labelPowerStatus = 'Power Status' + suffix;
-        const uidLampHour = 'lamp-hour' + suffix;
-        const labelLampHour = 'Lamp Hour' + suffix;
+        const powerStatus = stats[i + 1];
+        const suffix = hasMultipleLamps ? i / 2 + 1 : "";
+        const uidPowerStatus = "power-status" + suffix;
+        const labelPowerStatus = "Power Status" + suffix;
+        const uidLampHour = "lamp-hour" + suffix;
+        const labelLampHour = "Lamp Hour" + suffix;
         results.push(D.createVariable(uidPowerStatus, labelPowerStatus, POWER_STATUS[powerStatus], null, D.valueType.STRING));
-        results.push(D.createVariable(uidLampHour, labelLampHour, lampHours, 'Hours', D.valueType.STRING));
+        results.push(D.createVariable(uidLampHour, labelLampHour, lampHours, "Hours", D.valueType.STRING));
     }
 
     return results;
@@ -171,7 +168,7 @@ function handlePowerResponse(responseObject) {
     if (ERRORS[responseObject.args]) {
         console.error(ERRORS[responseObject.args]);
     } else {
-        console.info('Success');
+        console.info("Success");
     }
 }
 
@@ -182,56 +179,63 @@ function handlePowerResponse(responseObject) {
  * @returns {Promise<Socket>}
  */
 function executeCommand(client, command) {
-    const d = D.q.defer();
     if (!client) {
-        console.error('Client is not defined');
-        d.reject('Client is not defined');
-        return d.promise;
+        console.error("Client is not defined");
+        return Promise.reject("Client is not defined");
     }
-    client.setTimeout(COMMAND_TIMEOUT);
-    client.on('timeout', function () {
-        console.warn('Socket Timeout');
-        client.end();
-        d.resolve();
-        return d.promise;
-    });
-    client.on('data', function (data) {
-        const responseObject = parseResponse(data);
-        if (responseObject.err) {
-            console.error('Error:', responseObject.err);
-            d.reject(responseObject.err);
+    return new Promise(function (resolve, reject) {
+        client.setTimeout(COMMAND_TIMEOUT);
+        client.on("timeout", function () {
+            console.warn("Socket Timeout");
             client.end();
-        }
-        switch (responseObject.cmd) {
-        case AUTH:
-            if (responseObject.authVersion === '1') {
-                executeAuthenticatedCommand(client, responseObject, command);
+            resolve();
+        });
+        client.on("error", function (err) {
+            console.error("Socket error:", err);
+            reject(err);
+            client.end();
+        });
+        client.on("close", function () {
+            reject("Connection closed without a valid response");
+        });
+        client.on("data", function (data) {
+            const responseObject = parseResponse(data);
+            if (responseObject.err) {
+                console.error("Error:", responseObject.err);
+                reject(responseObject.err);
+                client.end();
+                return;
             }
-            if (responseObject.authVersion === '0') {
-                client.write(command);
+            switch (responseObject.cmd) {
+                case AUTH:
+                    if (responseObject.authVersion === "1") {
+                        executeAuthenticatedCommand(client, responseObject, command);
+                    }
+                    if (responseObject.authVersion === "0") {
+                        client.write(command);
+                    }
+                    break;
+                case LAMP:
+                    client.end();
+                    resolve(handleLampHours(responseObject));
+                    break;
+                case POWER:
+                    resolve(handlePowerResponse(responseObject));
+                    client.end();
+                    break;
+                case INFO:
+                    client.end();
+                    console.info(responseObject.args);
+                    resolve();
+                    break;
+                default:
+                    client.write(command);
+                    break;
             }
-            break;
-        case LAMP:
-            client.end();
-            d.resolve(handleLampHours(responseObject));
-            break;
-        case POWER:
-            d.resolve(handlePowerResponse(responseObject));
-            client.end();
-            break;
-        case INFO:
-            client.end();
-            console.info(responseObject.args);
-            d.resolve();
-        default:
-            client.write(command);
-            break;
-        }
 
+        });
     });
-    return d.promise;
 }
-
 
 function handleError(err) {
     console.error(err);
@@ -283,16 +287,3 @@ function custom_2() {
         .then(D.success)
         .catch(handleError);
 }
-
-
-/**
- * @description Projector Password
- * @type SECRET_TEXT 
- */
-var pwd = D.getParameter('pwd');
-
-/**
- * @description Default TCP Port
- * @type NUMBER 
- */
-var defaultTcpPort = D.getParameter('defaultTcpPort');

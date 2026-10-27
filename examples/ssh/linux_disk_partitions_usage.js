@@ -1,18 +1,18 @@
-/** 
+/**
  * Name: Linux Disk Partitions Usage (df)
- * Description: Display information about disk partitions on a Linux system 
- * 
+ * Description: Display information about disk partitions on a Linux system
+ *
  * Communication protocol is SSH
- * 
+ *
  * Tested on Linux: Ubuntu 22.04.3 LTS"
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *   - ID: The mount point of the disk partition.
  *   - Percentage Used: The percentage of disk space used on the partition.
  *   - Type: The filesystem type of the partition.
  *   - Size: The total size of the partition.
  *   - Available: The total amount of available space on the partition.
- * 
+ *
 **/
 
 // Command to retrieve disk partition information
@@ -46,17 +46,17 @@ function checkSshError(err) {
 
 // Execute SSH command and return a promise
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            d.resolve(out);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) {
+                checkSshError(err);
+                reject(err);
+            } else {
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 
 // Function to validate the output of the executed command
@@ -81,7 +81,7 @@ function parseData(output) {
         var available = values[4];
         table.insertRecord(recordId, [usePercentage, type, size, available]);
     });
-    
+
     D.success(table);
 }
 
@@ -107,4 +107,4 @@ function get_status() {
     executeCommand(command)
         .then(parseData)
         .catch(checkSshError);
-}       
+}

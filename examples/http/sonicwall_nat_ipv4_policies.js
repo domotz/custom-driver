@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - NAT IPV4 Policies
  * Description: Monitors the Network Address Translation (NAT) policies for IPv4 on a SonicWall device
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL TZ 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
@@ -14,12 +14,12 @@
  *      - Outbound: Outbound policy details.
  *      - Source: Source information for the policy.
  *      - Destination: Destination information for the policy.
- * 
+ *
  **/
 
 // policy_name set it to 'ALL' to retrieve all policies,
 // or specify a list of policy names to filter and display only the selected policies
-var policy_name = D.getParameter('policy_name');
+var policy_name = D.getParameter("policy_name");
 
 var table = D.createTable(
     "NAT Policies", [
@@ -33,11 +33,11 @@ var table = D.createTable(
 );
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -48,7 +48,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -57,7 +57,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -68,13 +67,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 //Retrieves NAT IPv4 policies from the SonicWALL device
 function getNatPolicies() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/nat-policies/ipv4",
         protocol: "https",
@@ -82,14 +81,15 @@ function getNatPolicies() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 //Extracts data from the HTTP response and populates the custom table.
@@ -97,9 +97,9 @@ function extractData(body) {
     var data = JSON.parse(body);
     data.nat_policies.forEach(function (item) {
         var name = item.ipv4.name;
-        if (policy_name[0].toLowerCase() === "all" || policy_name.some(function(res) {
+        if (policy_name[0].toLowerCase() === "all" || policy_name.some(function (res) {
             return res.toLowerCase() === name.toLowerCase();
-        })) {    
+        })) {
             var uid = item.ipv4.uuid;
             var recordId = sanitize(name + "-" + uid);
             var description = item.ipv4.comment || "-";
@@ -108,7 +108,7 @@ function extractData(body) {
                 enabled = "Yes";
             } else if (item.ipv4.enable === false || item.ipv4.enable === "false") {
                 enabled = "No";
-            }  
+            }
             var inbound = item.ipv4.inbound;
             var outbound = item.ipv4.outbound;
             var source = extractValue(item.ipv4.source);
@@ -137,10 +137,10 @@ function extractValue(field) {
 }
 
 /**
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getNatPolicies)
         .then(function (response) {

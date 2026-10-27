@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: OPNSense General / Monitoring
  * Description: This script is designed to retrieve information about an OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage
- *   
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Custom Driver Variables:
@@ -20,11 +20,11 @@
 var port = D.getParameter("portNumber");
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -33,13 +33,12 @@ function processResponse(d) {
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(JSON.parse(body));
+        resolve(JSON.parse(body));
     };
 }
 
 // Retrieves firmware status from the OPNsense device
 function  getFirmwareStatus() {
-    var d = D.q.defer();
     var config = {
         url: "/api/core/firmware/status",
         username: D.device.username(), //api key == username
@@ -50,13 +49,13 @@ function  getFirmwareStatus() {
         rejectUnauthorized: false,
         port: port
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves activity data from the OPNsense device
 function getActivity() {
-    var d = D.q.defer();
     var config = {
         url: "/api/diagnostics/activity/getActivity",
         protocol: "https",
@@ -65,13 +64,14 @@ function getActivity() {
         rejectUnauthorized: false,
         port: port
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 function extractHeaders(headers) {
-    return headers.split(',').map(function (item) { 
-        return parseFloat(item.match(/-?\d+(\.\d+)?/)); 
+    return headers.split(",").map(function (item) {
+        return parseFloat(item.match(/-?\d+(\.\d+)?/));
     });
 }
 
@@ -79,7 +79,7 @@ function extractHeaders(headers) {
 function extractData(data) {
     var productVersion = data[0].product_version;
     var firmwareUpdates = data[0].status_msg.indexOf("There are no updates available on the selected mirror.") !== -1 ? "No updates" : data[0].status_msg;
-   
+
     var cpuHeaders = extractHeaders(data[1].headers[2]);
     var cpuUsage = cpuHeaders[0] + cpuHeaders[1] + cpuHeaders[2] + cpuHeaders[3];
 
@@ -103,13 +103,12 @@ function extractData(data) {
     D.success(variables);
 }
 
-
 // Loads firmware status and activity informations
 function loadData() {
-    return D.q.all([
+    return Promise.all([
         getFirmwareStatus(),
         getActivity()
-    ]);    
+    ]);
 }
 
 /**
@@ -117,7 +116,7 @@ function loadData() {
  * @label Validate OPENSense Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     loadData()
         .then(function (response) {
             if (response) {
@@ -136,7 +135,7 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get OPENSense informations 
+ * @label Get OPENSense informations
  * @documentation This procedure is used to extract information about the OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage.
  */
 function get_status() {

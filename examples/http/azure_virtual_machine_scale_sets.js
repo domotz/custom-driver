@@ -39,16 +39,16 @@
  *
  **/
 // Parameters for Azure authentication
-const tenantId = D.getParameter('tenantId');
-const clientId = D.getParameter('clientId');
-const clientSecret = D.getParameter('clientSecret');
-const subscriptionId = D.getParameter('subscriptionId');
+const tenantId = D.getParameter("tenantId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
+const subscriptionId = D.getParameter("subscriptionId");
 
-const resourceGroups = D.getParameter('resourceGroups');
-const vmNames = D.getParameter('vmNames');
+const resourceGroups = D.getParameter("resourceGroups");
+const vmNames = D.getParameter("vmNames");
 
-const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com');
-const azureCloudManagementService = D.createExternalDevice('management.azure.com');
+const azureCloudLoginService = D.createExternalDevice("login.microsoftonline.com");
+const azureCloudManagementService = D.createExternalDevice("management.azure.com");
 
 let accessToken;
 let virtualMachineScaleSetTable;
@@ -70,131 +70,131 @@ let virtualMachineScaleSetTable;
 // This is the list of selected performance metrics retrieved.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
 const performanceMetrics = [{
-    label: 'Available Memory',
+    label: "Available Memory",
     valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Available Memory Bytes',
+    unit: "Gb",
+    key: "Available Memory Bytes",
     callback: convertBytesToGb
 }, {
-    label: 'Network Out Total',
+    label: "Network Out Total",
     valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Network Out Total',
+    unit: "Gb",
+    key: "Network Out Total",
     callback: convertBytesToGb
 }, {
-    label: 'Network In Total',
+    label: "Network In Total",
     valueType: D.valueType.NUMBER,
-    unit: 'Gb',
-    key: 'Network In Total',
+    unit: "Gb",
+    key: "Network In Total",
     callback: convertBytesToGb
-}, {label: 'CPU Credits Left', valueType: D.valueType.NUMBER, key: 'CPU Credits Remaining'}, {
-    label: 'Percentage CPU', valueType: D.valueType.NUMBER, unit: '%', key: 'Percentage CPU'
-}, {label: 'CPU Credits Used', valueType: D.valueType.NUMBER, key: 'CPU Credits Consumed'}, {
-    label: 'Vm Availability', valueType: D.valueType.NUMBER, key: 'VmAvailabilityMetric'
-}]
+}, { label: "CPU Credits Left", valueType: D.valueType.NUMBER, key: "CPU Credits Remaining" }, {
+    label: "Percentage CPU", valueType: D.valueType.NUMBER, unit: "%", key: "Percentage CPU"
+}, { label: "CPU Credits Used", valueType: D.valueType.NUMBER, key: "CPU Credits Consumed" }, {
+    label: "Vm Availability", valueType: D.valueType.NUMBER, key: "VmAvailabilityMetric"
+}];
 
 const virtualMachineScaleSetInfoExtractors = [{
     key: "id", valueType: D.valueType.STRING, extract: function (value) {
-        return sanitize(value.properties.uniqueId)
+        return sanitize(value.properties.uniqueId);
     }
 }, {
-    key: "name", label: 'Name', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.name || "N/A"
+    key: "name", label: "Name", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.name || "N/A";
     }
-}, {key: "resourceGroup", label: 'Resource Group', valueType: D.valueType.STRING, extract: extractResourceGroup}, {
-    key: "location", label: 'Location', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.location || "N/A"
-    }
-}, {
-    key: "skuName", label: 'SKU Name', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.sku && value.sku.name || "N/A"
+}, { key: "resourceGroup", label: "Resource Group", valueType: D.valueType.STRING, extract: extractResourceGroup }, {
+    key: "location", label: "Location", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.location || "N/A";
     }
 }, {
-    key: "skuTier", label: 'SKU Tier', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.sku && value.sku.tier || "N/A"
+    key: "skuName", label: "SKU Name", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.sku && value.sku.name || "N/A";
     }
 }, {
-    key: "skuCapacity", label: 'SKU Capacity', valueType: D.valueType.NUMBER, extract: function (value) {
-        return value && value.sku && value.sku.capacity || "N/A"
+    key: "skuTier", label: "SKU Tier", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.sku && value.sku.tier || "N/A";
     }
 }, {
-    key: "etag", label: 'Etag', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.etag || "N/A"
+    key: "skuCapacity", label: "SKU Capacity", valueType: D.valueType.NUMBER, extract: function (value) {
+        return value && value.sku && value.sku.capacity || "N/A";
     }
 }, {
-    key: "orchestrationMode", label: 'Orchestration Mode', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.orchestrationMode || "N/A"
+    key: "etag", label: "Etag", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.etag || "N/A";
     }
 }, {
-    key: "upgradePolicyMode", label: 'Upgrade Policy Mode', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.upgradePolicy && value.properties.upgradePolicy.mode || "N/A"
+    key: "orchestrationMode", label: "Orchestration Mode", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.orchestrationMode || "N/A";
+    }
+}, {
+    key: "upgradePolicyMode", label: "Upgrade Policy Mode", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.upgradePolicy && value.properties.upgradePolicy.mode || "N/A";
     }
 }, {
     key: "scaleInPolicyRules",
-    label: 'Scale-in Policy Rules',
+    label: "Scale-in Policy Rules",
     valueType: D.valueType.STRING,
     extract: function (value) {
-        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.rules && value.properties.scaleInPolicy.rules[0] || "N/A"
+        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.rules && value.properties.scaleInPolicy.rules[0] || "N/A";
     }
 }, {
     key: "scaleInForceDeletion",
-    label: 'Scale-in Force Deletion',
+    label: "Scale-in Force Deletion",
     valueType: D.valueType.BOOLEAN,
     extract: function (value) {
-        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.forceDeletion || "N/A"
+        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.forceDeletion || "N/A";
     }
 }, {
-    key: "computerNamePrefix", label: 'Computer Name Prefix', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.osProfile && value.properties.virtualMachineProfile.osProfile.computerNamePrefix || "N/A"
+    key: "computerNamePrefix", label: "Computer Name Prefix", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.osProfile && value.properties.virtualMachineProfile.osProfile.computerNamePrefix || "N/A";
     }
 }, {
-    key: "osType", label: 'OS Type', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.osType || "N/A"
+    key: "osType", label: "OS Type", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.osDisk && value.properties.virtualMachineProfile.storageProfile.osDisk.osType || "N/A";
     }
 }, {
-    key: "imagePublisher", label: 'Image Publisher', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.publisher || "N/A"
+    key: "imagePublisher", label: "Image Publisher", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.publisher || "N/A";
     }
 }, {
-    key: "imageOffer", label: 'Image Offer', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.offer || "N/A"
+    key: "imageOffer", label: "Image Offer", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.offer || "N/A";
     }
 }, {
-    key: "imageSku", label: 'Image SKU', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.sku || "N/A"
+    key: "imageSku", label: "Image SKU", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.sku || "N/A";
     }
 }, {
-    key: "imageVersion", label: 'Image Version', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.version || "N/A"
+    key: "imageVersion", label: "Image Version", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.storageProfile && value.properties.virtualMachineProfile.storageProfile.imageReference && value.properties.virtualMachineProfile.storageProfile.imageReference.version || "N/A";
     }
 }, {
     key: "networkInterfaceName",
-    label: 'Network Interface Name',
+    label: "Network Interface Name",
     valueType: D.valueType.STRING,
     extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].name || "N/A"
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].name || "N/A";
     }
 }, {
     key: "networkIPConfigurations",
-    label: 'Network IP Configurations',
+    label: "Network IP Configurations",
     valueType: D.valueType.STRING,
     extract: function (value) {
-        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0].name || "N/A"
+        return value && value.properties && value.properties.virtualMachineProfile && value.properties.virtualMachineProfile.networkProfile && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0] && value.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0].name || "N/A";
     }
 }, {
-    key: "provisioningState", label: 'Provisioning State', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.provisioningState || "N/A"
+    key: "provisioningState", label: "Provisioning State", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.provisioningState || "N/A";
     }
 }, {
     key: "platformFaultDomainCount",
-    label: 'Platform Fault Domain Count',
+    label: "Platform Fault Domain Count",
     valueType: D.valueType.NUMBER,
     extract: function (value) {
-        return value && value.properties && value.properties.platformFaultDomainCount || "N/A"
+        return value && value.properties && value.properties.platformFaultDomainCount || "N/A";
     }
 }, {
-    key: "timeCreated", label: 'Time Created', valueType: D.valueType.STRING, extract: function (value) {
-        return value && value.properties && value.properties.timeCreated ? convertToUTC(value.properties.timeCreated) : "N/A"
+    key: "timeCreated", label: "Time Created", valueType: D.valueType.STRING, extract: function (value) {
+        return value && value.properties && value.properties.timeCreated ? convertToUTC(value.properties.timeCreated) : "N/A";
     }
 }];
 
@@ -204,7 +204,7 @@ const virtualMachineScaleSetInfoExtractors = [{
  */
 function generateVirtualMachineScaleSetProperties() {
     return virtualMachineScaleSetInfoExtractors.concat(performanceMetrics).filter(function (result) {
-        return result.label
+        return result.label;
     });
 }
 
@@ -213,7 +213,7 @@ function generateVirtualMachineScaleSetProperties() {
  * using the `D.createTable` method with the properties defined in `virtualMachineScaleSetProperties`.
  */
 function createVirtualMachineScaleSetTable(virtualMachineScaleSetProperties) {
-    virtualMachineScaleSetTable = D.createTable('Azure Virtual Machine Scale Sets', virtualMachineScaleSetProperties);
+    virtualMachineScaleSetTable = D.createTable("Azure Virtual Machine Scale Sets", virtualMachineScaleSetProperties);
 }
 
 /**
@@ -250,21 +250,22 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            d.resolve();
+            resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -274,36 +275,37 @@ function processLoginResponse(d) {
  */
 function filterVirtualMachineScaleSetInfoList(virtualMachineScaleSetInfoList) {
     return virtualMachineScaleSetInfoList.filter(function (virtualMachineScaleSet) {
-        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
-            return resourceGroup.toLowerCase() === virtualMachineScaleSet.resourceGroup.toLowerCase()
-        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === "all") || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === virtualMachineScaleSet.resourceGroup.toLowerCase();
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === "all") || vmNames.some(function (vmName) {
             return vmName.toLowerCase() === virtualMachineScaleSet.name.toLowerCase();
-        }))
+        }));
     });
 }
 
 /**
  * Processes the response from the Virtual Machine Scale Sets API call and extracts Virtual Machine Scale Set information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processVirtualMachineScaleSetsResponse(d) {
+function processVirtualMachineScaleSetsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
-            D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No Virtual Machine Scale Sets found in the response");
+            D.failure(D.errorType.GENERIC_ERROR);
+            reject("No Virtual Machine Scale Sets found in the response");
             return;
         }
         let virtualMachineScaleSetInfoList = bodyAsJSON.value.map(extractVirtualMachineScaleSetInfo);
         if (!virtualMachineScaleSetInfoList.length) {
-            console.info('There is no Virtual machine');
+            console.info("There is no Virtual machine");
         } else {
             virtualMachineScaleSetInfoList = filterVirtualMachineScaleSetInfoList(virtualMachineScaleSetInfoList);
         }
-        d.resolve(virtualMachineScaleSetInfoList);
-    }
+        resolve(virtualMachineScaleSetInfoList);
+    };
 }
 
 /**
@@ -311,10 +313,9 @@ function processVirtualMachineScaleSetsResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded"
         }, form: {
             grant_type: "client_credentials",
             client_id: clientId,
@@ -322,8 +323,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    azureCloudLoginService.http.post(config, processLoginResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -332,9 +334,9 @@ function login() {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -358,8 +360,8 @@ function extractVirtualMachineScaleSetInfo(virtualMachineScaleSet) {
  */
 function insertRecord(virtualMachineScaleSet, virtualMachineScaleSetProperties) {
     const recordValues = virtualMachineScaleSetProperties.map(function (item) {
-        const value = virtualMachineScaleSet[item.key] || 'N/A';
-        return item.callback && value !== 'N/A' ? item.callback(value) : value;
+        const value = virtualMachineScaleSet[item.key] || "N/A";
+        return item.callback && value !== "N/A" ? item.callback(value) : value;
     });
     virtualMachineScaleSetTable.insertRecord(virtualMachineScaleSet.id, recordValues);
 }
@@ -372,7 +374,7 @@ function insertRecord(virtualMachineScaleSet, virtualMachineScaleSetProperties) 
 function generateConfig(url) {
     return {
         url: "/subscriptions/" + subscriptionId + url, protocol: "https", headers: {
-            "Authorization": "Bearer " + accessToken,
+            "Authorization": "Bearer " + accessToken
         }, rejectUnauthorized: false, jar: true
     };
 }
@@ -382,10 +384,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the Virtual Machine Scale Set data.
  */
 function retrieveVirtualMachineScaleSets() {
-    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2024-07-01");
-    azureCloudManagementService.http.get(config, processVirtualMachineScaleSetsResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processVirtualMachineScaleSetsResponse(resolve, reject));
+    });
 }
 
 /**
@@ -417,18 +419,19 @@ function extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachin
             const key = getNonTimeSeriesKey(performanceInfo.timeseries[0].data);
             virtualMachineScaleSetInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A";
         } else {
-            virtualMachineScaleSetInfo[performanceInfo.name.value] = "N/A"
+            virtualMachineScaleSetInfo[performanceInfo.name.value] = "N/A";
         }
     }
 }
 
 /**
  * Processes the Virtual Machine Scale Set performance API response and updates the Virtual Machine Scale Set information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {Object} virtualMachineScaleSetInfo - The Virtual Machine Scale Set information to update.
  * @returns {Function} A function to process the HTTP response.
  */
-function processVirtualMachineScaleSetPerformanceResponse(d, virtualMachineScaleSetInfo) {
+function processVirtualMachineScaleSetPerformanceResponse(resolve, reject, virtualMachineScaleSetInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         if (error || response.statusCode !== 200) {
@@ -437,18 +440,18 @@ function processVirtualMachineScaleSetPerformanceResponse(d, virtualMachineScale
         try {
             const bodyAsJSON = JSON.parse(body);
             if (!bodyAsJSON.value) {
-                D.failure(D.errorType.GENERIC_ERROR)
+                D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
             bodyAsJSON.value.map(function (performanceInfo) {
-                extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachineScaleSetInfo)
+                extractVirtualMachineScaleSetPerformance(performanceInfo, virtualMachineScaleSetInfo);
             });
-            d.resolve(virtualMachineScaleSetInfo);
+            resolve(virtualMachineScaleSetInfo);
         } catch (parseError) {
             console.error("Error parsing Virtual Machine Scale Sets configuration:", parseError);
-            d.reject("Failed to parse response for " + virtualMachineScaleSetInfo.name);
+            reject("Failed to parse response for " + virtualMachineScaleSetInfo.name);
         }
-    }
+    };
 }
 
 /**
@@ -457,14 +460,14 @@ function processVirtualMachineScaleSetPerformanceResponse(d, virtualMachineScale
  * @returns {string} The date string in UTC format
  */
 function convertToUTC(dateToConvert) {
-    const date = new Date(dateToConvert)
-    const month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
-    const day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
-    const year = date.getUTCFullYear()
-    const hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
-    const minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
-    const seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
-    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
+    const date = new Date(dateToConvert);
+    const month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1);
+    const day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate();
+    const year = date.getUTCFullYear();
+    const hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours();
+    const minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes();
+    const seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
+    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC";
 }
 
 /**
@@ -476,7 +479,7 @@ function convertBytesToGb(bytesValue) {
     if (bytesValue !== "N/A") {
         return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
     }
-    return bytesValue
+    return bytesValue;
 }
 
 /**
@@ -486,22 +489,22 @@ function convertBytesToGb(bytesValue) {
  */
 function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSetInfoList) {
     const performanceKeyGroups = [];
-    const promises = []
+    const promises = [];
     const maxGroupSize = 20;
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-            return metric.key
-        }).join(','));
+            return metric.key;
+        }).join(","));
     }
     virtualMachineScaleSetInfoList.forEach(function (diskInfo) {
         performanceKeyGroups.forEach(function (group) {
-            const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/virtualMachineScaleSets/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-            azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(d, diskInfo));
-            promises.push(d.promise);
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, processVirtualMachineScaleSetPerformanceResponse(resolve, reject, diskInfo));
+            }));
         });
     });
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
 /**
@@ -511,7 +514,7 @@ function retrieveVirtualMachineScaleSetsPerformanceMetrics(virtualMachineScaleSe
  */
 function populateTable(virtualMachineScaleSetInfoList, virtualMachineScaleSetProperties) {
     virtualMachineScaleSetInfoList.map(function (virtualMachineScaleSetInfo) {
-        insertRecord(virtualMachineScaleSetInfo, virtualMachineScaleSetProperties)
+        insertRecord(virtualMachineScaleSetInfo, virtualMachineScaleSetProperties);
     });
 }
 
@@ -543,9 +546,9 @@ function get_status() {
         .then(retrieveVirtualMachineScaleSets)
         .then(retrieveVirtualMachineScaleSetsPerformanceMetrics)
         .then(function (virtualMachineScaleSetInfoList) {
-            const virtualMachineScaleSetProperties = generateVirtualMachineScaleSetProperties()
-            createVirtualMachineScaleSetTable(virtualMachineScaleSetProperties)
-            populateTable(virtualMachineScaleSetInfoList, virtualMachineScaleSetProperties)
+            const virtualMachineScaleSetProperties = generateVirtualMachineScaleSetProperties();
+            createVirtualMachineScaleSetTable(virtualMachineScaleSetProperties);
+            populateTable(virtualMachineScaleSetInfoList, virtualMachineScaleSetProperties);
             D.success(virtualMachineScaleSetTable);
         })
         .catch(function (error) {

@@ -1,13 +1,13 @@
 /**
  * Name: Dell iDRAC RAID Monitoring
  * Description: Monitors the operational status of RAID controllers on a Dell server with iDRAC.
- * 
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under iDRAC version 7.0.3 21053776 U3 P70
- * 
+ *
  * Keyboard Interactive option: true/false (depends on iDRAC version).
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *      - Type
  *      - Primary Status
@@ -20,7 +20,7 @@
  *      - Security Status
  */
 
-var command = "racadm hwinventory"; 
+var command = "racadm hwinventory";
 
 // SSH options when running the commands
 var sshConfig = {
@@ -32,43 +32,43 @@ var sshConfig = {
 
 // SSH promise definition
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, err) {
-        if (err) {
-            checkSshError(err);
-        } else {           
-            if (output && output.indexOf("COMMAND NOT RECOGNIZED")!==-1) {
-                D.failure(D.errorType.PARSING_ERROR);
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, err) {
+            if (err) {
+                checkSshError(err);
             } else {
-                d.resolve(output);
-            }           
-        }
+                if (output && output.indexOf("COMMAND NOT RECOGNIZED") !== -1) {
+                    D.failure(D.errorType.PARSING_ERROR);
+                } else {
+                    resolve(output);
+                }
+            }
+        });
     });
-    return d.promise;
 }
 
 // Custom Driver Table to store RAID controller information
 var table = D.createTable(
     "RAID Info",
     [
-        { label: "Type", valueType: D.valueType.STRING},
-        { label: "Primary Status", valueType: D.valueType.STRING},
-        { label: "Product Name", valueType: D.valueType.STRING},
-        { label: "Description", valueType: D.valueType.STRING},
-        { label: "Support RAID10 Uneven Spans", valueType: D.valueType.STRING},
-        { label: "Cache Size", unit: "B", valueType: D.valueType.NUMBER},
-        { label: "Driver Version", valueType: D.valueType.STRING},
-        { label: "Encryption Mode", valueType: D.valueType.STRING},
-        { label: "Security Status", valueType: D.valueType.STRING},    
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Primary Status", valueType: D.valueType.STRING },
+        { label: "Product Name", valueType: D.valueType.STRING },
+        { label: "Description", valueType: D.valueType.STRING },
+        { label: "Support RAID10 Uneven Spans", valueType: D.valueType.STRING },
+        { label: "Cache Size", unit: "B", valueType: D.valueType.NUMBER },
+        { label: "Driver Version", valueType: D.valueType.STRING },
+        { label: "Encryption Mode", valueType: D.valueType.STRING },
+        { label: "Security Status", valueType: D.valueType.STRING }
     ]
 );
 
@@ -90,7 +90,7 @@ function validate() {
 function parseValidateOutput(output) {
     if (output.trim() !== "") {
         console.info("Validation successful");
-    } 
+    }
 }
 
 /**
@@ -110,18 +110,18 @@ function get_status() {
 function parseData(output) {
     var lines = output.split("\n");
     var data = {};
-    var instanceIdRaid = false; 
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var instanceIdRaid = false;
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: RAID.") >= 0) {
             instanceIdRaid = true;
-            data = {}; 
+            data = {};
         } else if (instanceIdRaid && line.length === 0) {
             if (data["Device Type"] === "Controller") {
-                var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
-                var type = data["Device Type"] || "-"; 
+                var recordId = (data["InstanceID"]).replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+                var type = data["Device Type"] || "-";
                 var primaryStatus = data["PrimaryStatus"] || "-";
                 var productName = data["ProductName"] || "-";
                 var description = data["DeviceDescription"] || "-";
@@ -148,7 +148,7 @@ function parseData(output) {
                 instanceIdRaid = false;
             }
         } else if (instanceIdRaid) {
-            var keyValue = line.split('=');
+            var keyValue = line.split("=");
             if (keyValue.length === 2) {
                 var key = keyValue[0].trim();
                 var value = keyValue[1].trim();

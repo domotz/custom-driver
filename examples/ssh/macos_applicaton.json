@@ -1,6 +1,6 @@
 {
     "logo": "macos.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "macOS - Applications",
     "description": "Retrieves details of installed applications on macOS",
     "category": "Software Integration",

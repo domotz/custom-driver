@@ -1,12 +1,12 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE MSA SAN Controllers
  * Description: This script retrieves information about each controller in an HPE MSA SAN system
- * 
- * Communication protocol is HTTPS 
- * 
+ *
+ * Communication protocol is HTTPS
+ *
  * Tested with HPE MSA 2050 SAN version: VL270P005
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *     - IP Address: Controller network port IP address
  *     - Disks: Number of disks in the storage system
@@ -14,7 +14,7 @@
  *     - Health: Health status of the controller
  *     - Redundancy Mode: Redundancy mode of the controller
  *     - Redundancy Status: Redundancy status of the controller
- * 
+ *
  */
 // Variable to store the session key
 var sessionKey;
@@ -25,17 +25,17 @@ var table = D.createTable(
     [
         { label: "IP Address", valueType: D.valueType.STRING },
         { label: "Disks", valueType: D.valueType.NUMBER },
-        { label: "Status", valueType: D.valueType.STRING }, 
-        { label: "Health", valueType: D.valueType.STRING }, 
-        { label: "Redundancy Mode", valueType: D.valueType.STRING }, 
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Health", valueType: D.valueType.STRING },
+        { label: "Redundancy Mode", valueType: D.valueType.STRING },
         { label: "Redundancy Status", valueType: D.valueType.STRING }
     ]
 );
 
 // Process the response from the server
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
-        if (error) {          
+        if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else if (response.statusCode == 404) {
@@ -44,15 +44,15 @@ function processResponse(d) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
-        } 
+        }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if(sessionKey == "Authentication Unsuccessful"){
+            if (sessionKey == "Authentication Unsuccessful") {
                 console.error("Session key not found in response headers");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
-        d.resolve(body);      
+        resolve(body);
     };
 }
 
@@ -61,7 +61,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/login",
         username: D.device.username(),
@@ -71,31 +70,32 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves controllers data from the HPE MSA SAN device
 function getController() {
-    var d = D.q.defer();
     var config = {
         url: "/api/show/controllers",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "sessionKey": sessionKey 
+            "sessionKey": sessionKey
         }
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Sanitize sensor name to create a recordId
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response
@@ -106,7 +106,7 @@ function extractData(data) {
         console.error("No fan found in the data");
         D.failure(D.errorType.PARSING_ERROR);
     }
-    
+
     sensorObjects.each(function (index, element) {
         var controllerId = $(element).find("PROPERTY[name=\"controller-id\"]").first().text();
         var ipAddress = $(element).find("PROPERTY[name=\"ip-address\"]").first().text();
@@ -133,7 +133,7 @@ function extractData(data) {
  * @label Validate HPE MSA SAN Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     login()
         .then(getController)
         .then(function (response) {
@@ -156,14 +156,14 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Controllers 
+ * @label Get Controllers
  * @documentation Retrieves the Controllers data from the device
  */
 function get_status() {
     login()
         .then(getController)
         .then(extractData)
-        .catch(function(error) {
+        .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         });

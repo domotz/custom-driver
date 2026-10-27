@@ -1,17 +1,16 @@
-
 /**
  * This driver extract information from http response
  * Communication protocol is https
  * return a table with this columns:
  * %id: monitoring variable id
- * %Link: http request link for the device, 
- * %Port: http request port for the device, 
- * %HTTP Method: http request method for the device, 
+ * %Link: http request link for the device,
+ * %Port: http request port for the device,
+ * %HTTP Method: http request method for the device,
  * %Status: Response status
  * %Elapsed: Time consumed to get the response
- * %Extracted Value: the value that should be extracted from http response, 
+ * %Extracted Value: the value that should be extracted from http response,
  * %Validation: check if the extracted value is valid or not
- * 
+ *
  * Each row of the table is defined in {@link httpMonitoringConfig}
  */
 
@@ -47,7 +46,7 @@ var nodeValueLocation = Object.freeze({
  * * contentType (default 'application/json')
  * * responseType: 'json' | 'html' | 'text' (if not specified it will be extracted from content-type header of the response)
  * * valueExtractor:
- *    - if response type is html: 
+ *    - if response type is html:
  *       - Regular Expression: regular expression containing the token to extract (example: /<input name="input_name" value="(.*)" \/>/), only the first token will be extracted
  *       - Query selector: an object that contain this fields:
  *            - query: string contains html query selector (example: "body > div > #id1 > .class1")
@@ -75,7 +74,7 @@ var httpMonitoringConfig = [
     },
     // example using query selector to find the value in html response
     {
-        host:"domotz.com",
+        host: "domotz.com",
         id: "domotz_feature_page_title3",
         link: "/features.php",
         valueExtractor: {
@@ -102,17 +101,16 @@ var httpMonitoringConfig = [
     // }
 ];
 
-
 var httpMonitoringTable = D.createTable(
     "HTTP Monitoring",
     [
         { label: "Link" },
         { label: "Port" },
         { label: "HTTP Method" },
-        { label: "Status"},
-        { label: "Elapsed", unit: "s"},
+        { label: "Status" },
+        { label: "Elapsed", unit: "s" },
         { label: "Extracted value" },
-        { label: "Validation" },
+        { label: "Validation" }
     ]
 );
 
@@ -126,9 +124,9 @@ function failValidation(message) {
  * @returns the config if valid
  */
 function httpMonitoringConfigValidation() {
-    if(httpMonitoringConfig && Array.isArray(httpMonitoringConfig)){
+    if (httpMonitoringConfig && Array.isArray(httpMonitoringConfig)) {
         httpMonitoringConfig.forEach(configValidation);
-    }else{
+    } else {
         console.error("httpMonitoringConfig should be an array");
         D.failure(D.errorType.GENERIC_ERROR);
     }
@@ -136,8 +134,8 @@ function httpMonitoringConfigValidation() {
 }
 
 /**
- * 
- * @param {*} config 
+ *
+ * @param {*} config
  * @param {*} index index of the config in the array
  * @returns the valid config
  */
@@ -188,7 +186,7 @@ function configValidation(config, index) {
 
 /**
  * make a http call to the resource based on the config passed in the parameter
- * @param {*} config 
+ * @param {*} config
  * @returns promise contains the response body and it's related config
  */
 function findResource(config) {
@@ -205,48 +203,48 @@ function findResource(config) {
         httpConfig.headers["content-type"] = config.contentType;
     }
     var device = D.device;
-    if(config.host){
+    if (config.host) {
         device = D.createExternalDevice(config.host);
     }
-    var d = D.q.defer();
     var start = new Date();
     var call;
-    switch(config.method){
-    case "get": call = device.http.get; break;
-    case "post": call = device.http.post; break;
-    case "put": call = device.http.put; break;
-    case "delete": call = device.http.delete; break;
-    default: call = D.device.http.get;
+    switch (config.method) {
+        case "get": call = device.http.get; break;
+        case "post": call = device.http.post; break;
+        case "put": call = device.http.put; break;
+        case "delete": call = device.http.delete; break;
+        default: call = D.device.http.get;
     }
-    call(httpConfig, function (err, response, body) {
-        if (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-
-        if (!config.responseType) {
-            var contentType = response.headers["content-type"];
-            if(contentType.indexOf("application/json") >= 0){
-                config.responseType = responseType.json;
-            }else if(contentType.indexOf("text/html") >= 0){
-                config.responseType = responseType.html;
-            }else{
-                config.responseType = responseType.text;
+    return new Promise(function (resolve) {
+        call(httpConfig, function (err, response, body) {
+            if (err) {
+                console.error(err);
+                return D.failure(D.errorType.GENERIC_ERROR);
             }
-        }
-        config.responseBody = body;
-        config.elapsed = (new Date().getTime() - start) / 1000;
-        config.status = response.statusCode;
-        d.resolve(config);
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
 
+            if (!config.responseType) {
+                var contentType = response.headers["content-type"];
+                if (contentType.indexOf("application/json") >= 0) {
+                    config.responseType = responseType.json;
+                } else if (contentType.indexOf("text/html") >= 0) {
+                    config.responseType = responseType.html;
+                } else {
+                    config.responseType = responseType.text;
+                }
+            }
+            config.responseBody = body;
+            config.elapsed = (new Date().getTime() - start) / 1000;
+            config.status = response.statusCode;
+            resolve(config);
+
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -325,7 +323,7 @@ function parse(config) {
 
 /**
  * validate the extracted value
- * @param {*} config 
+ * @param {*} config
  * @returns config with validation result
  */
 function valueValidation(config) {
@@ -335,15 +333,15 @@ function valueValidation(config) {
 }
 
 /**
- * 
+ *
  * @returns promise execute all http queries simultaneously
  */
 function findResourceForAll() {
-    return D.q.all(httpMonitoringConfig.map(findResource));
+    return Promise.all(httpMonitoringConfig.map(findResource));
 }
 /**
- * 
- * @param {*} configs 
+ *
+ * @param {*} configs
  * @returns parse all configs
  */
 function parseForAll(configs) {
@@ -351,8 +349,8 @@ function parseForAll(configs) {
 }
 
 /**
- * 
- * @param {*} configs 
+ *
+ * @param {*} configs
  * @returns validate all configs
  */
 function valueValidationForAll(configs) {
@@ -360,8 +358,8 @@ function valueValidationForAll(configs) {
 }
 
 /**
- * 
- * @param {*} configs 
+ *
+ * @param {*} configs
  * @returns table with filled result
  */
 function fillTable(configs) {
@@ -396,7 +394,6 @@ function validate() {
     httpMonitoringConfigValidation();
     D.success();
 }
-
 
 /**
 * @remote_procedure

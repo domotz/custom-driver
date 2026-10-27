@@ -1,6 +1,6 @@
 {
     "logo": "versa.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Versa Director - SD-WAN Circuits",
     "description": "Reports Versa SD-WAN access circuits and RX/TX traffic",
     "category": "Software Integration",

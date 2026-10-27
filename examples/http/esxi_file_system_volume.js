@@ -27,28 +27,27 @@
  **/
 
 // URL endpoint for accessing the vSphere SDK
-const url = '/sdk'
-
+const url = "/sdk";
 
 // Creation of File System Volume table
 var fileSystemVolumeTable = D.createTable(
-    'File System Volume Details',
+    "File System Volume Details",
     [
-      { label: 'Name', valueType: D.valueType.STRING },
-      { label: 'Type', valueType: D.valueType.STRING },
-      { label: 'Access Mode', valueType: D.valueType.STRING },
-      { label: 'Is Accessible', valueType: D.valueType.STRING },
-      { label: 'Capacity', valueType: D.valueType.NUMBER , unit: "GB"},
-      { label: 'Block Size', valueType: D.valueType.NUMBER , unit: "MB"},
-      { label: 'Max Blocks', valueType: D.valueType.NUMBER },
-      { label: 'Major Version', valueType: D.valueType.NUMBER },
-      { label: 'Version', valueType: D.valueType.STRING },
-      { label: 'Disk Name', valueType: D.valueType.STRING },
-      { label: 'Partition', valueType: D.valueType.NUMBER },
-      { label: 'Path', valueType: D.valueType.STRING },
-      { label: 'Is VMFS Upgradable', valueType: D.valueType.STRING }
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "Access Mode", valueType: D.valueType.STRING },
+        { label: "Is Accessible", valueType: D.valueType.STRING },
+        { label: "Capacity", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Block Size", valueType: D.valueType.NUMBER, unit: "MB" },
+        { label: "Max Blocks", valueType: D.valueType.NUMBER },
+        { label: "Major Version", valueType: D.valueType.NUMBER },
+        { label: "Version", valueType: D.valueType.STRING },
+        { label: "Disk Name", valueType: D.valueType.STRING },
+        { label: "Partition", valueType: D.valueType.NUMBER },
+        { label: "Path", valueType: D.valueType.STRING },
+        { label: "Is VMFS Upgradable", valueType: D.valueType.STRING }
     ]
-)
+);
 
 /**
  * Sends a SOAP request and returns a promise with the parsed response.
@@ -56,33 +55,33 @@ var fileSystemVolumeTable = D.createTable(
  * @param {function} extractData  A call back function to extract data from body and response.
  * @returns A promise that resolves with the parsed response.
  */
-function sendSoapRequest (body, extractData) {
-  const d = D.q.defer()
+function sendSoapRequest(body, extractData) {
 
-  let config ={
-    url,
-    protocol: "https",
-    rejectUnauthorized: false,
-    body,
-    jar: true
-  }
+    let config = {
+        url,
+        protocol: "https",
+        rejectUnauthorized: false,
+        body,
+        jar: true
+    };
 
-  D.device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (!response) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode === 400 || isInvalidLogin(body)) {
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode !== 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      const result = extractData(body, response)
-      d.resolve(result)
-    }
-  })
-  return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 400 || isInvalidLogin(body)) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                const result = extractData(body, response);
+                resolve(result);
+            }
+        });
+    });
 }
 
 /**
@@ -90,10 +89,10 @@ function sendSoapRequest (body, extractData) {
  * @param {string} soapBody - The content to be included in the SOAP body.
  * @returns {string} The complete SOAP payload as a string, including the envelope and body.
  */
-function createSoapPayload (soapBody) {
-  return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
+function createSoapPayload(soapBody) {
+    return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
       + soapBody +
-      '</soapenv:Body></soapenv:Envelope>'
+      "</soapenv:Body></soapenv:Envelope>";
 }
 
 /**
@@ -102,8 +101,8 @@ function createSoapPayload (soapBody) {
  * @returns {string} The Session Key extracted from the SOAP response.
  */
 function getSessionKey(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').find('key').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("key").first().text();
 }
 
 /**
@@ -112,11 +111,11 @@ function getSessionKey(soapResponse) {
  * @param {string} value - The text to escape.
  * @returns {string} The escaped text.
  */
-function escapeXml (value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+function escapeXml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
 /**
@@ -124,26 +123,26 @@ function escapeXml (value) {
  * @param {string} body - The SOAP response body.
  * @returns {boolean} True if the response is an InvalidLogin fault.
  */
-function isInvalidLogin (body) {
-  const text = String(body || '')
-  return text.indexOf('InvalidLoginFault') !== -1 ||
-    text.indexOf('Cannot complete login due to an incorrect user name or password.') !== -1
+function isInvalidLogin(body) {
+    const text = String(body || "");
+    return text.indexOf("InvalidLoginFault") !== -1 ||
+    text.indexOf("Cannot complete login due to an incorrect user name or password.") !== -1;
 }
 
 /**
  * Constructs and sends a SOAP login request to the ESXi server.
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
-function login () {
-  const payload = createSoapPayload(
-      '<vim25:Login>' +
+function login() {
+    const payload = createSoapPayload(
+        "<vim25:Login>" +
       '   <_this type="SessionManager">ha-sessionmgr</_this>' +
-      '   <userName>' + escapeXml(D.device.username()) + '</userName>' +
-      '   <password>' + escapeXml(D.device.password()) + '</password>' +
-      '</vim25:Login>'
-  )
-  // Send the SOAP request and handle the response to extract the cookie header.
-  return sendSoapRequest(payload, getSessionKey)
+      "   <userName>" + escapeXml(D.device.username()) + "</userName>" +
+      "   <password>" + escapeXml(D.device.password()) + "</password>" +
+      "</vim25:Login>"
+    );
+    // Send the SOAP request and handle the response to extract the cookie header.
+    return sendSoapRequest(payload, getSessionKey);
 }
 
 /**
@@ -152,8 +151,8 @@ function login () {
  * @returns {string} The container ID extracted from the SOAP response.
  */
 function getContainerIdFromSoap(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').text();
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").text();
 }
 
 /**
@@ -161,16 +160,16 @@ function getContainerIdFromSoap(soapResponse) {
  * @returns {Promise} A promise that resolves with the container ID from the SOAP response.
  */
 function createAllHostContainer() {
-  const payload = createSoapPayload(
-      '<CreateContainerView xmlns="urn:vim25">' +
+    const payload = createSoapPayload(
+        '<CreateContainerView xmlns="urn:vim25">' +
       '    <_this type="ViewManager">ViewManager</_this>' +
       '    <container type="Folder">ha-folder-root</container>' +
-      '    <type>HostSystem</type>' +
-      '    <recursive>true</recursive>' +
-      '</CreateContainerView>'
-  )
-  // Send the SOAP request and extract the container ID from the response.
-  return sendSoapRequest(payload, getContainerIdFromSoap)
+      "    <type>HostSystem</type>" +
+      "    <recursive>true</recursive>" +
+      "</CreateContainerView>"
+    );
+    // Send the SOAP request and extract the container ID from the response.
+    return sendSoapRequest(payload, getContainerIdFromSoap);
 }
 
 /**
@@ -179,8 +178,8 @@ function createAllHostContainer() {
  * @returns {string} The host reference extracted from the SOAP response.
  */
 function getHostRefFromSoap(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').find('ManagedObjectReference').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("ManagedObjectReference").first().text();
 }
 
 /**
@@ -189,14 +188,14 @@ function getHostRefFromSoap(soapResponse) {
  * @returns {Promise} A promise that resolves with the host reference extracted from the SOAP response.
  */
 function fetchContainer(containerId) {
-  const payload = createSoapPayload(
-      '<Fetch xmlns="urn:vim25">' +
-      '    <_this type="ContainerView">' + containerId + '</_this>' +
-      '    <prop>view</prop>' +
-      '</Fetch>'
-  )
-  // Send the SOAP request and extract the host reference from the response.
-  return sendSoapRequest(payload, getHostRefFromSoap)
+    const payload = createSoapPayload(
+        '<Fetch xmlns="urn:vim25">' +
+      '    <_this type="ContainerView">' + containerId + "</_this>" +
+      "    <prop>view</prop>" +
+      "</Fetch>"
+    );
+    // Send the SOAP request and extract the host reference from the response.
+    return sendSoapRequest(payload, getHostRefFromSoap);
 }
 
 /**
@@ -205,25 +204,25 @@ function fetchContainer(containerId) {
  * @returns {Promise} A promise that resolves with the properties of the host as extracted from the SOAP response.
  */
 function retrieveProprieties(hostRef) {
-  const payload = createSoapPayload(
-      '<RetrieveProperties xmlns="urn:vim25">' +
+    const payload = createSoapPayload(
+        '<RetrieveProperties xmlns="urn:vim25">' +
       '    <_this type="PropertyCollector">ha-property-collector</_this>' +
-      '    <specSet>' +
-      '        <propSet>' +
-      '            <type>HostSystem</type>' +
-      '            <pathSet>config.fileSystemVolume</pathSet>' +
-      '        </propSet>' +
-      '        <objectSet>' +
-      '            <obj type="HostSystem">' + hostRef + '</obj>' +
-      '        </objectSet>' +
-      '    </specSet>' +
-      '</RetrieveProperties>'
-  )
-  // Send the SOAP request and handle the response to generate the desired variables.
-  return sendSoapRequest(payload, generateTabelOutput)
+      "    <specSet>" +
+      "        <propSet>" +
+      "            <type>HostSystem</type>" +
+      "            <pathSet>config.fileSystemVolume</pathSet>" +
+      "        </propSet>" +
+      "        <objectSet>" +
+      '            <obj type="HostSystem">' + hostRef + "</obj>" +
+      "        </objectSet>" +
+      "    </specSet>" +
+      "</RetrieveProperties>"
+    );
+    // Send the SOAP request and handle the response to generate the desired variables.
+    return sendSoapRequest(payload, generateTabelOutput);
 }
 function convertBytesToGb(bytesValue) {
-  return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
+    return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
 }
 
 /**
@@ -235,29 +234,29 @@ function convertBytesToGb(bytesValue) {
  * @returns {string|null} The extracted UUID-like string if its length is 32 or 36 characters; otherwise, null.
  */
 function extractUUIDFromPath(path) {
-  const parts = path.split('/');
-  return parts[parts.length - 1];
+    const parts = path.split("/");
+    return parts[parts.length - 1];
 }
 
 /**
  * Populates a table with File System Volume.
  */
-function populateTable (volumeDetails) {
-  fileSystemVolumeTable.insertRecord(volumeDetails.id, [
-    volumeDetails.name,
-    volumeDetails.type,
-    volumeDetails.accessMode,
-    volumeDetails.isAccessible,
-    volumeDetails.capacity,
-    volumeDetails.blockSizeMb,
-    volumeDetails.maxBlocks,
-    volumeDetails.majorVersion,
-    volumeDetails.version,
-    volumeDetails.diskName,
-    volumeDetails.partition,
-    volumeDetails.path,
-    volumeDetails.isVmfsUpgradable
-  ]);
+function populateTable(volumeDetails) {
+    fileSystemVolumeTable.insertRecord(volumeDetails.id, [
+        volumeDetails.name,
+        volumeDetails.type,
+        volumeDetails.accessMode,
+        volumeDetails.isAccessible,
+        volumeDetails.capacity,
+        volumeDetails.blockSizeMb,
+        volumeDetails.maxBlocks,
+        volumeDetails.majorVersion,
+        volumeDetails.version,
+        volumeDetails.diskName,
+        volumeDetails.partition,
+        volumeDetails.path,
+        volumeDetails.isVmfsUpgradable
+    ]);
 }
 
 /**
@@ -266,31 +265,31 @@ function populateTable (volumeDetails) {
  * @returns {Array} the output tabel created from the extracted properties.
  */
 function generateTabelOutput(soapResponse) {
-  const $ = D.htmlParse(soapResponse);
-  let i = 1
-  $('propSet:has(name:contains("config.fileSystemVolume")) val mountInfo').each(function() {
-    const mountInfo = $(this);
-    const volume = mountInfo.find('volume');
-    const extent = volume.find('extent');
-    populateTable( {
-      "id": i + " - " + extractUUIDFromPath(mountInfo.find('path').text()),
-      "name": volume.find('name').text() || "N/A",
-      "type": volume.find('type').text() || "N/A",
-      "accessMode": mountInfo.find('accessMode').text() || "N/A",
-      "isAccessible": mountInfo.find('accessible').text() || "N/A",
-      "capacity": convertBytesToGb(volume.find('capacity').text()) || "N/A",
-      "blockSizeMb": volume.find('blockSizeMb').text() || "N/A",
-      "maxBlocks": volume.find('maxBlocks').text() || "N/A",
-      "majorVersion": volume.find('majorVersion').text() || "N/A",
-      "version": volume.find('version').text() || "N/A",
-      "diskName": extent.find('diskName').text() || "N/A",
-      "partition": extent.find('partition').text() || "N/A",
-      "path": mountInfo.find('path').text() || "N/A",
-      "isVmfsUpgradable": volume.find('vmfsUpgradable').text() || "N/A",
-    })
-    i++
-  });
-  return fileSystemVolumeTable;
+    const $ = D.htmlParse(soapResponse);
+    let i = 1;
+    $('propSet:has(name:contains("config.fileSystemVolume")) val mountInfo').each(function () {
+        const mountInfo = $(this);
+        const volume = mountInfo.find("volume");
+        const extent = volume.find("extent");
+        populateTable({
+            "id": i + " - " + extractUUIDFromPath(mountInfo.find("path").text()),
+            "name": volume.find("name").text() || "N/A",
+            "type": volume.find("type").text() || "N/A",
+            "accessMode": mountInfo.find("accessMode").text() || "N/A",
+            "isAccessible": mountInfo.find("accessible").text() || "N/A",
+            "capacity": convertBytesToGb(volume.find("capacity").text()) || "N/A",
+            "blockSizeMb": volume.find("blockSizeMb").text() || "N/A",
+            "maxBlocks": volume.find("maxBlocks").text() || "N/A",
+            "majorVersion": volume.find("majorVersion").text() || "N/A",
+            "version": volume.find("version").text() || "N/A",
+            "diskName": extent.find("diskName").text() || "N/A",
+            "partition": extent.find("partition").text() || "N/A",
+            "path": mountInfo.find("path").text() || "N/A",
+            "isVmfsUpgradable": volume.find("vmfsUpgradable").text() || "N/A"
+        });
+        i++;
+    });
+    return fileSystemVolumeTable;
 }
 
 /**
@@ -298,13 +297,15 @@ function generateTabelOutput(soapResponse) {
  * @label Validate Association
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate () {
-  login()
-  .then(function (sessionKey) {
-        if(sessionKey && sessionKey.length > 0){
-          D.success();
-        }
-    })
+function validate() {
+    login()
+        .then(function (sessionKey) {
+            if (sessionKey && sessionKey.length > 0) {
+                D.success();
+            } else {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        })
         .catch(function () {
             D.failure(D.errorType.GENERIC_ERROR);
         });
@@ -316,13 +317,13 @@ function validate () {
  * @documentation This procedure retrieves the ESXi host File System Volume
  */
 function get_status() {
-  login().
-  then(createAllHostContainer).
-  then(fetchContainer).
-  then(retrieveProprieties).
-  then(D.success)
-      .catch(function (err) {
-        console.error(err);
-        D.failure(D.errorType.GENERIC_ERROR);
-      });
+    login().
+        then(createAllHostContainer).
+        then(fetchContainer).
+        then(retrieveProprieties).
+        then(D.success)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

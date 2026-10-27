@@ -27,10 +27,10 @@
 // For Windows 10 computer (workstation) you may want to set the filter the following way:
 // var svcFilter = ["dhcp", "dnscache", "LanmanServer", "MpsSvc", "RpcEptMapper", "schedule", "Windows Time"]
 // For a server you may want to set the filter the following way:
-const svcFilter = D.getParameter('servicesFilter');
+const svcFilter = D.getParameter("servicesFilter");
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
@@ -39,11 +39,11 @@ const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRM
  * @returns {string}
  */
 function generateGetServicesCmd() {
-    if (svcFilter !== '$null') {
-        const svcFilterString = svcFilter.join('","').replace(/\$/g, '`$');
+    if (svcFilter !== "$null") {
+        const svcFilterString = svcFilter.join('","').replace(/\$/g, "`$");
         return 'ConvertTo-Json @(@("' + svcFilterString + '") | Get-Service | Select-Object ServiceName,DisplayName,Status,StartType)';
     }
-    return ''
+    return "";
 }
 
 // Define the WinRM options when running the commands
@@ -55,7 +55,7 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 const statusCodes = {
@@ -78,16 +78,16 @@ const startTypes = {
 const svcTable = D.createTable(
     "Monitored services",
     [
-        {label: "Service Name"},
-        {label: "Status"},
-        {label: "Start Type"}
+        { label: "Service Name" },
+        { label: "Status" },
+        { label: "Start Type" }
     ]
 );
 
 function populateTable(service) {
-    const svcName = service.ServiceName
-    const status = statusCodes[service.Status.toString()]
-    const startType = startTypes[service.StartType.toString()]
+    const svcName = service.ServiceName;
+    const status = statusCodes[service.Status.toString()];
+    const startType = startTypes[service.StartType.toString()];
 
     const recordID = service.DisplayName.slice(0, 50);
     svcTable.insertRecord(recordID, [svcName, status, startType]);
@@ -149,31 +149,32 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
+    const self = this;
     config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {
@@ -188,10 +189,9 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -201,21 +201,22 @@ SSHHandler.prototype.executeCommand = function (command) {
         timeout: config.timeout,
         command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
     };
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.reject(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                reject(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

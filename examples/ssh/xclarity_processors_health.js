@@ -1,16 +1,16 @@
 /**
  * Name: XClarity Processors Health
  * Description: This script can monitor processors health on Lenovo XClarity servers.
- *             
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under Lenovo XClarity version 8.42
- * 
+ *
  * Creates a Custom Driver table with the following columns:
  *      - ID (FRU Name): The identifier of the processor
  *      - Status: The health status of the processor
  *      - Clock Speed: The clock speed of the processor
- * 
+ *
  */
 
 // Define the command to be executed on the XClarity server
@@ -27,32 +27,32 @@ var sshConfig = {
 var processorHealthTable = D.createTable(
     "Processors Health Info",
     [
-        { label: "Status", valueType: D.valueType.STRING},
-        { label: "Clock Speed", unit: "MHz", valueType: D.valueType.NUMBER }  
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Clock Speed", unit: "MHz", valueType: D.valueType.NUMBER }
     ]
 );
 
 // Function to handle SSH errors and failure cases
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 // Function to execute an SSH command
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, err) {
-        if (err) {
-            checkSshError(err);
-        } else {
-            d.resolve(output);
-        }                  
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, err) {
+            if (err) {
+                checkSshError(err);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -71,7 +71,7 @@ function parseValidateOutput(output) {
     if (output && output.indexOf("Error: Command not recognized") !== -1) {
         console.info("Validation failed: Command not supported");
         D.failure(D.errorType.PARSING_ERROR);
-    }else {
+    } else {
         console.info("Validation successful: Command is supported");
     }
 }
@@ -90,13 +90,13 @@ function get_status() {
 // Parse and insert processors health data into the custom table
 function parseData(output) {
     var lines = output.split("\n");
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    for (var i = 2; i < lines.length-1; i++) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    for (var i = 2; i < lines.length - 1; i++) {
         var line = lines[i].trim();
         var values = line.split(/\s+/);
-        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
-        var status =  values[2]; 
+        var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+        var status =  values[2];
         var clockSpeed = parseInt(values[3]);
         processorHealthTable.insertRecord(
             recordId, [status, clockSpeed]

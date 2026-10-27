@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare vCenter Monitoring VM Snapshots",
     "description": "This script retrieves information about the latest snapshot taken on a VMware vCenter virtual machines. It allows monitoring of snapshot creation time and age",
     "category": "Software Integration",

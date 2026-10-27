@@ -1,6 +1,6 @@
 {
     "logo": "sonicwall.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sonicwall firewall - IPv4 DHCP Leases",
     "description": "Extract IPv4 DHCP Leases statistics",
     "category": "Software Integration",

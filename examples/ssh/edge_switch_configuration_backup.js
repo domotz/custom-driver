@@ -4,9 +4,9 @@
  * Requirements:
  * This integration requires the EdgeSwitch to land in 'enable' mode upon SSH login.
  * To achieve this, run the following command on the switch in Config mode:
- * 
+ *
  *     aaa authorization exec default local
- * 
+ *
  * Without this, the backup process may fail due to privilege limitations.
  */
 
@@ -49,7 +49,7 @@ function validate() {
 
     sshOptions.commands = ["echo 'SSH OK'"];
 
-    D.device.sendSSHCommands(sshOptions, function(out, err) {
+    D.device.sendSSHCommands(sshOptions, function (out, err) {
         if (err) {
             console.error("SSH validation failed.");
             checkSshError(err);
@@ -70,7 +70,7 @@ function backup() {
 
     sshOptions.commands = ["terminal length 0", "show running-config"];
 
-    D.device.sendSSHCommands(sshOptions, function(out, err) {
+    D.device.sendSSHCommands(sshOptions, function (out, err) {
         if (err) {
             console.error("Failed to retrieve configuration via SSH.");
             checkSshError(err);

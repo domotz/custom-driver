@@ -54,183 +54,182 @@
 
 /**
  * @description Teams Rooms Tenant Id
- * @type STRING 
+ * @type STRING
  */
-var tenantId = D.getParameter('tenantId');
+var tenantId = D.getParameter("tenantId");
 
 /**
  * @description Teams Rooms Client Id
- * @type STRING 
+ * @type STRING
  */
-var clientId = D.getParameter('clientId');
+var clientId = D.getParameter("clientId");
 
 /**
  * @description Teams Rooms Client Secret
- * @type SECRET_TEXT 
+ * @type SECRET_TEXT
  */
-var clientSecret = D.getParameter('clientSecret');
+var clientSecret = D.getParameter("clientSecret");
 
 /**
  * @description Flag to filter by device serial number
- * @type STRING 
+ * @type STRING
  */
-var filterByDeviceSerialNumber = D.getParameter('filterByDeviceSerialNumber');
+var filterByDeviceSerialNumber = D.getParameter("filterByDeviceSerialNumber");
 
+const microsoftLoginService = D.createExternalDevice("login.microsoftonline.com");
+const teamsManagementService = D.createExternalDevice("graph.microsoft.com");
 
-const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com')
-const teamsManagementService = D.createExternalDevice('graph.microsoft.com')
-
-let accessToken
-let deviceTable
-let deviceProperties
+let accessToken;
+let deviceTable;
+let deviceProperties;
 
 const deviceInfoExtractors = [{
     key: "id", extract: function (device) {
-        return sanitize(device.id)
+        return sanitize(device.id);
     }
 }, {
-    label: 'Model', valueType: D.valueType.STRING, key: 'model', extract: function (device) {
-        return extractFromHardwareDetailByKey(device, "model")
+    label: "Model", valueType: D.valueType.STRING, key: "model", extract: function (device) {
+        return extractFromHardwareDetailByKey(device, "model");
     }
 }, {
-    label: 'Vendor', valueType: D.valueType.STRING, key: 'manufacturer', extract: function (device) {
-        return extractFromHardwareDetailByKey(device, "manufacturer")
+    label: "Vendor", valueType: D.valueType.STRING, key: "manufacturer", extract: function (device) {
+        return extractFromHardwareDetailByKey(device, "manufacturer");
     }
 }, {
-    label: 'Type', valueType: D.valueType.STRING, key: 'deviceType', extract: function (device) {
-        return extractByKey(device, "deviceType")
+    label: "Type", valueType: D.valueType.STRING, key: "deviceType", extract: function (device) {
+        return extractByKey(device, "deviceType");
     }
 }, {
-    label: 'Used by', valueType: D.valueType.STRING, key: 'displayName', extract: function (device) {
-        return extractCurrentUserByKey(device, "displayName")
+    label: "Used by", valueType: D.valueType.STRING, key: "displayName", extract: function (device) {
+        return extractCurrentUserByKey(device, "displayName");
     }
 }, {
-    label: 'Serial Number', valueType: D.valueType.STRING, key: 'serialNumber', extract: function (device) {
-        return extractFromHardwareDetailByKey(device, "serialNumber")
+    label: "Serial Number", valueType: D.valueType.STRING, key: "serialNumber", extract: function (device) {
+        return extractFromHardwareDetailByKey(device, "serialNumber");
     }
 }, {
-    label: 'Health Status', valueType: D.valueType.STRING, key: 'healthStatus', extract: function (device) {
-        return extractByKey(device, "healthStatus")
+    label: "Health Status", valueType: D.valueType.STRING, key: "healthStatus", extract: function (device) {
+        return extractByKey(device, "healthStatus");
     }
 }, {
-    label: 'Activity', valueType: D.valueType.STRING, key: 'activityState', extract: function (device) {
-        return extractByKey(device, "activityState")
+    label: "Activity", valueType: D.valueType.STRING, key: "activityState", extract: function (device) {
+        return extractByKey(device, "activityState");
     }
-}]
+}];
 
 const deviceHealthExtractors = [{
-    label: 'Connection Status',
+    label: "Connection Status",
     valueType: D.valueType.STRING,
-    key: 'connectionStatus',
+    key: "connectionStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["connection", "connectionStatus"]);
     }
 }, {
-    label: 'Exchange Login Status',
+    label: "Exchange Login Status",
     valueType: D.valueType.STRING,
-    key: 'exchangeLoginStatus',
+    key: "exchangeLoginStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['loginStatus', 'exchangeConnection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["loginStatus", "exchangeConnection", "connectionStatus"]);
     }
 }, {
-    label: 'Teams Login Status',
+    label: "Teams Login Status",
     valueType: D.valueType.STRING,
-    key: 'teamsLoginStatus',
+    key: "teamsLoginStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['loginStatus', 'teamsConnection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["loginStatus", "teamsConnection", "connectionStatus"]);
     }
 }, {
-    label: 'Room Camera',
+    label: "Room Camera",
     valueType: D.valueType.STRING,
-    key: 'roomCameraHealth',
+    key: "roomCameraHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'roomCameraHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["peripheralsHealth", "roomCameraHealth", "connection", "connectionStatus"]);
     }
 }, {
-    label: 'Content Camera',
+    label: "Content Camera",
     valueType: D.valueType.STRING,
-    key: 'contentCameraHealth',
+    key: "contentCameraHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'contentCameraHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["peripheralsHealth", "contentCameraHealth", "connection", "connectionStatus"]);
     }
 }, {
-    label: 'Speaker',
+    label: "Speaker",
     valueType: D.valueType.STRING,
-    key: 'speakerHealth',
+    key: "speakerHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'speakerHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["peripheralsHealth", "speakerHealth", "connection", "connectionStatus"]);
     }
 }, {
-    label: 'Communication Speaker',
+    label: "Communication Speaker",
     valueType: D.valueType.STRING,
-    key: 'communicationSpeakerHealth',
+    key: "communicationSpeakerHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'communicationSpeakerHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["peripheralsHealth", "communicationSpeakerHealth", "connection", "connectionStatus"]);
     }
 }, {
-    label: 'Microphone',
+    label: "Microphone",
     valueType: D.valueType.STRING,
-    key: 'microphoneHealth',
+    key: "microphoneHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['peripheralsHealth', 'microphoneHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["peripheralsHealth", "microphoneHealth", "connection", "connectionStatus"]);
     }
 }, {
-    label: 'OS Update Status',
+    label: "OS Update Status",
     valueType: D.valueType.STRING,
-    key: 'operatingSystemSoftwareUpdateStatus',
+    key: "operatingSystemSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'operatingSystemSoftwareUpdateStatus'])
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "operatingSystemSoftwareUpdateStatus"]);
     }
 }, {
-    label: 'Admin Agent Update Status',
+    label: "Admin Agent Update Status",
     valueType: D.valueType.STRING,
-    key: 'adminAgentSoftwareUpdateStatus',
+    key: "adminAgentSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'adminAgentSoftwareUpdateStatus', 'softwareFreshness'])
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "adminAgentSoftwareUpdateStatus", "softwareFreshness"]);
     }
 }, {
-    label: 'Company Portal Update Status',
+    label: "Company Portal Update Status",
     valueType: D.valueType.STRING,
-    key: 'companyPortalSoftwareUpdateStatus',
+    key: "companyPortalSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'companyPortalSoftwareUpdateStatus', 'softwareFreshness'])
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "companyPortalSoftwareUpdateStatus", "softwareFreshness"]);
     }
 }, {
-    label: 'Teams Client Update Status',
+    label: "Teams Client Update Status",
     valueType: D.valueType.STRING,
-    key: 'teamsClientSoftwareUpdateStatus',
+    key: "teamsClientSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'teamsClientSoftwareUpdateStatus', 'softwareFreshness'])
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "teamsClientSoftwareUpdateStatus", "softwareFreshness"]);
     }
 }, {
-    label: 'Firmware Update Status',
+    label: "Firmware Update Status",
     valueType: D.valueType.STRING,
-    key: 'firmwareSoftwareUpdateStatus',
+    key: "firmwareSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'firmwareSoftwareUpdateStatus', 'softwareFreshness'])
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "firmwareSoftwareUpdateStatus", "softwareFreshness"]);
     }
 }, {
-    label: 'Partner Agent Update Status',
+    label: "Partner Agent Update Status",
     valueType: D.valueType.STRING,
-    key: 'partnerAgentSoftwareUpdateStatus',
+    key: "partnerAgentSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['softwareUpdateHealth', 'partnerAgentSoftwareUpdateStatus', 'softwareFreshness'])
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "partnerAgentSoftwareUpdateStatus", "softwareFreshness"]);
     }
 }, {
-    label: 'Compute Health',
+    label: "Compute Health",
     valueType: D.valueType.STRING,
-    key: 'computeHealth',
+    key: "computeHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['hardwareHealth', 'computeHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["hardwareHealth", "computeHealth", "connection", "connectionStatus"]);
     }
 }, {
-    label: 'HDMI Ingest',
+    label: "HDMI Ingest",
     valueType: D.valueType.STRING,
-    key: 'hdmiIngestHealth',
+    key: "hdmiIngestHealth",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ['hardwareHealth', 'hdmiIngestHealth', 'connection', 'connectionStatus'])
+        return extractFromHealthByPath(deviceHealth, ["hardwareHealth", "hdmiIngestHealth", "connection", "connectionStatus"]);
     }
-}]
+}];
 
 /**
  * Combines device and health extractors to generate a complete list of device properties.
@@ -238,8 +237,8 @@ const deviceHealthExtractors = [{
  */
 function generateDeviceProperties() {
     return deviceInfoExtractors.concat(deviceHealthExtractors).filter(function (result) {
-        return result.label
-    })
+        return result.label;
+    });
 }
 
 /**
@@ -247,9 +246,9 @@ function generateDeviceProperties() {
  * @param {Array} deviceProperties - List of device properties to include in the table.
  */
 function createDeviceTable(deviceProperties) {
-    var tableHeaders = deviceProperties.map(function(item) {return { label: item.label }});
+    var tableHeaders = deviceProperties.map(function (item) {return { label: item.label };});
 
-    deviceTable = D.createTable('Microsoft Teams Devices status', tableHeaders)
+    deviceTable = D.createTable("Microsoft Teams Devices status", tableHeaders);
 }
 
 /**
@@ -259,38 +258,38 @@ function createDeviceTable(deviceProperties) {
  */
 function createVariables(device) {
     var variables = [];
-    
+
     // Add device ID as the first variable
     variables.push(D.createVariable(
-        "id", 
-        "Device ID", 
-        device.id || 'N/A', 
-        null, 
+        "id",
+        "Device ID",
+        device.id || "N/A",
+        null,
         D.valueType.STRING
     ));
-    
-    deviceProperties.forEach(function(property) {
+
+    deviceProperties.forEach(function (property) {
         if (property.label) {
-            var value = device[property.key] || 'N/A';
+            var value = device[property.key] || "N/A";
             variables.push(D.createVariable(
-                property.key, 
-                property.label, 
-                value, 
-                null, 
+                property.key,
+                property.label,
+                value,
+                null,
                 D.valueType.STRING
             ));
         }
     });
 
-    const mstRoomsUrl = 'https://admin.teams.microsoft.com/devices/collaborationbars/' + device.id;
+    const mstRoomsUrl = "https://admin.teams.microsoft.com/devices/collaborationbars/" + device.id;
 
     variables.push(D.createMetric({
-        uid: 'MST-Rooms-url-link',
-        name: 'MST Rooms URL link',
+        uid: "MST-Rooms-url-link",
+        name: "MST Rooms URL link",
         value: mstRoomsUrl,
-                    metadata: {'url': mstRoomsUrl},
+        metadata: { "url": mstRoomsUrl },
         valueType: D.valueType.NUMBER,
-        unit: "%"}));
+        unit: "%" }));
 
     return variables;
 }
@@ -302,7 +301,7 @@ function createVariables(device) {
  * @returns {string} - The extracted value or "N/A".
  */
 function extractByKey(device, key) {
-    return device && device[key] ? device[key] : 'N/A'
+    return device && device[key] ? device[key] : "N/A";
 }
 
 /**
@@ -312,7 +311,7 @@ function extractByKey(device, key) {
  * @returns {string} - The extracted value or "N/A".
  */
 function extractCurrentUserByKey(device, key) {
-    return device && device.currentUser && device.currentUser[key] ? device.currentUser[key] : 'N/A'
+    return device && device.currentUser && device.currentUser[key] ? device.currentUser[key] : "N/A";
 }
 
 /**
@@ -322,7 +321,7 @@ function extractCurrentUserByKey(device, key) {
  * @returns {string} - The extracted value or "N/A".
  */
 function extractFromHardwareDetailByKey(device, key) {
-    return device && device.hardwareDetail && device.hardwareDetail[key] ? device.hardwareDetail[key] : 'N/A'
+    return device && device.hardwareDetail && device.hardwareDetail[key] ? device.hardwareDetail[key] : "N/A";
 }
 
 /**
@@ -335,12 +334,12 @@ function extractFromHealthByPath(deviceHealth, key) {
     let value = deviceHealth;
     for (let i = 0; i < key.length; i++) {
         if (value && value[key[i]] !== undefined) {
-            value = value[key[i]]
+            value = value[key[i]];
         } else {
-            return "N/A"
+            return "N/A";
         }
     }
-    return (value === "unknown") ? "N/A" : value
+    return (value === "unknown") ? "N/A" : value;
 }
 
 /**
@@ -349,9 +348,9 @@ function extractFromHealthByPath(deviceHealth, key) {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -361,55 +360,57 @@ function sanitize(output) {
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error(error);
+        D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
-            accessToken = bodyAsJSON.access_token
-            d.resolve()
+            accessToken = bodyAsJSON.access_token;
+            resolve();
         } else {
-            console.error("Access token not found in response body")
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
+            console.error("Access token not found in response body");
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
  * Processes the response from the Devices API call and extracts device information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDevicesResponse(d) {
+function processDevicesResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
-            console.error("No Devices found in the response")
-            D.failure(D.errorType.GENERIC_ERROR)
+            console.error("No Devices found in the response");
+            D.failure(D.errorType.GENERIC_ERROR);
         }
-        let deviceInfoList = bodyAsJSON.value.map(extractDevicesInfo)
+        let deviceInfoList = bodyAsJSON.value.map(extractDevicesInfo);
         if (!deviceInfoList.length) {
-            console.info('There is no Devices')
+            console.info("There is no Devices");
         }
-        d.resolve(deviceInfoList)
-    }
+        resolve(deviceInfoList);
+    };
 }
 
 /**
@@ -417,12 +418,12 @@ function processDevicesResponse(d) {
  * @param {Object} deviceHealth - The health data for a device.
  */
 function extendDisplayExtractors(deviceHealth) {
-    const displays = (deviceHealth && deviceHealth.peripheralsHealth && deviceHealth.peripheralsHealth.displayHealthCollection) || []
+    const displays = (deviceHealth && deviceHealth.peripheralsHealth && deviceHealth.peripheralsHealth.displayHealthCollection) || [];
     displays.forEach(function (display, index) {
-        const displayKey = 'display_' + (index + 1) + '_status'
-        if (!deviceHealthExtractors.some(function(extractor){ return extractor.key === displayKey })) {
+        const displayKey = "display_" + (index + 1) + "_status";
+        if (!deviceHealthExtractors.some(function (extractor) { return extractor.key === displayKey; })) {
             deviceHealthExtractors.push({
-                label: 'Display ' + (index + 1) + ' Status',
+                label: "Display " + (index + 1) + " Status",
                 valueType: D.valueType.STRING,
                 key: displayKey,
                 extract: function (health) {
@@ -432,36 +433,37 @@ function extendDisplayExtractors(deviceHealth) {
                         health.peripheralsHealth.displayHealthCollection[index] &&
                         health.peripheralsHealth.displayHealthCollection[index].connection &&
                         health.peripheralsHealth.displayHealthCollection[index].connection.connectionStatus
-                    ) || "N/A"
+                    ) || "N/A";
                 }
-            })
+            });
         }
-    })
+    });
 }
 
 /**
  * Processes the response from the health API and extracts relevant device health info.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDeviceHelthResponse(d) {
+function processDeviceHelthResponse(resolve, reject) {
     return function process(error, response, body) {
-        checkHTTPError(error, response)
-        const bodyAsJSON = JSON.parse(body)
+        checkHTTPError(error, response);
+        const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON) {
-            console.error('No health status found in the response')
+            console.error("No health status found in the response");
         }
-        extendDisplayExtractors(bodyAsJSON)
-        deviceProperties = generateDeviceProperties()
-        
+        extendDisplayExtractors(bodyAsJSON);
+        deviceProperties = generateDeviceProperties();
+
         // Only create device table if not filtering by serial number
         if (filterByDeviceSerialNumber.trim().toLowerCase() !== "true") {
-            createDeviceTable(deviceProperties)
+            createDeviceTable(deviceProperties);
         }
-        
-        const deviceHealthInfo = extractDeviceHealthInfo(bodyAsJSON)
-        d.resolve(deviceHealthInfo)
-    }
+
+        const deviceHealthInfo = extractDeviceHealthInfo(bodyAsJSON);
+        resolve(deviceHealthInfo);
+    };
 }
 
 /**
@@ -469,19 +471,19 @@ function processDeviceHelthResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer()
     const config = {
         url: "/" + tenantId + "/oauth2/v2.0/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded"
         }, form: {
             grant_type: "client_credentials",
             client_id: clientId,
             client_secret: clientSecret,
             scope: "https://graph.microsoft.com/.default"
         }, rejectUnauthorized: false, jar: true
-    }
-    microsoftLoginService.http.post(config, processLoginResponse(d))
-    return d.promise
+    };
+    return new Promise(function (resolve, reject) {
+        microsoftLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -491,11 +493,11 @@ function login() {
  * @returns {Object} - Extracted values
  */
 function extractInfo(source, extractors) {
-    const result = {}
+    const result = {};
     extractors.forEach(function (row) {
-        result[row.key] = row.extract(source)
-    })
-    return result
+        result[row.key] = row.extract(source);
+    });
+    return result;
 }
 
 /**
@@ -504,8 +506,8 @@ function extractInfo(source, extractors) {
  * @returns {Object} - Extracted device information.
  */
 function extractDevicesInfo(device) {
-    if (!device || !device.id) return null
-    return extractInfo(device, deviceInfoExtractors)
+    if (!device || !device.id) return null;
+    return extractInfo(device, deviceInfoExtractors);
 }
 
 /**
@@ -514,9 +516,9 @@ function extractDevicesInfo(device) {
  * @returns {Object} - Extracted device health information.
  */
 function extractDeviceHealthInfo(deviceHealth) {
-    const info = extractInfo(deviceHealth, deviceHealthExtractors)
-    info.id = deviceHealth.id
-    return info
+    const info = extractInfo(deviceHealth, deviceHealthExtractors);
+    info.id = deviceHealth.id;
+    return info;
 }
 
 /**
@@ -524,18 +526,18 @@ function extractDeviceHealthInfo(deviceHealth) {
  * @returns {Promise} A promise that resolves with the device data.
  */
 function retrieveDevices() {
-    const d = D.q.defer()
     const config = {
-        url:  "/beta/teamwork/devices",
+        url: "/beta/teamwork/devices",
         protocol: "https",
         headers: {
-            "Authorization": "Bearer " + accessToken,
+            "Authorization": "Bearer " + accessToken
         },
         rejectUnauthorized: false,
         jar: true
-    }
-    teamsManagementService.http.get(config, processDevicesResponse(d))
-    return d.promise
+    };
+    return new Promise(function (resolve, reject) {
+        teamsManagementService.http.get(config, processDevicesResponse(resolve, reject));
+    });
 }
 
 /**
@@ -544,9 +546,9 @@ function retrieveDevices() {
  */
 function insertRecord(device) {
     const recordValues = deviceProperties.map(function (item) {
-        return device[item.key] || 'N/A'
-    })
-    deviceTable.insertRecord(device.id, recordValues)
+        return device[item.key] || "N/A";
+    });
+    deviceTable.insertRecord(device.id, recordValues);
 }
 
 /**
@@ -556,18 +558,17 @@ function insertRecord(device) {
  */
 function retrieveDeviceHealthInfo(device) {
     const promises = device.map(function (item) {
-        const d = D.q.defer()
         const config = {
             url: "/beta/teamwork/devices/" + item.id + "/health", protocol: "https", headers: {
-                "Authorization": "Bearer " + accessToken,
+                "Authorization": "Bearer " + accessToken
             }, rejectUnauthorized: false, jar: true
-        }
-        teamsManagementService.http.get(config, processDeviceHelthResponse(d))
-        return d.promise
-    })
-    return D.q.all(promises)
+        };
+        return new Promise(function (resolve, reject) {
+            teamsManagementService.http.get(config, processDeviceHelthResponse(resolve, reject));
+        });
+    });
+    return Promise.all(promises);
 }
-
 
 /**
  * Merges device information with its corresponding health information.
@@ -576,29 +577,29 @@ function retrieveDeviceHealthInfo(device) {
  * @returns {Array} - List of devices with merged health information.
  */
 function mergeDevicesWithHealth(devices, healthList) {
-    if (!devices || devices.length === 0) return []
+    if (!devices || devices.length === 0) return [];
     return devices.map(function (device) {
-        var health = null
+        var health = null;
         for (var i = 0; i < healthList.length; i++) {
             if (healthList[i] && healthList[i].id === device.id) {
-                health = healthList[i]
-                break
+                health = healthList[i];
+                break;
             }
         }
         if (health) {
-            var merged = {}
+            var merged = {};
             for (var key in device) {
-                merged[key] = device[key]
+                merged[key] = device[key];
             }
             for (var helthKey in health) {
-                if (helthKey !== 'id') {
-                    merged[helthKey] = health[helthKey]
+                if (helthKey !== "id") {
+                    merged[helthKey] = health[helthKey];
                 }
             }
-            return merged
+            return merged;
         }
-        return device
-    })
+        return device;
+    });
 }
 
 /**
@@ -606,7 +607,7 @@ function mergeDevicesWithHealth(devices, healthList) {
  * @param {Array} deviceInfoList - A list of Device information objects to be inserted into the table.
  */
 function populateTable(deviceInfoList) {
-    deviceInfoList.map(insertRecord)
+    deviceInfoList.map(insertRecord);
 }
 
 /**
@@ -619,26 +620,25 @@ function validate() {
         .then(retrieveDevices)
         .then(function (devices) {
             return retrieveDeviceHealthInfo(devices)
-                .then(function () {D.success()})
+                .then(function () {D.success();});
         })
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
-function filterDevices(devices)
-{
-    let filteredDevices = devices
+function filterDevices(devices) {
+    let filteredDevices = devices;
     if (filterByDeviceSerialNumber.trim().toLowerCase() === "true") {
-        console.info("Device Serial" + D.device.serial())
+        console.info("Device Serial" + D.device.serial());
 
-        filteredDevices = devices.filter(function(device) {
-            console.info("Teams Serial" + device.serialNumber)        
-            return device.serialNumber && D.device.serial() && device.serialNumber.toLowerCase() === D.device.serial().toLowerCase()
-        })
+        filteredDevices = devices.filter(function (device) {
+            console.info("Teams Serial" + device.serialNumber);
+            return device.serialNumber && D.device.serial() && device.serialNumber.toLowerCase() === D.device.serial().toLowerCase();
+        });
     }
-    return filteredDevices
+    return filteredDevices;
 }
 
 /**
@@ -653,27 +653,27 @@ function get_status() {
         .then(function (devices) {
             return retrieveDeviceHealthInfo(devices)
                 .then(function (healthList) {
-                    const mergedDevices = mergeDevicesWithHealth(devices, healthList)
-                    console.log(mergedDevices)
-                    
+                    const mergedDevices = mergeDevicesWithHealth(devices, healthList);
+                    console.log(mergedDevices);
+
                     if (filterByDeviceSerialNumber.trim().toLowerCase() === "true") {
                         // When filtering by serial number, use variables instead of table
                         if (mergedDevices.length > 0) {
-                            const variables = createVariables(mergedDevices[0])
-                            D.success(variables)
+                            const variables = createVariables(mergedDevices[0]);
+                            D.success(variables);
                         } else {
-                            console.info('No matching device found for the serial number')
-                            D.success([])
+                            console.info("No matching device found for the serial number");
+                            D.success([]);
                         }
                     } else {
                         // Use table for multiple devices
-                        populateTable(mergedDevices)
-                        D.success(deviceTable)
+                        populateTable(mergedDevices);
+                        D.success(deviceTable);
                     }
-                })
+                });
         })
         .catch(function (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error(error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

@@ -1,22 +1,22 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Microsoft Exchange Server - RPC (Remote Procedure Call) Average Latency
  * Description: This script is used to monitor the RPC (Remote Procedure Call) Average Latency on a Microsoft Exchange Server
- * 
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on:
  *      - Microsoft Exchange Server 2019 CU12
- * 
+ *
  * Powershell Version:
- *      - 5.1.19041.2364 
- * 
- * create a dynamic monitoring variables 
+ *      - 5.1.19041.2364
+ *
+ * create a dynamic monitoring variables
  *      - Instance Name: Instance name of RPC Average Latency
  *      - Value: Value of RPC Average Latency
  */
 
-// Define a Performance Counter path to monitor RPC Average Latency 
+// Define a Performance Counter path to monitor RPC Average Latency
 var counters = "\\MSExchangeIS Store(*)\\RPC Average Latency";
 
 // WinRM configuration
@@ -29,7 +29,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 // Check for Errors on the WinRM command response
@@ -67,10 +67,10 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Parses the output of the WinRM command and extracts data
@@ -78,7 +78,14 @@ function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var variables = [];
-        var jsonOutput = JSON.parse(output.outcome.stdout);
+        var jsonOutput;
+        try {
+            jsonOutput = JSON.parse(output.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             var instanceName = jsonOutput[k].InstanceName || "-";
             var value = jsonOutput[k].CookedValue;

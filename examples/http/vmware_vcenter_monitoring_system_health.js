@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare vCenter Monitoring System Health
  * Description: This script is designed to retrieve system health information from a VMware vCenter server
- *               
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 8.0.2
  *
  * Creates a Custom Driver table with the system health information
@@ -20,7 +20,6 @@ var table = D.createTable(
 
 // Function to login to the VMWare vCenter
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/session",
         username: D.device.username(),
@@ -30,20 +29,21 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 201) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -53,7 +53,6 @@ function login() {
  * @returns A promise containing the body of the response
  */
 function httpGet(url, sessionId) {
-    var d = D.q.defer();
     var config = {
         url: url,
         protocol: "https",
@@ -63,19 +62,20 @@ function httpGet(url, sessionId) {
             "vmware-api-session-id": sessionId
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode != 200) {
-            console.log(response.body);
-            d.resolve("N/A");
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode != 200) {
+                console.log(response.body);
+                resolve("N/A");
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 var config = [
@@ -95,20 +95,20 @@ function getSystemHealthInfo(sessionId) {
         return httpGet(urls.url, sessionId);
     });
 
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
-// This function extracts data from the response and populates the custom table 
+// This function extracts data from the response and populates the custom table
 function extractData(data) {
     var colorToHealthStatus = {
         "green": "OK",
         "red": "NOT OK",
         "orange": "WARNING"
-    }
+    };
 
     for (var i = 0; i < data.length; i++) {
         var color = data[i] || "N/A";
-        var status = colorToHealthStatus[color] || "N/A"
+        var status = colorToHealthStatus[color] || "N/A";
         var recordId = config[i].id;
         table.insertRecord(recordId, [status]);
     }
@@ -117,10 +117,10 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare vCenter device
  */
-function validate(){
+function validate() {
     login()
         .then(getSystemHealthInfo)
         .then(function (response) {

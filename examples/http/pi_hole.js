@@ -45,7 +45,7 @@ function createVariables(data) {
     if (relative) {
         variables.push(
             _var("db_update_since", "Days since last DB update",
-                relative.days + relative.hours/24,  "", "days"
+                relative.days + relative.hours / 24,  "", "days"
             )
         );
     }
@@ -66,7 +66,6 @@ function validate() {
         D.success(createVariables(res));
     });
 }
-
 
 /**
  * @remote_procedure

@@ -108,7 +108,7 @@
  */
 
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
@@ -120,7 +120,7 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 let filter = [
@@ -142,13 +142,13 @@ filter = '@("' + filter.join('","') + '")';
 const auditTable = D.createTable(
     "Audit Settings",
     [
-        {label: "Category"},
-        {label: "Subcategory"},
-        {label: "Setting"}
+        { label: "Category" },
+        { label: "Subcategory" },
+        { label: "Setting" }
     ]
 );
 
-function parseValidateOutput (isValidated) {
+function parseValidateOutput(isValidated) {
     if (isValidated) {
         console.info("Validation successful");
         D.success();
@@ -176,7 +176,7 @@ function validate() {
  * @documentation This procedure retrieves and filter the current audit settings
  */
 function get_status() {
-    const command = "$output = auditpol /get /category:* | Where-Object { $_ -match '\\S' };$output = $output -replace '(?<=\\S)\\s{2,}(?=\\S)', ',';$aOutput = $output -split '\\r?\\n';$aOutput = $aOutput[2..($aOutput.Length - 1)];$CurrCategory = '';$RetObj = [System.Collections.ArrayList]::new();foreach ($item in $aOutput){if ($item -match '^\\s'){$tobj = @{category = $CurrCategory;subcat = (($item.split(','))[0]).Trim();setting = ($item.split(','))[1]};$RetObj += $tobj}elseif ($item -match '^(\\S)') {$CurrCategory = $item}};$RetObj |?{" + filter + " -contains $_.subcat}|ConvertTo-Json"
+    const command = "$output = auditpol /get /category:* | Where-Object { $_ -match '\\S' };$output = $output -replace '(?<=\\S)\\s{2,}(?=\\S)', ',';$aOutput = $output -split '\\r?\\n';$aOutput = $aOutput[2..($aOutput.Length - 1)];$CurrCategory = '';$RetObj = [System.Collections.ArrayList]::new();foreach ($item in $aOutput){if ($item -match '^\\s'){$tobj = @{category = $CurrCategory;subcat = (($item.split(','))[0]).Trim();setting = ($item.split(','))[1]};$RetObj += $tobj}elseif ($item -match '^(\\S)') {$CurrCategory = $item}};$RetObj |?{" + filter + " -contains $_.subcat}|ConvertTo-Json";
     instance.executeCommand(command)
         .then(instance.parseOutputToJson)
         .then(parseOutput)
@@ -184,9 +184,9 @@ function get_status() {
 }
 
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    const recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -210,7 +210,6 @@ function parseOutput(jsonOutput) {
     D.success(auditTable);
 }
 
-
 // WinRM functions
 function WinRMHandler() {}
 
@@ -225,32 +224,32 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
+    const self = this;
     config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
-
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {
@@ -265,10 +264,9 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -278,21 +276,22 @@ SSHHandler.prototype.executeCommand = function (command) {
         timeout: config.timeout,
         command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
     };
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.reject(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                reject(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

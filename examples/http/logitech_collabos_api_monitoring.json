@@ -1,6 +1,6 @@
 {
     "logo": "logitech.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Logitech CollabOS - Device Monitoring",
     "description": "Monitors Logitech CollabOS-based video conferencing devices.",
     "category": "Hardware Integration",

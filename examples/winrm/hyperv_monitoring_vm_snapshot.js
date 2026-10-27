@@ -1,24 +1,24 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Hyper-V VM Snapshot
  * Description: This script retrieves information about the latest snapshots taken on Hyper-V virtual machines. It allows monitoring of snapshot creation time and age.
- * 
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on:
  *    - Windows 10
  *    - Windows Server 2019
  *    - Hyper-V 10.0.19041.1
  *    - Powershell version 5.1.19041.4412
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *    - VM name: Name of the virtual machine
  *    - Snapshot name: Name of the snapshot
  *    - Creation time: The date and time when the latest snapshot was created
  *    - Age: The age of the latest snapshot in days
- *  
+ *
  * Privilege required: Hyper-V Administrators
- *   
+ *
  */
 
 // WinRM command to retrieve VM snapshots
@@ -36,12 +36,12 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 // Table to store VM snapshots
 var table = D.createTable(
-    "Hyper-V VM Snapshots", 
+    "Hyper-V VM Snapshots",
     [
         { label: "VM name", valueType: D.valueType.STRING },
         { label: "Snapshot name", valueType: D.valueType.STRING },
@@ -53,7 +53,7 @@ var table = D.createTable(
 // Check for Errors on the WinRM command response
 function checkWinRmError(err) {
     if (err.message) console.error(err.message);
-    if (err.code == 401){
+    if (err.code == 401) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (err.code == 404) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -65,16 +65,16 @@ function checkWinRmError(err) {
 
 // Execute WinRM command
 function executeWinrmCommand(command) {
-    var d = D.q.defer();
     winrmConfig.command = command;
-    D.device.sendWinRMCommand(winrmConfig, function (output) {
-        if (output.error === null) {
-            d.resolve(output);
-        } else {
-            d.reject(output.error);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(winrmConfig, function (output) {
+            if (output.error === null) {
+                resolve(output);
+            } else {
+                reject(output.error);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -99,7 +99,7 @@ function parseValidateOutput(output) {
 
 /**
  * @remote_procedure
- * @label Get Hyper-V VM latest snapshots 
+ * @label Get Hyper-V VM latest snapshots
  * @documentation Retrieves information about the latest snapshots taken on Hyper-V virtual machines.
  */
 function get_status() {
@@ -108,28 +108,28 @@ function get_status() {
         .catch(checkWinRmError);
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Parse the output of WinRM command and insert it into the table
-function parseOutput(output){
-    var vmSnapshot = JSON.parse(output.outcome.stdout);  
-    vmSnapshot.forEach(function(snapshot){
+function parseOutput(output) {
+    var vmSnapshot = JSON.parse(output.outcome.stdout);
+    vmSnapshot.forEach(function (snapshot) {
         var vmId = snapshot.VMID;
         var vmName = snapshot.VMName;
         var snapshotName = snapshot.Name;
         var creationTime = snapshot.CreationTime;
 
-        if (creationTime){
-            var date = new Date(creationTime); 
+        if (creationTime) {
+            var date = new Date(creationTime);
             var currentDate = new Date();
             var ageInMilliseconds = currentDate - date;
             var ageInDays = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24));
         }
-        if (vmNameFilter[0].toUpperCase() === "ALL" || vmNameFilter.indexOf(vmName) !== -1 ) {
+        if (vmNameFilter[0].toUpperCase() === "ALL" || vmNameFilter.indexOf(vmName) !== -1) {
             var recordId = sanitize(vmId);
             table.insertRecord(recordId, [
                 vmName || "N/A",
@@ -137,7 +137,7 @@ function parseOutput(output){
                 creationTime || "N/A",
                 ageInDays || 0
             ]);
-        
+
         }
     });
     D.success(table);

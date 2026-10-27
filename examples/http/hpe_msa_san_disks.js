@@ -1,21 +1,21 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: HPE MSA SAN Disks
  * Description: This script retrieves information about each disk in an HPE MSA SAN system
- * 
- * Communication protocol is HTTPS 
- * 
+ *
+ * Communication protocol is HTTPS
+ *
  * Tested with HPE MSA 2050 SAN version: VL270P005
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *     - Serial Number: The serial number of the disk
  *     - Usage: The disk usage
  *     - Disk Group: The name of the disk group that contains the disk
- *     - Pool: The pool name to which the disk belongs 
- *     - Tier: The tier of the disk 
+ *     - Pool: The pool name to which the disk belongs
+ *     - Tier: The tier of the disk
  *     - Status: The status of he disk
  *     - Health: The health status of the disk
- * 
+ *
  */
 
 // Variable to store the session key
@@ -31,14 +31,14 @@ var table = D.createTable(
         { label: "Pool", valueType: D.valueType.STRING },
         { label: "Tier", valueType: D.valueType.STRING },
         { label: "Status", valueType: D.valueType.STRING },
-        { label: "Health", valueType: D.valueType.STRING },
+        { label: "Health", valueType: D.valueType.STRING }
     ]
 );
 
 // Process the response from the server
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
-        if (error) {          
+        if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else if (response.statusCode == 404) {
@@ -47,15 +47,15 @@ function processResponse(d) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
-        } 
+        }
         if (response.headers["command-status"]) {
             sessionKey = response.headers["command-status"].split(/^.*?\s/)[1];
-            if(sessionKey == "Authentication Unsuccessful"){
+            if (sessionKey == "Authentication Unsuccessful") {
                 console.error("Session key not found in response headers");
                 D.failure(D.errorType.AUTHENTICATION_ERROR);
             }
         }
-        d.resolve(body);      
+        resolve(body);
     };
 }
 
@@ -64,7 +64,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/login",
         username: D.device.username(),
@@ -74,31 +73,32 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves disks data from the HPE MSA SAN device
 function getDisks() {
-    var d = D.q.defer();
     var config = {
         url: "/api/show/disks",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "sessionKey": sessionKey 
+            "sessionKey": sessionKey
         }
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
 // Sanitize location value to create a recordId
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Extracts relevant data from the API response
@@ -137,7 +137,7 @@ function extractData(data) {
  * @label Validate HPE MSA SAN Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     login()
         .then(getDisks)
         .then(function (response) {
@@ -160,14 +160,14 @@ function validate(){
 
 /**
  * @remote_procedure
- * @label Get Disks 
+ * @label Get Disks
  * @documentation Retrieves the disks data from the device
  */
 function get_status() {
     login()
         .then(getDisks)
         .then(extractData)
-        .catch(function(error) {
+        .catch(function (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         });

@@ -1,8 +1,8 @@
 /**
  * This driver Gets AWS EC2 and attached AWS EBS volumes metrics and uses the script item to make HTTP requests to the CloudWatch API.
- * Collects metrics for an AWS EC2 instance, including CPU utilization, network activity, disk I/O, and EBS performance. 
+ * Collects metrics for an AWS EC2 instance, including CPU utilization, network activity, disk I/O, and EBS performance.
  * The collected metrics are used to monitor and analyze the performance and health of the EC2 instance.
- * 
+ *
  * Communication protocol is https
  */
 
@@ -117,19 +117,17 @@ function prepareParams(params) {
     Object.keys(params).sort().forEach(function (key) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
-        }
-        else {
-            result.push(prepareObject(key, params[key]));
+        } else {
+            result.push(prepareRecursive(key, params[key]));
         }
     });
     return result.join("&");
 }
 
 /**
- * @returns HTTP GET request to an AWS EC2 API to retrieve information about DB instances. 
+ * @returns HTTP GET request to an AWS EC2 API to retrieve information about DB instances.
  */
 function httpGet(params) {
-    var d = D.q.defer();
     var service = "monitoring";
     var data = "";
     var method = "GET";
@@ -148,37 +146,38 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.get({
-        url: canonicalUri + "?" + params,
-        protocol: "https",
-        headers: {
-            "x-amz-date": amzdate,
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Content-Encoding": "amz-1.0",
-            "Authorization": auth
-        }
-    },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        device.http.get({
+            url: canonicalUri + "?" + params,
+            protocol: "https",
+            headers: {
+                "x-amz-date": amzdate,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Content-Encoding": "amz-1.0",
+                "Authorization": auth
+            }
+        },
+        function (err, response, body) {
+            if (err) {
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode === 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**
- * @returns promise for http response containing EC2 metrics 
+ * @returns promise for http response containing EC2 metrics
  */
 function getMetricsData() {
     var timestamp = new Date().getTime(),
@@ -237,7 +236,7 @@ function fillConfig() {
             unit: "%"
         },
         {
-            //The number of earned CPU credits that an instance has accrued since it was launched or started. 
+            //The number of earned CPU credits that an instance has accrued since it was launched or started.
             uid: "credit_balance",
             label: "Credit CPU: Balance",
             execute: extractValue("CPUCreditBalance")
@@ -341,7 +340,7 @@ function fillConfig() {
             //The number of times the instance metadata service was successfully accessed using a method that does not use a token.
             uid: "no_token",
             label: "Metadata: No token",
-            execute: extractValue("MetadataNoToken"),
+            execute: extractValue("MetadataNoToken")
         },
         {
             //The number of bytes received on all network interfaces by the instance.
@@ -352,7 +351,7 @@ function fillConfig() {
             type: D.valueType.RATE
         },
         {
-            //The number of bytes sent out on all network interfaces by the instance. 
+            //The number of bytes sent out on all network interfaces by the instance.
             uid: "network_out",
             label: "Network: Bytes out",
             execute: [extractValue("NetworkOut"), diviser(300)],
@@ -390,12 +389,12 @@ function fillConfig() {
             uid: "status_check_failed_system",
             label: "Status: Check failed, system",
             execute: extractValue("StatusCheckFailed_System")
-        },
+        }
     ];
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

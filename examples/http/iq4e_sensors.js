@@ -27,14 +27,13 @@ function validateHttpResponse(response) {
 * @label Validate Association
 * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
 */
-function validate(){
+function validate() {
     function callbackValidate(error, response, body) {
         // We first need to validate for any common errors on the http response
         validateHttpResponse(response);
         // Secondly we validate if the http resource we have called contains any table data for the sensors
-        var $ = D.htmlParse(body);
         var dataPath = "body > div[id=wrapper] > div[id=main] > div[id=mainData] > div[id=mainContent] > table > tbody > tr[class=\"data \"]";
-        if (dataPath === null || dataPath === undefined || dataPath.length < 1){
+        if (dataPath === null || dataPath === undefined || dataPath.length < 1) {
             // Calling failure callback in case of no dataPath content
             D.failure(D.errorType.PARSING_ERROR);
         } else {
@@ -43,7 +42,7 @@ function validate(){
         }
     }
     D.device.http.get(httpOptions, callbackValidate);
-} 
+}
 
 /**
  * @remote_procedure

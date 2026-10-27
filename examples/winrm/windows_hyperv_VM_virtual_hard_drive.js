@@ -27,53 +27,53 @@
  */
 
 // The VM ID for which you want to display the Virtual Hard Drives.
-const vmIdFilter = D.getParameter('vmId')
+const vmIdFilter = D.getParameter("vmId");
 
 // WinRM command to retrieve VM Virtual Hard Drives
-const getVmVirtualHardDrives = '(Get-VM -Id "' + vmIdFilter + '" | Select-Object -ExpandProperty HardDrives).ForEach({ $req = (Get-VHD -Path $_.Path); @{ "Id" = $_.Id; "Name" = $_.Name; "Path" = $_.Path; "DiskNumber" = $_.DiskNumber; "PoolName" = $_.PoolName; "IsDeleted" = $_.IsDeleted; "Attached" = $req.Attached; "Size" = [math]::round($req.Size / 1GB, 2); "ControllerNumber" = $_.ControllerNumber; "ControllerLocation" = $_.ControllerLocation}}) | ConvertTo-Json'
+const getVmVirtualHardDrives = '(Get-VM -Id "' + vmIdFilter + '" | Select-Object -ExpandProperty HardDrives).ForEach({ $req = (Get-VHD -Path $_.Path); @{ "Id" = $_.Id; "Name" = $_.Name; "Path" = $_.Path; "DiskNumber" = $_.DiskNumber; "PoolName" = $_.PoolName; "IsDeleted" = $_.IsDeleted; "Attached" = $req.Attached; "Size" = [math]::round($req.Size / 1GB, 2); "ControllerNumber" = $_.ControllerNumber; "ControllerLocation" = $_.ControllerLocation}}) | ConvertTo-Json';
 
 // Define the WinRM options when running the commands
 const winrmConfig = {
-  command: getVmVirtualHardDrives,
-  username: D.device.username(),
-  password: D.device.password(),
+    command: getVmVirtualHardDrives,
+    username: D.device.username(),
+    password: D.device.password(),
     // WinRM transport options:
     port: 5985,                // 5985 = HTTP, 5986 = HTTPS
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
-}
+    timeout: 30000               // per-command timeout in milliseconds
+};
 
 // mapping boolean values to human-readable strings.
 const booleanCodes = {
-  true: 'Yes',
-  false: 'No'
-}
+    true: "Yes",
+    false: "No"
+};
 
 // Creation of custom driver table
 const virtualHardDrivesTable = D.createTable(
-  'Virtual Hard Drives',
-  [
-    { label: 'Name' },
-    { label: 'Pool' },
-    { label: 'Path' },
-    { label: 'Attached' },
-    { label: 'Capacity', unit: 'GB', valueType: D.valueType.NUMBER },
-    { label: 'Controller Number' },
-    { label: 'Location Number' },
-    { label: 'Disk Number' },
-    { label: 'Deleted' }
-  ]
-)
+    "Virtual Hard Drives",
+    [
+        { label: "Name" },
+        { label: "Pool" },
+        { label: "Path" },
+        { label: "Attached" },
+        { label: "Capacity", unit: "GB", valueType: D.valueType.NUMBER },
+        { label: "Controller Number" },
+        { label: "Location Number" },
+        { label: "Disk Number" },
+        { label: "Deleted" }
+    ]
+);
 
 // Check for Errors on the WinRM command response
-function checkWinRmError (err) {
-  if (err.message) console.error(err.message)
-  if (err.code === 401) D.failure(D.errorType.AUTHENTICATION_ERROR)
-  if (err.code === 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-  console.error(err)
-  D.failure(D.errorType.GENERIC_ERROR)
+function checkWinRmError(err) {
+    if (err.message) console.error(err.message);
+    if (err.code === 401) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code === 404) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    console.error(err);
+    D.failure(D.errorType.GENERIC_ERROR);
 }
 
 /**
@@ -81,15 +81,15 @@ function checkWinRmError (err) {
  * @label Validate WinRM is working on device
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate () {
-  winrmConfig.command = 'Get-vm'
-  D.device.sendWinRMCommand(winrmConfig, function (output) {
-    if (output.error === null) {
-      D.success()
-    } else {
-      checkWinRmError(output.error)
-    }
-  })
+function validate() {
+    winrmConfig.command = "Get-vm";
+    D.device.sendWinRMCommand(winrmConfig, function (output) {
+        if (output.error === null) {
+            D.success();
+        } else {
+            checkWinRmError(output.error);
+        }
+    });
 }
 
 /**
@@ -97,8 +97,8 @@ function validate () {
  * @label Retrieve list of VM virtual hard drives
  * @documentation This procedure retrieves a list of virtual hard drives for the target virtual Machine
  */
-function get_status () {
-  D.device.sendWinRMCommand(winrmConfig, parseOutput)
+function get_status() {
+    D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
 /**
@@ -107,10 +107,10 @@ function get_status () {
  * @param {string} output - The string to be sanitized.
  * @returns {string} - The sanitized string.
  */
-function sanitize (output) {
-  const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-  const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-  return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+function sanitize(output) {
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -120,58 +120,64 @@ function sanitize (output) {
 * @param {string} input - The input string to extract the hard drive ID from.
 * @returns {string} - The extracted hard drive ID or the original input string.
 */
-function extractHardDriveId (input) {
-  const firstIndex = input.indexOf('\\')
-  if (input.indexOf('\\') !== -1) {
-    return input.substring(firstIndex + 1)
-  } else {
-    return input
-  }
+function extractHardDriveId(input) {
+    const firstIndex = input.indexOf("\\");
+    if (input.indexOf("\\") !== -1) {
+        return input.substring(firstIndex + 1);
+    } else {
+        return input;
+    }
 }
 
-function populateTable (id, Name, PoolName, Path, Attached, Size, ControllerNumber, ControllerLocation, DiskNumber, IsDeleted) {
-  const recordId = sanitize(extractHardDriveId(id))
-  IsDeleted = booleanCodes[IsDeleted]
-  Attached = booleanCodes[Attached]
-  DiskNumber = DiskNumber || 'N/A'
-  virtualHardDrivesTable.insertRecord(recordId, [Name, PoolName, Path, Attached, Size, ControllerNumber, ControllerLocation, DiskNumber, IsDeleted])
+function populateTable(id, Name, PoolName, Path, Attached, Size, ControllerNumber, ControllerLocation, DiskNumber, IsDeleted) {
+    const recordId = sanitize(extractHardDriveId(id));
+    IsDeleted = booleanCodes[IsDeleted];
+    Attached = booleanCodes[Attached];
+    DiskNumber = DiskNumber || "N/A";
+    virtualHardDrivesTable.insertRecord(recordId, [Name, PoolName, Path, Attached, Size, ControllerNumber, ControllerLocation, DiskNumber, IsDeleted]);
 }
 
 /**
  * @description Parses the output of the WinRM command and fill the virtual hard drives table.
  * @param {object} output - The output of the WinRM command.
  */
-function parseOutput (output) {
-  if (output.error === null) {
-    const jsonOutput = JSON.parse(JSON.stringify(output))
-    let listOfVirtualHardDrives = []
-    let result = null
-    if (!jsonOutput.outcome.stdout) {
-      console.log('There are no virtual hard drives related to this filter.')
+function parseOutput(output) {
+    if (output.error === null) {
+        const jsonOutput = JSON.parse(JSON.stringify(output));
+        let listOfVirtualHardDrives = [];
+        let result = null;
+        if (!jsonOutput.outcome.stdout) {
+            console.log("There are no virtual hard drives related to this filter.");
+        } else {
+            try {
+                result = JSON.parse(jsonOutput.outcome.stdout);
+            } catch (e) {
+                console.error("Unable to parse the WinRM output: " + e.message);
+                D.failure(D.errorType.PARSING_ERROR);
+                return;
+            }
+        }
+        if (Array.isArray(result)) {
+            listOfVirtualHardDrives = result;
+        } else if (result !== null && typeof result === "object") {
+            listOfVirtualHardDrives.push(result);
+        }
+        for (let k = 0; k < listOfVirtualHardDrives.length; k++) {
+            populateTable(
+                listOfVirtualHardDrives[k].Id,
+                listOfVirtualHardDrives[k].Name,
+                listOfVirtualHardDrives[k].PoolName,
+                listOfVirtualHardDrives[k].Path,
+                listOfVirtualHardDrives[k].Attached,
+                listOfVirtualHardDrives[k].Size,
+                listOfVirtualHardDrives[k].ControllerNumber,
+                listOfVirtualHardDrives[k].ControllerLocation,
+                listOfVirtualHardDrives[k].DiskNumber,
+                listOfVirtualHardDrives[k].IsDeleted
+            );
+        }
+        D.success(virtualHardDrivesTable);
     } else {
-      result = JSON.parse(jsonOutput.outcome.stdout)
+        checkWinRmError(output.error);
     }
-    if (Array.isArray(result)) {
-      listOfVirtualHardDrives = result
-    } else if (typeof result === 'object') {
-      listOfVirtualHardDrives.push(result)
-    }
-    for (let k = 0; k < listOfVirtualHardDrives.length; k++) {
-      populateTable(
-        listOfVirtualHardDrives[k].Id,
-        listOfVirtualHardDrives[k].Name,
-        listOfVirtualHardDrives[k].PoolName,
-        listOfVirtualHardDrives[k].Path,
-        listOfVirtualHardDrives[k].Attached,
-        listOfVirtualHardDrives[k].Size,
-        listOfVirtualHardDrives[k].ControllerNumber,
-        listOfVirtualHardDrives[k].ControllerLocation,
-        listOfVirtualHardDrives[k].DiskNumber,
-        listOfVirtualHardDrives[k].IsDeleted
-      )
-    }
-    D.success(virtualHardDrivesTable)
-  } else {
-    checkWinRmError(output.error)
-  }
 }

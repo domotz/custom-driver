@@ -16,16 +16,16 @@
  *
  **/
 
-const endpoint = "lscloudcallhome"
+const endpoint = "lscloudcallhome";
 const variableDetails = [
-    {"id": "status", "name": "Status", "extraction": "status", "valueType": D.valueType.STRING, "unit": null},
-    {"id": "connection", "name": "Connection", "extraction": "connection", "valueType": D.valueType.STRING, "unit": null},
-    {"id": "error_sequence_number", "name": "Error Sequence Number", "extraction": "error_sequence_number", "valueType": D.valueType.STRING, "unit": null},
-    {"id": "last_success", "name": "Last Success", "extraction": "last_success", "valueType": D.valueType.DATETIME, "unit": null},
-    {"id": "last_failure", "name": "Last Failure", "extraction": "last_failure", "valueType": D.valueType.DATETIME, "unit": null}
-]
+    { "id": "status", "name": "Status", "extraction": "status", "valueType": D.valueType.STRING, "unit": null },
+    { "id": "connection", "name": "Connection", "extraction": "connection", "valueType": D.valueType.STRING, "unit": null },
+    { "id": "error_sequence_number", "name": "Error Sequence Number", "extraction": "error_sequence_number", "valueType": D.valueType.STRING, "unit": null },
+    { "id": "last_success", "name": "Last Success", "extraction": "last_success", "valueType": D.valueType.DATETIME, "unit": null },
+    { "id": "last_failure", "name": "Last Failure", "extraction": "last_failure", "valueType": D.valueType.DATETIME, "unit": null }
+];
 
-let result = []
+let result = [];
 
 /**
  * Sends an HTTPS POST request and returns the parsed JSON response.
@@ -34,7 +34,6 @@ let result = []
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttps(endpoint, headers) {
-    const d = D.q.defer();
     const config = {
         url: endpoint,
         protocol: "https",
@@ -42,21 +41,22 @@ function callHttps(endpoint, headers) {
         rejectUnauthorized: false,
         headers: headers
     };
-    D.device.http.post(config, function (error, response, body) {
-        if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (!response) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 400) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        } else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(JSON.parse(body));
-        }
-    })
-    return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 400) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
+    });
 }
 
 /**
@@ -66,8 +66,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -75,13 +75,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -92,9 +92,9 @@ function login() {
  */
 function cleanValue(value, valueType) {
     if (!value) {
-        return "N/A"
+        return "N/A";
     }
-    return valueType === D.valueType.DATETIME ? formatDate(value) : value
+    return valueType === D.valueType.DATETIME ? formatDate(value) : value;
 }
 
 /**
@@ -105,10 +105,10 @@ function cleanValue(value, valueType) {
  */
 function populateEndpointVariables(response, rows) {
     for (let i = 0; i < rows.length; i++) {
-        const row = rows[i]
-        result.push(D.createVariable(row.id, row.name, cleanValue(response[row.extraction], row.valueType), row.unit, row.valueType))
+        const row = rows[i];
+        result.push(D.createVariable(row.id, row.name, cleanValue(response[row.extraction], row.valueType), row.unit, row.valueType));
     }
-    D.success(result)
+    D.success(result);
 }
 
 /**
@@ -117,15 +117,15 @@ function populateEndpointVariables(response, rows) {
  * @returns {string} The formatted date string.
  */
 function formatDate(timestamp) {
-    if (!timestamp) return 'N/A';
-    const year = parseInt('20' + timestamp.slice(0, 2));
+    if (!timestamp) return "N/A";
+    const year = parseInt("20" + timestamp.slice(0, 2));
     const month = parseInt(timestamp.slice(2, 4)) - 1;
     const day = parseInt(timestamp.slice(4, 6));
     const hour = parseInt(timestamp.slice(6, 8));
     const minute = parseInt(timestamp.slice(8, 10));
     const second = parseInt(timestamp.slice(10, 12));
     const dateTime = new Date(year, month, day, hour, minute, second);
-    return (dateTime.getMonth() + 1) + '-' + dateTime.getDate() + '-' + dateTime.getFullYear() + ' ' + dateTime.getHours() + ':' + dateTime.getMinutes() + ':' + dateTime.getSeconds()
+    return (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + "-" + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
 }
 
 /**
@@ -138,11 +138,11 @@ function validate() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpoint)
                 .then(function () {
-                    D.success()
-                })
+                    D.success();
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -157,11 +157,11 @@ function get_status() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpoint)
                 .then(function (response) {
-                    populateEndpointVariables(response, variableDetails)
-                })
+                    populateEndpointVariables(response, variableDetails);
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

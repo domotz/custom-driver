@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver extracts information for Crestron DM-NVX devices.
  * Communication protocol is https
  * Communicate with https api using USERNAME and PASSWORD
@@ -10,7 +10,7 @@
  * InitiatorAddress: The address of the device connected to the receiver.
  * HorizontalResolution: The horizontal resolution of the received stream.
  * VerticalResolution: The vertical resolution of the received stream.
- * 
+ *
  * Columns for the table 'Stream Transmit':
  * MulticastAddress: The multicast address of the transmitted stream.
  * StreamLocation: The multicast address of the transmitted stream.
@@ -29,7 +29,7 @@ var tableStreamReceive = D.createTable(
         { label: "MulticastAddress" },
         { label: "InitiatorAddress" },
         { label: "HorizontalResolution" },
-        { label: "VerticalResolution" },
+        { label: "VerticalResolution" }
     ]
 );
 var tableStreamTransmit = D.createTable(
@@ -48,41 +48,48 @@ var tableStreamTransmit = D.createTable(
  * @returns a promise containing the body of the response.
  */
 function httpGet(url) {
-    var d = D.q.defer();
     var config = {
         url: url,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, function (error, response, body) {
-        if (response.statusCode && response.statusCode === 200 && body)
-            d.resolve(body);
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
+                reject(error);
+            } else if (!response || response.statusCode !== 200) {
+                reject(new Error("HTTP request failed with status " + (response && response.statusCode)));
+            } else if (!body) {
+                reject(new Error("Empty response body"));
+            } else {
+                resolve(body);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
  * @returns a promise containing the body of the login page.
  */
 function login() {
-    var d = D.q.defer();
-    D.device.http.post({
-        url: "/userlogin.html",
-        protocol: "https",
-        form: {
-            login: D.device.username(),
-            passwd: D.device.password(),
-        },
-        jar: true,
-        rejectUnauthorized: false
-    }, function (err, res, body) {
-        if (err) {
-            console.error(err);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.post({
+            url: "/userlogin.html",
+            protocol: "https",
+            form: {
+                login: D.device.username(),
+                passwd: D.device.password()
+            },
+            jar: true,
+            rejectUnauthorized: false
+        }, function (err, res, body) {
+            if (err) {
+                console.error(err);
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -109,7 +116,7 @@ function getDeviceSpecific() {
 }
 
 /**
- * @returns promise for http response body containig device information for the DM NVX device.  
+ * @returns promise for http response body containig device information for the DM NVX device.
  */
 function getDeviceInfo() {
     return httpGet("/Device/DeviceInfo")
@@ -189,7 +196,7 @@ function fillConfig() {
         }
     ];
 }
-//Fill the table with data related to reception or transmission stream according on the device mode  
+//Fill the table with data related to reception or transmission stream according on the device mode
 function fillTable() {
     if (deviceSpecific.Device.DeviceSpecific.DeviceMode === "Receiver") {
         table = tableStreamReceive;
@@ -229,7 +236,7 @@ function fillTable() {
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {
@@ -261,7 +268,7 @@ function loadData() {
                 return getStreamTransmit();
             }
         }).then(function () {
-            return D.q.all([
+            return Promise.all([
                 getSystemVersions(),
                 getDeviceInfo()
             ]);
@@ -269,7 +276,6 @@ function loadData() {
             fillConfig();
         });
 }
-
 
 //Indicate the successful execution of the driver and returns the variable list and table data
 function success() {
@@ -297,7 +303,7 @@ function validate() {
  * @remote_procedure
  * @label Get Device Variables
  * @documentation This procedure is used to extract monitoring parameters from Crestron DM NVX API.
- * 
+ *
  */
 function get_status() {
     login()

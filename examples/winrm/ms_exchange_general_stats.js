@@ -1,20 +1,20 @@
 /**
- * Domotz Custom Driver 
- * Name: Microsoft Exchange Server - General Stats 
+ * Domotz Custom Driver
+ * Name: Microsoft Exchange Server - General Stats
  * Description: This script is used to monitor various general statistics on a Microsoft Exchange Server
- * 
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on:
  *      - Microsoft Exchange Server 2019 CU12
- * 
+ *
  * Powershell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *      - Instance Name: Instance name of the monitored statistic
  *      - Value: Value of the monitored statistic
- * 
+ *
  */
 
 // List of performance counters to monitor
@@ -27,7 +27,7 @@ var counters = [
 
 // Counter type mappings
 // some of these has been changed to improve readability.
-// if changed, the original name is in a comment at right. 
+// if changed, the original name is in a comment at right.
 var counterTypeMappings = {
     //0: "number", //NumberOfItemsHEX32
     //256: "number", //NumberOfItemsHEX64
@@ -61,7 +61,7 @@ var counterTypeMappings = {
 
 // WinRM configuration
 var winrmConfig = {
-    "command": 'Get-Counter -Counter ' + counters.map(function(counter){return '"' + counter + '"';}).join(',') + ' | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue, CounterType  } | ConvertTo-Json',
+    "command": "Get-Counter -Counter " + counters.map(function (counter) {return '"' + counter + '"';}).join(",") + " | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue, CounterType  } | ConvertTo-Json",
     "username": D.device.username(),
     "password": D.device.password(),
     // WinRM transport options:
@@ -69,7 +69,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 // Check for Errors on the WinRM command response
@@ -100,17 +100,17 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get General Stats 
+ * @label Get General Stats
  * @documentation This procedure retrieves general statistics on the Microsoft Exchange Server by querying performance counters
  */
 function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Parses the output of the WinRM command and extracts data
@@ -118,17 +118,24 @@ function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var variables = [];
-        var jsonOutput = JSON.parse(output.outcome.stdout);
+        var jsonOutput;
+        try {
+            jsonOutput = JSON.parse(output.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             var path = jsonOutput[k].Path;
-            var msExchangeItem = path.replace(/.*?msexchange/, " ").replace(/\\/g, " ").replace(/(\/sec|\(sec\))/g ,"").replace("service availability", "service").trim();
+            var msExchangeItem = path.replace(/.*?msexchange/, " ").replace(/\\/g, " ").replace(/(\/sec|\(sec\))/g, "").replace("service availability", "service").trim();
             var instanceName = jsonOutput[k].InstanceName;
             var counterType = jsonOutput[k].CounterType;
             var uid = sanitize(msExchangeItem);
             var label = instanceName ? instanceName + " " + msExchangeItem : msExchangeItem;
             var value = jsonOutput[k].CookedValue;
-            var unit = counterTypeMappings[counterType];     
-            var variable = D.device.createVariable(uid, label , value, unit, D.valueType.NUMBER);
+            var unit = counterTypeMappings[counterType];
+            var variable = D.device.createVariable(uid, label, value, unit, D.valueType.NUMBER);
             variables.push(variable);
             k++;
         }

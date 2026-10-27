@@ -1,17 +1,17 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Mikrotik CPU and Memory Usage, Firmware and Uptime
  * Description: This script retrieves information about MikroTik RouterOS devices, including CPU and memory usage, firmware version, and uptime.
- * 
- * Communication protocol is ssh 
- * 
- * Tested under MikroTik RouterOS with the following versions: 
+ *
+ * Communication protocol is ssh
+ *
+ * Tested under MikroTik RouterOS with the following versions:
  *      - CCR2004-1G-12S+2XS
  *      - CRS354-48P-4S+2Q+
  *      - CRS326-24G-2S+
- *      - CRS328-24P-4S+ 
+ *      - CRS328-24P-4S+
  *
- * Creates a Custom Driver Variable with the retrieved data: 
+ * Creates a Custom Driver Variable with the retrieved data:
  *      - CPU Usage: Percentage of CPU usage.
  *      - Memory Usage: Percentage of memory usage.
  *      - Uptime: System uptime in days.
@@ -21,7 +21,7 @@
  *      - CPU Count: Number of CPUs on the MikroTik device.
  *      - Board Name: Name of the MikroTik device board.
  *      - HD Usage: Percentage of hard disk usage
- * 
+ *
  */
 
 // SSH command to retrieve system resource information
@@ -36,8 +36,8 @@ var sshConfig = {
 
 //Handle SSH errors
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5){
+    if (err.message) console.error(err.message);
+    if (err.code == 5) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (err.code == 255) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -49,16 +49,16 @@ function checkSshError(err) {
 
 // Execute SSH command and return a promise
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            d.resolve(error);
-        } else {           
-            d.resolve(output);      
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                resolve(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 function convertToBytes(value) {
@@ -89,10 +89,10 @@ function parseData(output) {
             var key = parts[0].trim();
             var value = parts[1].trim();
             data[key] = value;
-        }      
+        }
     }
- 
-    var cpuUsage = data["cpu-load"] ? data["cpu-load"].replace("%", "") : ""; 
+
+    var cpuUsage = data["cpu-load"] ? data["cpu-load"].replace("%", "") : "";
     var totalMemory = convertToBytes(data["total-memory"]) || 0;
     var freeMemory = convertToBytes(data["free-memory"]) || 0;
     var memoryUsage = totalMemory ? ((totalMemory - freeMemory) / totalMemory * 100).toFixed(2) : 0;
@@ -109,8 +109,8 @@ function parseData(output) {
     var hddUsage = totalHddSpace ? ((totalHddSpace - freeHddSpace) / totalHddSpace * 100).toFixed(2) : 0;
 
     var variables = [
-        (D.createVariable("cpu-usage" , "CPU Usage", cpuUsage, "%", D.valueType.NUMBER)),
-        (D.createVariable("memory-usage" , "Memory Usage", memoryUsage, "%", D.valueType.NUMBER)),
+        (D.createVariable("cpu-usage", "CPU Usage", cpuUsage, "%", D.valueType.NUMBER)),
+        (D.createVariable("memory-usage", "Memory Usage", memoryUsage, "%", D.valueType.NUMBER)),
         (D.createVariable("uptime", "Uptime", uptimeInDays, "days", D.valueType.NUMBER)),
         (D.createVariable("firmware-version", "Firmware Version", firmwareVersion, null, D.valueType.STRING)),
         (D.createVariable("cpu", "CPU Description", cpuDescription, null, D.valueType.STRING)),
@@ -120,7 +120,7 @@ function parseData(output) {
         (D.createVariable("hd-usage", "HD Usage", hddUsage, "%", D.valueType.NUMBER))
     ];
 
-    var filteredVariables = variables.filter(function(variable) { return variable.value;});
+    var filteredVariables = variables.filter(function (variable) { return variable.value;});
     D.success(filteredVariables);
 }
 
@@ -150,8 +150,8 @@ function parseValidateOutput(output) {
 
 /**
  * @remote_procedure
- * @label Get MikroTik System Info 
- * @documentation Retrieves system resource information from the MikroTik device. 
+ * @label Get MikroTik System Info
+ * @documentation Retrieves system resource information from the MikroTik device.
  */
 function get_status() {
     executeCommand(command)

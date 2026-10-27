@@ -1,6 +1,6 @@
 {
     "logo": "mikrotik.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "MikroTik DHCP Pool Monitoring",
     "description": "This script monitors DHCP address pools on a MikroTik device",
     "category": "Hardware Integration",

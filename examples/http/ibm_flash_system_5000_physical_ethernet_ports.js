@@ -26,27 +26,26 @@
 
 const endpointDetails = {
     "endpoint": "lsportethernet"
-}
+};
 
 var ethernetPortsTable = D.createTable(
-    'Physical Ethernet Ports Details',
+    "Physical Ethernet Ports Details",
     [
-        {label: "Node Name", valueType: D.valueType.STRING},
-        {label: "MAC Address", valueType: D.valueType.STRING},
-        {label: "Duplex", valueType: D.valueType.STRING},
-        {label: "Speed", valueType: D.valueType.NUMBER, unit:"Gb/s"},
-        {label: "Link State", valueType: D.valueType.STRING},
-        {label: "DCBX State", valueType: D.valueType.STRING},
-        {label: "Adapter Location", valueType: D.valueType.NUMBER},
-        {label: "Adapter Port ID", valueType: D.valueType.NUMBER},
-        {label: "Host", valueType: D.valueType.STRING},
-        {label: "Storage", valueType: D.valueType.STRING},
-        {label: "Replication", valueType: D.valueType.STRING},
-        {label: "Ethernet Clustering", valueType: D.valueType.STRING},
-        {label: "Management", valueType: D.valueType.STRING}
+        { label: "Node Name", valueType: D.valueType.STRING },
+        { label: "MAC Address", valueType: D.valueType.STRING },
+        { label: "Duplex", valueType: D.valueType.STRING },
+        { label: "Speed", valueType: D.valueType.NUMBER, unit: "Gb/s" },
+        { label: "Link State", valueType: D.valueType.STRING },
+        { label: "DCBX State", valueType: D.valueType.STRING },
+        { label: "Adapter Location", valueType: D.valueType.NUMBER },
+        { label: "Adapter Port ID", valueType: D.valueType.NUMBER },
+        { label: "Host", valueType: D.valueType.STRING },
+        { label: "Storage", valueType: D.valueType.STRING },
+        { label: "Replication", valueType: D.valueType.STRING },
+        { label: "Ethernet Clustering", valueType: D.valueType.STRING },
+        { label: "Management", valueType: D.valueType.STRING }
     ]
 );
-
 
 /**
  * Sends an HTTPS POST request and returns the parsed JSON response.
@@ -55,7 +54,6 @@ var ethernetPortsTable = D.createTable(
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttps(endpoint, headers) {
-    const d = D.q.defer();
     const config = {
         url: endpoint,
         protocol: "https",
@@ -63,22 +61,22 @@ function callHttps(endpoint, headers) {
         rejectUnauthorized: false,
         headers: headers
     };
-    D.device.http.post(config, function (error, response, body) {
-        if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (!response || response.statusCode === 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        }
-        else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(JSON.parse(body));
-        }
-    })
-    return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response || response.statusCode === 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
+    });
 }
 
 /**
@@ -88,8 +86,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -97,13 +95,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -113,20 +111,20 @@ function login() {
 function populateTable(ethernetPortsList) {
     for (let i = 0; i < ethernetPortsList.length; i++) {
         const portDetails = ethernetPortsList[i];
-        ethernetPortsTable.insertRecord(portDetails['port_id'] + " - " + portDetails['node_id'], [
-            portDetails['node_name'] || "N/A",
-            portDetails['MAC'] || "N/A",
-            portDetails['duplex'] || "N/A",
-            portDetails['speed'] ? convertToGbps(portDetails['speed']) : 0,
-            portDetails['link_state'] || "N/A",
-            portDetails['dcbx_state'] || "N/A",
-            portDetails['adapter_location'] || "N/A",
-            portDetails['adapter_port_id'] || "N/A",
-            portDetails['host'] || "N/A",
-            portDetails['storage'] || "N/A",
-            portDetails['replication'] || "N/A",
-            portDetails['eth_clustering'] || "N/A",
-            portDetails['management'] || "N/A"
+        ethernetPortsTable.insertRecord(portDetails["port_id"] + " - " + portDetails["node_id"], [
+            portDetails["node_name"] || "N/A",
+            portDetails["MAC"] || "N/A",
+            portDetails["duplex"] || "N/A",
+            portDetails["speed"] ? convertToGbps(portDetails["speed"]) : 0,
+            portDetails["link_state"] || "N/A",
+            portDetails["dcbx_state"] || "N/A",
+            portDetails["adapter_location"] || "N/A",
+            portDetails["adapter_port_id"] || "N/A",
+            portDetails["host"] || "N/A",
+            portDetails["storage"] || "N/A",
+            portDetails["replication"] || "N/A",
+            portDetails["eth_clustering"] || "N/A",
+            portDetails["management"] || "N/A"
         ]);
     }
 }
@@ -142,7 +140,7 @@ function convertToGbps(inputValue) {
     if (matchedResult) {
         return formatValueToGbps(parseFloat(matchedResult[1]), matchedResult[2].trim());
     } else {
-        throw new Error('Invalid input format');
+        throw new Error("Invalid input format");
     }
 }
 
@@ -154,14 +152,14 @@ function convertToGbps(inputValue) {
  */
 function formatValueToGbps(value, unit) {
     switch (unit.toLowerCase()) {
-        case 'mb/s':
+        case "mb/s":
             return (value / 1024).toFixed(4);
-        case 'gb/s':
+        case "gb/s":
             return value.toFixed(2);
-        case 'tb/s':
+        case "tb/s":
             return (value  * 1024).toFixed(2);
         default:
-            throw new Error('Unknown unit: ' + unit);
+            throw new Error("Unknown unit: " + unit);
     }
 }
 
@@ -175,11 +173,11 @@ function validate() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function () {
-                    D.success()
-                })
+                    D.success();
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -194,12 +192,12 @@ function get_status() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function (response) {
-                    populateTable(response)
-                    D.success(ethernetPortsTable)
-                })
+                    populateTable(response);
+                    D.success(ethernetPortsTable);
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - VPN Stats info
  * Description: Monitors VPN sessions for Sonicwall devices and populates a custom table with session information
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL TZ 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
@@ -12,10 +12,10 @@
  *      - Local IP Address: Local IP address of the VPN session
  *      - Remote IP Address: Remote IP address of the VPN session
  *      - Logged in: Timestamp when the user logged in to the VPN session
- * 
- * Creates a custom Driver Variable: 
+ *
+ * Creates a custom Driver Variable:
  *      - VPN sessions count: Number of active VPN sessions
- * 
+ *
  **/
 
 var table = D.createTable(
@@ -27,11 +27,11 @@ var table = D.createTable(
 );
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -42,7 +42,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -51,7 +51,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -62,13 +61,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 // Retrieves VPN Sessions data from the SonicWALL device.
 function getVpnSessions() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/reporting/ssl-vpn/sessions",
         protocol: "https",
@@ -76,14 +75,15 @@ function getVpnSessions() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 //Extracts data from the HTTP response and populates the custom table
@@ -93,7 +93,7 @@ function extractData(body) {
     var vpnsessioncount = 0;
     for (var i = 0; i < data.length; i++) {
         var session = data[i];
-        var recordId = sanitize(session.user_name); 
+        var recordId = sanitize(session.user_name);
         table.insertRecord(recordId, [
             session.client_virtual_ip,
             session.client_wan_ip,
@@ -101,7 +101,7 @@ function extractData(body) {
         ]);
         vpnsessioncount++;
     }
-    var vpnSessionVariable = [(D.createVariable("vpnsessioncount", "VPN sessions count", vpnsessioncount,null, D.valueType.NUMBER))];
+    var vpnSessionVariable = [(D.createVariable("vpnsessioncount", "VPN sessions count", vpnsessioncount, null, D.valueType.NUMBER))];
     D.success(vpnSessionVariable, table);
 }
 
@@ -110,7 +110,7 @@ function extractData(body) {
  * @label Validate Connection
  * @documentation This procedure is used to validate the connection and retrieve VPN session data from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getVpnSessions)
         .then(function (response) {

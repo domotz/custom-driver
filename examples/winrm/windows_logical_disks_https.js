@@ -45,12 +45,12 @@
  *
  */
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
-const logicalDisksCmd = 'Get-CimInstance -ClassName MSFT_StorageSubSystem -Namespace Root\\Microsoft\\Windows\\Storage | Where-Object { $_.FriendlyName -like "*Win*" } | Get-CimAssociatedInstance -ResultClassName MSFT_Disk -PipelineVariable disk | Get-CimAssociatedInstance -ResultClassName MSFT_Partition -PipelineVariable partition | Get-CimAssociatedInstance -ResultClassName MSFT_Volume -PipelineVariable volume | Select-Object @{n="Disk Number";e={$disk.Number}}, @{n="Volume GUID";e={$volume.Path}}, DriveLetter, FileSystemLabel, FileSystem, Size, SizeRemaining, DriveType, @{n="IsReadOnly";e={$disk.IsReadOnly}}, HealthStatus | ConvertTo-Json -Compress'
-const bitLockerCmd = 'Get-BitLockerVolume | Select-Object -Property MountPoint,VolumeStatus,EncryptionPercentage,ProtectionStatus | ConvertTo-Json'
+const logicalDisksCmd = 'Get-CimInstance -ClassName MSFT_StorageSubSystem -Namespace Root\\Microsoft\\Windows\\Storage | Where-Object { $_.FriendlyName -like "*Win*" } | Get-CimAssociatedInstance -ResultClassName MSFT_Disk -PipelineVariable disk | Get-CimAssociatedInstance -ResultClassName MSFT_Partition -PipelineVariable partition | Get-CimAssociatedInstance -ResultClassName MSFT_Volume -PipelineVariable volume | Select-Object @{n="Disk Number";e={$disk.Number}}, @{n="Volume GUID";e={$volume.Path}}, DriveLetter, FileSystemLabel, FileSystem, Size, SizeRemaining, DriveType, @{n="IsReadOnly";e={$disk.IsReadOnly}}, HealthStatus | ConvertTo-Json -Compress';
+const bitLockerCmd = "Get-BitLockerVolume | Select-Object -Property MountPoint,VolumeStatus,EncryptionPercentage,ProtectionStatus | ConvertTo-Json";
 
 const config = {
     "username": D.device.username(),
@@ -60,8 +60,8 @@ const config = {
     scheme: "https",           // "http" | "https"
     skipVerify: true,          // set to false to enforce TLS certificate verification
     // auth: "auto",           // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
-}
+    timeout: 30000            // per-command timeout in milliseconds
+};
 
 // Mapping of drive types
 const driveTypes = {
@@ -72,7 +72,7 @@ const driveTypes = {
     "4": "Remote",
     "5": "CD-ROM",
     "6": "RAM Disk"
-}
+};
 
 // Mapping of volume status
 // https://learn.microsoft.com/en-us/windows/win32/secprov/win32-encryptablevolume
@@ -83,14 +83,14 @@ const volumeStatus = {
     "3": "Decryption In Progress",
     "4": "Encryption Paused",
     "5": "Decryption Paused"
-}
+};
 
 // Mapping of BitLocker protection status
 const protectionStatus = {
     "0": "OFF",
     "1": "ON",
     "2": "UNKNOWN"
-}
+};
 
 // Mapping of logical disks status
 const statusTypes = {
@@ -98,27 +98,27 @@ const statusTypes = {
     "1": "Scan Needed",
     "2": "Spot Fix Needed",
     "3": "Full Repair Needed"
-}
+};
 
 // Custom Driver Table to store Logical disk information
 const table = D.createTable(
     "Logical Disks",
     [
-        {label: "Drive", valueType: D.valueType.STRING},
-        {label: "Name", valueType: D.valueType.STRING},
-        {label: "Physical Disk", valueType: D.valueType.STRING},
-        {label: "Usage", unit: "%", valueType: D.valueType.NUMBER},
-        {label: "Free Space", unit: "GiB", valueType: D.valueType.NUMBER},
-        {label: "Size", unit: "GiB", valueType: D.valueType.NUMBER},
-        {label: "File System", valueType: D.valueType.STRING},
-        {label: "Type", valueType: D.valueType.STRING},
-        {label: "ReadOnly", valueType: D.valueType.STRING},
-        {label: "BitLocker Status", valueType: D.valueType.STRING},
-        {label: "BitLocker Protection Status", valueType: D.valueType.STRING},
-        {label: "BitLocker Encryption", unit: "%", valueType: D.valueType.NUMBER},
-        {label: "Status", valueType: D.valueType.STRING}
+        { label: "Drive", valueType: D.valueType.STRING },
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "Physical Disk", valueType: D.valueType.STRING },
+        { label: "Usage", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Free Space", unit: "GiB", valueType: D.valueType.NUMBER },
+        { label: "Size", unit: "GiB", valueType: D.valueType.NUMBER },
+        { label: "File System", valueType: D.valueType.STRING },
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "ReadOnly", valueType: D.valueType.STRING },
+        { label: "BitLocker Status", valueType: D.valueType.STRING },
+        { label: "BitLocker Protection Status", valueType: D.valueType.STRING },
+        { label: "BitLocker Encryption", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Status", valueType: D.valueType.STRING }
     ]
-)
+);
 
 function parseValidateOutput(isValidated) {
     if (isValidated) {
@@ -131,21 +131,21 @@ function parseValidateOutput(isValidated) {
 }
 
 function execute() {
-    return D.q.all([
+    return Promise.all([
         instance.executeCommand(logicalDisksCmd),
         instance.executeCommand(bitLockerCmd)
-    ])
+    ]);
 }
 
 function checkIfValidated(output) {
-    return instance.checkIfValidated(output[0]) && instance.checkIfValidated(output[1])
+    return instance.checkIfValidated(output[0]) && instance.checkIfValidated(output[1]);
 }
 
 function parseOutputToJson(output) {
     return [
         instance.parseOutputToJson(output[0]),
         instance.parseOutputToJson(output[1])
-    ]
+    ];
 }
 
 /**
@@ -178,7 +178,7 @@ function get_status() {
  * @returns {string} The md5 hash of the input value in hexadecimal format
  */
 function md5(value) {
-    return D.crypto.hash(value, "md5", null, "hex")
+    return D.crypto.hash(value, "md5", null, "hex");
 }
 
 /**
@@ -187,9 +187,9 @@ function md5(value) {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 function checkEmptyString(string) {
@@ -205,17 +205,17 @@ function convertToGB(freeSpace) {
 }
 
 function populateTable(logicalDiskInfo, bitLockerInfo) {
-    const recordId = logicalDiskInfo["Volume GUID"]
-    const diskNumber = logicalDiskInfo["Disk Number"]
-    const physicalDisk = diskNumber !== undefined ? "Disk " + diskNumber : "N/A"
-    const size = checkEmptyNumber(logicalDiskInfo.Size)
-    const freeSpace = checkEmptyNumber(logicalDiskInfo.SizeRemaining)
-    const usage = size ? ((size - freeSpace) / size) * 100 : 0
-    const type = logicalDiskInfo.DriveType ? driveTypes[logicalDiskInfo.DriveType] : "N/A"
-    const bitLockerStatus = bitLockerInfo.MountPoint !== null ? volumeStatus[bitLockerInfo.VolumeStatus] : "N/A"
-    const bitLockerProtectionStatus = bitLockerInfo.MountPoint !== null ? protectionStatus[bitLockerInfo.ProtectionStatus] : "N/A"
-    const bitLockerEncryptionPercentage = bitLockerInfo.MountPoint !== null ? bitLockerInfo.EncryptionPercentage : "N/A"
-    const status = logicalDiskInfo.HealthStatus !== undefined ? statusTypes[logicalDiskInfo.HealthStatus] : "N/A"
+    const recordId = logicalDiskInfo["Volume GUID"];
+    const diskNumber = logicalDiskInfo["Disk Number"];
+    const physicalDisk = diskNumber !== undefined ? "Disk " + diskNumber : "N/A";
+    const size = checkEmptyNumber(logicalDiskInfo.Size);
+    const freeSpace = checkEmptyNumber(logicalDiskInfo.SizeRemaining);
+    const usage = size ? ((size - freeSpace) / size) * 100 : 0;
+    const type = logicalDiskInfo.DriveType ? driveTypes[logicalDiskInfo.DriveType] : "N/A";
+    const bitLockerStatus = bitLockerInfo.MountPoint !== null ? volumeStatus[bitLockerInfo.VolumeStatus] : "N/A";
+    const bitLockerProtectionStatus = bitLockerInfo.MountPoint !== null ? protectionStatus[bitLockerInfo.ProtectionStatus] : "N/A";
+    const bitLockerEncryptionPercentage = bitLockerInfo.MountPoint !== null ? bitLockerInfo.EncryptionPercentage : "N/A";
+    const status = logicalDiskInfo.HealthStatus !== undefined ? statusTypes[logicalDiskInfo.HealthStatus] : "N/A";
     table.insertRecord(sanitize(md5(recordId)), [
         checkEmptyString(logicalDiskInfo.DriveLetter),
         checkEmptyString(logicalDiskInfo.FileSystemLabel),
@@ -230,7 +230,7 @@ function populateTable(logicalDiskInfo, bitLockerInfo) {
         bitLockerProtectionStatus,
         bitLockerEncryptionPercentage,
         status
-    ])
+    ]);
 }
 
 function extractBitLockerInfo(bitLockerOutput, logicalDiskDriveLetter) {
@@ -239,17 +239,17 @@ function extractBitLockerInfo(bitLockerOutput, logicalDiskDriveLetter) {
         VolumeStatus: null,
         EncryptionPercentage: null,
         ProtectionStatus: null
-    }
+    };
 
     for (let j = 0; j < bitLockerOutput.length; j++) {
         if (bitLockerOutput[j]) {
-            const bitLockerDrive = bitLockerOutput[j].MountPoint.replace(":", "")
+            const bitLockerDrive = bitLockerOutput[j].MountPoint.replace(":", "");
             if (bitLockerDrive === logicalDiskDriveLetter) {
-                bitLockerInfo.MountPoint = bitLockerDrive
-                bitLockerInfo.VolumeStatus = bitLockerOutput[j].VolumeStatus
-                bitLockerInfo.EncryptionPercentage = bitLockerOutput[j].EncryptionPercentage
-                bitLockerInfo.ProtectionStatus = bitLockerOutput[j].ProtectionStatus
-                break
+                bitLockerInfo.MountPoint = bitLockerDrive;
+                bitLockerInfo.VolumeStatus = bitLockerOutput[j].VolumeStatus;
+                bitLockerInfo.EncryptionPercentage = bitLockerOutput[j].EncryptionPercentage;
+                bitLockerInfo.ProtectionStatus = bitLockerOutput[j].ProtectionStatus;
+                break;
             }
         }
     }
@@ -258,14 +258,14 @@ function extractBitLockerInfo(bitLockerOutput, logicalDiskDriveLetter) {
 
 // Parse the output of commands and insert it into the table
 function parseOutput(output) {
-    const logicalDisksOutput = output[0]
-    const bitLockerOutput = Array.isArray(output[1]) ? output[1] : [output[1]]
+    const logicalDisksOutput = output[0];
+    const bitLockerOutput = Array.isArray(output[1]) ? output[1] : [output[1]];
     for (let i = 0; i < logicalDisksOutput.length; i++) {
-        const logicalDiskInfo = logicalDisksOutput[i]
-        const bitLockerInfo = extractBitLockerInfo(bitLockerOutput, logicalDiskInfo.DriveLetter)
+        const logicalDiskInfo = logicalDisksOutput[i];
+        const bitLockerInfo = extractBitLockerInfo(bitLockerOutput, logicalDiskInfo.DriveLetter);
         populateTable(logicalDiskInfo, bitLockerInfo);
     }
-    D.success(table)
+    D.success(table);
 }
 
 // WinRM functions
@@ -282,31 +282,32 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
+    const self = this;
     config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {}
@@ -320,10 +321,9 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -333,21 +333,22 @@ SSHHandler.prototype.executeCommand = function (command) {
         timeout: config.timeout,
         command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
     };
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.reject(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                reject(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

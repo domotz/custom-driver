@@ -27,84 +27,84 @@
  **/
 
 // Parameters for Azure authentication
-const tenantId = D.getParameter('tenantID');
-const clientId = D.getParameter('clientId');
-const clientSecret = D.getParameter('clientSecret');
-const subscriptionId = D.getParameter('subscriptionId');
+const tenantId = D.getParameter("tenantID");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
+const subscriptionId = D.getParameter("subscriptionId");
 
-const resourceGroups = D.getParameter('resourceGroups');
-const vmNames = D.getParameter('vmNames');
+const resourceGroups = D.getParameter("resourceGroups");
+const vmNames = D.getParameter("vmNames");
 
-const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com');
-const azureCloudManagementService = D.createExternalDevice('management.azure.com');
+const azureCloudLoginService = D.createExternalDevice("login.microsoftonline.com");
+const azureCloudManagementService = D.createExternalDevice("management.azure.com");
 
 let accessToken;
 let vmTable;
 
 const vmInfoExtractors = [{
     key: "id", extract: function (vm) {
-        return sanitize(vm.properties.vmId)
+        return sanitize(vm.properties.vmId);
     }
 }, {
-    label: 'Name', valueType: D.valueType.NUMBER, key: 'name', extract: function (vm) {
-        return vm.name || "N/A"
+    label: "Name", valueType: D.valueType.NUMBER, key: "name", extract: function (vm) {
+        return vm.name || "N/A";
     }
-}, {label: 'Resource Group', valueType: D.valueType.STRING, key: 'resourceGroup', extract: extractResourceGroup}, {
-    label: 'OS Type', valueType: D.valueType.STRING, key: 'osType', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A"
-    }
-}, {
-    label: 'Location', valueType: D.valueType.STRING, key: 'location', extract: function (vm) {
-        return vm.location || "N/A"
+}, { label: "Resource Group", valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup }, {
+    label: "OS Type", valueType: D.valueType.STRING, key: "osType", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType) || "N/A";
     }
 }, {
-    label: 'Size', valueType: D.valueType.STRING, key: 'size', extract: function (vm) {
-        return (vm.properties.hardwareProfile && vm.properties.hardwareProfile.vmSize) || "N/A"
+    label: "Location", valueType: D.valueType.STRING, key: "location", extract: function (vm) {
+        return vm.location || "N/A";
     }
 }, {
-    label: 'Image Publisher', valueType: D.valueType.STRING, key: 'imagePublisher', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.publisher) || "N/A"
+    label: "Size", valueType: D.valueType.STRING, key: "size", extract: function (vm) {
+        return (vm.properties.hardwareProfile && vm.properties.hardwareProfile.vmSize) || "N/A";
     }
 }, {
-    label: 'Image', valueType: D.valueType.STRING, key: 'imageOffer', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A"
+    label: "Image Publisher", valueType: D.valueType.STRING, key: "imagePublisher", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.publisher) || "N/A";
     }
 }, {
-    label: 'Image Version', valueType: D.valueType.STRING, key: 'imageVersion', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A"
+    label: "Image", valueType: D.valueType.STRING, key: "imageOffer", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.offer) || "N/A";
     }
 }, {
-    label: 'Image SKU', valueType: D.valueType.STRING, key: 'imageSku', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A"
+    label: "Image Version", valueType: D.valueType.STRING, key: "imageVersion", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.exactVersion) || "N/A";
     }
 }, {
-    label: 'Data Disks', valueType: D.valueType.STRING, key: 'dataDisks', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks && vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(', ') : "N/A")
+    label: "Image SKU", valueType: D.valueType.STRING, key: "imageSku", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.imageReference && vm.properties.storageProfile.imageReference.sku) || "N/A";
     }
 }, {
-    label: 'Provisioning State', valueType: D.valueType.STRING, key: 'provisioningState', extract: function (vm) {
-        return vm.properties.provisioningState || "N/A"
+    label: "Data Disks", valueType: D.valueType.STRING, key: "dataDisks", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.dataDisks && vm.properties.storageProfile.dataDisks.length ? vm.properties.storageProfile.dataDisks.join(", ") : "N/A");
     }
 }, {
-    label: 'Hibernation Enabled', valueType: D.valueType.STRING, key: 'hibernationEnabled', extract: function (vm) {
-        return (vm.properties.additionalCapabilities && vm.properties.additionalCapabilities.hibernationEnabled && vm.properties.additionalCapabilities.hibernationEnabled === true) ? "Yes" : "No"
+    label: "Provisioning State", valueType: D.valueType.STRING, key: "provisioningState", extract: function (vm) {
+        return vm.properties.provisioningState || "N/A";
     }
 }, {
-    label: 'Managed Disk', valueType: D.valueType.STRING, key: 'managedDisk', extract: function (vm) {
-        return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A"
+    label: "Hibernation Enabled", valueType: D.valueType.STRING, key: "hibernationEnabled", extract: function (vm) {
+        return (vm.properties.additionalCapabilities && vm.properties.additionalCapabilities.hibernationEnabled && vm.properties.additionalCapabilities.hibernationEnabled === true) ? "Yes" : "No";
     }
 }, {
-    label: 'Computer Name', valueType: D.valueType.STRING, key: 'computerName', extract: function (vm) {
-        return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A"
+    label: "Managed Disk", valueType: D.valueType.STRING, key: "managedDisk", extract: function (vm) {
+        return (vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.name) || "N/A";
     }
 }, {
-    label: 'Network Interfaces',
+    label: "Computer Name", valueType: D.valueType.STRING, key: "computerName", extract: function (vm) {
+        return (vm.properties.osProfile && vm.properties.osProfile.computerName) || "N/A";
+    }
+}, {
+    label: "Network Interfaces",
     valueType: D.valueType.STRING,
-    key: 'networkInterfaces',
+    key: "networkInterfaces",
     extract: extractNetworkInterfaces
 }, {
-    label: 'Zone', valueType: D.valueType.STRING, key: 'zone', extract: function (vm) {
-        return (vm.zones && vm.zones[0]) || "N/A"
+    label: "Zone", valueType: D.valueType.STRING, key: "zone", extract: function (vm) {
+        return (vm.zones && vm.zones[0]) || "N/A";
     }
 }];
 
@@ -114,7 +114,7 @@ const vmInfoExtractors = [{
  */
 function generateVirtualMachineProperties() {
     return vmInfoExtractors.filter(function (result) {
-        return result.label
+        return result.label;
     });
 }
 
@@ -122,8 +122,8 @@ function generateVirtualMachineProperties() {
  * Creates a table for displaying Azure Virtual Machine properties.
  */
 function createVirtualMachineTable(vmProperties) {
-    vmTable = vmTable = D.createTable('Azure Virtual Machines', vmProperties.map(function (item) {
-        const tableDef = {label: item.label, valueType: item.valueType};
+    vmTable = vmTable = D.createTable("Azure Virtual Machines", vmProperties.map(function (item) {
+        const tableDef = { label: item.label, valueType: item.valueType };
         if (item.unit) {
             tableDef.unit = item.unit;
         }
@@ -141,7 +141,7 @@ function extractNetworkInterfaces(vm) {
         return vm.properties.networkProfile.networkInterfaces.map(function (ni) {
             const match = ni.id.match(/networkInterfaces\/([^\/]*)$/);
             return match ? match[1] : "N/A";
-        }).join(', ');
+        }).join(", ");
     }
     return "N/A";
 }
@@ -180,21 +180,22 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            d.resolve();
+            resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -204,36 +205,37 @@ function processLoginResponse(d) {
  */
 function filterVmInfoList(vmInfoList) {
     return vmInfoList.filter(function (vmInfo) {
-        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
-            return resourceGroup.toLowerCase() === vmInfo.resourceGroup.toLowerCase()
-        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === "all") || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === vmInfo.resourceGroup.toLowerCase();
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === "all") || vmNames.some(function (vmName) {
             return vmName.toLowerCase() === vmInfo.name.toLowerCase();
-        }))
+        }));
     });
 }
 
 /**
  * Processes the response from the VMs API call, extracts VM data, and populates the table.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processVMsResponse(d) {
+function processVMsResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
-            D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No VMs found in the response");
+            D.failure(D.errorType.GENERIC_ERROR);
+            reject("No VMs found in the response");
             return;
         }
         let vmInfoList = bodyAsJSON.value.map(extractVmInfo);
         if (!vmInfoList.length) {
-            console.info('There is no Virtual machine');
+            console.info("There is no Virtual machine");
         } else {
             vmInfoList = filterVmInfoList(vmInfoList);
         }
-        d.resolve(vmInfoList);
-    }
+        resolve(vmInfoList);
+    };
 }
 
 /**
@@ -241,10 +243,9 @@ function processVMsResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded"
         }, form: {
             grant_type: "client_credentials",
             client_id: clientId,
@@ -252,8 +253,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    azureCloudLoginService.http.post(config, processLoginResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -262,9 +264,9 @@ function login() {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -304,7 +306,7 @@ function insertRecord(vm, vmProperties) {
 function generateConfig(url) {
     return {
         url: "/subscriptions/" + subscriptionId + url, protocol: "https", headers: {
-            "Authorization": "Bearer " + accessToken,
+            "Authorization": "Bearer " + accessToken
         }, rejectUnauthorized: false, jar: true
     };
 }
@@ -314,10 +316,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the VM data upon successful retrieval from the Azure API.
  */
 function retrieveVMs() {
-    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.Compute/virtualMachines?api-version=2021-04-01");
-    azureCloudManagementService.http.get(config, processVMsResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processVMsResponse(resolve, reject));
+    });
 }
 
 /**
@@ -328,7 +330,7 @@ function retrieveVMs() {
  */
 function populateTable(vmInfoList, vmProperties) {
     vmInfoList.map(function (vmInfo) {
-        insertRecord(vmInfo, vmProperties)
+        insertRecord(vmInfo, vmProperties);
     });
 }
 
@@ -358,9 +360,9 @@ function get_status() {
     login()
         .then(retrieveVMs)
         .then(function (virtualMachineScaleSetInfoList) {
-            const vmProperties = generateVirtualMachineProperties()
-            createVirtualMachineTable(vmProperties)
-            populateTable(virtualMachineScaleSetInfoList, vmProperties)
+            const vmProperties = generateVirtualMachineProperties();
+            createVirtualMachineTable(vmProperties);
+            populateTable(virtualMachineScaleSetInfoList, vmProperties);
             D.success(vmTable);
         })
         .catch(function (error) {

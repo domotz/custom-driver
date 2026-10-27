@@ -1,6 +1,6 @@
 {
     "logo": "sonicwall.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Sonicwall - Failover Load Balancing Groups",
     "description": "Monitors Sonicwall failover load balancing groups",
     "category": "Software Integration",

@@ -1,19 +1,19 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Active Directory privileged users count
  * Description: reports the number of members of AD privileged groups
- *   
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on Windows Versions:
  *      - Microsoft Windows Server 2019
  * Powershell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates a Custom Driver table with the number of members in AD privileged groups.
- * 
+ *
  * Privilege required: AD User
- * 
+ *
 **/
 
 // Define winrm configuration
@@ -25,7 +25,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 var privilegedUsersTable = D.createTable(
@@ -80,7 +80,13 @@ function parseOutput(output) {
         var k = 0;
         var totPrivilegedUsers = 0;
         var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        try {
+            jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             privilegedUsersTable.insertRecord(k.toString(), [jsonOutput[k].Name, jsonOutput[k].MemberCount]);
             totPrivilegedUsers += jsonOutput[k].MemberCount;

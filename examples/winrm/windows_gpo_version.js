@@ -1,25 +1,25 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Windows GPOs version
- * Description: monitors the versions of selected GPOs, you can set the initial value as baseeline and get alerted if it changes. 
+ * Description: monitors the versions of selected GPOs, you can set the initial value as baseeline and get alerted if it changes.
  * It must run agains a DC with PS GroupPolicy module installed
- *  
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on Windows Versions:
  *      - Microsoft Windows Server 2019
  * Powershell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates a Custom Driver Table with Policy name, status, User AD and SYSVOL versions, Computer AD and SYSVOL version
  *      Status: The current status of the GPO being monitored (Enabled, Disabled).
  *      AD Version (User): The version of the Active Directory (AD) associated with the user settings of the GPO.
  *      SYSVOL Version (User): The version of the SYSVOL folder associated with the user settings of the GPO.
  *      AD Version (Computer): The version of the Active Directory (AD) associated with the computer settings of the GPO.
  *      SYSVOL Version (Computer): The version of the SYSVOL folder associated with the computer settings of the GPO.
- * 
+ *
  * Required permissions: AD user
- * 
+ *
 **/
 
 // Define the WinRM options when running the commands
@@ -32,7 +32,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 /**
@@ -97,7 +97,13 @@ function parseOutput(output) {
     if (output.error === null) {
         var k = 0;
         var jsonOutput = JSON.parse(JSON.stringify(output));
-        jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        try {
+            jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         while (k < jsonOutput.length) {
             gpoTable.insertRecord((jsonOutput[k].Name).slice(0, 50), [
                 jsonOutput[k].Status,

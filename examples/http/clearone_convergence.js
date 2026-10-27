@@ -1,15 +1,15 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: ClearOne Convergence
  * Description: This script extracts information for ClearOne devices
- * 
+ *
  * Communication protocol is HTTP
- * 
+ *
  * Tested with ClearOne Convergence 3.1.0.0
  *
- * Parameters: 
+ * Parameters:
  *    - urlCl: Url access to Convergence
- *    
+ *
  * Custom Driver Variables:
  *    - Model: The model device
  *    - Serial Number: The serial number device
@@ -18,18 +18,17 @@
  *    - Status: Status device (STATUS - TIME IN THIS STATUS)
  *    - Location: Location device
  *    - Part Number: Part number device
- * 
+ *
  * The device password used to configure Convergence API key
  *
  **/
 
 // Url access to Convergence
-var urlCl = D.getParameter('urlCl');
+var urlCl = D.getParameter("urlCl");
 
 var deviceInfo, detailInfo;
 var protocol;
 var port;
-
 
 if (!urlCl.indexOf("//")) {
     D.failure("ClearOne CONVERGENCE URL must include protocol");
@@ -42,7 +41,7 @@ if (!urlCl.indexOf("//")) {
     if (portIndex !== -1) {
         port = remainingUrl.substring(portIndex + 1);
         urlCl = remainingUrl.substring(0, portIndex);
-    } 
+    }
 }
 
 /**
@@ -50,32 +49,30 @@ if (!urlCl.indexOf("//")) {
  * @returns promise for http response body
  */
 function httpGet(url) {
-    var d = D.q.defer();
-	var website = D.createExternalDevice(urlCl);
+    var website = D.createExternalDevice(urlCl);
     var config = {
         url: url,
-        port: port,  
+        port: port,
         headers: {
-			"X-Api-Key": D.device.password() //api key == password
-		}
+            "X-Api-Key": D.device.password() //api key == password
+        }
     };
-    website.http.get(config, function (error, response, body) {
-		if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } 
-        else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } 
-        else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        website.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -83,12 +80,12 @@ function httpGet(url) {
  */
 function search() {
     return httpGet("/dashboard-back/api/devices/pro-audio/search?q=" + D.device.ip())
-        .then(function(data){
+        .then(function (data) {
             if (data && data.avDevices && data.avDevices.length > 0) {
                 deviceInfo = data.avDevices[0];
             } else {
-               console.error("No avDevices found in the response")
-               D.failure(D.errorType.GENERIC_ERROR);
+                console.error("No avDevices found in the response");
+                D.failure(D.errorType.GENERIC_ERROR);
             }
         });
 }
@@ -98,7 +95,7 @@ function search() {
  */
 function getDetail() {
     return httpGet("/dashboard-back/api/devices/pro-audio/" + deviceInfo.id)
-        .then(function(output){
+        .then(function (output) {
             detailInfo = output;
         });
 }
@@ -107,15 +104,15 @@ function getDetail() {
 function extractVariables() {
     var firmware = deviceInfo.firmwareVersion;
     if (deviceInfo.hasNewFirmware) {
-        firmware = firmware + ' *';
+        firmware = firmware + " *";
     }
     var variables = [
-        D.createVariable("product-model", "Model", deviceInfo.productModel, null, D.valueType.STRING ),
-        D.createVariable("serial-number", "Serial Number", deviceInfo.serialNumber, null, D.valueType.STRING ),
-        D.createVariable("firmware-version", "Firmware Version", firmware, null, D.valueType.STRING ),
-        D.createVariable("locate-mode", "Locate Mode", deviceInfo.locateMode, null, D.valueType.STRING ),
-        D.createVariable("relative-status", "Status", deviceInfo.relativeStatus, null, D.valueType.STRING ),
-        D.createVariable("location", "Location", deviceInfo.location, null, D.valueType.STRING )
+        D.createVariable("product-model", "Model", deviceInfo.productModel, null, D.valueType.STRING),
+        D.createVariable("serial-number", "Serial Number", deviceInfo.serialNumber, null, D.valueType.STRING),
+        D.createVariable("firmware-version", "Firmware Version", firmware, null, D.valueType.STRING),
+        D.createVariable("locate-mode", "Locate Mode", deviceInfo.locateMode, null, D.valueType.STRING),
+        D.createVariable("relative-status", "Status", deviceInfo.relativeStatus, null, D.valueType.STRING),
+        D.createVariable("location", "Location", deviceInfo.location, null, D.valueType.STRING)
     ];
 
     if (detailInfo && detailInfo.partNumber) {

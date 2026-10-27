@@ -25,12 +25,12 @@
  *
  **/
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
 const packetCount = 2; // Number of packets to send during the ping command.
-const ipAddressesToCheck = D.getParameter('ipAddressesToCheck');
+const ipAddressesToCheck = D.getParameter("ipAddressesToCheck");
 const config = {
     username: D.device.username(),
     password: D.device.password(),
@@ -39,14 +39,14 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
+    timeout: 30000            // per-command timeout in milliseconds
 };
 
 const tableColumns = D.createTable(
     "IP Latency",
     [
-        {label: "Latency", unit: "ms"},
-        {label: "Packet Loss", unit: "%"}
+        { label: "Latency", unit: "ms" },
+        { label: "Packet Loss", unit: "%" }
     ]
 );
 
@@ -93,8 +93,8 @@ function get_status() {
             })
             .catch(instance.checkError);
     });
-    D.q.all(commands)
-        .then(displayOutput)
+    Promise.all(commands)
+        .then(displayOutput);
 }
 
 function parseOutput(output, ipAddress) {
@@ -103,9 +103,9 @@ function parseOutput(output, ipAddress) {
     latencyValue = matchLatency ? matchLatency[1] : "-";
     const matchPacketLoss = /Packets: Sent = \d+, Received = \d+, Lost = \d+ \((\d+)% loss\)/.exec(output);
     packetLossValue = matchPacketLoss ? matchPacketLoss[1] : "-";
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    const recordId = ipAddress.replace(recordIdSanitizationRegex, '').slice(0, 50);
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    const recordId = ipAddress.replace(recordIdSanitizationRegex, "").slice(0, 50);
     tableColumns.insertRecord(recordId, [latencyValue, packetLossValue]);
 }
 
@@ -123,32 +123,33 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
+    const self = this;
     config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
 
-    // config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        // config.command = command;
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 WinRMHandler.prototype.parseOutputToString = function (output) {
-    return output.outcome.stdout
-}
+    return output.outcome.stdout;
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {
@@ -163,10 +164,9 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         if (error.code !== 1) D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -177,22 +177,23 @@ SSHHandler.prototype.executeCommand = function (command) {
         command: command
     };
 
-    // config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.resolve(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve) {
+        // config.command = 'powershell -Command "' + command.replace(/"/g, '\\"') + '"';
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                resolve(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 SSHHandler.prototype.parseOutputToString = function (output) {
     return output.output ? output.output : output;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

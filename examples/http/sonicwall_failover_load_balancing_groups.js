@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall - Failover Load Balancing Groups
- * Description: Monitors Sonicwall failover load balancing groups. 
- * 
+ * Description: Monitors Sonicwall failover load balancing groups.
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL TZ370W, SonicOS 7.1.1-7058-R6162
  *
  * Creates a Custom Driver Table with the following columns:
@@ -32,11 +32,11 @@ var table = D.createTable(
 );
 
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -47,7 +47,7 @@ function processResponse(d) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -56,7 +56,6 @@ function processResponse(d) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -67,13 +66,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(resolve, reject));
+    });
 }
 
 //Retrieves failover load balanging groups from the SonicWALL device
 function getFailoverLBgroups() {
-    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/reporting/failover-lb/status/members",
         protocol: "https",
@@ -81,50 +80,50 @@ function getFailoverLBgroups() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.get(config, processResponse(resolve, reject));
+    });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 //Extracts data from the HTTP response and populates the custom table.
 function extractData(body) {
     var data = JSON.parse(body);
-    if (data)
-    {
+    if (data) {
         data.forEach(function (item) {
-                var groupName = item.group_name? item.group_name: 'N/A';
-                var memberName = item.member_name? item.member_name : 'N/A';
-                var recordId = sanitize(item.group_name ? memberName + groupName : memberName);
-                var linkstatus = item.link_status? item.link_status : 'N/A';
-                var lbstatus = item.lb_status? item.lb_status : 'N/A';
-                var probestatus = item.probe_status? item.probe_status : 'N/A';
-                var maintargetstatus = item.main_target_status? item.main_target_status : 'N/A';
-                var alternatetargetstatus = item.alternate_target_status? item.alternate_target_status : 'N/A';
+            var groupName = item.group_name ? item.group_name : "N/A";
+            var memberName = item.member_name ? item.member_name : "N/A";
+            var recordId = sanitize(item.group_name ? memberName + groupName : memberName);
+            var linkstatus = item.link_status ? item.link_status : "N/A";
+            var lbstatus = item.lb_status ? item.lb_status : "N/A";
+            var probestatus = item.probe_status ? item.probe_status : "N/A";
+            var maintargetstatus = item.main_target_status ? item.main_target_status : "N/A";
+            var alternatetargetstatus = item.alternate_target_status ? item.alternate_target_status : "N/A";
 
-                table.insertRecord(recordId, [
-                    groupName,
-                    memberName,
-                    linkstatus,
-                    lbstatus,
-                    probestatus,
-                    maintargetstatus,
-                    alternatetargetstatus
-                ]);
+            table.insertRecord(recordId, [
+                groupName,
+                memberName,
+                linkstatus,
+                lbstatus,
+                probestatus,
+                maintargetstatus,
+                alternatetargetstatus
+            ]);
         });
     }
     D.success(table);
 }
 
 /**
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(getFailoverLBgroups)
         .then(function (response) {

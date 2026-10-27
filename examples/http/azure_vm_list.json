@@ -1,6 +1,6 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Azure VMs List",
     "description": "Monitor Azure Compute Virtual Machines: this script retrieves information about Virtual Machine",
     "category": "Software Integration",

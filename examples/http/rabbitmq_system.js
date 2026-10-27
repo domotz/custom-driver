@@ -1,8 +1,8 @@
-/** 
+/**
  * This driver gets nodes and cluster metrics from RabbitMQ management plugin provided an HTTP-based API using HTTP agent.
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
  */
 
 var port = 15672;
@@ -13,29 +13,29 @@ var healthcheck = {};
  * @returns promise for http response body
  */
 function httpGet(url) {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: url,
-        port: port,
-        username: D.device.username(),
-        password: D.device.password(),
-        auth: "basic"
-    }, function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: url,
+            port: port,
+            username: D.device.username(),
+            password: D.device.password(),
+            auth: "basic"
+        }, function (err, response, body) {
+            if (err) {
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -122,7 +122,7 @@ function getHealthcheckVirtualHosts() {
 }
 
 /**
- * @param {value} value to convert to number  
+ * @param {value} value to convert to number
  * @returns numeric value
  */
 function convertToNumber(value) {
@@ -340,7 +340,7 @@ function fillConfig() {
             unit: "B"
         },
         {
-            //Checks if there are classic mirrored queues without synchronized mirrors online 
+            //Checks if there are classic mirrored queues without synchronized mirrors online
             uid: "mirror_sync",
             label: "Healthcheck: classic mirrored queues without synchronized mirrors online",
             execute: extractValue(healthcheck.mirror_sync, "status")
@@ -448,8 +448,8 @@ function fillConfig() {
 }
 
 /**
-* 
-* @param {[object]} data array of objects 
+*
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {
@@ -472,7 +472,7 @@ function extract(data) {
 
 // load overview, helthcheck and exchanges informations
 function loadData() {
-    return D.q.all([
+    return Promise.all([
         getOverview(),
         getHealthcheck(),
         getHealthcheckMirrorSync(),
@@ -495,6 +495,10 @@ function validate() {
     loadData()
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
@@ -519,4 +523,3 @@ function get_status() {
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
-

@@ -1,6 +1,6 @@
 {
     "logo": "freebsd.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "FreeBSD Processes",
     "description": "Monitor the FreeBSD processes by extracting info with the 'top' command",
     "category": "Software Integration",

@@ -1,32 +1,32 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Microsoft Exchange Server - LDAP (Lightweight Directory Access Protocol) Read / Search Time
  * Description: This script is used to monitor LDAP (Lightweight Directory Access Protocol) read and search times on a Microsoft Exchange Server
- * 
+ *
  * Communication protocol is WinRM
- * 
+ *
  * Tested on:
  *      - Microsoft Exchange Server 2019 CU12
- * 
+ *
  * Powershell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates a Custom Driver Table with the following columns:
  *      - Instance Name: Instance name of the LDAP operation
  *      - LDAP Read Time: The value of the "LDAP Read Time" counter, representing the time taken for LDAP read operations
  *      - LDAP Search Time: The value of the "LDAP Search Time" counter, representing the time taken for LDAP search operations
- * 
+ *
  */
 
 // List of performance counters to monitor
 var counters = [
-    "\\MSExchange ADAccess Domain Controllers(*)\\LDAP Read Time", 
+    "\\MSExchange ADAccess Domain Controllers(*)\\LDAP Read Time",
     "\\MSExchange ADAccess Domain Controllers(*)\\LDAP Search Time"
 ];
 
 // WinRM configuration
 var winrmConfig = {
-    "command": 'Get-Counter -Counter ' + counters.map(function(counter){return '"' + counter + '"';}).join(',') + ' | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue } | ConvertTo-Json',
+    "command": "Get-Counter -Counter " + counters.map(function (counter) {return '"' + counter + '"';}).join(",") + " | ForEach-Object { $_.countersamples | Select-Object path, InstanceName, CookedValue } | ConvertTo-Json",
     "username": D.device.username(),
     "password": D.device.password(),
     // WinRM transport options:
@@ -34,7 +34,7 @@ var winrmConfig = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,               // per-command timeout in milliseconds
+    timeout: 30000               // per-command timeout in milliseconds
 };
 
 var table = D.createTable(
@@ -81,16 +81,23 @@ function get_status() {
     D.device.sendWinRMCommand(winrmConfig, parseOutput);
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Parses the output of the WinRM command and extracts data
 function parseOutput(output) {
     if (output.error === null) {
-        var jsonOutput = JSON.parse(output.outcome.stdout);
+        var jsonOutput;
+        try {
+            jsonOutput = JSON.parse(output.outcome.stdout);
+        } catch (e) {
+            console.error("Unable to parse the WinRM output: " + e.message);
+            D.failure(D.errorType.PARSING_ERROR);
+            return;
+        }
         var data = {};
         for (var i = 0; i < jsonOutput.length; i++) {
             var instanceName = jsonOutput[i].InstanceName;
@@ -108,7 +115,7 @@ function parseOutput(output) {
         for (instanceName in data) {
             var recordId = sanitize(instanceName);
             var instanceData = data[instanceName];
-            table.insertRecord(recordId, [instanceName, instanceData.ldapReadTime, instanceData.ldapSearchTime ]);
+            table.insertRecord(recordId, [instanceName, instanceData.ldapReadTime, instanceData.ldapSearchTime]);
         }
 
         D.success(table);

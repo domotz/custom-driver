@@ -10,10 +10,10 @@
 * @label Validate Association
 * @documentation This procedure verifies if the device has the needed Cisco Enterprise OID for the custom_1 action (reboot)
 */
-function validate(){
+function validate() {
     var tsMsgSendOid = "1.3.6.1.4.1.9.2.9.9.0"; // Integer
-    function getCallback(output, error){
-        if (error || output[tsMsgSendOid].error){
+    function getCallback(output, error) {
+        if (error || output[tsMsgSendOid].error) {
             console.error("Received an error during the SNMP Get ", error || output[tsMsgSendOid].error);
             D.failure(D.errorType.PARSING_ERROR);
         } else {
@@ -25,21 +25,21 @@ function validate(){
     // Executing an SNMP get towards set status needed OID
     snmpSession.get([tsMsgSendOid], getCallback);
 
-} 
+}
 /**
 * @remote_procedure
 * @label Get Device Variables
 * @documentation This procedure collects system uptime value and sets it in a custom driver variable
 */
-function get_status(){
+function get_status() {
     var variables = [];
     var sysUptimeOid = "1.3.6.1.2.1.1.3.0";
-    function getCallback(output, error){
-        if (error || output[sysUptimeOid].error){
+    function getCallback(output, error) {
+        if (error || output[sysUptimeOid].error) {
             console.error("Received an error during the SNMP Get ", error || output[sysUptimeOid].error);
             D.failure(D.errorType.PARSING_ERROR);
         } else {
-            var variableSystemUptime = D.device.createVariable("1", "System Uptime in Days", Math.round(output[sysUptimeOid]/86400000), "days");
+            var variableSystemUptime = D.device.createVariable("1", "System Uptime in Days", Math.round(output[sysUptimeOid] / 86400000), "days");
             variables.push(variableSystemUptime);
             D.success(variables);
         }
@@ -55,13 +55,13 @@ function get_status(){
  * @label Reboot
  * @documentation Reboots a Cisco device
 */
-function custom_1(){
+function custom_1() {
     var rebootCommand = 2;
     var tsMsgSendOid = "1.3.6.1.4.1.9.2.9.9.0"; // Integer
-    // The callback functions to determine success or failure of the snmp set call 
-    function setCallback(output, error){
-        if (error || output[tsMsgSendOid].error){
-            console.error("Received an error during the SNMP Set ", error || output[sysUptimeOid].error);
+    // The callback functions to determine success or failure of the snmp set call
+    function setCallback(output, error) {
+        if (error || output[tsMsgSendOid].error) {
+            console.error("Received an error during the SNMP Set ", error || output[tsMsgSendOid].error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else {
             D.success();

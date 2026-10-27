@@ -1,6 +1,6 @@
 {
     "logo": "mikrotik.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Mikrotik CPU and Memory Usage, Firmware and Uptime",
     "description": "This script retrieves information about MikroTik RouterOS devices, including CPU and memory usage, firmware version, and uptime",
     "category": "Hardware Integration",
