@@ -1,0 +1,84 @@
+{
+    "four cost rows, dev-rg not selected validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four cost rows, dev-rg not selected get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-cost",
+                "name": "Total Cost",
+                "value": 16.16,
+                "unit": "USD",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Azure Cost Metrics",
+            "columnHeaders": [
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Meter",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Meter Subcategory",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Service Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Resource Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Pre Tax Cost",
+                    "unit": "USD",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "e5dcff3c86c8246beff1b5a0cfca0b0e",
+                    "values": [
+                        "prod-rg",
+                        "D2s v3",
+                        "Dsv3 Series",
+                        "Virtual Machines",
+                        "EU West",
+                        3.46
+                    ]
+                },
+                {
+                    "id": "dcd9877ffde7fe24eeace8b42fb44bf9",
+                    "values": [
+                        "prod-rg",
+                        "P10 Disks",
+                        "Premium SSD Managed Disks",
+                        "Storage",
+                        "EU West",
+                        0.2
+                    ]
+                },
+                {
+                    "id": "4f042e4e2e6ab658a3698c4a17f317d9",
+                    "values": [
+                        "data-rg",
+                        "E4s v3",
+                        "Esv3 Series",
+                        "Virtual Machines",
+                        "EU North",
+                        12.5
+                    ]
+                }
+            ]
+        }
+    }
+}

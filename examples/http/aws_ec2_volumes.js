@@ -21,7 +21,6 @@ var instanceId = "ADD_INSTANCE_ID";
 var monitoringList, volumes;
 var vars = [];
 var volumesList = [];
-var attachments = [];
 
 function sign(key, message) {
     var hex = hmac("sha256", key, message);
@@ -112,11 +111,13 @@ function getVolumesData(nextToken) {
     payload["NextToken"] = nextToken;
     return httpGet(prepareParams(payload))
         .then(function (data) {
-            var $ = D.htmlParse(data);
+            // The HTML parser does not close self-closing XML tags (e.g. <snapshotId/> on a blank volume): expand them first.
+            var $ = D.htmlParse(data.replace(/<([A-Za-z][\w.-]*)\s*\/>/g, "<$1></$1>"));
             volumes = $("DescribeVolumesResponse > volumeSet > item").map(function (index, element) {
                 var volume = {};
                 $(element).children().each(function (index, child) {
                     if (child.tagName == "attachmentset") {
+                        var attachments = [];
                         $(child).children("item").each(function (index, attachmentElement) {
                             var attachment = {};
                             $(attachmentElement).children().each(function (index, attachmentChild) {
@@ -130,14 +131,11 @@ function getVolumesData(nextToken) {
                     }
                 });
                 return volume;
-            });
+            }).get();
             volumesList = volumesList.concat(volumes);
             nextToken = $("DescribeVolumesResponse > nextToken").text();
             if (nextToken) {
-                return getVolumesData(instanceId, nextToken)
-                    .then(function (volumeList) {
-                        return volumes.concat(volumeList);
-                    });
+                return getVolumesData(nextToken);
             }
             return volumesList;
         });
@@ -148,7 +146,7 @@ function getVolumesData(nextToken) {
  */
 function extractVolumes(property) {
     return function () {
-        return volumesList.map(function (volume) { return volume[0][property]; });
+        return volumesList.map(function (volume) { return volume[property]; });
     };
 }
 
@@ -167,7 +165,7 @@ function fillConfig() {
             label: "Device",
             execute: function () {
                 return volumesList.map(function (volume) {
-                    return volume[0].attachmentset[0].device;
+                    return volume.attachmentset[0].device;
                 });
             }
         },
@@ -183,7 +181,7 @@ function fillConfig() {
             label: "Attachment time",
             execute: function () {
                 return volumesList.map(function (volume) {
-                    return volume[0].attachmentset[0].attachtime;
+                    return volume.attachmentset[0].attachtime;
                 });
             }
         },
@@ -193,7 +191,7 @@ function fillConfig() {
             label: "Attachment state",
             execute: function () {
                 return volumesList.map(function (volume) {
-                    return volume[0].attachmentset[0].status;
+                    return volume.attachmentset[0].status;
                 });
 
             }

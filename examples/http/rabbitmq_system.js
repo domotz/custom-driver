@@ -158,6 +158,14 @@ function extractValue(data, key) {
     };
 }
 
+/**
+ * @param {object} details a message_stats "*_details" object, e.g. { rate: 25.5 }
+ * @returns the per second rate
+ */
+function extractRate(details) {
+    return details && details.rate !== undefined ? details.rate : 0;
+}
+
 // The list of custom driver variables to monitor
 function fillConfig() {
     monitoringList = [
@@ -183,7 +191,7 @@ function fillConfig() {
             //The rate of messages (per second) returned to a publisher as unroutable.
             uid: "return_unroutab_details",
             label: "Messages returned unroutable per second",
-            execute: extractValue(overview.message_stats, "return_unroutable_details"),
+            execute: [extractValue(overview.message_stats, "return_unroutable_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -196,7 +204,7 @@ function fillConfig() {
             //The rate of subset of messages (per second) in the `deliver_get`, which had the `redelivered` flag set.
             uid: "redeliver_details",
             label: "Messages returned redeliver per second",
-            execute: extractValue(overview.message_stats, "redeliver_details"),
+            execute: [extractValue(overview.message_stats, "redeliver_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -209,13 +217,13 @@ function fillConfig() {
             //The number of messages ready for delivery.
             uid: "messages_ready",
             label: "Messages ready for delivery",
-            execute: extractValue(overview.message_stats, "messages_ready")
+            execute: extractValue(overview.queue_totals, "messages_ready")
         },
         {
             //The rate of messages (per second) published from this overview into queues.
             uid: "publish_out_details",
             label: "Messages publish_out per second",
-            execute: extractValue(overview.message_stats, "publish_out_details"),
+            execute: [extractValue(overview.message_stats, "publish_out_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -228,7 +236,7 @@ function fillConfig() {
             //The rate of messages (per second) published from the channels into this overview.
             uid: "publish_in_details",
             label: "Messages publish_in per second",
-            execute: extractValue(overview.message_stats, "publish_in_details"),
+            execute: [extractValue(overview.message_stats, "publish_in_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -241,7 +249,7 @@ function fillConfig() {
             //The rate of published messages per second.
             uid: "publish_details",
             label: "Messages published per second",
-            execute: extractValue(overview.message_stats, "publish_details"),
+            execute: [extractValue(overview.message_stats, "publish_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -254,7 +262,7 @@ function fillConfig() {
             //The rate of the sum of messages (per second) delivered to consumers in acknowledgement and no-acknowledgement mode.
             uid: "deliver_get_details",
             label: "Messages delivered per second",
-            execute: extractValue(overview.message_stats, "deliver_get_details"),
+            execute: [extractValue(overview.message_stats, "deliver_get_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -267,7 +275,7 @@ function fillConfig() {
             //The rate of confirmed messages per second.
             uid: "confirm_details",
             label: "Messages confirmed per second",
-            execute: extractValue(overview.message_stats, "confirm_details"),
+            execute: [extractValue(overview.message_stats, "confirm_details"), extractRate],
             type: D.valueType.RATE
         },
         {
@@ -280,7 +288,7 @@ function fillConfig() {
             //The rate of messages (per second) delivered to clients and acknowledged.
             uid: "ack_details",
             label: "Messages acknowledged per second",
-            execute: extractValue(overview.message_stats, "ack_details"),
+            execute: [extractValue(overview.message_stats, "ack_details"), extractRate],
             type: D.valueType.RATE
         },
         {

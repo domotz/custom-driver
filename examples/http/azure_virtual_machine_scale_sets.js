@@ -141,7 +141,8 @@ const virtualMachineScaleSetInfoExtractors = [{
     label: "Scale-in Force Deletion",
     valueType: D.valueType.BOOLEAN,
     extract: function (value) {
-        return value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.forceDeletion || "N/A";
+        const forceDeletion = value && value.properties && value.properties.scaleInPolicy && value.properties.scaleInPolicy.forceDeletion;
+        return typeof forceDeletion === "boolean" ? forceDeletion : "N/A";
     }
 }, {
     key: "computerNamePrefix", label: "Computer Name Prefix", valueType: D.valueType.STRING, extract: function (value) {
@@ -360,7 +361,7 @@ function extractVirtualMachineScaleSetInfo(virtualMachineScaleSet) {
  */
 function insertRecord(virtualMachineScaleSet, virtualMachineScaleSetProperties) {
     const recordValues = virtualMachineScaleSetProperties.map(function (item) {
-        const value = virtualMachineScaleSet[item.key] || "N/A";
+        const value = virtualMachineScaleSet[item.key] === undefined || virtualMachineScaleSet[item.key] === null ? "N/A" : virtualMachineScaleSet[item.key];
         return item.callback && value !== "N/A" ? item.callback(value) : value;
     });
     virtualMachineScaleSetTable.insertRecord(virtualMachineScaleSet.id, recordValues);

@@ -336,7 +336,7 @@ function calculateAverageByMetricName(participants, qosType, metricName) {
         if (acc.count === 0) {
             return "N/A";
         }
-        return acc.count === 0 ? 0 : acc.sum / acc.count;
+        return acc.count === 0 ? 0 : parseFloat((acc.sum / acc.count).toFixed(2));
     }
 
     return undefined;

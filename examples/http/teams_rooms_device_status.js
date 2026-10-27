@@ -178,7 +178,7 @@ const deviceHealthExtractors = [{
     valueType: D.valueType.STRING,
     key: "operatingSystemSoftwareUpdateStatus",
     extract: function (deviceHealth) {
-        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "operatingSystemSoftwareUpdateStatus"]);
+        return extractFromHealthByPath(deviceHealth, ["softwareUpdateHealth", "operatingSystemSoftwareUpdateStatus", "softwareFreshness"]);
     }
 }, {
     label: "Admin Agent Update Status",
@@ -288,8 +288,7 @@ function createVariables(device) {
         name: "MST Rooms URL link",
         value: mstRoomsUrl,
         metadata: { "url": mstRoomsUrl },
-        valueType: D.valueType.NUMBER,
-        unit: "%" }));
+        valueType: D.valueType.STRING }));
 
     return variables;
 }

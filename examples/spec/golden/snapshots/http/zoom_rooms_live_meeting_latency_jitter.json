@@ -1,0 +1,305 @@
+{
+    "two rooms in a live meeting and an idle one validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two rooms in a live meeting and an idle one get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Rooms Live Meeting Latency and Jitter",
+            "columnHeaders": [
+                {
+                    "label": "Room Name",
+                    "valueType": "STRING",
+                    "outputKey": "roomName"
+                },
+                {
+                    "key": "video_input",
+                    "label": "Video Input Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_input_jitter"
+                },
+                {
+                    "key": "video_input",
+                    "label": "Video Input Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_input_latency"
+                },
+                {
+                    "key": "video_output",
+                    "label": "Video Output Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_output_jitter"
+                },
+                {
+                    "key": "video_output",
+                    "label": "Video Output Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_output_latency"
+                },
+                {
+                    "key": "video_device_from_rwg",
+                    "label": "Video Input Web Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_device_from_rwg_jitter"
+                },
+                {
+                    "key": "video_device_from_rwg",
+                    "label": "Video Input Web Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_device_from_rwg_latency"
+                },
+                {
+                    "key": "video_device_to_rwg",
+                    "label": "Video Output Web Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_device_to_rwg_jitter"
+                },
+                {
+                    "key": "video_device_to_rwg",
+                    "label": "Video Output Web Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "video_device_to_rwg_latency"
+                },
+                {
+                    "key": "as_input",
+                    "label": "AS In Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_input_jitter"
+                },
+                {
+                    "key": "as_input",
+                    "label": "AS In Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_input_latency"
+                },
+                {
+                    "key": "as_output",
+                    "label": "AS Out Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_output_jitter"
+                },
+                {
+                    "key": "as_output",
+                    "label": "AS Out Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_output_latency"
+                },
+                {
+                    "key": "as_device_from_rwg",
+                    "label": "AS RWG In Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_device_from_rwg_jitter"
+                },
+                {
+                    "key": "as_device_from_rwg",
+                    "label": "AS RWG In Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_device_from_rwg_latency"
+                },
+                {
+                    "key": "as_device_to_rwg",
+                    "label": "AS RWG Out Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_device_to_rwg_jitter"
+                },
+                {
+                    "key": "as_device_to_rwg",
+                    "label": "AS RWG Out Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "as_device_to_rwg_latency"
+                },
+                {
+                    "key": "audio_input",
+                    "label": "Audio In Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_input_jitter"
+                },
+                {
+                    "key": "audio_input",
+                    "label": "Audio In Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_input_latency"
+                },
+                {
+                    "key": "audio_output",
+                    "label": "Audio Out Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_output_jitter"
+                },
+                {
+                    "key": "audio_output",
+                    "label": "Audio Out Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_output_latency"
+                },
+                {
+                    "key": "audio_device_from_rwg",
+                    "label": "Audio RWG In Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_device_from_rwg_jitter"
+                },
+                {
+                    "key": "audio_device_from_rwg",
+                    "label": "Audio RWG In Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_device_from_rwg_latency"
+                },
+                {
+                    "key": "audio_device_to_rwg",
+                    "label": "Audio RWG Out Jitter Avg",
+                    "metricName": "jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_device_to_rwg_jitter"
+                },
+                {
+                    "key": "audio_device_to_rwg",
+                    "label": "Audio RWG Out Latency Avg",
+                    "metricName": "latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER",
+                    "outputKey": "audio_device_to_rwg_latency"
+                }
+            ],
+            "records": [
+                {
+                    "id": "room_001",
+                    "values": [
+                        "Boardroom",
+                        6.67,
+                        46.67,
+                        6.67,
+                        46.67,
+                        3,
+                        30,
+                        3.5,
+                        31,
+                        4,
+                        30,
+                        4,
+                        30,
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        6.17,
+                        40,
+                        6.17,
+                        40,
+                        1,
+                        15,
+                        1.5,
+                        16
+                    ]
+                },
+                {
+                    "id": "room_002",
+                    "values": [
+                        "Huddle 2",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "room_003",
+                    "values": [
+                        "Training",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        4,
+                        25,
+                        5,
+                        28,
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

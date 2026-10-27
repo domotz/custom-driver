@@ -380,7 +380,7 @@ function insertRecord(storageAccount, metrics) {
     ];
     metricList.forEach(function (metric) {
         const metricValue = metrics[metric.key] || "N/A";
-        recordValues.push(metric.callback ? formatToTwoDecimals(metric.callback(metricValue)) : formatToTwoDecimals(metricValue));
+        recordValues.push(metric.callback ? metric.callback(metricValue) : formatToTwoDecimals(metricValue));
     });
     storageAccountTable.insertRecord(sanitize(storageAccount.name), recordValues);
 }

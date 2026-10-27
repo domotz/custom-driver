@@ -180,10 +180,12 @@ function statusFilter(key, statusFirstNumber) {
  */
 function getValueSum(metrics, key, filterFn) {
     return function () {
-        return metrics
+        var values = metrics
             .filter(function (d) {return d.key == key && (filterFn ? filterFn(d) : true);})
-            .map(function (d) {return parseFloat(d.value.split(" ")[0]);})
-            .reduce(function (a, b) {return a + b;}, 0);
+            .map(function (d) {return parseFloat(d.value.split(" ")[0]);});
+        // null when the metric is absent, so it is not reported as 0
+        if (!values.length) return null;
+        return values.reduce(function (a, b) {return a + b;}, 0);
     };
 }
 
@@ -271,21 +273,21 @@ function fillConfig() {
 function fillTable() {
     podsInfo.map(function (item) {
         var node = _find(nodes, function (n) {return n.ip == item.hostIp;});
+        // Sum the per-container series only: cAdvisor also exports the pod cgroup (container="") and,
+        // on older runtimes, the pause container (container="POD"), which would count the CPU twice.
+        var podCpuSum = function (key) {
+            return getValueSum(node.metrics, key, function (d) {
+                return d.desc.pod == item.podName && d.desc.namespace == item.namespace && d.desc.container && d.desc.container != "POD";
+            })() || 0;
+        };
         return {
             id: item.podName,
             row: [
                 node.name,
                 item.namespace,
-                getValueSum(node.metrics, "container_cpu_usage_seconds_total", function (d) {
-                    return d.desc.pod == item.podName && d.desc.namespace == item.namespace;
-                })(),
-                getValueSum(node.metrics, "container_cpu_system_seconds_total", function (d) {
-                    return d.desc.pod == item.podName && d.desc.namespace == item.namespace;
-                })(),
-                getValueSum(node.metrics, "container_cpu_user_seconds_total", function (d) {
-                    return d.desc.pod == item.podName && d.desc.namespace == item.namespace;
-                })()
-
+                podCpuSum("container_cpu_usage_seconds_total"),
+                podCpuSum("container_cpu_system_seconds_total"),
+                podCpuSum("container_cpu_user_seconds_total")
             ]
         };
     }).forEach(function (item) {
@@ -319,7 +321,7 @@ function extract(data) {
         } else if (typeof (c.execute) == "function") {
             result = c.execute(data);
         }
-        if (result) {
+        if (result != null) {
             return _var(c.uid, c.label, result, c.unit, c.type);
         } else {
             return null;
