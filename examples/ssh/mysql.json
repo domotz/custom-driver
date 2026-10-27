@@ -1,6 +1,6 @@
 {
     "logo": "mysql.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "MySQL Server",
     "description": "Monitor the statistics on MySQL server running on Linux",
     "category": "Software Integration",

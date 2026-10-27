@@ -55,12 +55,6 @@ const hostUsersTable = D.createTable(
 );
 const userDetailsRegexp = /([\w\d]+)\s+([\w]+)\s+(.*)/;
 
-/**
- * @remote_procedure
- * @label Validate WinRM is working on device
- * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
- */
-
 function parseValidateOutput(isValidated) {
     if (isValidated) {
         console.info("Validation successful");
@@ -71,6 +65,11 @@ function parseValidateOutput(isValidated) {
     }
 }
 
+/**
+ * @remote_procedure
+ * @label Validate WinRM is working on device
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ */
 function validate() {
     const command = "Test-WSMan";
     instance.executeCommand(command)

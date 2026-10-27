@@ -149,6 +149,8 @@ function isRunning(data) {
 function parse(output) {
     var ret = { errors: "" };
     var lines = output.split("\n");
+    // The command prints the service status line first, then the pmap total line, then mysqladmin's output
+    ret["status"] = (lines.shift() || "").trim().replace(/^Active:\s*/, "");
     try {
         ret["usedRam"] = _parseUsedRam(lines.shift());
     } catch (e) {

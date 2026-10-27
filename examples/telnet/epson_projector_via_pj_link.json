@@ -1,6 +1,6 @@
 {
     "logo": "epson.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Epson Projector - PJLink Monitoring",
     "description": "Monitors and controls an Epson projector over the PJLink Class 1 protocol via raw TCP/IP",
     "category": "Hardware Integration",
