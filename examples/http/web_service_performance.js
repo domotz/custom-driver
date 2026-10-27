@@ -62,6 +62,7 @@ function responseTime(url) {
             url: path,
             timeout: 5000,
             time: true,
+            protocol: /^https:/i.test(url) ? "https" : "http",
             port: port
         }, function (err, resp) {
             var data = {

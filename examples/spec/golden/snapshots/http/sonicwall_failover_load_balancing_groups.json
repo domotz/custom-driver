@@ -1,0 +1,75 @@
+{
+    "two groups, one member down validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two groups, one member down get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Failover Load Balancing Groups",
+            "columnHeaders": [
+                {
+                    "label": "Group Name"
+                },
+                {
+                    "label": "Member Name"
+                },
+                {
+                    "label": "Link Status"
+                },
+                {
+                    "label": "LB Status"
+                },
+                {
+                    "label": "Probe Status"
+                },
+                {
+                    "label": "Main Target Status"
+                },
+                {
+                    "label": "Alternate Target Status"
+                }
+            ],
+            "records": [
+                {
+                    "id": "x1default-lb-group",
+                    "values": [
+                        "Default LB Group",
+                        "X1",
+                        "Link Up",
+                        "Active",
+                        "Probing",
+                        "Reachable",
+                        "Reachable"
+                    ]
+                },
+                {
+                    "id": "x2default-lb-group",
+                    "values": [
+                        "Default LB Group",
+                        "X2",
+                        "No Link",
+                        "Standby",
+                        "Not Probing",
+                        "Unreachable",
+                        "Unreachable"
+                    ]
+                },
+                {
+                    "id": "x3branch-vpn-group",
+                    "values": [
+                        "Branch VPN Group",
+                        "X3",
+                        "Link Up",
+                        "Active",
+                        "Probing",
+                        "Unreachable",
+                        "Reachable"
+                    ]
+                }
+            ]
+        }
+    }
+}

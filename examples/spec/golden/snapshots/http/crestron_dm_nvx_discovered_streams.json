@@ -1,0 +1,48 @@
+{
+    "two discovered streams validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two discovered streams get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Discovered Streams",
+            "columnHeaders": [
+                {
+                    "label": "Session name"
+                },
+                {
+                    "label": "Bitrate"
+                },
+                {
+                    "label": "Resolution"
+                },
+                {
+                    "label": "Multicast adress"
+                }
+            ],
+            "records": [
+                {
+                    "id": "6b1f0a2e-3c4d-4e5f-8a9b-0c1d2e3f4a5b",
+                    "values": [
+                        "Lobby Display",
+                        "14",
+                        "1920x1080",
+                        "239.8.0.10"
+                    ]
+                },
+                {
+                    "id": "9c2d1b3a-4e5f-4a6b-9c8d-1e2f3a4b5c6d",
+                    "values": [
+                        "Boardroom Camera",
+                        "6",
+                        "1280x720",
+                        "239.8.0.11"
+                    ]
+                }
+            ]
+        }
+    }
+}

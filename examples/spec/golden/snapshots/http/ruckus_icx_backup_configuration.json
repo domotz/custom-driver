@@ -1,0 +1,16 @@
+{
+    "ICX7150-C12, SSH mode validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ICX7150-C12, SSH mode backup": {
+        "type": "success",
+        "backup": {
+            "label": "Ruckus ICX7150-C12 — Running Config",
+            "running": "Current configuration:\n!\nver 08.0.95T213\n!\nstack unit 1\n  module 1 icx7150-c12p-12-port-management-module\n  module 2 icx7150-2-copper-port-2g-module\n!\nvlan 1 name DEFAULT-VLAN by port\n!\nvlan 10 name Users by port\n tagged ethe 1/1/11 to 1/1/12\n untagged ethe 1/1/1 to 1/1/8\n!\nhostname ICX7150-C12\nip dns server-address 9.9.9.9\n!\nusername admin password .....\nsnmp-server community ..... ro\n!\ninterface ethernet 1/1/1\n port-name Printer\n!\nend",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

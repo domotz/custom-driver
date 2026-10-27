@@ -104,6 +104,12 @@ describe("golden harness", () => {
             expect(replay.responder({ kind: "http", method: "post", options: { url: "/sdk", body: "<RetrieveServiceContent/>" } })).toEqual(["a"]);
         });
 
+        it("matches the http protocol when the fixture names it, defaulting to http", () => {
+            const replay = createReplay([{ kind: "http", method: "get", target: "/", protocol: "https", reply: ["s"] }, { kind: "http", method: "get", target: "/", protocol: "http", reply: ["p"] }]);
+            expect(replay.responder({ kind: "http", method: "get", options: { url: "/" } })).toEqual(["p"]);
+            expect(replay.responder({ kind: "http", method: "get", options: { url: "/", protocol: "https" } })).toEqual(["s"]);
+        });
+
         it("matches SNMP calls by OID", () => {
             const replay = createReplay([{ kind: "snmp", method: "get", target: "1.2,1.3", reply: [{}, null] }]);
             expect(replay.responder({ kind: "snmp", method: "get", options: ["1.2", "1.3"] })).toEqual([{}, null]);
