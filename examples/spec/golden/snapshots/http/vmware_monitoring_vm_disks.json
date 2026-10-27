@@ -1,0 +1,55 @@
+{
+    "vcenter 7.0.3 vm disks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 7.0.3 vm disks get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Disks",
+            "columnHeaders": [
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "VMDK File",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "hard-disk-1",
+                    "values": [
+                        "SCSI",
+                        40,
+                        "[datastore1] web-frontend-01/web-frontend-01.vmdk"
+                    ]
+                },
+                {
+                    "id": "hard-disk-2",
+                    "values": [
+                        "SATA",
+                        250.5,
+                        "[datastore2] web-frontend-01/web-frontend-01_1.vmdk"
+                    ]
+                },
+                {
+                    "id": "hard-disk-3",
+                    "values": [
+                        "NVME",
+                        1024,
+                        "[datastore2] web-frontend-01/web-frontend-01_2.vmdk"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "irmc s5 thermal validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "irmc s5 thermal get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Component Temperature",
+            "columnHeaders": [
+                {
+                    "label": "Temperature",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ambient",
+                    "values": [
+                        24,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "cpu1",
+                    "values": [
+                        87,
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "cpu2",
+                    "values": [
+                        "",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "systemboard-1",
+                    "values": [
+                        38,
+                        "Warning"
+                    ]
+                }
+            ]
+        }
+    }
+}

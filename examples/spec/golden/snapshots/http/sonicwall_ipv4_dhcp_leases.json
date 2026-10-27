@@ -1,0 +1,48 @@
+{
+    "tz370w leases validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz370w leases get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "current",
+                "name": "Current",
+                "value": 37,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "avaliable_dynamic",
+                "name": "Available Dynamic",
+                "value": 163,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "avaliable_static",
+                "name": "Available Static",
+                "value": 12,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_active",
+                "name": "Total Active",
+                "value": 49,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "total_configured",
+                "name": "Total Configured",
+                "value": 212,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

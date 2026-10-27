@@ -1,0 +1,155 @@
+{
+    "nsv270 all services validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "nsv270 all services get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Security services status and license",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Licensed",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "gateway-anti-virus",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "anti-spyware",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "intrusion-prevention-and-detection",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "geo-ip-filter",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "botnet-filter",
+                    "values": [
+                        "Off",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "application-control",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "deep-packet-inspection-ssl",
+                    "values": [
+                        "Off",
+                        "No"
+                    ]
+                },
+                {
+                    "id": "deep-packet-inspection-ssh",
+                    "values": [
+                        "Off",
+                        "No"
+                    ]
+                },
+                {
+                    "id": "content-filtering",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "anti-spam-service",
+                    "values": [
+                        "Off",
+                        "No"
+                    ]
+                },
+                {
+                    "id": "endpoint-security-client-capture",
+                    "values": [
+                        "Off",
+                        "No"
+                    ]
+                },
+                {
+                    "id": "capture-advanced-threat-protection",
+                    "values": [
+                        "On",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    },
+    "nsv270 selected services validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "nsv270 selected services get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Security services status and license",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Licensed",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "gateway-anti-virus",
+                    "values": [
+                        "On",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "botnet-filter",
+                    "values": [
+                        "Off",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "capture-advanced-threat-protection",
+                    "values": [
+                        "On",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}
