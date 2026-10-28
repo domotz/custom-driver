@@ -1,4 +1,4 @@
-const { checkSuccess, parseRange } = require("./success-check");
+const { checkSuccess, normalizeReport, parseRange } = require("./success-check");
 const { createReplay } = require("./replay");
 const { deterministicGlobals, FIXED_NOW } = require("./clock");
 
@@ -49,6 +49,16 @@ describe("golden harness", () => {
             expect(checkSuccess(result, { entryPoint: "validate", companion })).toEqual([]);
         });
 
+        it("checks a backup report and snapshots it as backup", () => {
+            const backup = { label: "Custom Driver Configuration Backup", running: "hostname sw1", startup: null, ignoredLines: null };
+            const result = { firstReport: { type: "success", variables: backup }, reports: [{ type: "success" }] };
+            expect(checkSuccess(result, { entryPoint: "backup" })).toEqual([]);
+            expect(normalizeReport(result.firstReport)).toEqual({ type: "success", backup });
+            expect(checkSuccess(result, { entryPoint: "validate" })).toEqual([jasmine.stringContaining("reported a backup object from validate")]);
+            const empty = { firstReport: { type: "success", variables: { label: "x", running: "" } }, reports: [{}] };
+            expect(checkSuccess(empty, { entryPoint: "backup" })).toEqual([jasmine.stringContaining("backup must report")]);
+        });
+
         it("reports more than one report", () => {
             const result = success(null);
             result.reports = [{ type: "success" }, { type: "failure", errorType: "GENERIC_ERROR" }];
@@ -76,6 +86,28 @@ describe("golden harness", () => {
                 "unexpected call http.get @other \"/v1/x\"",
                 "expected call never made http.get /^\\/v1\\//"
             ]);
+        });
+
+        it("matches http headers when the fixture names them", () => {
+            const replay = createReplay([{ kind: "http", method: "post", target: "/rest/lssystem", headers: { "X-Auth-Token": "t1" }, reply: [null, {}, ""] }]);
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/rest/lssystem", headers: { "X-Auth-Token": "other" } } })).toBeUndefined();
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/rest/lssystem", headers: { "X-Auth-Token": "t1" } } })).toEqual([null, {}, ""]);
+        });
+
+        it("matches http bodies when the fixture names them", () => {
+            const replay = createReplay([
+                { kind: "http", method: "post", target: "/sdk", body: /RetrieveServiceContent/, reply: ["a"] },
+                { kind: "http", method: "post", target: "/sdk", body: "{\"q\":1}", reply: ["b"] }
+            ]);
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/sdk", body: { q: 1 } } })).toEqual(["b"]);
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/sdk", body: "<Login/>" } })).toBeUndefined();
+            expect(replay.responder({ kind: "http", method: "post", options: { url: "/sdk", body: "<RetrieveServiceContent/>" } })).toEqual(["a"]);
+        });
+
+        it("matches the http protocol when the fixture names it, defaulting to http", () => {
+            const replay = createReplay([{ kind: "http", method: "get", target: "/", protocol: "https", reply: ["s"] }, { kind: "http", method: "get", target: "/", protocol: "http", reply: ["p"] }]);
+            expect(replay.responder({ kind: "http", method: "get", options: { url: "/" } })).toEqual(["p"]);
+            expect(replay.responder({ kind: "http", method: "get", options: { url: "/", protocol: "https" } })).toEqual(["s"]);
         });
 
         it("matches SNMP calls by OID", () => {

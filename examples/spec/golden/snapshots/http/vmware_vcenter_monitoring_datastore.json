@@ -1,0 +1,71 @@
+{
+    "vcenter 7.0.3 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 7.0.3 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Datastores",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "datastore-11",
+                    "values": [
+                        "datastore1",
+                        "VMFS",
+                        1024,
+                        412.32,
+                        "59.7"
+                    ]
+                },
+                {
+                    "id": "datastore-12",
+                    "values": [
+                        "nfs-backup",
+                        "NFS",
+                        2048,
+                        36,
+                        "98.2"
+                    ]
+                },
+                {
+                    "id": "datastore-13",
+                    "values": [
+                        "vsan-prod",
+                        "vsan",
+                        500,
+                        5,
+                        "99.0"
+                    ]
+                }
+            ]
+        }
+    }
+}

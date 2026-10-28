@@ -1,0 +1,57 @@
+{
+    "macos 14.5 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "macos 14.5 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Disk partitions",
+            "columnHeaders": [
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "disk4",
+                    "values": [
+                        25,
+                        "750.00",
+                        "1000.00"
+                    ]
+                },
+                {
+                    "id": "disk5",
+                    "values": [
+                        95,
+                        "100.00",
+                        "2000.00"
+                    ]
+                },
+                {
+                    "id": "disk6",
+                    "values": [
+                        100,
+                        "0.00",
+                        "8.00"
+                    ]
+                }
+            ]
+        }
+    }
+}

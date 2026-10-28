@@ -1,0 +1,69 @@
+{
+    "transmitter with three preview sizes validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "transmitter with three preview sizes get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Images",
+            "columnHeaders": [
+                {
+                    "label": "FQDN Path"
+                },
+                {
+                    "label": "IPv4 Path"
+                },
+                {
+                    "label": "Is Image Available"
+                },
+                {
+                    "label": "Size"
+                },
+                {
+                    "label": "Height"
+                },
+                {
+                    "label": "Width"
+                }
+            ],
+            "records": [
+                {
+                    "id": "Image1_320x180",
+                    "values": [
+                        "https://nvx-lobby-tx.example.com/preview/Image1_320x180.jpg",
+                        "https://192.168.1.50/preview/Image1_320x180.jpg",
+                        true,
+                        8214,
+                        180,
+                        320
+                    ]
+                },
+                {
+                    "id": "Image2_640x360",
+                    "values": [
+                        "https://nvx-lobby-tx.example.com/preview/Image2_640x360.jpg",
+                        "https://192.168.1.50/preview/Image2_640x360.jpg",
+                        true,
+                        21980,
+                        360,
+                        640
+                    ]
+                },
+                {
+                    "id": "Image3_1920x1080",
+                    "values": [
+                        "https://nvx-lobby-tx.example.com/preview/Image3_1920x1080.jpg",
+                        "https://192.168.1.50/preview/Image3_1920x1080.jpg",
+                        false,
+                        0,
+                        1080,
+                        1920
+                    ]
+                }
+            ]
+        }
+    }
+}

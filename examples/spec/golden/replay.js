@@ -2,10 +2,17 @@
  * Replay responder for golden fixtures.
  *
  * createReplay(calls) -> { responder, problems() }
- *   calls = [{ kind, method, target, host?, reply }]
+ *   calls = [{ kind, method, target, host?, protocol?, headers?, body?, reply }]
  *   target is compared (string equality or RegExp test) with targetOf(call): the URL for http,
- *   the command for ssh/telnet/tcp/winrm, the OID (or OIDs joined by ",") for snmp.
+ *   the command for ssh/telnet/tcp/winrm, the OID (or OIDs joined by ",") for snmp; ping, mtr and tftp
+ *   calls have no target (leave it out).
  *   host, when given, must equal the external device host (D.createExternalDevice).
+ *   headers, when given, must each equal the request's header of that name (http only), e.g. to prove
+ *   that the token from a login reply is sent on the data calls.
+ *   protocol, when given, must equal the request's protocol option (http only; absent means "http", as
+ *   remote_pawn_ng device.js buildRequest defaults it).
+ *   body, when given, is compared (string equality or RegExp test) with the request body (http only;
+ *   an object body is JSON-stringified), e.g. to tell apart SOAP calls that all post to one URL.
  *
  * Each transport call consumes the first unused fixture call that matches it. A call with no match
  * gets no callback (the driver then never reports) and is listed by problems(), as is every
@@ -33,8 +40,29 @@ function matches(expected, call) {
     if (expected.host !== undefined && expected.host !== call.host) {
         return false;
     }
+    if (expected.headers !== undefined) {
+        const sent = (call.options && call.options.headers) || {};
+        if (Object.keys(expected.headers).some((name) => sent[name] !== expected.headers[name])) {
+            return false;
+        }
+    }
+    if (expected.protocol !== undefined && expected.protocol !== ((call.options && call.options.protocol) || "http")) {
+        return false;
+    }
+    if (expected.body !== undefined && !matchesValue(expected.body, bodyOf(call))) {
+        return false;
+    }
     const target = targetOf(call);
-    return expected.target instanceof RegExp ? expected.target.test(String(target)) : expected.target === target;
+    return matchesValue(expected.target, target);
+}
+
+function matchesValue(expected, actual) {
+    return expected instanceof RegExp ? expected.test(String(actual)) : expected === actual;
+}
+
+function bodyOf(call) {
+    const body = call.options && call.options.body;
+    return body !== null && typeof body === "object" ? JSON.stringify(body) : body;
 }
 
 function describeCall(call) {

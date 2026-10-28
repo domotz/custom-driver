@@ -161,9 +161,9 @@ const vmConfigExtractors = [
 // Extract basic VM information
 const vmInfoExtractors = [
     { key: "id", extract: function (vm) {return sanitize(vm.properties.vmId);} },
-    { label: "Name", valueType: D.valueType.NUMBER, key: "vmName", extract: function (vm) {return vm.name || "N/A";} },
+    { label: "Name", valueType: D.valueType.STRING, key: "vmName", extract: function (vm) {return vm.name || "N/A";} },
     { label: "Resource Group", valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup },
-    { label: "OS Type", valueType: D.valueType.STRING, key: "osType", extract: function (vm) {return vm.location || "N/A";} }
+    { label: "OS Type", valueType: D.valueType.STRING, key: "osType", extract: function (vm) {return vm.properties && vm.properties.storageProfile && vm.properties.storageProfile.osDisk && vm.properties.storageProfile.osDisk.osType || "N/A";} }
 ];
 
 /**

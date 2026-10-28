@@ -98,8 +98,12 @@ function parseData(output) {
     var lines = output.split("\n");
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
     var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
-    for (var i = 3; i < lines.length - 1; i++) {
+    // The collector trims stdout, so the last line is data; skip blank lines and a trailing "system>" prompt
+    for (var i = 3; i < lines.length; i++) {
         var line = lines[i].trim();
+        if (!line || /^\S*>$/.test(line)) {
+            continue;
+        }
         var parts = line.split(/\s+/);
         var temperature = parts.slice(-3)[0];
         var temps = temperature.split("/");

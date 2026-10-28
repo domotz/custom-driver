@@ -40,13 +40,10 @@ describe("driver catalogue", () => {
     it("finds every top-level function documented as a @remote_procedure", () => {
         // A JSDoc block, then (on the same or the next lines) a top-level function declaration.
         const documented = /^\s*\/\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*(?:async\s+)?function\s+(\w+)\s*\(/gm;
-        // winrm/windows_host_users.js: the "Validate WinRM" @remote_procedure block sits above the
-        // helper parseValidateOutput(); the validate() it describes follows right after it.
-        const misplacedJsdoc = new Set(["winrm/windows_host_users.js parseValidateOutput"]);
         let checked = 0;
         for (const d of drivers) {
             for (const m of d.source.matchAll(documented)) {
-                if (!/@remote_procedure\b/.test(m[1]) || misplacedJsdoc.has(`${d.path} ${m[2]}`)) {
+                if (!/@remote_procedure\b/.test(m[1])) {
                     continue;
                 }
                 checked += 1;
@@ -54,10 +51,6 @@ describe("driver catalogue", () => {
             }
         }
         expect(checked).toBeGreaterThan(drivers.length);
-        for (const key of misplacedJsdoc) {
-            const [file, name] = key.split(" ");
-            expect(byPath(file).source).withContext(key).toMatch(new RegExp(`function ${name}\\s*\\(`));
-        }
     });
 
     it("finds backup in configuration-management drivers", () => {

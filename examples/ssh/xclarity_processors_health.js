@@ -92,8 +92,12 @@ function parseData(output) {
     var lines = output.split("\n");
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
     var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
-    for (var i = 2; i < lines.length - 1; i++) {
+    // The collector trims stdout, so the last line is data; skip blank lines and a trailing "system>" prompt
+    for (var i = 2; i < lines.length; i++) {
         var line = lines[i].trim();
+        if (!line || /^\S*>$/.test(line)) {
+            continue;
+        }
         var values = line.split(/\s+/);
         var recordId = (values[0] + " " + values[1]).replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
         var status =  values[2];

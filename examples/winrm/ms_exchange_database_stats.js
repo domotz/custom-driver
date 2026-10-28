@@ -40,9 +40,9 @@ var winrmConfig = {
 var table = D.createTable(
     "Database Reads / Writes Average Latency",
     [
-        { label: "Instance Name", type: D.valueType.STRING },
-        { label: "Average Read Latency", type: D.valueType.NUMBER },
-        { label: "Average Write Latency", type: D.valueType.NUMBER }
+        { label: "Instance Name", valueType: D.valueType.STRING },
+        { label: "Average Read Latency", valueType: D.valueType.NUMBER },
+        { label: "Average Write Latency", valueType: D.valueType.NUMBER }
     ]
 );
 
@@ -93,6 +93,10 @@ function parseOutput(output) {
         var jsonOutput;
         try {
             jsonOutput = JSON.parse(output.outcome.stdout);
+            // ConvertTo-Json writes a single counter sample as a bare object
+            if (!Array.isArray(jsonOutput)) {
+                jsonOutput = jsonOutput ? [jsonOutput] : [];
+            }
         } catch (e) {
             console.error("Unable to parse the WinRM output: " + e.message);
             D.failure(D.errorType.PARSING_ERROR);

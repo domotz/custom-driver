@@ -1,0 +1,16 @@
+{
+    "edgeswitch 8 150w 1.9.2 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "edgeswitch 8 150w 1.9.2 backup": {
+        "type": "success",
+        "backup": {
+            "label": "EdgeSwitch Running Config (SSH)",
+            "running": "show running-config\n!Current Configuration:\n!\n!System Description \"EdgeSwitch 8 150W, 1.9.2, Linux 3.6.5, 1.0.5.5008305\"\n!System Software Version \"1.9.2\"\n!\nnetwork protocol none\nnetwork parms 192.168.1.20 255.255.255.0 192.168.1.1\nvlan database\nvlan 10,20\nexit\nconfigure\nhostname \"EdgeSwitch-Office\"\nusername \"admin\" password 5f4dcc3b5aa765d61d8327deb882cf99 level 15 encrypted\ninterface 0/1\nswitchport access vlan 10\npoe opmode auto\nexit\nexit\n(UBNT EdgeSwitch) #",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

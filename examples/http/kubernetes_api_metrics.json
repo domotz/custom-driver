@@ -1,6 +1,6 @@
 {
     "logo": "kubernetes.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Kubernetes API Metrics",
     "description": "This script extracts kubernetes API metrics: client requests, cpu usage, fds count, trhread count, virtual memory, TLS handshake errors",
     "category": "Software Integration",

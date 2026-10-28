@@ -1,0 +1,62 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "state",
+                "name": "State",
+                "value": "OS booted",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "restarts",
+                "name": "Restarts",
+                "value": "71",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cooling_devices",
+                "name": "Cooling Devices",
+                "value": "Normal",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "local_storage",
+                "name": "Local Storage",
+                "value": "Warning",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "processors",
+                "name": "Processors",
+                "value": "Normal",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "memory",
+                "name": "Memory",
+                "value": "Normal",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system",
+                "name": "System",
+                "value": "Warning",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

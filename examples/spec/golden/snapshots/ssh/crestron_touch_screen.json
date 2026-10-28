@@ -1,0 +1,176 @@
+{
+    "tsw-1070 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tsw-1070 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Touchscreen Sensors",
+            "columnHeaders": [
+                {
+                    "label": "Sensor"
+                },
+                {
+                    "label": "Value"
+                }
+            ],
+            "records": [
+                {
+                    "id": "id-current-cpu/sata-temperature",
+                    "values": [
+                        "Current CPU/SATA Temperature - C",
+                        "44"
+                    ]
+                },
+                {
+                    "id": "id-current-pmic-junction-temperature",
+                    "values": [
+                        "Current PMIC Junction Temperature - C",
+                        "43"
+                    ]
+                },
+                {
+                    "id": "id-category",
+                    "values": [
+                        "Category",
+                        "TouchPanel"
+                    ]
+                },
+                {
+                    "id": "id-core3uilevel",
+                    "values": [
+                        "Core3UILevel",
+                        "3.00"
+                    ]
+                },
+                {
+                    "id": "id-dhcp-support",
+                    "values": [
+                        "DHCP Support",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-displaylist",
+                    "values": [
+                        "DisplayList",
+                        "YES"
+                    ]
+                },
+                {
+                    "id": "id-ethernet-active",
+                    "values": [
+                        "Ethernet Active",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-ethernet-ports",
+                    "values": [
+                        "Ethernet Ports",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "id-front-panel-slot",
+                    "values": [
+                        "Front Panel Slot",
+                        "2"
+                    ]
+                },
+                {
+                    "id": "id-front-panel-type",
+                    "values": [
+                        "Front Panel Type",
+                        "TouchScreen"
+                    ]
+                },
+                {
+                    "id": "id-ftp-transfers",
+                    "values": [
+                        "FTP Transfers",
+                        "Enabled Level 1"
+                    ]
+                },
+                {
+                    "id": "id-ip-masters",
+                    "values": [
+                        "IP Masters",
+                        "16"
+                    ]
+                },
+                {
+                    "id": "id-ip-table",
+                    "values": [
+                        "IP Table",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-max-host-name",
+                    "values": [
+                        "Max Host Name",
+                        "63"
+                    ]
+                },
+                {
+                    "id": "id-max-ip-entries",
+                    "values": [
+                        "Max IP Entries",
+                        "16"
+                    ]
+                },
+                {
+                    "id": "id-password",
+                    "values": [
+                        "Password",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "id-rconsole-support",
+                    "values": [
+                        "RConsole support",
+                        "SUPPORTED Level 3"
+                    ]
+                },
+                {
+                    "id": "id-ssl-support",
+                    "values": [
+                        "SSL support",
+                        "SUPPORTED Level 1"
+                    ]
+                },
+                {
+                    "id": "id-system-monitor",
+                    "values": [
+                        "System Monitor",
+                        "SUPPORTED Level 4"
+                    ]
+                },
+                {
+                    "id": "id-tji-support",
+                    "values": [
+                        "TJI support",
+                        "Level 2"
+                    ]
+                },
+                {
+                    "id": "id-web-server",
+                    "values": [
+                        "Web Server",
+                        "Enabled Level 1"
+                    ]
+                }
+            ]
+        }
+    },
+    "tsw-1070 custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

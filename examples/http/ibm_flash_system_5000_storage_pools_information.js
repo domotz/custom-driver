@@ -163,6 +163,22 @@ function cleanFloatValue(value) {
     return parseFloat(value.replace(/[^0-9.]/g, ""));
 }
 
+const UNIT_EXPONENTS = { B: 0, KB: 1, MB: 2, GB: 3, TB: 4, PB: 5 };
+
+/**
+ * Converts a capacity with a unit suffix (e.g. "812.50GB", base 1024) to the given unit.
+ * @param {string} value - The capacity as reported by the CLI.
+ * @param {string} unit - The target unit.
+ * @returns {number|string} The converted capacity, or "N/A" when the unit is unknown.
+ */
+function convertCapacity(value, unit) {
+    const match = /^([0-9.]+)\s*([KMGTP]?B)$/.exec(value);
+    if (!match) {
+        return "N/A";
+    }
+    return Number((parseFloat(match[1]) * Math.pow(1024, UNIT_EXPONENTS[match[2]] - UNIT_EXPONENTS[unit])).toFixed(4));
+}
+
 /**
  * Populates the storage pools table with details from a list.
  * @param {Array<Object>} storagePoolsDetailsList - List of managed disk details.
@@ -175,24 +191,24 @@ function populateTable(storagePoolsDetailsList) {
             managedDiskDetails["status"] || "N/A",
             managedDiskDetails["mdisk_count"] ? cleanFloatValue(managedDiskDetails["mdisk_count"]) : "N/A",
             managedDiskDetails["vdisk_count"] ? cleanFloatValue(managedDiskDetails["vdisk_count"]) : "N/A",
-            managedDiskDetails["capacity"] ? cleanFloatValue(managedDiskDetails["capacity"]) : "N/A",
+            managedDiskDetails["capacity"] ? convertCapacity(managedDiskDetails["capacity"], "TB") : "N/A",
             managedDiskDetails["extent_size"] ? cleanFloatValue(managedDiskDetails["extent_size"]) : "N/A",
-            managedDiskDetails["free_capacity"] ? cleanFloatValue(managedDiskDetails["free_capacity"]) : "N/A",
-            managedDiskDetails["virtual_capacity"] ? cleanFloatValue(managedDiskDetails["virtual_capacity"]) : "N/A",
-            managedDiskDetails["used_capacity"] ? cleanFloatValue(managedDiskDetails["used_capacity"]) : "N/A",
-            managedDiskDetails["real_capacity"] ? cleanFloatValue(managedDiskDetails["real_capacity"]) : "N/A",
+            managedDiskDetails["free_capacity"] ? convertCapacity(managedDiskDetails["free_capacity"], "TB") : "N/A",
+            managedDiskDetails["virtual_capacity"] ? convertCapacity(managedDiskDetails["virtual_capacity"], "TB") : "N/A",
+            managedDiskDetails["used_capacity"] ? convertCapacity(managedDiskDetails["used_capacity"], "TB") : "N/A",
+            managedDiskDetails["real_capacity"] ? convertCapacity(managedDiskDetails["real_capacity"], "TB") : "N/A",
             managedDiskDetails["overallocation"] ? cleanFloatValue(managedDiskDetails["overallocation"]) : "N/A",
             managedDiskDetails["warning"] ? cleanFloatValue(managedDiskDetails["warning"]) : "N/A",
             managedDiskDetails["easy_tier"] || "N/A",
             managedDiskDetails["easy_tier_status"] || "N/A",
             managedDiskDetails["compression_active"] || "N/A",
-            managedDiskDetails["compression_virtual_capacity"] ? cleanFloatValue(managedDiskDetails["compression_virtual_capacity"]) : "N/A",
-            managedDiskDetails["compression_compressed_capacity"] ? cleanFloatValue(managedDiskDetails["compression_compressed_capacity"]) : "N/A",
-            managedDiskDetails["compression_uncompressed_capacity"] ? cleanFloatValue(managedDiskDetails["compression_uncompressed_capacity"]) : "N/A",
+            managedDiskDetails["compression_virtual_capacity"] ? convertCapacity(managedDiskDetails["compression_virtual_capacity"], "MB") : "N/A",
+            managedDiskDetails["compression_compressed_capacity"] ? convertCapacity(managedDiskDetails["compression_compressed_capacity"], "MB") : "N/A",
+            managedDiskDetails["compression_uncompressed_capacity"] ? convertCapacity(managedDiskDetails["compression_uncompressed_capacity"], "MB") : "N/A",
             managedDiskDetails["parent_mdisk_grp_id"] || "N/A",
             managedDiskDetails["parent_mdisk_grp_name"] || "N/A",
             managedDiskDetails["child_mdisk_grp_count"] ? cleanFloatValue(managedDiskDetails["child_mdisk_grp_count"]) : "N/A",
-            managedDiskDetails["child_mdisk_grp_capacity"] ? cleanFloatValue(managedDiskDetails["child_mdisk_grp_capacity"]) : "N/A",
+            managedDiskDetails["child_mdisk_grp_capacity"] ? convertCapacity(managedDiskDetails["child_mdisk_grp_capacity"], "MB") : "N/A",
             managedDiskDetails["type"] || "N/A",
             managedDiskDetails["encrypt"] || "N/A",
             managedDiskDetails["owner_type"] || "N/A",
@@ -201,11 +217,11 @@ function populateTable(storagePoolsDetailsList) {
             managedDiskDetails["site_id"] || "N/A",
             managedDiskDetails["site_name"] || "N/A",
             managedDiskDetails["data_reduction"] || "N/A",
-            managedDiskDetails["used_capacity_before_reduction"] ? cleanFloatValue(managedDiskDetails["used_capacity_before_reduction"]) : "N/A",
-            managedDiskDetails["used_capacity_after_reduction"] ? cleanFloatValue(managedDiskDetails["used_capacity_after_reduction"]) : "N/A",
-            managedDiskDetails["overhead_capacity"] ? cleanFloatValue(managedDiskDetails["overhead_capacity"]) : "N/A",
-            managedDiskDetails["deduplication_capacity_saving"] ? cleanFloatValue(managedDiskDetails["deduplication_capacity_saving"]) : "N/A",
-            managedDiskDetails["reclaimable_capacity"] ? cleanFloatValue(managedDiskDetails["reclaimable_capacity"]) : "N/A",
+            managedDiskDetails["used_capacity_before_reduction"] ? convertCapacity(managedDiskDetails["used_capacity_before_reduction"], "MB") : "N/A",
+            managedDiskDetails["used_capacity_after_reduction"] ? convertCapacity(managedDiskDetails["used_capacity_after_reduction"], "MB") : "N/A",
+            managedDiskDetails["overhead_capacity"] ? convertCapacity(managedDiskDetails["overhead_capacity"], "MB") : "N/A",
+            managedDiskDetails["deduplication_capacity_saving"] ? convertCapacity(managedDiskDetails["deduplication_capacity_saving"], "MB") : "N/A",
+            managedDiskDetails["reclaimable_capacity"] ? convertCapacity(managedDiskDetails["reclaimable_capacity"], "MB") : "N/A",
             managedDiskDetails["easy_tier_fcm_over_allocation_max"] ? cleanFloatValue(managedDiskDetails["easy_tier_fcm_over_allocation_max"]) : "N/A",
             managedDiskDetails["provisioning_policy_id"] || "N/A",
             managedDiskDetails["provisioning_policy_name"] || "N/A"

@@ -269,7 +269,8 @@ function createVariables() {
             variables.push(D.createVariable("storage-free", "Storage Free", storage.free || 0, "bytes", D.valueType.NUMBER));
 
             // Calculate storage usage percentage
-            if (storage.total && storage.free) {
+            // a full disk has free 0
+            if (storage.total && typeof storage.free === "number") {
                 const used = storage.total - storage.free;
                 const usagePercent = Math.round((used / storage.total) * 100);
                 variables.push(D.createVariable("storage-usage", "Storage Usage", usagePercent, "%", D.valueType.NUMBER));

@@ -32,7 +32,7 @@ const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRM
 // Command to retrieve failed login attempts
 const command = "$Hours=" + hours + ';$events=Get-WinEvent -FilterHashTable @{LogName="Security";' +
     "ID=4625;" +
-    "StartTime=((Get-Date).AddHours(-($Hours)).Date);" +
+    "StartTime=((Get-Date).AddHours(-($Hours)));" +
     "EndTime=(Get-Date)} -ErrorAction SilentlyContinue;" +
     "$GroupByUsers = $events | ForEach-Object {[PSCustomObject]@{TimeCreated = $_.TimeCreated;" +
     "TargetUserName = $_.properties[5].value;" +

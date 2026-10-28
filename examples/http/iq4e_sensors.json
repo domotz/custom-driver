@@ -1,6 +1,6 @@
 {
     "logo": "iq4e.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "IQ4E Controller",
     "description": "This script monitors IQ4E Controller sensors",
     "category": "Hardware Integration",

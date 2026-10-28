@@ -1,0 +1,41 @@
+{
+    "msa 2050 system validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 system get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "product-id",
+                "name": "Product ID",
+                "value": "MSA 2050 SAN",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "midplane-serial-number",
+                "name": "Midplane Serial Number",
+                "value": "00C0FFF1A2B3",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "health",
+                "name": "Health",
+                "value": "Degraded",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "health-reason",
+                "name": "Health Reason",
+                "value": "The system is operational, but one or more disks have failed.",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

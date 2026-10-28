@@ -31,7 +31,7 @@
 
 const endpoints = [
     { endpoint: "lsdrive", key: "id" },
-    { endpoint: "lsarraymember", key: "member_id" }
+    { endpoint: "lsarraymember", key: "drive_id" }
 ];
 
 let httpResponses = [];
@@ -114,6 +114,19 @@ function login() {
     return callHttps(endpoint, headers);
 }
 
+const UNIT_EXPONENTS = { B: 0, KB: 1, MB: 2, GB: 3, TB: 4, PB: 5 };
+
+/**
+ * Converts a capacity with a unit suffix (e.g. "812.50GB", base 1024) to terabytes
+ * @param {string} value The capacity as reported by the CLI
+ * @returns {number|string} The capacity in TB, or "N/A" when the unit is unknown
+ */
+function toTerabytes(value) {
+    const match = /^([0-9.]+)\s*([KMGTP]?B)$/.exec(value);
+    if (!match) return "N/A";
+    return Number((parseFloat(match[1]) * Math.pow(1024, UNIT_EXPONENTS[match[2]] - UNIT_EXPONENTS.TB)).toFixed(4));
+}
+
 /**
  * Populates the physical drives table with drive information
  * @param {Array} physicalDrives An array of physical drive details
@@ -125,7 +138,7 @@ function populateTable(physicalDrives) {
             drive.error_sequence_number || "N/A",
             drive.use || "N/A",
             drive.tech_type || "N/A",
-            drive.capacity ? drive.capacity.replace(/[^0-9.]/g, "") : "N/A",
+            drive.capacity ? toTerabytes(drive.capacity) : "N/A",
             drive.mdisk_id || "N/A",
             drive.mdisk_name || "N/A",
             drive.member_id || "N/A",
@@ -180,13 +193,14 @@ function mergeOutputs() {
  */
 function retrieveAndStoreData(body) {
     const promises = endpoints.map(function (endpointDetails) {
-        return callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-            .then(function (response) {
-                storeResponse(response, endpointDetails.key);
-                return response;
-            });
+        return callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint);
     });
-    return Promise.all(promises);
+    return Promise.all(promises).then(function (responses) {
+        responses.forEach(function (response, i) {
+            storeResponse(response, endpoints[i].key);
+        });
+        return responses;
+    });
 }
 
 /**

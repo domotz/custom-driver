@@ -1,0 +1,31 @@
+{
+    "three components, two not operational validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three components, two not operational get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "0",
+                "name": "Zoom Meetings",
+                "value": "Operational",
+                "unit": null
+            },
+            {
+                "uid": "1",
+                "name": "Zoom Phone",
+                "value": "Degraded Performance",
+                "unit": null
+            },
+            {
+                "uid": "2",
+                "name": "Zoom Webinars",
+                "value": "Partial Outage",
+                "unit": null
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "tz270 all interfaces validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 all interfaces get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Interfaces",
+            "columnHeaders": [
+                {
+                    "label": "Ip Address"
+                },
+                {
+                    "label": "Gateway"
+                },
+                {
+                    "label": "Zone"
+                },
+                {
+                    "label": "Management"
+                },
+                {
+                    "label": "User Login"
+                }
+            ],
+            "records": [
+                {
+                    "id": "x0-office-lan",
+                    "values": [
+                        "192.168.168.168 - 255.255.255.0",
+                        "-",
+                        "LAN",
+                        "https : Yes | ping : Yes | snmp : Yes | ssh : No",
+                        "http : No | https : Yes"
+                    ]
+                },
+                {
+                    "id": "x1",
+                    "values": [
+                        " - ",
+                        "-",
+                        "WAN",
+                        "https : No | ping : Yes | snmp : No | ssh : No",
+                        "http : No | https : No"
+                    ]
+                },
+                {
+                    "id": "x2-guest",
+                    "values": [
+                        "10.20.30.1 - 255.255.255.0",
+                        "10.20.30.254",
+                        "DMZ",
+                        "https : Yes | ping : No | snmp : No | ssh : Yes",
+                        "http : Yes | https : Yes"
+                    ]
+                },
+                {
+                    "id": "x3",
+                    "values": [
+                        "-",
+                        "-",
+                        "-",
+                        "-",
+                        "-"
+                    ]
+                }
+            ]
+        }
+    },
+    "tz270 selected interfaces validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 selected interfaces get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Interfaces",
+            "columnHeaders": [
+                {
+                    "label": "Ip Address"
+                },
+                {
+                    "label": "Gateway"
+                },
+                {
+                    "label": "Zone"
+                },
+                {
+                    "label": "Management"
+                },
+                {
+                    "label": "User Login"
+                }
+            ],
+            "records": [
+                {
+                    "id": "x0-office-lan",
+                    "values": [
+                        "192.168.168.168 - 255.255.255.0",
+                        "-",
+                        "LAN",
+                        "https : Yes | ping : Yes | snmp : Yes | ssh : No",
+                        "http : No | https : Yes"
+                    ]
+                },
+                {
+                    "id": "x2-guest",
+                    "values": [
+                        "10.20.30.1 - 255.255.255.0",
+                        "10.20.30.254",
+                        "DMZ",
+                        "https : Yes | ping : No | snmp : No | ssh : Yes",
+                        "http : Yes | https : Yes"
+                    ]
+                }
+            ]
+        }
+    }
+}

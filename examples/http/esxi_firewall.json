@@ -1,6 +1,6 @@
 {
     "logo": "vmware-esxi.svg",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "name": "ESXi Firewall",
     "description": "Monitors the ESXi host Firewall",
     "category": "Software Integration",
@@ -18,7 +18,7 @@
     "sample_period_s": 1800,
     "has_actions": false,
     "expected_variables": {
-        "independent": "[7]"
+        "table": "[7]"
     },
     "protocols": [
         "HTTPS"

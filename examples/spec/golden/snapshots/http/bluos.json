@@ -1,0 +1,372 @@
+{
+    "playing from a streaming service validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "state",
+                "name": "State",
+                "value": "play"
+            }
+        ],
+        "table": null
+    },
+    "playing from a streaming service get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "canMovePlayback",
+                "name": "Can Move Playback",
+                "value": "true"
+            },
+            {
+                "uid": "canSeek",
+                "name": "Can Seek",
+                "value": "true"
+            },
+            {
+                "uid": "cursor",
+                "name": "Cursor",
+                "value": "4"
+            },
+            {
+                "uid": "db",
+                "name": "dB",
+                "value": "-28.5",
+                "unit": "dB"
+            },
+            {
+                "uid": "image",
+                "name": "Image",
+                "value": "/Artwork?service=Qobuz&songid=123"
+            },
+            {
+                "uid": "indexing",
+                "name": "Indexing",
+                "value": "0"
+            },
+            {
+                "uid": "mid",
+                "name": "Mid",
+                "value": "1"
+            },
+            {
+                "uid": "mode",
+                "name": "Mode",
+                "value": "1"
+            },
+            {
+                "uid": "mute",
+                "name": "Mute",
+                "value": "false"
+            },
+            {
+                "uid": "pid",
+                "name": "Status Pid",
+                "value": "117"
+            },
+            {
+                "uid": "preset_id",
+                "name": "Preset Id",
+                "value": "2"
+            },
+            {
+                "uid": "quality",
+                "name": "Quality",
+                "value": "cd"
+            },
+            {
+                "uid": "repeat",
+                "name": "Repeat",
+                "value": "off"
+            },
+            {
+                "uid": "shuffle",
+                "name": "Shuffle",
+                "value": "always"
+            },
+            {
+                "uid": "sid",
+                "name": "Sid",
+                "value": "6"
+            },
+            {
+                "uid": "song",
+                "name": "Song",
+                "value": "3"
+            },
+            {
+                "uid": "state",
+                "name": "State",
+                "value": "play"
+            },
+            {
+                "uid": "stationImage",
+                "name": "Station Image",
+                "value": ""
+            },
+            {
+                "uid": "streamFormat",
+                "name": "Stream Format",
+                "value": "FLAC 44100/16/2"
+            },
+            {
+                "uid": "streamUrl",
+                "name": "Stream URL",
+                "value": ""
+            },
+            {
+                "uid": "syncStat",
+                "name": "Sync Stat",
+                "value": "17"
+            },
+            {
+                "uid": "title1",
+                "name": "Title 1",
+                "value": "Kind of Blue"
+            },
+            {
+                "uid": "title2",
+                "name": "Title 2",
+                "value": "Miles Davis"
+            },
+            {
+                "uid": "title3",
+                "name": "Title 3",
+                "value": "So What"
+            },
+            {
+                "uid": "volume",
+                "name": "Volume",
+                "value": "25",
+                "unit": "%"
+            },
+            {
+                "uid": "secs",
+                "name": "Seconds",
+                "value": "143",
+                "unit": "secs"
+            }
+        ],
+        "table": null
+    },
+    "playing from a streaming service custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "playing from a streaming service custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "playing from a streaming service custom_3": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "playing from a streaming service custom_4": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "playing from a streaming service custom_5": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "playing from a streaming service custom_6": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "playing from a streaming service custom_7": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "state",
+                "name": "State",
+                "value": "pause"
+            }
+        ],
+        "table": null
+    },
+    "paused and muted on internet radio get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "canMovePlayback",
+                "name": "Can Move Playback",
+                "value": "false"
+            },
+            {
+                "uid": "canSeek",
+                "name": "Can Seek",
+                "value": "false"
+            },
+            {
+                "uid": "cursor",
+                "name": "Cursor",
+                "value": "0"
+            },
+            {
+                "uid": "db",
+                "name": "dB",
+                "value": "-80",
+                "unit": "dB"
+            },
+            {
+                "uid": "image",
+                "name": "Image",
+                "value": "/Artwork?service=TuneIn"
+            },
+            {
+                "uid": "indexing",
+                "name": "Indexing",
+                "value": "0"
+            },
+            {
+                "uid": "mid",
+                "name": "Mid",
+                "value": "1"
+            },
+            {
+                "uid": "mode",
+                "name": "Mode",
+                "value": "0"
+            },
+            {
+                "uid": "mute",
+                "name": "Mute",
+                "value": "true"
+            },
+            {
+                "uid": "pid",
+                "name": "Status Pid",
+                "value": "118"
+            },
+            {
+                "uid": "preset_id",
+                "name": "Preset Id",
+                "value": ""
+            },
+            {
+                "uid": "quality",
+                "name": "Quality",
+                "value": "mp3"
+            },
+            {
+                "uid": "repeat",
+                "name": "Repeat",
+                "value": "play queue"
+            },
+            {
+                "uid": "shuffle",
+                "name": "Shuffle",
+                "value": "once"
+            },
+            {
+                "uid": "sid",
+                "name": "Sid",
+                "value": "3"
+            },
+            {
+                "uid": "song",
+                "name": "Song",
+                "value": "0"
+            },
+            {
+                "uid": "state",
+                "name": "State",
+                "value": "pause"
+            },
+            {
+                "uid": "stationImage",
+                "name": "Station Image",
+                "value": "http://cdn.example.com/s.png"
+            },
+            {
+                "uid": "streamFormat",
+                "name": "Stream Format",
+                "value": "MP3 128"
+            },
+            {
+                "uid": "streamUrl",
+                "name": "Stream URL",
+                "value": "RadioParadise:"
+            },
+            {
+                "uid": "syncStat",
+                "name": "Sync Stat",
+                "value": "21"
+            },
+            {
+                "uid": "title1",
+                "name": "Title 1",
+                "value": "Radio Paradise"
+            },
+            {
+                "uid": "title2",
+                "name": "Title 2",
+                "value": ""
+            },
+            {
+                "uid": "title3",
+                "name": "Title 3",
+                "value": ""
+            },
+            {
+                "uid": "volume",
+                "name": "Volume",
+                "value": "0",
+                "unit": "%"
+            },
+            {
+                "uid": "secs",
+                "name": "Seconds",
+                "value": "0",
+                "unit": "secs"
+            }
+        ],
+        "table": null
+    },
+    "paused and muted on internet radio custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio custom_3": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio custom_4": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio custom_5": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio custom_6": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "paused and muted on internet radio custom_7": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

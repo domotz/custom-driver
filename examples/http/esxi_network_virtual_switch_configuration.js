@@ -305,6 +305,18 @@ function generateId(key, index) {
 }
 
 /**
+ * Joins the text of several elements, e.g. the uplinks of a vSwitch.
+ * @param {Function} $ - The parsed document.
+ * @param {Object} elements - The elements to join.
+ * @returns {string} The texts separated by ", ".
+ */
+function joinTexts($, elements) {
+    return elements.map(function () {
+        return $(this).text();
+    }).get().join(", ");
+}
+
+/**
  * Sanitizes a string by removing reserved words and limiting its length.
  * @param {string} output - The string to be sanitized.
  * @param {number} maxLength - The maximum length of the sanitized string.
@@ -338,11 +350,11 @@ function generateTableOutput(soapResponse) {
             key: vSwitchInfo.find("key").text() || "N/A",
             numPorts: parseInt(vSwitchInfo.find("numPorts").filter(function () {return $(this).parents("spec").length === 0;}).text()) || 0,
             numPortsAvailable: parseInt(vSwitchInfo.find("numPortsAvailable").text()) || 0,
-            mtu: parseInt(vSwitchInfo.find("mtu").text()) || 0,
+            mtu: parseInt(vSwitchInfo.children("mtu").text()) || 0,
             portGroup: vSwitchInfo.find("portgroup").map(function () { return $(this).text(); }).get(),
-            pnic: vSwitchInfo.find("pnic").text() || "N/A",
+            pnic: joinTexts($, vSwitchInfo.children("pnic")) || "N/A",
             specifiedNumPorts: parseInt(spec.find("numPorts").text()) || 0,
-            bridgeNicDevice: spec.find("bridge nicDevice").text() || "N/A",
+            bridgeNicDevice: joinTexts($, spec.find("bridge nicDevice")) || "N/A",
             beaconInterval: parseInt(spec.find("bridge beacon interval").text()) || 0,
             allowPromiscuous: policy.find("security allowPromiscuous").text() === "true" ? "Yes" : "No",
             macChanges: policy.find("security macChanges").text() === "true" ? "Yes" : "No",
@@ -358,7 +370,7 @@ function generateTableOutput(soapResponse) {
             failureCriteriaCheckErrorPercent: failureCriteria.find("checkErrorPercent").text() === "true" ? "Yes" : "No",
             failureCriteriaPercentage: parseInt(failureCriteria.find("percentage").text()) || 0,
             failureCriteriaCheckBeacon: failureCriteria.find("checkBeacon").text() === "true" ? "Yes" : "No",
-            activeNic: nicTeaming.find("nicOrder activeNic").text() || "N/A",
+            activeNic: joinTexts($, nicTeaming.find("nicOrder activeNic")) || "N/A",
             checksumOffload: offloadPolicy.find("csumOffload").text() === "true" ? "Yes" : "No",
             tcpSegmentation: offloadPolicy.find("tcpSegmentation").text() === "true" ? "Yes" : "No",
             zeroCopyTransmit: offloadPolicy.find("zeroCopyXmit").text() === "true" ? "Yes" : "No",

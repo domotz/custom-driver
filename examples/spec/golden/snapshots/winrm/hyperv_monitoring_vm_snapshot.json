@@ -1,0 +1,146 @@
+{
+    "all vms, one without snapshot validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "all vms, one without snapshot get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Hyper-V VM Snapshots",
+            "columnHeaders": [
+                {
+                    "label": "VM name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Snapshot name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Creation time",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Age",
+                    "unit": "Days",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "5b0ff7ea-45cf-4f11-8c3c-1a4c27c0f5a1",
+                    "values": [
+                        "dc-01",
+                        "Before AD upgrade",
+                        "11/4/2025 9:15:30 AM",
+                        72
+                    ]
+                },
+                {
+                    "id": "c9d1c3f4-2a58-41e8-9a5f-7e3f21b8d0b2",
+                    "values": [
+                        "web-02",
+                        "web-02 - (3/19/2025 4:45:05 PM)",
+                        "3/19/2025 4:45:05 PM",
+                        301
+                    ]
+                },
+                {
+                    "id": "0e6a1f77-9d3b-4b8e-8f6e-52d0a1c4e7c3",
+                    "values": [
+                        "backup-03",
+                        "N/A",
+                        "N/A",
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    "filtered to one vm validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "filtered to one vm get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Hyper-V VM Snapshots",
+            "columnHeaders": [
+                {
+                    "label": "VM name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Snapshot name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Creation time",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Age",
+                    "unit": "Days",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "c9d1c3f4-2a58-41e8-9a5f-7e3f21b8d0b2",
+                    "values": [
+                        "web-02",
+                        "web-02 - (3/19/2025 4:45:05 PM)",
+                        "3/19/2025 4:45:05 PM",
+                        301
+                    ]
+                }
+            ]
+        }
+    },
+    "host with a single vm (bare object) validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "host with a single vm (bare object) get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Hyper-V VM Snapshots",
+            "columnHeaders": [
+                {
+                    "label": "VM name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Snapshot name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Creation time",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Age",
+                    "unit": "Days",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "5b0ff7ea-45cf-4f11-8c3c-1a4c27c0f5a1",
+                    "values": [
+                        "dc-01",
+                        "Before AD upgrade",
+                        "11/4/2025 9:15:30 AM",
+                        72
+                    ]
+                }
+            ]
+        }
+    }
+}

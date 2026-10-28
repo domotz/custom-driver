@@ -1,0 +1,40 @@
+{
+    "dl380 gen10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "dl380 gen10 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Power Supply",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "hpeserverpowersupply-0",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "hpeserverpowersupply-1",
+                    "values": [
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "hpeserverpowersupply-2",
+                    "values": [
+                        "Not enabled"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -123,8 +123,8 @@ function executeSQLQuery() {
         .then(function (output) {
             if (output.error === null) {
                 var sqlServerStatus;
-                var query = output.outcome.stdout.trim().split(/\r/);
-                if (query.indexOf("TimeOfQuery")) {
+                // Invoke-Sqlcmd prints the TimeOfQuery column header when the query ran
+                if (output.outcome.stdout.indexOf("TimeOfQuery") !== -1) {
                     console.log("SQL query executin successful");
                     sqlServerStatus = "OK";
                 } else {

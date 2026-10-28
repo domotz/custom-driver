@@ -129,47 +129,58 @@ function getValueSum(key, filterFn) {
     };
 }
 
+/**
+ *
+ * @param {string} key parameter key
+ * @returns number of series returned for the key (one kube_*_created series per object)
+ */
+function getCount(key) {
+    return function () {
+        return metrics.filter(function (d) { return d.key == key; }).length;
+    };
+}
+
 // config variable containing the list of monitoring parameters
 var config = [
     {
         uid: "CronJob_count",
         label: "CronJob count",
-        execute: getValueSum("kube_cronjob_created")
+        execute: getCount("kube_cronjob_created")
     },
     {
         uid: "Deployment_count",
         label: "Deployment count",
-        execute: getValueSum("kube_deployment_created")
+        execute: getCount("kube_deployment_created")
     },
     {
         uid: "endpoint_count",
         label: "Endpoint count",
-        execute: getValueSum("kube_endpoint_created")
+        execute: getCount("kube_endpoint_created")
     },
     {
         uid: "job_count",
         label: "Job count",
-        execute: getValueSum("kube_job_created")
+        execute: getCount("kube_job_created")
     },
     {
         uid: "service_count",
         label: "Service count",
-        execute: getValueSum("kube_service_created")
+        execute: getCount("kube_service_created")
     },
     {
         uid: "namespace_count",
         label: "Namespace count",
-        execute: getValueSum("kube_namespace_created")
+        execute: getCount("kube_namespace_created")
     },
     {
         uid: "node_count",
         label: "Node count",
-        execute: getValueSum("kube_node_created")
+        execute: getCount("kube_node_created")
     },
     {
         uid: "statefulset_count",
         label: "Statefulset count",
-        execute: getValueSum("kube_statefulset_created")
+        execute: getCount("kube_statefulset_created")
     }
 
 ];
@@ -238,7 +249,7 @@ function extract() {
         } else if (typeof (c.execute) == "function") {
             result = c.execute();
         }
-        if (result) {
+        if (result != null) {
             return _var(c.uid, c.label, result, c.unit, c.type);
         } else {
             return null;

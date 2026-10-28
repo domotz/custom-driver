@@ -1,0 +1,27 @@
+{
+    "S5731 V200R022 RADIUS scheme and MSTP validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "S5731 V200R022 RADIUS scheme and MSTP get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "radius",
+                "name": "Radius",
+                "value": "Enabled",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "stp",
+                "name": "STP",
+                "value": "Enabled",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,208 @@
+{
+    "hub with camera and microphone validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hub with camera and microphone get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "audio-status",
+                "name": "Audio Status",
+                "value": "unmute",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-status",
+                "name": "System Status",
+                "value": "normal",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "camera-position-x",
+                "name": "Camera Position X",
+                "value": 12,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "camera-position-y",
+                "name": "Camera Position Y",
+                "value": -30,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "camera-position-z",
+                "name": "Camera Position Z",
+                "value": 4,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Connected Devices",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Firmware",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hardware",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ID",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "2506e0000001",
+                    "values": [
+                        "MCore Pro",
+                        "246.15.0.30",
+                        "1.0.0.0",
+                        "2506E0000001",
+                        "80:5E:C0:11:22:33",
+                        1
+                    ]
+                },
+                {
+                    "id": "2506e0000002",
+                    "values": [
+                        "UVC86",
+                        "148.15.0.12",
+                        "2.0.0.0",
+                        "2506E0000002",
+                        "80:5E:C0:44:55:66",
+                        2
+                    ]
+                },
+                {
+                    "id": "2506e0000003",
+                    "values": [
+                        "MSpeech",
+                        "150.15.0.8",
+                        "1.1.0.0",
+                        "2506E0000003",
+                        "80:5E:C0:77:88:99",
+                        3
+                    ]
+                }
+            ]
+        }
+    },
+    "hub with camera and microphone custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "single hub, muted, warning validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "single hub, muted, warning get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "audio-status",
+                "name": "Audio Status",
+                "value": "mute",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-status",
+                "name": "System Status",
+                "value": "warning",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "camera-position-x",
+                "name": "Camera Position X",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "camera-position-y",
+                "name": "Camera Position Y",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "camera-position-z",
+                "name": "Camera Position Z",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Connected Devices",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Firmware",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hardware",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ID",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "2506e0000001",
+                    "values": [
+                        "MCore Pro",
+                        "246.15.0.30",
+                        "1.0.0.0",
+                        "2506E0000001",
+                        "80:5E:C0:11:22:33",
+                        1
+                    ]
+                }
+            ]
+        }
+    },
+    "single hub, muted, warning custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

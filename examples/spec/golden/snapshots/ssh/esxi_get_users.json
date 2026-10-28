@@ -1,0 +1,49 @@
+{
+    "esxi 8.0.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "user-1",
+                "name": "User - 1",
+                "value": "root",
+                "unit": " "
+            },
+            {
+                "uid": "user-2",
+                "name": "User - 2",
+                "value": "daemon",
+                "unit": " "
+            },
+            {
+                "uid": "user-3",
+                "name": "User - 3",
+                "value": "nfsnobody",
+                "unit": " "
+            },
+            {
+                "uid": "user-4",
+                "name": "User - 4",
+                "value": "dcui",
+                "unit": " "
+            },
+            {
+                "uid": "user-5",
+                "name": "User - 5",
+                "value": "vpxuser",
+                "unit": " "
+            },
+            {
+                "uid": "user-6",
+                "name": "User - 6",
+                "value": "svc-backup",
+                "unit": " "
+            }
+        ],
+        "table": null
+    }
+}

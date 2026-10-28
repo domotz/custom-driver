@@ -18,12 +18,15 @@
 **/
 
 var packagesFilter = D.getParameter("packagesFilter");
-var cmdListUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst";
+// apt-get failing (or missing, on non-Debian hosts) exits 1 before grep runs, so it maps to RESOURCE_UNAVAILABLE
+var cmdListUpdates = "out=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade) || exit 1; printf '%s\\n' \"$out\" | /bin/grep ^Inst";
 
 if (packagesFilter.length > 0) {
     var packages = packagesFilter.join("\\|");
     cmdListUpdates += " | grep -E " + packages;
 }
+// grep exits 1 when nothing matches, i.e. on an up-to-date host: that is a success with no updates
+cmdListUpdates += "; test $? -le 1";
 
 // SSH options when running the commands
 var sshConfig = {
@@ -88,11 +91,16 @@ function parseData(executionResult) {
     var listOfUpdates = executionResult.split(/\r?\n/);
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
     var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    // "Inst <pkg> [<installed>] (<new> <origin> [<arch>])"; a package not installed yet has no [<installed>]
+    var instRegex = /^Inst (\S+) (?:\[([^\]]*)\] )?\((\S+)/;
     for (var i = 0; i < listOfUpdates.length; i++) {
-        var fields = listOfUpdates[i].replace(/[\[\]()]/g, "").split(" ");
-        var pkgName = fields[1];
-        var pkgOldV = fields[2];
-        var pkgNewV = fields[3];
+        var match = instRegex.exec(listOfUpdates[i].trim());
+        if (!match) {
+            continue;
+        }
+        var pkgName = match[1];
+        var pkgOldV = match[2] || "N/A";
+        var pkgNewV = match[3];
         var recordId = pkgName.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase(); ;
         updateListTable.insertRecord(
             recordId, [pkgOldV, pkgNewV]

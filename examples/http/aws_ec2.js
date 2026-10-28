@@ -85,8 +85,8 @@ function createMetricsPayload(period, instanceId) {
         "EBSWriteOps:Count",
         "EBSReadBytes:Bytes",
         "EBSWriteBytes:Bytes",
-        "EBSIOBalance %:Percent",
-        "EBSByteBalance %:Percent"
+        "EBSIOBalance%:Percent",
+        "EBSByteBalance%:Percent"
     ];
     return metricsList.map(function (metric) {
         var parts = metric.split(":", 2);

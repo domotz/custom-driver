@@ -1,6 +1,6 @@
 {
     "logo": "nginx.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Nginx Status",
     "description": "Monitor Nginx metrics such as: Active, Accepted, and Handled Connections; total requests; etc. Before using this script, please read this article http://nginx.org/en/docs/http/ngx_http_stub_status_module.html.",
     "category": "Software Integration",

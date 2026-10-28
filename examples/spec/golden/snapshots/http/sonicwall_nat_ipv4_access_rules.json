@@ -1,0 +1,136 @@
+{
+    "tz270 all access rules validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 all access rules get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Access Rules",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Enabled"
+                },
+                {
+                    "label": "From"
+                },
+                {
+                    "label": "To"
+                },
+                {
+                    "label": "Source"
+                },
+                {
+                    "label": "Destination"
+                },
+                {
+                    "label": "Action"
+                }
+            ],
+            "records": [
+                {
+                    "id": "lan-to-wan-allow-2d1c6b0a-7e55-4f6b-9a31-0c7f1d3b5",
+                    "values": [
+                        "Default outbound",
+                        "Yes",
+                        "LAN",
+                        "WAN",
+                        "Address: (any: Yes) | Port: (any: Yes)",
+                        "Address: (any: Yes)",
+                        "allow"
+                    ]
+                },
+                {
+                    "id": "wan-to-dmz-web-8c93f5de-12aa-4b1f-8f0e-5a6d7c8e9b0",
+                    "values": [
+                        "Published web server",
+                        "Yes",
+                        "WAN",
+                        "DMZ",
+                        "Address: (any: Yes) | Port: (any: Yes)",
+                        "Address: (name: DMZ Web Server)",
+                        "allow"
+                    ]
+                },
+                {
+                    "id": "block-guest-to-lan-f3a1d2c4-9b8e-4c7d-a6f5-1e2d3c4",
+                    "values": [
+                        "-",
+                        "No",
+                        "DMZ",
+                        "LAN",
+                        "Address: (group: Guest Hosts) | Port: (any: Yes)",
+                        "Address: (name: X0 Subnet)",
+                        "deny"
+                    ]
+                }
+            ]
+        }
+    },
+    "tz270 selected access rules validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 selected access rules get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Access Rules",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Enabled"
+                },
+                {
+                    "label": "From"
+                },
+                {
+                    "label": "To"
+                },
+                {
+                    "label": "Source"
+                },
+                {
+                    "label": "Destination"
+                },
+                {
+                    "label": "Action"
+                }
+            ],
+            "records": [
+                {
+                    "id": "wan-to-dmz-web-8c93f5de-12aa-4b1f-8f0e-5a6d7c8e9b0",
+                    "values": [
+                        "Published web server",
+                        "Yes",
+                        "WAN",
+                        "DMZ",
+                        "Address: (any: Yes) | Port: (any: Yes)",
+                        "Address: (name: DMZ Web Server)",
+                        "allow"
+                    ]
+                },
+                {
+                    "id": "block-guest-to-lan-f3a1d2c4-9b8e-4c7d-a6f5-1e2d3c4",
+                    "values": [
+                        "-",
+                        "No",
+                        "DMZ",
+                        "LAN",
+                        "Address: (group: Guest Hosts) | Port: (any: Yes)",
+                        "Address: (name: X0 Subnet)",
+                        "deny"
+                    ]
+                }
+            ]
+        }
+    }
+}

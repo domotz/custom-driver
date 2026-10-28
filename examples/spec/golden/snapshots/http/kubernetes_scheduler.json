@@ -1,0 +1,88 @@
+{
+    "scheduler with unschedulable pods and no errors validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "scheduler with unschedulable pods and no errors get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "rest_client_requests_total_200",
+                "name": "HTTP requests: 2xx",
+                "value": 3910,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "rest_client_requests_total_400",
+                "name": "HTTP requests: 4xx",
+                "value": 7,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "rest_client_requests_total_500",
+                "name": "HTTP requests: 5xx",
+                "value": 2,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "cpu",
+                "name": "CPU",
+                "value": 4567,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "max_fds",
+                "name": "Fds max",
+                "value": 1048576
+            },
+            {
+                "uid": "open_fds",
+                "name": "Fds open",
+                "value": 22
+            },
+            {
+                "uid": "go_goroutines",
+                "name": "Goroutines",
+                "value": 64
+            },
+            {
+                "uid": "go_threads",
+                "name": "Go threads",
+                "value": 14
+            },
+            {
+                "uid": "process_resident_memory_bytes",
+                "name": "Resident memory",
+                "value": 55000000,
+                "unit": "B"
+            },
+            {
+                "uid": "process_virtual_memory_bytes",
+                "name": "Virtual memory,",
+                "value": 760000000,
+                "unit": "B",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "scheduler_schedule_attempts_error",
+                "name": "Schedule attempts: error",
+                "value": 0,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "scheduler_schedule_attempts_scheduled",
+                "name": "Schedule attempts: scheduled",
+                "value": 428,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "scheduler_schedule_attempts_unschedulable",
+                "name": "Schedule attempts: unschedulable",
+                "value": 15,
+                "valueType": "RATE"
+            }
+        ],
+        "table": null
+    }
+}

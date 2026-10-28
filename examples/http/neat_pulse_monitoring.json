@@ -1,6 +1,6 @@
 {
     "logo": "neat.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Neat Pulse Endpoint Monitoring",
     "description": "Monitors Neat Pulse room devices via the Neat Pulse cloud API. Retrieves device info (firmware, connectivity, storage, room name) and sensor data (temperature, humidity, CO2, VOC, illumination, people count). Supports direct device ID lookup or automatic discovery by serial number. Includes a Reboot action.",
     "category": "Hardware Integration",

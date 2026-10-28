@@ -90,7 +90,14 @@ function extractData(data) {
         if (sensorName === "Overall Unit Status") {
             var status = $(element).find("PROPERTY[name=\"status\"]").text();
             var uid = sanitize(sensorName);
-            variables.push(D.createVariable(uid, sensorName, status, null, D.valueType.STRING));
+            var name = sensorName;
+            // Every enclosure has its own sensor; the first keeps the plain uid, the others get the enclosure id
+            if (variables.length > 0) {
+                var enclosureId = $(element).find("PROPERTY[name=\"enclosure-id\"]").text() || String(variables.length);
+                uid = sanitize(sensorName + "-" + enclosureId);
+                name = sensorName + " (Enclosure " + enclosureId + ")";
+            }
+            variables.push(D.createVariable(uid, name, status, null, D.valueType.STRING));
         }
     });
     D.success(variables);

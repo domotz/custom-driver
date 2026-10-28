@@ -1,6 +1,6 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Azure Network Interfaces",
     "description": "Retrieves information about network interfaces and their associated performance metrics",
     "category": "Software Integration",

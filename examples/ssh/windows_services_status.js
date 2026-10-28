@@ -34,7 +34,7 @@
  *
 */
 
-var exludedServices = ["AJRouter", "B"];
+var exludedServices = [];
 var monitoredServices = [];
 
 // SSH options when running the commands

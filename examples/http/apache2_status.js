@@ -165,12 +165,6 @@ var parametersConfig = [
         postProcess: toFloat
     },
     {
-        // Service version
-        uid: "version",
-        label: "Version",
-        path: "json.ServerVersion"
-    },
-    {
         // Number of workers in closing state
         uid: "workers_closing_connection",
         label: "Workers closing connection",

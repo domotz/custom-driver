@@ -53,13 +53,8 @@ const hostUsersTable = D.createTable(
         { label: "Description" }
     ]
 );
-const userDetailsRegexp = /([\w\d]+)\s+([\w]+)\s+(.*)/;
-
-/**
- * @remote_procedure
- * @label Validate WinRM is working on device
- * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
- */
+// Get-LocalUser table rows: Name (may contain spaces), Enabled (True/False), Description (may be empty)
+const userDetailsRegexp = /^\s*(.*?\S)\s+(True|False)(?:\s+(.*))?$/;
 
 function parseValidateOutput(isValidated) {
     if (isValidated) {
@@ -71,6 +66,11 @@ function parseValidateOutput(isValidated) {
     }
 }
 
+/**
+ * @remote_procedure
+ * @label Validate WinRM is working on device
+ * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
+ */
 function validate() {
     const command = "Test-WSMan";
     instance.executeCommand(command)
@@ -101,7 +101,7 @@ function parseOutput(outputLines) {
                     const name = match[1];
                     const recordId = name.toLowerCase().substring(0, 50);
                     const status = match[2];
-                    const description = match[3];
+                    const description = match[3] || "";
                     hostUsersTable.insertRecord(recordId, [name, status, description]);
                 }
             }

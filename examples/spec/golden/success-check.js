@@ -11,8 +11,12 @@
  * On top of that, two quality rules for a success fixture: a variable without a value and a table
  * without records are reported unless the case allows them (expect.nullValues, expect.allowEmptyTable).
  *
+ * A backup (CONFIGURATION_MANAGEMENT drivers) is sent as is by sandbox.js successConfigurationManagement;
+ * it must be a D.createBackup object whose running configuration is a non-empty string.
+ *
  * checkSuccess(result, { entryPoint, companion, expect }) -> [problem]
- * normalizeReport(report) -> { type, variables, table } as plain data (what the snapshots store)
+ * normalizeReport(report) -> { type, variables, table } or { type, backup } as plain data (what the
+ * snapshots store)
  */
 
 const VALID_UID_RE = /^((?!((\/|^)(table|column|history)(\/|$))).)*$/;
@@ -129,6 +133,10 @@ function normalizeReport(report) {
     if (!report || report.type !== "success") {
         return report ? { type: report.type, errorType: report.originalErrorType } : null;
     }
+    const variables = report.variables;
+    if (variables && typeof variables === "object" && !Array.isArray(variables) && !variables.isTable) {
+        return { type: "success", backup: variables };
+    }
     const table = report.table && report.table.isTable ? report.table : null;
     return {
         type: "success",
@@ -146,6 +154,15 @@ function checkSuccess(result, { entryPoint, companion, expect }) {
     const problems = [];
     if (result.reports.length > 1) {
         problems.push("reported " + result.reports.length + " times: " + result.reports.map((r) => r.type + (r.errorType ? "(" + r.errorType + ")" : "")).join(", "));
+    }
+    if (entryPoint === "backup") {
+        if (!report.backup || typeof report.backup.running !== "string" || report.backup.running.length === 0) {
+            problems.push("backup must report D.createBackup({ running: <non-empty string> }), got " + JSON.stringify(report.backup || report.variables || null));
+        }
+        return problems;
+    }
+    if (report.backup) {
+        problems.push("reported a backup object from " + entryPoint + ": " + JSON.stringify(report.backup).slice(0, 200));
     }
     if (!isEmpty(report.variables)) {
         problems.push(...checkVariables(report.variables, options));

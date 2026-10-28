@@ -238,9 +238,9 @@ function generateTableOutput(soapResponse) {
         populateTable({
             id: vnicInfo.find("key").text() || "N/A",
             device: vnicInfo.find("device").text() || "N/A",
-            portGroup: vnicInfo.find("portgroup").text() || "N/A",
+            portGroup: vnicInfo.children("portgroup").text() || "N/A",
             dhcpEnabled: ip.find("dhcp").text() === "true" ? "Yes" : "No",
-            ipAddress: ip.find("ipAddress").text() || "N/A",
+            ipAddress: ip.children("ipAddress").text() || "N/A",
             subnetMask: ip.find("subnetMask").text() || "N/A",
             macAddress: spec.find("mac").text() || "N/A"
         });

@@ -1,6 +1,6 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Azure Storage Accounts",
     "description": "Retrieves information about Azure storage accounts and their associated performance metrics",
     "category": "Software Integration",

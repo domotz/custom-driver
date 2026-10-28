@@ -1,0 +1,92 @@
+{
+    "no reboot pending validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "pending-reboot",
+                "name": "IsRebootPending",
+                "value": "No",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-uptime-hours",
+                "name": "Uptime",
+                "value": "5",
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "no reboot pending get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "pending-reboot",
+                "name": "IsRebootPending",
+                "value": "No",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-uptime-hours",
+                "name": "Uptime",
+                "value": "5",
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "no reboot pending custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "reboot pending validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "pending-reboot",
+                "name": "IsRebootPending",
+                "value": "Yes",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-uptime-hours",
+                "name": "Uptime",
+                "value": "17",
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "reboot pending get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "pending-reboot",
+                "name": "IsRebootPending",
+                "value": "Yes",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-uptime-hours",
+                "name": "Uptime",
+                "value": "17",
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "reboot pending custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

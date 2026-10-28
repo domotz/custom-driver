@@ -1,0 +1,98 @@
+{
+    "all devices validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "all devices get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Devices Status",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Product",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "34536881",
+                    "values": [
+                        "AER2200-600M",
+                        "AER2200",
+                        "online"
+                    ]
+                },
+                {
+                    "id": "34536882",
+                    "values": [
+                        "E300-C18B",
+                        "E300",
+                        "offline"
+                    ]
+                },
+                {
+                    "id": "34536883",
+                    "values": [
+                        "IBR900-600M",
+                        "N/A",
+                        "unknown"
+                    ]
+                }
+            ]
+        }
+    },
+    "filtered by two ids validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "filtered by two ids get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Devices Status",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Product",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "34536881",
+                    "values": [
+                        "AER2200-600M",
+                        "AER2200",
+                        "online"
+                    ]
+                },
+                {
+                    "id": "34536882",
+                    "values": [
+                        "E300-C18B",
+                        "E300",
+                        "offline"
+                    ]
+                }
+            ]
+        }
+    }
+}

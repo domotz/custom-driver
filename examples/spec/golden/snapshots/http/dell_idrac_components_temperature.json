@@ -1,0 +1,80 @@
+{
+    "iDRAC 9 redfish thermal validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 redfish thermal get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Component Temperature",
+            "columnHeaders": [
+                {
+                    "label": "Status ",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Reading",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Min Warning Threshold",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Max Warning Threshold",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Min Critical Threshold",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Max Critical Threshold",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "system-board-inlet-temp",
+                    "values": [
+                        "OK",
+                        22,
+                        3,
+                        38,
+                        -7,
+                        42
+                    ]
+                },
+                {
+                    "id": "cpu1-temp",
+                    "values": [
+                        "Warning",
+                        78,
+                        3,
+                        75,
+                        -7,
+                        90
+                    ]
+                },
+                {
+                    "id": "cpu2-temp",
+                    "values": [
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

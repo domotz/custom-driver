@@ -1,0 +1,63 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Memory Health Info",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dimm-1",
+                    "values": [
+                        "Normal",
+                        "DDR4",
+                        32
+                    ]
+                },
+                {
+                    "id": "dimm-2",
+                    "values": [
+                        "Normal",
+                        "DDR4",
+                        32
+                    ]
+                },
+                {
+                    "id": "dimm-3",
+                    "values": [
+                        "Critical",
+                        "DDR4",
+                        16
+                    ]
+                },
+                {
+                    "id": "dimm-4",
+                    "values": [
+                        "Normal",
+                        "DDR4",
+                        64
+                    ]
+                }
+            ]
+        }
+    }
+}

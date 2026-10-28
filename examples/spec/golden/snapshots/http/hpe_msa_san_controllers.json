@@ -1,0 +1,64 @@
+{
+    "msa 2050 controllers validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 controllers get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Controllers",
+            "columnHeaders": [
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Disks",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Health",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Redundancy Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Redundancy Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "a",
+                    "values": [
+                        "10.0.5.11",
+                        "24",
+                        "Operational",
+                        "OK",
+                        "Active-Active ULP",
+                        "Redundant"
+                    ]
+                },
+                {
+                    "id": "b",
+                    "values": [
+                        "10.0.5.12",
+                        "24",
+                        "Down",
+                        "Fault",
+                        "Active-Active ULP",
+                        "Operational but not redundant"
+                    ]
+                }
+            ]
+        }
+    }
+}

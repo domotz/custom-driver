@@ -1,0 +1,202 @@
+{
+    "two nodes, four pods with a crash looping one validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two nodes, four pods with a crash looping one get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "containers_terminated",
+                "name": "Containers last state terminated",
+                "value": 2
+            },
+            {
+                "uid": "containers_restarts",
+                "name": "Containers restarts",
+                "value": 15
+            },
+            {
+                "uid": "containers_running",
+                "name": "Containers running",
+                "value": 3
+            },
+            {
+                "uid": "pods_running",
+                "name": "Pods running",
+                "value": 3
+            },
+            {
+                "uid": "process_max_fds",
+                "name": "File descriptors, max",
+                "value": 1048576
+            },
+            {
+                "uid": "process_open_fds",
+                "name": "File descriptors, open",
+                "value": 180
+            },
+            {
+                "uid": "machine_memory",
+                "name": "Machine memory",
+                "value": 456785920,
+                "unit": "B"
+            },
+            {
+                "uid": "virtual_memory",
+                "name": "Virtual memory",
+                "value": 1400000000,
+                "unit": "B"
+            }
+        ],
+        "table": {
+            "label": "Kubelets",
+            "columnHeaders": [
+                {
+                    "label": "node"
+                },
+                {
+                    "label": "namespace"
+                },
+                {
+                    "label": "CPU: usage rate",
+                    "type": "RATE"
+                },
+                {
+                    "label": "CPU: System seconds"
+                },
+                {
+                    "label": "CPU: User seconds"
+                }
+            ],
+            "records": [
+                {
+                    "id": "web-1",
+                    "values": [
+                        "k8s-worker-1",
+                        "default",
+                        110.5,
+                        22.25,
+                        88.25
+                    ]
+                },
+                {
+                    "id": "api-1",
+                    "values": [
+                        "k8s-worker-2",
+                        "default",
+                        42,
+                        12,
+                        30
+                    ]
+                },
+                {
+                    "id": "crash-1",
+                    "values": [
+                        "k8s-worker-2",
+                        "apps",
+                        8.5,
+                        3.5,
+                        5
+                    ]
+                },
+                {
+                    "id": "job-1",
+                    "values": [
+                        "k8s-worker-1",
+                        "apps",
+                        5.75,
+                        1.25,
+                        4.5
+                    ]
+                }
+            ]
+        }
+    },
+    "one node, one pod never restarted validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "one node, one pod never restarted get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "containers_terminated",
+                "name": "Containers last state terminated",
+                "value": 0
+            },
+            {
+                "uid": "containers_restarts",
+                "name": "Containers restarts",
+                "value": 0
+            },
+            {
+                "uid": "containers_running",
+                "name": "Containers running",
+                "value": 1
+            },
+            {
+                "uid": "pods_running",
+                "name": "Pods running",
+                "value": 1
+            },
+            {
+                "uid": "process_max_fds",
+                "name": "File descriptors, max",
+                "value": 1048576
+            },
+            {
+                "uid": "process_open_fds",
+                "name": "File descriptors, open",
+                "value": 180
+            },
+            {
+                "uid": "machine_memory",
+                "name": "Machine memory",
+                "value": 456785920,
+                "unit": "B"
+            },
+            {
+                "uid": "virtual_memory",
+                "name": "Virtual memory",
+                "value": 1400000000,
+                "unit": "B"
+            }
+        ],
+        "table": {
+            "label": "Kubelets",
+            "columnHeaders": [
+                {
+                    "label": "node"
+                },
+                {
+                    "label": "namespace"
+                },
+                {
+                    "label": "CPU: usage rate",
+                    "type": "RATE"
+                },
+                {
+                    "label": "CPU: System seconds"
+                },
+                {
+                    "label": "CPU: User seconds"
+                }
+            ],
+            "records": [
+                {
+                    "id": "web-1",
+                    "values": [
+                        "k8s-worker-1",
+                        "default",
+                        12.5,
+                        2.5,
+                        10
+                    ]
+                }
+            ]
+        }
+    }
+}

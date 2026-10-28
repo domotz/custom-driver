@@ -1,0 +1,111 @@
+{
+    "three sas ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three sas ports get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "SAS Ports",
+            "columnHeaders": [
+                {
+                    "label": "Port ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Port Speed",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "World Wide Port Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Switch WWPN",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Attachment",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Adapter Location",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Adapter Port ID",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "1",
+                        "12",
+                        "1",
+                        "node1",
+                        "500507680C110001",
+                        "online",
+                        "0000000000000000",
+                        "controller",
+                        "sas",
+                        "0",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "2",
+                        "6",
+                        "1",
+                        "node1",
+                        "500507680C110002",
+                        "degraded",
+                        "0000000000000000",
+                        "host",
+                        "sas",
+                        "0",
+                        "2"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "0",
+                        "2",
+                        "node2",
+                        "500507680C120001",
+                        "offline",
+                        "0000000000000000",
+                        "N/A",
+                        "sas",
+                        "0",
+                        "1"
+                    ]
+                }
+            ]
+        }
+    }
+}

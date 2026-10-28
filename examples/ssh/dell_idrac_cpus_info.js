@@ -111,8 +111,23 @@ function get_status() {
 }
 
 // Parse cpu information output
+/**
+ * Converts a clock speed as racadm prints it ("4000 MHz", "2.1 GHz") to MHz
+ * @param {string} value The clock speed with its unit
+ * @returns {number|string} The speed in MHz, or "-" when it cannot be read
+ */
+function toMegahertz(value) {
+    var match = /^([\d.]+)\s*(GHz|MHz)?$/i.exec((value || "").trim());
+    if (!match) {
+        return "-";
+    }
+    var speed = parseFloat(match[1]);
+    return match[2] && match[2].toLowerCase() === "ghz" ? Math.round(speed * 1000) : speed;
+}
+
 function parseData(output) {
-    var lines = output.split("\n");
+    // The collector trims stdout, so add back the blank line that ends the last section
+    var lines = (output + "\n").split("\n");
     var data = {};
     var instanceIdCpu = false;
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
@@ -129,8 +144,8 @@ function parseData(output) {
             var model = data["Model"] || "-";
             var primaryStatus = data["PrimaryStatus"] || "-";
             var cpuStatus = data["CPUStatus"] || "-";
-            var maxClockSpeed = (data["MaxClockSpeed"] || "").replace(/\D+/g, "") || "-";
-            var currentClockSpeed = (data["CurrentClockSpeed"] || "").replace(/\D+/g, "") || "-";
+            var maxClockSpeed = toMegahertz(data["MaxClockSpeed"]);
+            var currentClockSpeed = toMegahertz(data["CurrentClockSpeed"]);
             var virtualizationTechnologyEnabled = data["VirtualizationTechnologyEnabled"] || "-";
             var hyperThreadingEnabled = data["HyperThreadingEnabled"] || "-";
             table.insertRecord(

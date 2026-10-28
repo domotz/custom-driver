@@ -93,14 +93,11 @@ function sanitize(output) {
 function formatDate(date) {
     if (!date) return "N/A";
     var dateTime = new Date(date);
-    var formattedDate =
-        (dateTime.getMonth() + 1) + "-" +
-    dateTime.getDate() + "-" +
-    dateTime.getFullYear() + " " +
-    dateTime.getHours() + ":" +
-    dateTime.getMinutes() + ":" +
-    dateTime.getSeconds();
-    return formattedDate;
+    var pad = function (number) {
+        return String(number).padStart(2, "0");
+    };
+    return pad(dateTime.getMonth() + 1) + "-" + pad(dateTime.getDate()) + "-" + dateTime.getFullYear() + " " +
+        pad(dateTime.getHours()) + ":" + pad(dateTime.getMinutes()) + ":" + pad(dateTime.getSeconds());
 }
 
 /**
@@ -109,7 +106,7 @@ function formatDate(date) {
  */
 function populateTable(applications) {
     applications.forEach(function (app) {
-        var recordId = sanitize(app.name + "-" + app.version);
+        var recordId = sanitize(app.name + "-" + (app.version || "N/A"));
         var formattedLastModified = formatDate(app.lastModified);
         var signedBy = Array.isArray(app.signedBy) ? app.signedBy.map(function (signer) {
             return signer.replace(/[\[\]']+/g, "");

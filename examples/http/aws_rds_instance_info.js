@@ -156,9 +156,9 @@ function fillConfig() {
             label: "Read replica: State",
             execute: function () {
                 var data = instanceInfo.filter(function (item) { return item; })[0].StatusInfos;
-                if (data !== null) {
-                    var resultat = data.filter(function (obj) { return obj; }).Normal;
-                    return resultat;
+                if (data) {
+                    var resultat = data.filter(function (obj) { return obj; })[0];
+                    return resultat ? resultat.Normal : null;
                 }
             }
         },
@@ -168,9 +168,9 @@ function fillConfig() {
             label: "Read replica: Status",
             execute: function () {
                 var data = instanceInfo.filter(function (item) { return item; })[0].StatusInfos;
-                if (data !== null) {
-                    var resultat = data.filter(function (obj) { return obj; }).Status;
-                    return resultat;
+                if (data) {
+                    var resultat = data.filter(function (obj) { return obj; })[0];
+                    return resultat ? resultat.Status : null;
                 }
             }
         },
@@ -192,7 +192,8 @@ function fillConfig() {
             uid: "max_allocated",
             label: "Storage: Max allocated",
             execute: function () {
-                return (typeof instanceInfo.MaxAllocatedStorage === "undefined") ? -1 : instanceInfo.MaxAllocatedStorage;
+                var maxAllocated = extractValueByKey(instanceInfo, "MaxAllocatedStorage")();
+                return (typeof maxAllocated === "undefined") ? -1 : maxAllocated;
             },
             unit: "GiB"
         },

@@ -1,0 +1,60 @@
+{
+    "crs354, psu2 failed validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "crs354, psu2 failed get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "poe-out-consumption",
+                "name": "POE Output Consumption",
+                "value": "45.1",
+                "unit": "W",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "switch-temperature",
+                "name": "Switch Temperature",
+                "value": "52",
+                "unit": "C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "board-temperature1",
+                "name": "Board Temperature 1",
+                "value": "41",
+                "unit": "C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "board-temperature2",
+                "name": "Board Temperature 2",
+                "value": "39",
+                "unit": "C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-temperature",
+                "name": "CPU Temperature",
+                "value": "48",
+                "unit": "C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "psu1-state",
+                "name": "PSU 1 Status",
+                "value": "ok",
+                "valueType": "STRING"
+            },
+            {
+                "uid": "psu2-state",
+                "name": "PSU 2 Status",
+                "value": "fail",
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

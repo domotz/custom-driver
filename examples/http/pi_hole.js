@@ -23,7 +23,7 @@ function validateHttpResponse(error, response) {
         errorMessage = D.errorType.GENERIC_ERROR;
     }
     if (errorMessage) {
-        D.failure(error);
+        D.failure(errorMessage);
     }
 }
 
@@ -45,7 +45,7 @@ function createVariables(data) {
     if (relative) {
         variables.push(
             _var("db_update_since", "Days since last DB update",
-                relative.days + relative.hours / 24,  "", "days"
+                (parseFloat(relative.days) + parseFloat(relative.hours) / 24).toFixed(2), "days", D.valueType.NUMBER
             )
         );
     }

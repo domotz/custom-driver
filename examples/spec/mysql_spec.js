@@ -4,17 +4,17 @@ var mockD = require("./helpers/mock-d");
 // loaded through the vm harness, which exposes its functions on the sandbox.
 var driver = mockD.loadDriver("ssh/mysql.js", mockD.createMockD());
 
-// Pins current behaviour. usedRam is never parsed because parse() expects the pmap line first but the command prints the service status line first. Listed under known issues in spec/README.md.
 describe("MySQL driver testing", function () {
     describe("Output parsing", function () {
         var parse = driver.parse;
-        var memoryError = "No memory usage information (Active: active (running) since Thu 2022-05-19 08:23:29 CEST; 5min ago)";
+        var activeStatus = "active (running) since Thu 2022-05-19 08:23:29 CEST; 5min ago";
 
-        it("Should parse mysqladmin data but not usedRam from the driver's own command output", function () {
+        it("Should parse the service status, usedRam and mysqladmin data from the driver's own command output", function () {
             var result = parse(outputSuccess);
-            expect(result.usedRam).toBeUndefined();
             expect(result).toEqual({
-                errors: memoryError,
+                errors: "",
+                status: activeStatus,
+                usedRam: 681660,
                 version: "5.5.62-0+deb8u1",
                 uptime: "5 min 19 sec",
                 threads: 1,
@@ -27,11 +27,12 @@ describe("MySQL driver testing", function () {
             });
         });
 
-        it("Should report the service line as the memory error when no service is found", function () {
+        it("Should parse usedRam and mysqladmin data when no service is found", function () {
             var result = parse(outputNoService);
-            expect(result.usedRam).toBeUndefined();
             expect(result).toEqual({
-                errors: "No memory usage information (No service found)",
+                errors: "",
+                status: "No service found",
+                usedRam: 681660,
                 version: "8.0.29",
                 uptime: "13 sec",
                 threads: 2,
@@ -47,16 +48,16 @@ describe("MySQL driver testing", function () {
         it("Should parse mysqladmin data when no pid is found", function () {
             var result = parse(outputNoPid);
             expect(result.usedRam).toBeUndefined();
-            expect(result.errors).toEqual(memoryError);
+            expect(result.errors).toEqual("No memory usage information (No pid found)");
             expect(result.version).toEqual("5.5.62-0+deb8u1");
             expect(result.threads).toEqual(1);
         });
 
         it("Should report an admin error when mysqladmin cannot run", function () {
             var result = parse(outputAdminFail);
-            expect(result.usedRam).toBeUndefined();
+            expect(result.usedRam).toEqual(1630956);
             expect(result.version).toBeUndefined();
-            expect(result.errors).toEqual(memoryError + "\n" + "No admin information (Cannot run mysqladmin)");
+            expect(result.errors).toEqual("No admin information (Cannot run mysqladmin)");
         });
 
         it("Should report both errors on a total failure", function () {

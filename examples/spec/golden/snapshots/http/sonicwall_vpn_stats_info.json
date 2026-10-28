@@ -1,0 +1,51 @@
+{
+    "tz270 two sessions validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "tz270 two sessions get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "vpnsessioncount",
+                "name": "VPN sessions count",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "VPN Sessions",
+            "columnHeaders": [
+                {
+                    "label": "Local IP Address"
+                },
+                {
+                    "label": "Remote IP Address"
+                },
+                {
+                    "label": "Logged in"
+                }
+            ],
+            "records": [
+                {
+                    "id": "mrossi",
+                    "values": [
+                        "192.168.200.11",
+                        "84.220.14.7",
+                        "01/15/2026 08:12:41"
+                    ]
+                },
+                {
+                    "id": "anna-bianchi",
+                    "values": [
+                        "192.168.200.12",
+                        "151.38.2.190",
+                        "01/14/2026 17:55:03"
+                    ]
+                }
+            ]
+        }
+    }
+}

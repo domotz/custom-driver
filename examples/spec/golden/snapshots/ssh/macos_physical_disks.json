@@ -1,0 +1,73 @@
+{
+    "macos 14.5 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "macos 14.5 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Physical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partitions Number",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "disk0",
+                    "values": [
+                        "APPLE SSD AP0512Z",
+                        "Verified",
+                        "500.28",
+                        "276.82",
+                        "44.67",
+                        "0ba01d6c0d0a7f45",
+                        2
+                    ]
+                },
+                {
+                    "id": "disk4",
+                    "values": [
+                        "Samsung SSD 970 EVO Plus 1TB",
+                        "Failing",
+                        "1000.20",
+                        "120.00",
+                        "88.00",
+                        "S4EWNX0M123456A",
+                        1
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -145,7 +145,7 @@ function configValidation(config, index) {
     if (!config.method || typeof (config.method) != "string") config.method = httpMethod.get;
     if (!config.contentType || typeof (config.contentType) != "string") config.contentType = "application/x-www-form-urlencoded";
     if (config.requestBody && typeof (config.requestBody) == "object") {
-        if (config.contentType == "application/json") config.body = JSON.stringify(config.body);
+        if (config.contentType == "application/json") config.body = JSON.stringify(config.requestBody);
         else {
             config.form = config.requestBody;
             delete config.requestBody;

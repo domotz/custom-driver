@@ -1,0 +1,82 @@
+{
+    "exchange, two domain controllers validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, two domain controllers get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "LDAP Read and Search Time",
+            "columnHeaders": [
+                {
+                    "label": "Instance Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "LDAP Read Time",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "LDAP Search Time",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dc01.contoso.local",
+                    "values": [
+                        "dc01.contoso.local",
+                        3,
+                        5
+                    ]
+                },
+                {
+                    "id": "dc02.contoso.local",
+                    "values": [
+                        "dc02.contoso.local",
+                        96,
+                        142
+                    ]
+                }
+            ]
+        }
+    },
+    "exchange, a single sample is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, a single sample is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "LDAP Read and Search Time",
+            "columnHeaders": [
+                {
+                    "label": "Instance Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "LDAP Read Time",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "LDAP Search Time",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dc01.contoso.local",
+                    "values": [
+                        "dc01.contoso.local",
+                        3,
+                        null
+                    ]
+                }
+            ]
+        }
+    }
+}

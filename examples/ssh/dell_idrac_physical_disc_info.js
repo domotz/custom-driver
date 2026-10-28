@@ -117,7 +117,8 @@ function get_status() {
 
 function parseData(output) {
     console.log(output);
-    var lines = output.split("\n");
+    // The collector trims stdout, so add back the blank line that ends the last section
+    var lines = (output + "\n").split("\n");
     var data = {};
     var instanceIdDisk = false;
     var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
@@ -137,7 +138,8 @@ function parseData(output) {
             var size = (data["SizeInBytes"] || "").replace(/\D+/g, "");
             size = (size / 1073741824) || "-";
             var usedSize = (data["UsedSizeInBytes"] || "").replace(/\D+/g, "");
-            usedSize = (usedSize / 1073741824) || "-";
+            // An unused disk reports 0 bytes, which is a value, not a missing one
+            usedSize = usedSize === "" ? "-" : usedSize / 1073741824;
             var freeSize = (data["FreeSizeInBytes"] || "").replace(/\D+/g, "") || "-";
             var manufacturer = data["Manufacturer"] || "-";
             var model = data["Model"] || "-";

@@ -1,0 +1,665 @@
+{
+    "poly object id given validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "poly object id given get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "id",
+                "name": "Id",
+                "value": "a6f1c2d3-4b5e-4f60-8a7b-9c0d1e2f3a4b",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "displayName",
+                "name": "Display name",
+                "value": "Boardroom Studio X50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-name",
+                "name": "Room name",
+                "value": "Boardroom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "floor",
+                "name": "Floor",
+                "value": "2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-capacity",
+                "name": "Room capacity",
+                "value": 12,
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-type",
+                "name": "Room type",
+                "value": "Conference",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-size",
+                "name": "Room size",
+                "value": "Large",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "--studio-x50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial",
+                "name": "Serial",
+                "value": "SN0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "Poly Studio X50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connected",
+                "name": "Connected",
+                "value": true,
+                "unit": null
+            },
+            {
+                "uid": "software-version",
+                "name": "Software version",
+                "value": "4.3.0-541008",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "software-build",
+                "name": "Software build",
+                "value": "541008",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hardware-family",
+                "name": "Hardware family",
+                "value": "Studio X",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hardware-revision",
+                "name": "Hardware revision",
+                "value": "B",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "mac-address",
+                "name": "Mac address",
+                "value": "00:00:5E:00:53:01",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "internal-ip",
+                "name": "Internal ip",
+                "value": "192.0.2.10",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "external-ip",
+                "name": "External ip",
+                "value": "203.0.113.9",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "call-status",
+                "name": "Call status",
+                "value": "NOT_IN_CALL",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "last-detected",
+                "name": "Last detected",
+                "value": "2026-01-15T09:58:12Z",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "date-registered",
+                "name": "Date registered",
+                "value": "2024-06-03T14:22:00Z",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "manufacturer",
+                "name": "Manufacturer",
+                "value": "Poly",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "provisioning-state",
+                "name": "Provisioning state",
+                "value": "PROVISIONED",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "zoom-room-status",
+                "name": "Zoom room status",
+                "value": "Available",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "teams-health-status",
+                "name": "Teams health status",
+                "value": null,
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-name",
+                "name": "Product name",
+                "value": "Studio X50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "tenant-name",
+                "name": "Tenant name",
+                "value": "Example Org",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "poly-lens-url-link",
+                "name": "Poly lens url link",
+                "value": "https://lens.poly.com/manage/inventory/details/00005E005301?tenantid=tnt-7788",
+                "metadata": {
+                    "url": "https://lens.poly.com/manage/inventory/details/00005E005301?tenantid=tnt-7788"
+                },
+                "valueType": "STRING"
+            },
+            {
+                "uid": "api-response-outcomes",
+                "name": "Api response outcomes",
+                "value": "success",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "Device Connections",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connected"
+                }
+            ],
+            "records": [
+                {
+                    "id": "c-1",
+                    "values": [
+                        "Poly TC10",
+                        true
+                    ]
+                },
+                {
+                    "id": "c-2",
+                    "values": [
+                        "Poly Sync 20",
+                        false
+                    ]
+                }
+            ]
+        }
+    },
+    "poly object id given custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "null: lookup by MAC address validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "null: lookup by MAC address get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "id",
+                "name": "Id",
+                "value": "a6f1c2d3-4b5e-4f60-8a7b-9c0d1e2f3a4b",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "displayName",
+                "name": "Display name",
+                "value": "Boardroom Studio X50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-name",
+                "name": "Room name",
+                "value": "Boardroom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "floor",
+                "name": "Floor",
+                "value": "2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-capacity",
+                "name": "Room capacity",
+                "value": 12,
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-type",
+                "name": "Room type",
+                "value": "Conference",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "room-size",
+                "name": "Room size",
+                "value": "Large",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "--studio-x50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial",
+                "name": "Serial",
+                "value": "SN0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "Poly Studio X50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connected",
+                "name": "Connected",
+                "value": true,
+                "unit": null
+            },
+            {
+                "uid": "software-version",
+                "name": "Software version",
+                "value": "4.3.0-541008",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "software-build",
+                "name": "Software build",
+                "value": "541008",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hardware-family",
+                "name": "Hardware family",
+                "value": "Studio X",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hardware-revision",
+                "name": "Hardware revision",
+                "value": "B",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "mac-address",
+                "name": "Mac address",
+                "value": "00:00:5E:00:53:01",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "internal-ip",
+                "name": "Internal ip",
+                "value": "192.0.2.10",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "external-ip",
+                "name": "External ip",
+                "value": "203.0.113.9",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "call-status",
+                "name": "Call status",
+                "value": "NOT_IN_CALL",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "last-detected",
+                "name": "Last detected",
+                "value": "2026-01-15T09:58:12Z",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "date-registered",
+                "name": "Date registered",
+                "value": "2024-06-03T14:22:00Z",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "manufacturer",
+                "name": "Manufacturer",
+                "value": "Poly",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "provisioning-state",
+                "name": "Provisioning state",
+                "value": "PROVISIONED",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "zoom-room-status",
+                "name": "Zoom room status",
+                "value": "Available",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "teams-health-status",
+                "name": "Teams health status",
+                "value": null,
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-name",
+                "name": "Product name",
+                "value": "Studio X50",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "tenant-name",
+                "name": "Tenant name",
+                "value": "Example Org",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "poly-lens-url-link",
+                "name": "Poly lens url link",
+                "value": "https://lens.poly.com/manage/inventory/details/00005E005301?tenantid=tnt-7788",
+                "metadata": {
+                    "url": "https://lens.poly.com/manage/inventory/details/00005E005301?tenantid=tnt-7788"
+                },
+                "valueType": "STRING"
+            },
+            {
+                "uid": "api-response-outcomes",
+                "name": "Api response outcomes",
+                "value": "success",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "Device Connections",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connected"
+                }
+            ],
+            "records": [
+                {
+                    "id": "c-1",
+                    "values": [
+                        "Poly TC10",
+                        true
+                    ]
+                },
+                {
+                    "id": "c-2",
+                    "values": [
+                        "Poly Sync 20",
+                        false
+                    ]
+                }
+            ]
+        }
+    },
+    "null: lookup by MAC address custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "all: inventory table validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "all: inventory table get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "api-response-outcomes",
+                "name": "Api response outcomes",
+                "value": "success",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "All Devices",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Display Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connected"
+                },
+                {
+                    "label": "Hardware Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Software Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Internal IP",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Poly Link",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "other-id",
+                    "values": [
+                        "wpp-trio-8500",
+                        "Huddle Trio",
+                        "SN7777",
+                        false,
+                        "Poly Trio 8500",
+                        "4.3.0-541008",
+                        "00:04:F2:AA:BB:CC",
+                        "192.0.2.77",
+                        "https://lens.poly.com/manage/inventory/details/0004F2AABBCC?tenantid=tnt-7788"
+                    ],
+                    "metadata": [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {
+                            "url": "https://lens.poly.com/manage/inventory/details/0004F2AABBCC?tenantid=tnt-7788"
+                        }
+                    ]
+                },
+                {
+                    "id": "a6f1c2d3-4b5e-4f60-8a7b-9c0d1e2f3a4b",
+                    "values": [
+                        "wpp-studio-x50",
+                        "Boardroom Studio X50",
+                        "SN0001",
+                        true,
+                        "Poly Studio X50",
+                        "4.3.0-541008",
+                        "00:00:5E:00:53:01",
+                        "192.0.2.10",
+                        "https://lens.poly.com/manage/inventory/details/00005E005301?tenantid=tnt-7788"
+                    ],
+                    "metadata": [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {
+                            "url": "https://lens.poly.com/manage/inventory/details/00005E005301?tenantid=tnt-7788"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "all: inventory table custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "error: permission error with partial data validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "error: permission error with partial data get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "error-1-message",
+                "name": "Error 1 - message",
+                "value": "Not authorized to read tenant",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "error-1-permissions",
+                "name": "Error 1 - permissions",
+                "value": "device.read, tenant.read",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "error-1-code",
+                "name": "Error 1 - code",
+                "value": "FORBIDDEN",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "error-1-resource-id",
+                "name": "Error 1 - resource id",
+                "value": "tnt-7788",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "error-1-resource-type",
+                "name": "Error 1 - resource type",
+                "value": "tenant",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "error: permission error with partial data custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

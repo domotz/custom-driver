@@ -1,0 +1,61 @@
+{
+    "three servers validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three servers get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "DNS Servers",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "dns0",
+                        "ipv4",
+                        "10.10.0.53",
+                        "active"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "dns1",
+                        "ipv4",
+                        "10.10.0.54",
+                        "inactive"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "dns2",
+                        "ipv6",
+                        "2001:db8:10::53",
+                        "active"
+                    ]
+                }
+            ]
+        }
+    }
+}

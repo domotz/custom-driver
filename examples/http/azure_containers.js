@@ -47,20 +47,19 @@ let containerGroupsTable;
 
 // This is the list of selected performance metrics retrieved.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
+// Azure Monitor reports CpuUsage in millicores and the network metrics in bytes per second.
 const performanceMetrics = [{
-    label: "Cpu Usage", valueType: D.valueType.NUMBER, unit: "Gb", key: "CpuUsage", callback: convertBytesToGb
+    label: "Cpu Usage", valueType: D.valueType.NUMBER, unit: "millicores", key: "CpuUsage"
 }, { label: "Memory Usage", valueType: D.valueType.NUMBER, unit: "Gb", key: "MemoryUsage", callback: convertBytesToGb }, {
     label: "Network Received",
     valueType: D.valueType.NUMBER,
-    unit: "bps",
-    key: "NetworkBytesReceivedPerSecond",
-    callback: convertBytesToGb
+    unit: "B/s",
+    key: "NetworkBytesReceivedPerSecond"
 }, {
     label: "Network Transmitted",
     valueType: D.valueType.NUMBER,
-    unit: "bps",
-    key: "NetworkBytesTransmittedPerSecond",
-    callback: convertBytesToGb
+    unit: "B/s",
+    key: "NetworkBytesTransmittedPerSecond"
 }];
 
 const containerDetailsExtractors = [{
@@ -297,7 +296,7 @@ function md5(value) {
  */
 function insertRecord(container, containerGroupProperties) {
     const recordValues = containerGroupProperties.map(function (item) {
-        const value = container[item.key] || "N/A";
+        const value = container[item.key] === undefined || container[item.key] === null ? "N/A" : container[item.key];
         return item.callback ? item.callback(value) : value;
     });
     containerGroupsTable.insertRecord(sanitize(md5(container.resourceGroup + container.resourceName + container.containerName)), recordValues);
@@ -425,12 +424,14 @@ function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
  */
 function populateTable(containerGroupInfoList, containerGroupProperties) {
     containerGroupInfoList.map(function (groupInfo) {
+        // One row per container: the container fields change, the group fields and metrics are shared.
         groupInfo.containers.forEach(function (containerInfo) {
+            groupInfo.containerName = containerInfo.name;
             containerDetailsExtractors.map(function (containerExtractor) {
                 groupInfo[containerExtractor.key] = containerExtractor.extract(containerInfo);
             });
+            insertRecord(groupInfo, containerGroupProperties);
         });
-        insertRecord(groupInfo, containerGroupProperties);
     });
 }
 

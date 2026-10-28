@@ -1,0 +1,72 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Cooling System Health",
+            "columnHeaders": [
+                {
+                    "label": "Speed Value",
+                    "unit": "RPM",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Speed Percentage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "fan1a-tach",
+                    "values": [
+                        "8160",
+                        "42",
+                        "Normal"
+                    ]
+                },
+                {
+                    "id": "fan1b-tach",
+                    "values": [
+                        "7920",
+                        "41",
+                        "Normal"
+                    ]
+                },
+                {
+                    "id": "fan2a-tach",
+                    "values": [
+                        "0",
+                        "0",
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "fan2b-tach",
+                    "values": [
+                        "8040",
+                        "42",
+                        "Normal"
+                    ]
+                },
+                {
+                    "id": "fan3a-tach",
+                    "values": [
+                        "8280",
+                        "43",
+                        "Normal"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,145 @@
+{
+    "opnsense 23.7 all interfaces validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 all interfaces get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Interfaces IPV6",
+            "columnHeaders": [
+                {
+                    "label": "References Number",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "In traffic (ipv6 block)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "In traffic (ipv6 pass)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Out traffic (ipv6 block)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Out traffic (ipv6 pass)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Cleared Time",
+                    "valueType": "DATETIME"
+                }
+            ],
+            "records": [
+                {
+                    "id": "em0",
+                    "values": [
+                        3,
+                        604800,
+                        2421300000,
+                        0,
+                        1980000000,
+                        "Mon Jan 12 08:00:00 2026"
+                    ]
+                },
+                {
+                    "id": "em1",
+                    "values": [
+                        1,
+                        0,
+                        1389150000,
+                        7200,
+                        123220000,
+                        "Mon Jan 12 08:00:00 2026"
+                    ]
+                },
+                {
+                    "id": "lo0",
+                    "values": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "Mon Jan 12 08:00:00 2026"
+                    ]
+                }
+            ]
+        }
+    },
+    "opnsense 23.7 em interfaces validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 em interfaces get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Interfaces IPV6",
+            "columnHeaders": [
+                {
+                    "label": "References Number",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "In traffic (ipv6 block)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "In traffic (ipv6 pass)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Out traffic (ipv6 block)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Out traffic (ipv6 pass)",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Cleared Time",
+                    "valueType": "DATETIME"
+                }
+            ],
+            "records": [
+                {
+                    "id": "em0",
+                    "values": [
+                        3,
+                        604800,
+                        2421300000,
+                        0,
+                        1980000000,
+                        "Mon Jan 12 08:00:00 2026"
+                    ]
+                },
+                {
+                    "id": "em1",
+                    "values": [
+                        1,
+                        0,
+                        1389150000,
+                        7200,
+                        123220000,
+                        "Mon Jan 12 08:00:00 2026"
+                    ]
+                }
+            ]
+        }
+    }
+}

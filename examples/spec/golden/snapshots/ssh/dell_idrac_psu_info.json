@@ -1,0 +1,100 @@
+{
+    "iDRAC 9 with PSU 2 on lost input validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 with PSU 2 on lost input get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "power-usage",
+                "name": "Power Usage",
+                "value": 186,
+                "unit": "W",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "capacity",
+                "name": "Maximum Capacity Usage",
+                "value": 896,
+                "unit": "W",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "capacity-percentage",
+                "name": "Capacity Percentage",
+                "value": "20.76",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "PSU Info",
+            "columnHeaders": [
+                {
+                    "label": "Description",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Total Output Power",
+                    "unit": "W",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Input Voltage",
+                    "unit": "V",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Redundancy Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Part Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Manufacturer",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "psu.slot.1",
+                    "values": [
+                        "Power Supply 1",
+                        "Ok",
+                        "750",
+                        "230",
+                        "Fully Redundant",
+                        "0GRTXNA00",
+                        "PWR SPLY,750W,RDNT,LTON",
+                        "DELL"
+                    ]
+                },
+                {
+                    "id": "psu.slot.2",
+                    "values": [
+                        "Power Supply 2",
+                        "Warning",
+                        "750",
+                        "0",
+                        "Lost",
+                        "0GRTXNA00",
+                        "PWR SPLY,750W,RDNT,LTON",
+                        "DELL"
+                    ]
+                }
+            ]
+        }
+    }
+}

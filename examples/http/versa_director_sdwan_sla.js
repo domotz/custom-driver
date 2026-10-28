@@ -766,7 +766,8 @@ function buildOutput(entries, summary, sitesAvailable, sitesSampled, source) {
 
         if (latency !== null || forwardLoss !== null || reverseLoss !== null) recognisedMetrics = true;
         if (latency !== null && (worstLatency === null || latency > worstLatency)) worstLatency = latency;
-        const loss = forwardLoss !== null ? forwardLoss : reverseLoss;
+        // the worse of the two directions
+        const loss = forwardLoss !== null && reverseLoss !== null ? Math.max(forwardLoss, reverseLoss) : (forwardLoss !== null ? forwardLoss : reverseLoss);
         if (loss !== null && (worstLoss === null || loss > worstLoss)) worstLoss = loss;
 
         let recordId = slaRecordId([site, localCircuit, remoteCircuit]);

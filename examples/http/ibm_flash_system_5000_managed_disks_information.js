@@ -129,13 +129,19 @@ function login() {
     return callHttps(endpoint, headers);
 }
 
+const UNIT_EXPONENTS = { B: 0, KB: 1, MB: 2, GB: 3, TB: 4, PB: 5 };
+
 /**
- * Cleans and parses the Float value.
- * @param {string} value - The value to clean.
- * @returns {number|string} Cleaned value.
+ * Converts a capacity with a unit suffix (e.g. "812.50GB", base 1024) to terabytes.
+ * @param {string} value - The capacity as reported by the CLI.
+ * @returns {number|string} The capacity in TB, or "N/A" when the unit is unknown.
  */
-function cleanFloatValue(value) {
-    return parseFloat(value.replace(/[^0-9.]/g, ""));
+function toTerabytes(value) {
+    const match = /^([0-9.]+)\s*([KMGTP]?B)$/.exec(value);
+    if (!match) {
+        return "N/A";
+    }
+    return Number((parseFloat(match[1]) * Math.pow(1024, UNIT_EXPONENTS[match[2]] - UNIT_EXPONENTS.TB)).toFixed(4));
 }
 
 /**
@@ -151,7 +157,7 @@ function populateEndpointVariables(managedDisksDetailsList) {
             managedDiskDetails["mode"] || "N/A",
             managedDiskDetails["mdisk_grp_id"] || "N/A",
             managedDiskDetails["mdisk_grp_name"] || "N/A",
-            managedDiskDetails["capacity"] ? cleanFloatValue(managedDiskDetails["capacity"]) : "N/A",
+            managedDiskDetails["capacity"] ? toTerabytes(managedDiskDetails["capacity"]) : "N/A",
             managedDiskDetails["ctrl_LUN_#"] || "N/A",
             managedDiskDetails["controller_name"] || "N/A",
             managedDiskDetails["UID"] || "N/A",
@@ -203,17 +209,20 @@ function mergeOutputs() {
     return baseResponseList;
 }
 
+/**
+ * Retrieves data from all endpoints and stores the responses in endpoint order.
+ * @param {Object} body - The login response containing the auth token.
+ * @returns {Promise<void>}
+ */
 function retrieveAndStoreData(body) {
-    const promises = [];
-    for (let i = 0; i < endpoints.length; i++) {
-        const endpointDetails = endpoints[i];
-        const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-            .then(function (response) {
-                storeResponse(response, endpointDetails.endpoint, endpointDetails.key);
-            });
-        promises.push(promise);
-    }
-    return Promise.all(promises);
+    const promises = endpoints.map(function (endpointDetails) {
+        return callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint);
+    });
+    return Promise.all(promises).then(function (responses) {
+        responses.forEach(function (response, i) {
+            storeResponse(response, endpoints[i].key);
+        });
+    });
 }
 
 /**

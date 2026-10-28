@@ -100,10 +100,12 @@ function sum(data) {
  */
 function getValueSum(key, filterFn) {
     return function (data) {
-        return data
+        var values = data
             .filter(function (d) {return d.key == key && (filterFn ? filterFn(d) : true);})
-            .map(function (d) {return parseFloat(d.value);})
-            .reduce(function (a, b) {return a + b;}, 0);
+            .map(function (d) {return parseFloat(d.value);});
+        // null when the metric is absent, so it is not reported as 0
+        if (!values.length) return null;
+        return values.reduce(function (a, b) {return a + b;}, 0);
     };
 }
 
@@ -200,7 +202,7 @@ var config = [
  */
 function multiplier(number) {
     return function (value) {
-        return value * number;
+        return value == null ? null : value * number;
     };
 }
 
@@ -217,7 +219,7 @@ function extract(data) {
         } else if (typeof (c.execute) == "function") {
             result = c.execute(data);
         }
-        if (result) {
+        if (result != null) {
             return _var(c.uid, c.label, result, c.unit, c.type);
         } else {
             return null;

@@ -43,7 +43,7 @@ var gpArray = ["Default Domain Policy", "Default Domain Controllers Policy"];
 gpArray = "'" + gpArray.join("','") + "'";
 
 var gpoTable = D.createTable(
-    "Security events",
+    "Group Policy Objects",
     [
         { label: "Status" },
         { label: "AD Version (User)" },
@@ -99,6 +99,9 @@ function parseOutput(output) {
         var jsonOutput = JSON.parse(JSON.stringify(output));
         try {
             jsonOutput = JSON.parse(jsonOutput.outcome.stdout);
+            if (!Array.isArray(jsonOutput)) {
+                jsonOutput = jsonOutput ? [jsonOutput] : [];
+            }
         } catch (e) {
             console.error("Unable to parse the WinRM output: " + e.message);
             D.failure(D.errorType.PARSING_ERROR);

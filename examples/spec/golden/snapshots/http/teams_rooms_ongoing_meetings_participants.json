@@ -1,0 +1,93 @@
+{
+    "busy boardroom with two events, empty huddle room, training room validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "busy boardroom with two events, empty huddle room, training room get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Microsoft Teams Rooms Meeting Participants",
+            "columnHeaders": [
+                {
+                    "label": "Email Address"
+                },
+                {
+                    "label": "Room Name"
+                },
+                {
+                    "label": "Total Attendees"
+                },
+                {
+                    "label": "Required Attendees"
+                },
+                {
+                    "label": "Optional Attendees"
+                },
+                {
+                    "label": "Resource Attendees"
+                },
+                {
+                    "label": "Accepted"
+                },
+                {
+                    "label": "Tentatively Accepted"
+                },
+                {
+                    "label": "Declined"
+                },
+                {
+                    "label": "Absent"
+                }
+            ],
+            "records": [
+                {
+                    "id": "a1b2c3d4-0001-4000-8000-000000000001",
+                    "values": [
+                        "boardroom@contoso.com",
+                        "Boardroom",
+                        8,
+                        4,
+                        2,
+                        2,
+                        4,
+                        1,
+                        1,
+                        1
+                    ]
+                },
+                {
+                    "id": "a1b2c3d4-0002-4000-8000-000000000002",
+                    "values": [
+                        "huddle7@contoso.com",
+                        "Huddle 7",
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "id": "a1b2c3d4-0003-4000-8000-000000000003",
+                    "values": [
+                        "training@contoso.com",
+                        "Training Lab",
+                        3,
+                        2,
+                        0,
+                        1,
+                        2,
+                        0,
+                        1,
+                        0
+                    ]
+                }
+            ]
+        }
+    }
+}

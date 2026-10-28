@@ -121,7 +121,10 @@ function formatDate(timestamp) {
     const minute = parseInt(timestamp.slice(8, 10));
     const second = parseInt(timestamp.slice(10, 12));
     const dateTime = new Date(year, month, day, hour, minute, second);
-    return (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + "-" + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+    const pad = function (number) {
+        return String(number).padStart(2, "0");
+    };
+    return pad(dateTime.getMonth() + 1) + "-" + pad(dateTime.getDate()) + "-" + dateTime.getFullYear() + " " + pad(dateTime.getHours()) + ":" + pad(dateTime.getMinutes()) + ":" + pad(dateTime.getSeconds());
 }
 
 /**

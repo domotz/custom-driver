@@ -116,17 +116,37 @@ function login() {
     return callHttps(endpoint, headers);
 }
 
+const UNIT_EXPONENTS = { B: 0, KB: 1, MB: 2, GB: 3, TB: 4, PB: 5 };
+
+/**
+ * Converts a capacity with a unit suffix (e.g. "812.50GB", base 1024) to the given unit.
+ * @param {string} value - The capacity as reported by the CLI.
+ * @param {string} unit - The target unit.
+ * @returns {number|string} The converted capacity, or "N/A" when the unit is unknown.
+ */
+function convertCapacity(value, unit) {
+    const match = /^([0-9.]+)\s*([KMGTP]?B)$/.exec(value);
+    if (!match) {
+        return "N/A";
+    }
+    return Number((parseFloat(match[1]) * Math.pow(1024, UNIT_EXPONENTS[match[2]] - UNIT_EXPONENTS[unit])).toFixed(4));
+}
+
 /**
  * Cleans and parses the value based on its type.
  * @param {string} value - The value to clean.
  * @param {string} valueType - Type of the value.
+ * @param {string} unit - Unit of the value; capacities are converted to it.
  * @returns {number|string} Cleaned value.
  */
-function cleanValue(value, valueType) {
+function cleanValue(value, valueType, unit) {
     if (!value) {
         return "N/A";
     }
-    return valueType === D.valueType.NUMBER ? parseFloat(value.replace(/[^0-9.]/g, "")) : value;
+    if (valueType !== D.valueType.NUMBER) {
+        return value;
+    }
+    return unit in UNIT_EXPONENTS ? convertCapacity(value, unit) : parseFloat(value.replace(/[^0-9.]/g, ""));
 }
 
 /**
@@ -138,7 +158,7 @@ function cleanValue(value, valueType) {
 function populateEndpointVariables(response, rows) {
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        result.push(D.createVariable(row.id, row.name, cleanValue(response[row.extraction], row.valueType), row.unit, row.valueType));
+        result.push(D.createVariable(row.id, row.name, cleanValue(response[row.extraction], row.valueType, row.unit), row.unit, row.valueType));
     }
 }
 

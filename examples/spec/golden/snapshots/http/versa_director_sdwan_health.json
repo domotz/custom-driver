@@ -1,0 +1,662 @@
+{
+    "director by device ip validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "director by device ip get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "SD-WAN Appliances",
+            "columnHeaders": [
+                {
+                    "label": "Organization",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Org UUID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Appliance UUID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Deployment",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connector",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connector Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Branch ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CMS Org",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Services",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "SNG Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reachability",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Config Sync",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Path Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Controller",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Services Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Overall Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Template",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "YANG Compatibility",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Inter-Chassis HA",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Intra-Chassis HA",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Stolen Suspected",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Software Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Build",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Firmware Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Manufacturer",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hardware Serial",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CPU Cores",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total Memory",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Used Memory",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total Disk",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Used Disk",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latitude",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Longitude",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Uptime",
+                    "unit": "days",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Start Time",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Last Updated",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Created At",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan",
+                    "values": [
+                        "Acme",
+                        "9f8e7d6c-0000-4000-8000-00000000a001",
+                        "11111111-aaaa-4bbb-8ccc-000000000001",
+                        "branch",
+                        "physical",
+                        "Acme-Connector",
+                        "Acme",
+                        "101",
+                        "Acme",
+                        "sdwan, nextgen-firewall",
+                        0,
+                        "REACHABLE",
+                        "IN_SYNC",
+                        "REACHABLE",
+                        "Available",
+                        "GOOD",
+                        "GOOD",
+                        "In Sync",
+                        "Compatible",
+                        "Not configured",
+                        "Configured",
+                        "No",
+                        "22.1.4-GA",
+                        "abc1234 20240628",
+                        "1.2.3",
+                        "CSG750",
+                        "Versa Networks",
+                        "VSG750-0001",
+                        "HW-0001",
+                        4,
+                        15.4,
+                        41.5,
+                        98.3,
+                        25,
+                        "10.0.0.11",
+                        "Milan",
+                        45.4642,
+                        9.19,
+                        10,
+                        "Mon Jan 5 10:00:00 2026",
+                        "2026-01-15 09:55:00",
+                        "2024-07-01"
+                    ]
+                },
+                {
+                    "id": "hub-frankfurt",
+                    "values": [
+                        "Acme",
+                        "N/A",
+                        "22222222-aaaa-4bbb-8ccc-000000000002",
+                        "hub",
+                        "virtual",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "sdwan",
+                        2,
+                        "REACHABLE",
+                        "IN_SYNC",
+                        "REACHABLE",
+                        "Available",
+                        "GOOD",
+                        "GOOD",
+                        "In Sync",
+                        "Compatible",
+                        "Configured",
+                        "Not configured",
+                        "No",
+                        "22.1.4-GA",
+                        "abc1234 20240628",
+                        "N/A",
+                        "Virtual Machine",
+                        "KVM",
+                        "VM-0002",
+                        "N/A",
+                        null,
+                        16,
+                        75,
+                        1536,
+                        66.7,
+                        "10.0.1.1",
+                        "Frankfurt",
+                        50.1109,
+                        8.6821,
+                        21.2,
+                        "Thu Dec 25 04:30:00 2025",
+                        "2026-01-15 09:55:00",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "branch-rome",
+                    "values": [
+                        "Acme",
+                        "N/A",
+                        "33333333-aaaa-4bbb-8ccc-000000000003",
+                        "branch",
+                        "physical",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "sdwan",
+                        0,
+                        "UNREACHABLE",
+                        "OUT_OF_SYNC",
+                        "UNREACHABLE",
+                        "Unavailable",
+                        "UNKNOWN",
+                        "CRITICAL",
+                        "Out of Sync",
+                        "Incompatible",
+                        "N/A",
+                        "N/A",
+                        "Yes",
+                        "21.2.3-GA",
+                        "def5678 20230115",
+                        "N/A",
+                        "CSG350",
+                        "Versa Networks",
+                        "VSG350-0003",
+                        "N/A",
+                        2,
+                        3.7,
+                        89.2,
+                        29,
+                        90,
+                        "10.0.3.11",
+                        "Rome",
+                        null,
+                        null,
+                        null,
+                        "not a date",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    },
+    "director by hostname with page size validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "director by hostname with page size get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "SD-WAN Appliances",
+            "columnHeaders": [
+                {
+                    "label": "Organization",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Org UUID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Appliance UUID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Deployment",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connector",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connector Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Branch ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CMS Org",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Services",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "SNG Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reachability",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Config Sync",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Path Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Controller",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Services Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Overall Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Template",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "YANG Compatibility",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Inter-Chassis HA",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Intra-Chassis HA",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Stolen Suspected",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Software Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Build",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Firmware Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Manufacturer",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hardware Serial",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CPU Cores",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total Memory",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Used Memory",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total Disk",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Used Disk",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latitude",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Longitude",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Uptime",
+                    "unit": "days",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Start Time",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Last Updated",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Created At",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan",
+                    "values": [
+                        "Acme",
+                        "9f8e7d6c-0000-4000-8000-00000000a001",
+                        "11111111-aaaa-4bbb-8ccc-000000000001",
+                        "branch",
+                        "physical",
+                        "Acme-Connector",
+                        "Acme",
+                        "101",
+                        "Acme",
+                        "sdwan, nextgen-firewall",
+                        0,
+                        "REACHABLE",
+                        "IN_SYNC",
+                        "REACHABLE",
+                        "Available",
+                        "GOOD",
+                        "GOOD",
+                        "In Sync",
+                        "Compatible",
+                        "Not configured",
+                        "Configured",
+                        "No",
+                        "22.1.4-GA",
+                        "abc1234 20240628",
+                        "1.2.3",
+                        "CSG750",
+                        "Versa Networks",
+                        "VSG750-0001",
+                        "HW-0001",
+                        4,
+                        15.4,
+                        41.5,
+                        98.3,
+                        25,
+                        "10.0.0.11",
+                        "Milan",
+                        45.4642,
+                        9.19,
+                        10,
+                        "Mon Jan 5 10:00:00 2026",
+                        "2026-01-15 09:55:00",
+                        "2024-07-01"
+                    ]
+                },
+                {
+                    "id": "hub-frankfurt",
+                    "values": [
+                        "Acme",
+                        "N/A",
+                        "22222222-aaaa-4bbb-8ccc-000000000002",
+                        "hub",
+                        "virtual",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "sdwan",
+                        2,
+                        "REACHABLE",
+                        "IN_SYNC",
+                        "REACHABLE",
+                        "Available",
+                        "GOOD",
+                        "GOOD",
+                        "In Sync",
+                        "Compatible",
+                        "Configured",
+                        "Not configured",
+                        "No",
+                        "22.1.4-GA",
+                        "abc1234 20240628",
+                        "N/A",
+                        "Virtual Machine",
+                        "KVM",
+                        "VM-0002",
+                        "N/A",
+                        null,
+                        16,
+                        75,
+                        1536,
+                        66.7,
+                        "10.0.1.1",
+                        "Frankfurt",
+                        50.1109,
+                        8.6821,
+                        21.2,
+                        "Thu Dec 25 04:30:00 2025",
+                        "2026-01-15 09:55:00",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "branch-rome",
+                    "values": [
+                        "Acme",
+                        "N/A",
+                        "33333333-aaaa-4bbb-8ccc-000000000003",
+                        "branch",
+                        "physical",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "sdwan",
+                        0,
+                        "UNREACHABLE",
+                        "OUT_OF_SYNC",
+                        "UNREACHABLE",
+                        "Unavailable",
+                        "UNKNOWN",
+                        "CRITICAL",
+                        "Out of Sync",
+                        "Incompatible",
+                        "N/A",
+                        "N/A",
+                        "Yes",
+                        "21.2.3-GA",
+                        "def5678 20230115",
+                        "N/A",
+                        "CSG350",
+                        "Versa Networks",
+                        "VSG350-0003",
+                        "N/A",
+                        2,
+                        3.7,
+                        89.2,
+                        29,
+                        90,
+                        "10.0.3.11",
+                        "Rome",
+                        null,
+                        null,
+                        null,
+                        "not a date",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

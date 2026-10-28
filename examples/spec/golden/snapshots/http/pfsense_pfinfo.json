@@ -1,0 +1,748 @@
+{
+    "pfSense 2.6.0 with em1 as log interface validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "pfSense 2.6.0 with em1 as log interface get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "em1_bytes_in_ipv4",
+                "name": "em1 Bytes In ipv4",
+                "value": "1234567890"
+            },
+            {
+                "uid": "em1_bytes_out_ipv4",
+                "name": "em1 Bytes Out ipv4",
+                "value": "987654321"
+            },
+            {
+                "uid": "em1_packets_in_passed_ipv4",
+                "name": "em1 packets in passed ipv4",
+                "value": "1234567"
+            },
+            {
+                "uid": "em1_packets_in_blocked_ipv4",
+                "name": "em1 packets in blocked ipv4",
+                "value": "1234"
+            },
+            {
+                "uid": "em1_packets_out_passed_ipv4",
+                "name": "em1 packets out passed ipv4",
+                "value": "987654"
+            },
+            {
+                "uid": "em1_packets_out_blocked_ipv4",
+                "name": "em1 packets out blocked ipv4",
+                "value": "0"
+            },
+            {
+                "uid": "em1_bytes_in_ipv6",
+                "name": "em1 Bytes In ipv6",
+                "value": "5120"
+            },
+            {
+                "uid": "em1_bytes_out_ipv6",
+                "name": "em1 Bytes Out ipv6",
+                "value": "2048"
+            },
+            {
+                "uid": "em1_packets_in_passed_ipv6",
+                "name": "em1 packets in passed ipv6",
+                "value": "40"
+            },
+            {
+                "uid": "em1_packets_in_blocked_ipv6",
+                "name": "em1 packets in blocked ipv6",
+                "value": "2"
+            },
+            {
+                "uid": "em1_packets_out_passed_ipv6",
+                "name": "em1 packets out passed ipv6",
+                "value": "31"
+            },
+            {
+                "uid": "em1_packets_out_blocked_ipv6",
+                "name": "em1 packets out blocked ipv6",
+                "value": "0"
+            },
+            {
+                "uid": "State Table_current entries_total",
+                "name": "State Table: current entries (total)",
+                "value": "1234"
+            },
+            {
+                "uid": "State Table_searches_total",
+                "name": "State Table: searches (total)",
+                "value": "123456789"
+            },
+            {
+                "uid": "State Table_searches_rate",
+                "name": "State Table: searches (rate)",
+                "value": "117.4",
+                "unit": "/s"
+            },
+            {
+                "uid": "State Table_inserts_total",
+                "name": "State Table: inserts (total)",
+                "value": "2345678"
+            },
+            {
+                "uid": "State Table_inserts_rate",
+                "name": "State Table: inserts (rate)",
+                "value": "2.2",
+                "unit": "/s"
+            },
+            {
+                "uid": "State Table_removals_total",
+                "name": "State Table: removals (total)",
+                "value": "2344444"
+            },
+            {
+                "uid": "State Table_removals_rate",
+                "name": "State Table: removals (rate)",
+                "value": "2.1",
+                "unit": "/s"
+            },
+            {
+                "uid": "Source Tracking Table_current entries_total",
+                "name": "Source Tracking Table: current entries (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Source Tracking Table_searches_total",
+                "name": "Source Tracking Table: searches (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Source Tracking Table_searches_rate",
+                "name": "Source Tracking Table: searches (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Source Tracking Table_inserts_total",
+                "name": "Source Tracking Table: inserts (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Source Tracking Table_inserts_rate",
+                "name": "Source Tracking Table: inserts (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Source Tracking Table_removals_total",
+                "name": "Source Tracking Table: removals (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Source Tracking Table_removals_rate",
+                "name": "Source Tracking Table: removals (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_match_total",
+                "name": "Counters: match (total)",
+                "value": "12345678"
+            },
+            {
+                "uid": "Counters_match_rate",
+                "name": "Counters: match (rate)",
+                "value": "11.7",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_bad-offset_total",
+                "name": "Counters: bad-offset (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_bad-offset_rate",
+                "name": "Counters: bad-offset (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_fragment_total",
+                "name": "Counters: fragment (total)",
+                "value": "12"
+            },
+            {
+                "uid": "Counters_fragment_rate",
+                "name": "Counters: fragment (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_short_total",
+                "name": "Counters: short (total)",
+                "value": "3"
+            },
+            {
+                "uid": "Counters_short_rate",
+                "name": "Counters: short (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_normalize_total",
+                "name": "Counters: normalize (total)",
+                "value": "5"
+            },
+            {
+                "uid": "Counters_normalize_rate",
+                "name": "Counters: normalize (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_memory_total",
+                "name": "Counters: memory (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_memory_rate",
+                "name": "Counters: memory (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_bad-timestamp_total",
+                "name": "Counters: bad-timestamp (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_bad-timestamp_rate",
+                "name": "Counters: bad-timestamp (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_congestion_total",
+                "name": "Counters: congestion (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_congestion_rate",
+                "name": "Counters: congestion (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_ip-option_total",
+                "name": "Counters: ip-option (total)",
+                "value": "7"
+            },
+            {
+                "uid": "Counters_ip-option_rate",
+                "name": "Counters: ip-option (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_proto-cksum_total",
+                "name": "Counters: proto-cksum (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_proto-cksum_rate",
+                "name": "Counters: proto-cksum (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_state-mismatch_total",
+                "name": "Counters: state-mismatch (total)",
+                "value": "41"
+            },
+            {
+                "uid": "Counters_state-mismatch_rate",
+                "name": "Counters: state-mismatch (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_state-insert_total",
+                "name": "Counters: state-insert (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_state-insert_rate",
+                "name": "Counters: state-insert (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_state-limit_total",
+                "name": "Counters: state-limit (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_state-limit_rate",
+                "name": "Counters: state-limit (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_src-limit_total",
+                "name": "Counters: src-limit (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_src-limit_rate",
+                "name": "Counters: src-limit (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_synproxy_total",
+                "name": "Counters: synproxy (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_synproxy_rate",
+                "name": "Counters: synproxy (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Counters_map-failed_total",
+                "name": "Counters: map-failed (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Counters_map-failed_rate",
+                "name": "Counters: map-failed (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_max states per rule_total",
+                "name": "Limit Counters: max states per rule (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_max states per rule_rate",
+                "name": "Limit Counters: max states per rule (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_max-src-states_total",
+                "name": "Limit Counters: max-src-states (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_max-src-states_rate",
+                "name": "Limit Counters: max-src-states (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_max-src-nodes_total",
+                "name": "Limit Counters: max-src-nodes (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_max-src-nodes_rate",
+                "name": "Limit Counters: max-src-nodes (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_max-src-conn_total",
+                "name": "Limit Counters: max-src-conn (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_max-src-conn_rate",
+                "name": "Limit Counters: max-src-conn (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_max-src-conn-rate_total",
+                "name": "Limit Counters: max-src-conn-rate (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_max-src-conn-rate_rate",
+                "name": "Limit Counters: max-src-conn-rate (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_overload tbl insertion_total",
+                "name": "Limit Counters: overload table insertion (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_overload tbl insertion_rate",
+                "name": "Limit Counters: overload table insertion (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_overload flush states_total",
+                "name": "Limit Counters: overload flush states (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_overload flush states_rate",
+                "name": "Limit Counters: overload flush states (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_synfloods detected_total",
+                "name": "Limit Counters: synfloods detected (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_synfloods detected_rate",
+                "name": "Limit Counters: synfloods detected (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_syncookies sent_total",
+                "name": "Limit Counters: syncookies sent (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_syncookies sent_rate",
+                "name": "Limit Counters: syncookies sent (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "Limit Counters_syncookies validated_total",
+                "name": "Limit Counters: syncookies validated (total)",
+                "value": "0"
+            },
+            {
+                "uid": "Limit Counters_syncookies validated_rate",
+                "name": "Limit Counters: syncookies validated (rate)",
+                "value": "0.0",
+                "unit": "/s"
+            },
+            {
+                "uid": "syncookies",
+                "name": "syncookies",
+                "value": "adaptive"
+            },
+            {
+                "uid": "states        hard limit",
+                "name": "states        hard limit",
+                "value": "198000"
+            },
+            {
+                "uid": "src-nodes     hard limit",
+                "name": "src-nodes     hard limit",
+                "value": "198000"
+            },
+            {
+                "uid": "frags         hard limit",
+                "name": "frags         hard limit",
+                "value": "5000"
+            },
+            {
+                "uid": "tbl-entries hard limit",
+                "name": "table-entries hard limit",
+                "value": "400000"
+            },
+            {
+                "uid": "tcp.first",
+                "name": "tcp.first",
+                "value": "120",
+                "unit": "s"
+            },
+            {
+                "uid": "tcp.opening",
+                "name": "tcp.opening",
+                "value": "30",
+                "unit": "s"
+            },
+            {
+                "uid": "tcp.established",
+                "name": "tcp.established",
+                "value": "86400",
+                "unit": "s"
+            },
+            {
+                "uid": "tcp.closing",
+                "name": "tcp.closing",
+                "value": "900",
+                "unit": "s"
+            },
+            {
+                "uid": "tcp.finwait",
+                "name": "tcp.finwait",
+                "value": "45",
+                "unit": "s"
+            },
+            {
+                "uid": "tcp.closed",
+                "name": "tcp.closed",
+                "value": "90",
+                "unit": "s"
+            },
+            {
+                "uid": "tcp.tsdiff",
+                "name": "tcp.tsdiff",
+                "value": "30",
+                "unit": "s"
+            },
+            {
+                "uid": "udp.first",
+                "name": "udp.first",
+                "value": "60",
+                "unit": "s"
+            },
+            {
+                "uid": "udp.single",
+                "name": "udp.single",
+                "value": "30",
+                "unit": "s"
+            },
+            {
+                "uid": "udp.multiple",
+                "name": "udp.multiple",
+                "value": "60",
+                "unit": "s"
+            },
+            {
+                "uid": "icmp.first",
+                "name": "icmp.first",
+                "value": "20",
+                "unit": "s"
+            },
+            {
+                "uid": "icmp.error",
+                "name": "icmp.error",
+                "value": "10",
+                "unit": "s"
+            },
+            {
+                "uid": "other.first",
+                "name": "other.first",
+                "value": "60",
+                "unit": "s"
+            },
+            {
+                "uid": "other.single",
+                "name": "other.single",
+                "value": "30",
+                "unit": "s"
+            },
+            {
+                "uid": "other.multiple",
+                "name": "other.multiple",
+                "value": "60",
+                "unit": "s"
+            },
+            {
+                "uid": "frag",
+                "name": "frag",
+                "value": "30",
+                "unit": "s"
+            },
+            {
+                "uid": "interval",
+                "name": "interval",
+                "value": "10",
+                "unit": "s"
+            },
+            {
+                "uid": "adaptive.start",
+                "name": "adaptive.start",
+                "value": "59400",
+                "unit": "states"
+            },
+            {
+                "uid": "adaptive.end",
+                "name": "adaptive.end",
+                "value": "118800",
+                "unit": "states"
+            },
+            {
+                "uid": "src.track",
+                "name": "src.track",
+                "value": "0",
+                "unit": "s"
+            }
+        ],
+        "table": {
+            "label": "Pfsense interface statistics",
+            "columnHeaders": [
+                {
+                    "label": "Cleared"
+                },
+                {
+                    "label": "References"
+                },
+                {
+                    "label": "In4/Pass (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "In4/Pass (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "In4/Block (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "In4/Block (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "Out4/Pass (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "Out4/Pass (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "Out4/Block (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "Out4/Block (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "In6/Pass (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "In6/Pass (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "In6/Block (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "In6/Block (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "Out6/Pass (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "Out6/Pass (Bytes)",
+                    "unit": "byte"
+                },
+                {
+                    "label": "Out6/Block (Packets)",
+                    "unit": "packet"
+                },
+                {
+                    "label": "Out6/Block (Bytes)",
+                    "unit": "byte"
+                }
+            ],
+            "records": [
+                {
+                    "id": "all",
+                    "values": [
+                        "Thu Jan  1 00:00:00 2026",
+                        "0",
+                        "1300000",
+                        "1400000000",
+                        "1500",
+                        "90000",
+                        "1000000",
+                        "1100000000",
+                        "10",
+                        "800",
+                        "40",
+                        "5000",
+                        "2",
+                        "160",
+                        "31",
+                        "2400",
+                        "0",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "em0",
+                    "values": [
+                        "Thu Jan  1 00:00:00 2026",
+                        "4",
+                        "800000",
+                        "900000000",
+                        "1400",
+                        "80000",
+                        "600000",
+                        "700000000",
+                        "0",
+                        "0",
+                        "20",
+                        "2500",
+                        "2",
+                        "160",
+                        "15",
+                        "1200",
+                        "0",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "em1",
+                    "values": [
+                        "Thu Jan  1 00:00:00 2026",
+                        "9",
+                        "500000",
+                        "500000000",
+                        "100",
+                        "10000",
+                        "400000",
+                        "400000000",
+                        "10",
+                        "800",
+                        "20",
+                        "2500",
+                        "0",
+                        "0",
+                        "16",
+                        "1200",
+                        "0",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "lo0",
+                    "values": [
+                        "Thu Jan  1 00:00:00 2026",
+                        "1",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0",
+                        "0"
+                    ]
+                }
+            ]
+        }
+    }
+}

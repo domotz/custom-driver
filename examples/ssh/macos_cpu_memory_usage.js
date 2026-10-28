@@ -98,10 +98,14 @@ function extractVariables(output) {
     if (cpuMemoryInfo && cpuMemoryInfo.SPHardwareDataType && cpuMemoryInfo.SPHardwareDataType.length > 0) {
         var hardwareData = cpuMemoryInfo.SPHardwareDataType[0];
         var totalMemory = hardwareData.physical_memory ? hardwareData.physical_memory.replace(/[^\d,.]/g, "") : 0;
-        var cpuName = hardwareData.cpu_type || "N/A";
+        // Apple silicon reports chip_type instead of cpu_type
+        var cpuName = hardwareData.cpu_type || hardwareData.chip_type || "N/A";
         var processorSpeed = hardwareData.current_processor_speed ? hardwareData.current_processor_speed.replace(/[^\d,.]/g, "") : 0;
         var physicalCPUPackages = hardwareData.packages || 0;
-        var coresNumber = hardwareData.number_processors || 0;
+        // Apple silicon reports number_processors as "proc <total>:<performance>:<efficiency>:<other>"
+        var coresNumber = typeof hardwareData.number_processors === "string"
+            ? parseInt(hardwareData.number_processors.replace(/^proc\s*/, ""), 10) || 0
+            : hardwareData.number_processors || 0;
     } else {
         console.error("Invalid or empty SPHardwareDataType");
     }

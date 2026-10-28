@@ -140,7 +140,8 @@ function insertPsuRecord(recordData) {
 
 function extractData(output) {
     if (output) {
-        var psulines = output.psuOutput.split("\n");
+        // The collector trims stdout, so add back the blank line that ends the last section
+        var psulines = (output.psuOutput + "\n").split("\n");
         var data = {};
         var instanceIdPsu = false;
         for (var i = 0; i < psulines.length; i++) {

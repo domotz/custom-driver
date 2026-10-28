@@ -1,0 +1,88 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Temperatures",
+            "columnHeaders": [
+                {
+                    "label": "Temperature F",
+                    "unit": "F",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Temperature C",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Warning Reset",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Warning",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Soft Shutdown",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hard Shutdown",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "cpu1-temp",
+                    "values": [
+                        "72",
+                        "22",
+                        "75/24",
+                        "88/31",
+                        "95/35",
+                        "100/38"
+                    ]
+                },
+                {
+                    "id": "cpu2-temp",
+                    "values": [
+                        "93",
+                        "34",
+                        "75/24",
+                        "88/31",
+                        "95/35",
+                        "100/38"
+                    ]
+                },
+                {
+                    "id": "ambient-temp",
+                    "values": [
+                        "75",
+                        "24",
+                        "60/16",
+                        "108/42",
+                        "113/45",
+                        "118/48"
+                    ]
+                },
+                {
+                    "id": "dimm-1-temp",
+                    "values": [
+                        "81",
+                        "27",
+                        "70/21",
+                        "90/32",
+                        "95/35",
+                        "100/38"
+                    ]
+                }
+            ]
+        }
+    }
+}

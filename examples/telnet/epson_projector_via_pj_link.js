@@ -187,8 +187,8 @@ function executeCommand(client, command) {
         client.setTimeout(COMMAND_TIMEOUT);
         client.on("timeout", function () {
             console.warn("Socket Timeout");
+            reject("Socket timeout without a valid response");
             client.end();
-            resolve();
         });
         client.on("error", function (err) {
             console.error("Socket error:", err);
@@ -213,6 +213,10 @@ function executeCommand(client, command) {
                     }
                     if (responseObject.authVersion === "0") {
                         client.write(command);
+                    }
+                    if (responseObject.authVersion === null) {
+                        reject("Unsupported PJLINK greeting: " + responseObject.args.join(" "));
+                        client.end();
                     }
                     break;
                 case LAMP:

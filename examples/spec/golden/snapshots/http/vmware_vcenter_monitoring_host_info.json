@@ -1,0 +1,206 @@
+{
+    "vcenter 8.0.2 esx01.lab.local validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 8.0.2 esx01.lab.local get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "esx01.lab.local",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "Dell Inc. PowerEdge R650",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os",
+                "name": "Operating System",
+                "value": "VMware ESXi 8.0.2 build-22380479 (vmnix-x86)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu",
+                "name": "CPU Model",
+                "value": "Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "processors",
+                "name": "Processors",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores",
+                "name": "Cores",
+                "value": 64,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory",
+                "name": "Memory",
+                "value": "256.00",
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "50.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-usage",
+                "name": "CPU Usage",
+                "value": "10.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "power-state",
+                "name": "Power State",
+                "value": "poweredOn",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection-state",
+                "name": "Connection State",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": 336,
+                "unit": "hours",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "vcenter 8.0.2 esx02.lab.local validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 8.0.2 esx02.lab.local get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "esx02.lab.local",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "HPE ProLiant DL380 Gen10",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os",
+                "name": "Operating System",
+                "value": "VMware ESXi 8.0.1 build-21813344 (vmnix-x86)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu",
+                "name": "CPU Model",
+                "value": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "processors",
+                "name": "Processors",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores",
+                "name": "Cores",
+                "value": 24,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory",
+                "name": "Memory",
+                "value": "128.00",
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "91.41",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-usage",
+                "name": "CPU Usage",
+                "value": "50.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "power-state",
+                "name": "Power State",
+                "value": "poweredOn",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection-state",
+                "name": "Connection State",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "WARNING",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": 2,
+                "unit": "hours",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

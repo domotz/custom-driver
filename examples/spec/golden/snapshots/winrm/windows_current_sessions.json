@@ -1,0 +1,181 @@
+{
+    "winrm, three sessions validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three sessions get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logged In Users",
+            "columnHeaders": [
+                {
+                    "label": "Username"
+                },
+                {
+                    "label": "State"
+                },
+                {
+                    "label": "Logon Time"
+                },
+                {
+                    "label": "Session ID"
+                },
+                {
+                    "label": "Idle Time"
+                },
+                {
+                    "label": "Session Name"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        "administrator",
+                        "Active",
+                        "1/12/2026 8:05 AM",
+                        "1",
+                        "none",
+                        "console"
+                    ]
+                },
+                {
+                    "id": "jsmith",
+                    "values": [
+                        "jsmith",
+                        "Active",
+                        "1/14/2026 4:30 PM",
+                        "3",
+                        "14",
+                        "rdp-tcp#12"
+                    ]
+                },
+                {
+                    "id": "bwayne",
+                    "values": [
+                        "bwayne",
+                        "Disc",
+                        "1/13/2026 11:47 AM",
+                        "4",
+                        "2+03:10",
+                        ""
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one session validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one session get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logged In Users",
+            "columnHeaders": [
+                {
+                    "label": "Username"
+                },
+                {
+                    "label": "State"
+                },
+                {
+                    "label": "Logon Time"
+                },
+                {
+                    "label": "Session ID"
+                },
+                {
+                    "label": "Idle Time"
+                },
+                {
+                    "label": "Session Name"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        "administrator",
+                        "Active",
+                        "1/12/2026 8:05 AM",
+                        "1",
+                        "none",
+                        "console"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three sessions validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three sessions get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logged In Users",
+            "columnHeaders": [
+                {
+                    "label": "Username"
+                },
+                {
+                    "label": "State"
+                },
+                {
+                    "label": "Logon Time"
+                },
+                {
+                    "label": "Session ID"
+                },
+                {
+                    "label": "Idle Time"
+                },
+                {
+                    "label": "Session Name"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        "administrator",
+                        "Active",
+                        "1/12/2026 8:05 AM",
+                        "1",
+                        "none",
+                        "console"
+                    ]
+                },
+                {
+                    "id": "jsmith",
+                    "values": [
+                        "jsmith",
+                        "Active",
+                        "1/14/2026 4:30 PM",
+                        "3",
+                        "14",
+                        "rdp-tcp#12"
+                    ]
+                },
+                {
+                    "id": "bwayne",
+                    "values": [
+                        "bwayne",
+                        "Disc",
+                        "1/13/2026 11:47 AM",
+                        "4",
+                        "2+03:10",
+                        ""
+                    ]
+                }
+            ]
+        }
+    }
+}

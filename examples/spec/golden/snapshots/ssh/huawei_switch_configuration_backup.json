@@ -1,0 +1,16 @@
+{
+    "S5735 V200R022 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "S5735 V200R022 backup": {
+        "type": "success",
+        "backup": {
+            "label": "Huawei Switch Configuration Backup",
+            "running": "!Software Version V200R022C00SPC500\n#\nsysname Huawei-SW1\n#\nvlan batch 10 20 100\n#\ninterface Vlanif100\n ip address 192.168.100.2 255.255.255.0\n#\ninterface GigabitEthernet0/0/1\n port link-type access\n port default vlan 10\n#\naaa\n local-user admin password irreversible-cipher $1c$abcdefg$\n#\nreturn",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

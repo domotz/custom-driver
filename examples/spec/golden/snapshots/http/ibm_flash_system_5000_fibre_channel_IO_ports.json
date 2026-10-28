@@ -1,0 +1,143 @@
+{
+    "four fc ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four fc ports get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Fibre Channel I/O Ports",
+            "columnHeaders": [
+                {
+                    "label": "Fibre Channel I/O Port ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Port ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Port Speed",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "World Wide Port Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "N-Port ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Attachment",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Cluster Use",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Adapter Location",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Adapter Port ID",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "1",
+                        "1",
+                        "fc",
+                        "16",
+                        "1",
+                        "node1",
+                        "500507680C110001",
+                        "010200",
+                        "active",
+                        "switch",
+                        "local_partner",
+                        "1",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "2",
+                        "2",
+                        "fc",
+                        "32",
+                        "1",
+                        "node1",
+                        "500507680C120001",
+                        "010300",
+                        "active",
+                        "host",
+                        "local_partner",
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "1",
+                        "fc",
+                        "8",
+                        "2",
+                        "node2",
+                        "500507680C110002",
+                        "010400",
+                        "active",
+                        "switch",
+                        "local_partner",
+                        "1",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "2",
+                        "2",
+                        "fc",
+                        "0",
+                        "2",
+                        "node2",
+                        "500507680C120002",
+                        "000000",
+                        "inactive_unconfigured",
+                        "N/A",
+                        "unused",
+                        "1",
+                        "2"
+                    ]
+                }
+            ]
+        }
+    }
+}

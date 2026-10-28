@@ -32,14 +32,21 @@ const azureCloudManagementService = D.createExternalDevice("management.azure.com
 // Variable to store access token for Azure API calls
 let accessToken;
 
-const table =  D.createTable("Azure Cost Metrics", [
-    { label: "Resource Group", valueType: D.valueType.STRING },
-    { label: "Meter", valueType: D.valueType.STRING },
-    { label: "Meter Subcategory", valueType: D.valueType.STRING },
-    { label: "Service Name", valueType: D.valueType.STRING },
-    { label: "Resource Location", valueType: D.valueType.STRING },
-    { label: "Pre Tax Cost", unit: "EUR", valueType: D.valueType.NUMBER }
-]);
+/**
+ * Creates the cost table; the cost column unit is the currency the API reports
+ * @param {string} currency The billing currency (e.g. "EUR", "USD")
+ * @returns {Object} The cost table
+ */
+function createCostTable(currency) {
+    return D.createTable("Azure Cost Metrics", [
+        { label: "Resource Group", valueType: D.valueType.STRING },
+        { label: "Meter", valueType: D.valueType.STRING },
+        { label: "Meter Subcategory", valueType: D.valueType.STRING },
+        { label: "Service Name", valueType: D.valueType.STRING },
+        { label: "Resource Location", valueType: D.valueType.STRING },
+        { label: "Pre Tax Cost", unit: currency, valueType: D.valueType.NUMBER }
+    ]);
+}
 
 const today = new Date();
 const startDate = new Date(today);
@@ -205,18 +212,20 @@ function extractMetricsInfo(metricsResponse) {
             if (column.name === "PreTaxCost") {
                 let roundedPreTaxCost = parseFloat(value).toFixed(2);
                 roundedPreTaxCost = parseFloat(roundedPreTaxCost);
-                totalCost += roundedPreTaxCost;
                 rowData[column.name] = roundedPreTaxCost;
             }
         });
         delete rowData.UsageDate;
-        delete rowData.Currency;
         return rowData;
     });
     data = filterByResourceGroup(data, resourceGroups);
+    data.forEach(function (rowData) {
+        totalCost += rowData.PreTaxCost;
+    });
     return {
         metrics: data,
-        totalCost: totalCost
+        totalCost: parseFloat(totalCost.toFixed(2)),
+        currency: data.length ? data[0].Currency : undefined
     };
 }
 
@@ -249,6 +258,7 @@ function insertRecords(data) {
         console.error("No metrics data provided");
         return;
     }
+    const table = createCostTable(data.currency);
     data.metrics.forEach(function (row) {
         var recordId = sanitize(md5(row.ResourceGroup + "-" + row.Meter));
         table.insertRecord(recordId, [
@@ -260,7 +270,7 @@ function insertRecords(data) {
             row.PreTaxCost
         ]);
     });
-    D.success([D.createVariable("total-cost", "Total Cost", data.totalCost, data.metrics[0].Currency, D.valueType.NUMBER)], table);
+    D.success([D.createVariable("total-cost", "Total Cost", data.totalCost, data.currency, D.valueType.NUMBER)], table);
 }
 
 /**

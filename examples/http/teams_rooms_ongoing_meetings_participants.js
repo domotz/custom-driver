@@ -231,15 +231,24 @@ function processOngoingMeetingsResponse(resolve, reject) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
 
-        let meetings = bodyAsJSON.value.map(function (room) {
-            let ongoingMeetings = extractOngoingMeetingsInfo(room);
-            if (!ongoingMeetings || ongoingMeetings.length === 0) {
-                console.info("There are no ongoing meetings at the moment in room:", email);
+        // Sum the attendee counts of every event in the window; a room without meetings counts 0.
+        const totals = {};
+        ongoingMeetingInfoExtractors.forEach(function (extractor) {
+            totals[extractor.key] = 0;
+        });
+        if (bodyAsJSON.value.length === 0) {
+            console.info("There are no ongoing meetings at the moment in room:", email);
+        }
+        bodyAsJSON.value.forEach(function (meeting) {
+            const ongoingMeeting = extractOngoingMeetingsInfo(meeting);
+            if (ongoingMeeting) {
+                Object.keys(totals).forEach(function (key) {
+                    totals[key] += ongoingMeeting[key];
+                });
             }
-            return ongoingMeetings;
         });
 
-        resolve(meetings);
+        resolve(totals);
     };
 }
 
@@ -357,9 +366,8 @@ function retrieveOngoingMeetings(meetings) {
  * @param {Object} room - Room object containing various properties.
  */
 function insertRecord(room) {
-    const roomData = room["0"] || {};
     const recordValues = roomProperties.map(function (item) {
-        return room[item.key] || roomData[item.key] || "N/A";
+        return room[item.key] !== undefined ? room[item.key] : "N/A";
     });
     roomsTable.insertRecord(room.id, recordValues);
 }

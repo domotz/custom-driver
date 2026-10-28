@@ -41,6 +41,8 @@ if (!urlCl.indexOf("//")) {
     if (portIndex !== -1) {
         port = remainingUrl.substring(portIndex + 1);
         urlCl = remainingUrl.substring(0, portIndex);
+    } else {
+        urlCl = remainingUrl;
     }
 }
 
@@ -52,6 +54,7 @@ function httpGet(url) {
     var website = D.createExternalDevice(urlCl);
     var config = {
         url: url,
+        protocol: protocol === "https:" ? "https" : "http",
         port: port,
         headers: {
             "X-Api-Key": D.device.password() //api key == password

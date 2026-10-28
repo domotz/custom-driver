@@ -1,0 +1,83 @@
+{
+    "two batteries validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two batteries get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Battery Information",
+            "columnHeaders": [
+                {
+                    "label": "Enclosure ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Battery ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Charging Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Recondition Needed",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Percent Charged",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "End of Life Warning",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Canister ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Battery Slot",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "1",
+                        "1",
+                        "online",
+                        "charged",
+                        "no",
+                        "100",
+                        "no",
+                        "1",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "2",
+                        "degraded",
+                        "charging",
+                        "yes",
+                        "42",
+                        "yes",
+                        "2",
+                        "1"
+                    ]
+                }
+            ]
+        }
+    }
+}

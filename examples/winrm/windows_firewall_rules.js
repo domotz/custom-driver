@@ -65,10 +65,11 @@ const directionCodes = {
     "2": "Outbound"
 };
 
+// NetSecurity.Action enum
 const actionCodes = {
-    "1": "NotConfigured",
+    "0": "NotConfigured",
     "2": "Allow",
-    "3": "Block"
+    "4": "Block"
 };
 
 const enabledCodes = {

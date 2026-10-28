@@ -107,7 +107,7 @@ function login() {
                 var responseData = JSON.parse(body);
                 if (responseData.status === 200 && responseData.data && responseData.data.token) {
                     authToken = responseData.data.token;
-                    console.info("Login successful. Auth token:", authToken);
+                    console.info("Login successful.");
                     resolve(authToken);
                 } else {
                     console.error("Invalid login response:", body);

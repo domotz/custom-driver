@@ -58,6 +58,8 @@ function httpGet(url) {
         D.device.http.get(config, function (error, response, body) {
             if (error) {
                 reject(error);
+            } else if (response && (response.statusCode === 401 || response.statusCode === 403)) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
             } else if (!response || response.statusCode !== 200) {
                 reject(new Error("HTTP request failed with status " + (response && response.statusCode)));
             } else if (!body) {

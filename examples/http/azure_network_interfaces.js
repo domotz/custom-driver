@@ -121,7 +121,7 @@ const networkInterfaceInfoExtractors = [
         valueType: D.valueType.STRING,
         key: "primaryIpConfiguration",
         extract: function (networkInterface) {
-            return networkInterface.properties && networkInterface.properties.ipConfigurations && networkInterface.properties.ipConfigurations[0] && networkInterface.properties.ipConfigurations[0].properties && networkInterface.properties.ipConfigurations[0].properties.primary || "N/A";
+            return valueOrNA(networkInterface.properties && networkInterface.properties.ipConfigurations && networkInterface.properties.ipConfigurations[0] && networkInterface.properties.ipConfigurations[0].properties && networkInterface.properties.ipConfigurations[0].properties.primary);
         }
     }, {
         label: "Private IP Version",
@@ -157,28 +157,28 @@ const networkInterfaceInfoExtractors = [
         valueType: D.valueType.STRING,
         key: "enableAcceleratedNetworking",
         extract: function (networkInterface) {
-            return networkInterface.properties && networkInterface.properties.enableAcceleratedNetworking || "N/A";
+            return valueOrNA(networkInterface.properties && networkInterface.properties.enableAcceleratedNetworking);
         }
     }, {
         label: "Virtual Network Encryption",
         valueType: D.valueType.STRING,
         key: "vnetEncryptionSupported",
         extract: function (networkInterface) {
-            return networkInterface.properties && networkInterface.properties.vnetEncryptionSupported || "N/A";
+            return valueOrNA(networkInterface.properties && networkInterface.properties.vnetEncryptionSupported);
         }
     }, {
         label: "IP Forwarding",
         valueType: D.valueType.STRING,
         key: "enableIPForwarding",
         extract: function (networkInterface) {
-            return networkInterface.properties && networkInterface.properties.enableIPForwarding || "N/A";
+            return valueOrNA(networkInterface.properties && networkInterface.properties.enableIPForwarding);
         }
     }, {
         label: "Disable TCP State Tracking",
         valueType: D.valueType.STRING,
         key: "disableTcpStateTracking",
         extract: function (networkInterface) {
-            return networkInterface.properties && networkInterface.properties.disableTcpStateTracking || "N/A";
+            return valueOrNA(networkInterface.properties && networkInterface.properties.disableTcpStateTracking);
         }
     }, {
         label: "Network Security Group",
@@ -196,7 +196,7 @@ const networkInterfaceInfoExtractors = [
         valueType: D.valueType.STRING,
         key: "primaryNetworkInterface",
         extract: function (networkInterface) {
-            return networkInterface.properties && networkInterface.properties.primary || "N/A";
+            return valueOrNA(networkInterface.properties && networkInterface.properties.primary);
         }
     }, {
         label: "Associated Virtual Machine",
@@ -229,6 +229,15 @@ const networkInterfaceInfoExtractors = [
         }
     }
 ];
+
+/**
+ * Returns "N/A" only for a missing or empty value, so false and 0 are reported as they are
+ * @param {*} value The value to check
+ * @returns {*} The value, or "N/A" if it is undefined, null or an empty string
+ */
+function valueOrNA(value) {
+    return value === undefined || value === null || value === "" ? "N/A" : value;
+}
 
 /**
  * Sanitizes the output by removing reserved words and formatting it
@@ -477,7 +486,7 @@ function retrieveNIPerformanceMetrics(networkInterfaceList) {
  */
 function insertRecord(networkInterface, networkInterfaceProperties) {
     const recordValues = networkInterfaceProperties.map(function (item) {
-        return networkInterface[item.key] || "N/A";
+        return valueOrNA(networkInterface[item.key]);
     });
     networkInterfacesTable.insertRecord(networkInterface.id, recordValues);
 }

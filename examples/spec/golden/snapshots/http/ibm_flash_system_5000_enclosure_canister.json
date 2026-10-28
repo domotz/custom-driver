@@ -1,0 +1,86 @@
+{
+    "control and expansion validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "control and expansion get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Canisters",
+            "columnHeaders": [
+                {
+                    "label": "Enclosure ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Canister ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Node ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node Name",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "1",
+                        "1",
+                        "online",
+                        "node",
+                        "1",
+                        "node1"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "2",
+                        "degraded",
+                        "node",
+                        "2",
+                        "node2"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "2",
+                        "1",
+                        "online",
+                        "expansion",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "2",
+                        "2",
+                        "offline",
+                        "expansion",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}
