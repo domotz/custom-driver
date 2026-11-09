@@ -1,0 +1,53 @@
+{
+    "logo": "sony.svg",
+    "version": "1.0.0",
+    "name": "Dynamic VLAN Isolation for NETGEAR Switch Ports with Multiple Devices",
+    "description": "This script isolates switch ports with multiple reachable devices by moving them to an empty VLAN. If the port returns to a single device, it is restored to its original VLAN",
+    "category": "Hardware Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "NETGEAR Switch",
+            "SSH Enabled"
+        ]
+    },
+    "tags": [
+        "netgear-switch",
+        "isolate",
+        "restore",
+        "status",
+        "misused-port"
+    ],
+    "sample_period_s": 600,
+    "has_actions": true,
+    "expected_variables": {
+        "table": "[3]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "NETGEAR Switch",
+            "version": "M4250-10G2F-PoE+"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "isolatedVlanId",
+            "label": "Isolated VLAN ID"
+        },
+        {
+            "value_type": "STRING",
+            "name": "productionVlanName",
+            "label": "Production Vlan Name"
+        },
+        {
+            "value_type": "LIST",
+            "name": "excludedPorts",
+            "label": "Excluded Ports"
+        }
+    ]
+}
