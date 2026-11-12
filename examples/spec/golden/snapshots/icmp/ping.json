@@ -1,0 +1,49 @@
+{
+    "ten probes, one lost validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ten probes, one lost get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "jitter",
+                "name": "Jitter",
+                "value": 0.8,
+                "unit": "ms"
+            },
+            {
+                "uid": "avg",
+                "name": "Average",
+                "value": 4.2,
+                "unit": "ms"
+            },
+            {
+                "uid": "packet_loss",
+                "name": "Packet Loss",
+                "value": 10,
+                "unit": "%"
+            },
+            {
+                "uid": "min",
+                "name": "Min",
+                "value": 2.9,
+                "unit": "ms"
+            },
+            {
+                "uid": "max",
+                "name": "Max",
+                "value": 7.5,
+                "unit": "ms"
+            },
+            {
+                "uid": "std",
+                "name": "Std",
+                "value": 1.4,
+                "unit": "ms"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,177 @@
+{
+    "scale set with data disk and one without validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "scale set with data disk and one without get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Azure Virtual Machine Scale Sets",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Disk Controller Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "OS Disk Size",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Disk Write Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Disk Read Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Data Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Data Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Data Disk Read Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Data Disk Write Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Data BW",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Data IOPS",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Data Disk Target BW",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "DataDisk Target IOPS",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "OS Disk BW",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "OS Disk IOPS",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "OS Disk Read Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "OS Disk Write Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "OS Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "OS Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                }
+            ],
+            "records": [
+                {
+                    "id": "aaaa1111-0000-0000-0000-000000000001",
+                    "values": [
+                        "web-vmss",
+                        "Prod-RG",
+                        "SCSI",
+                        128,
+                        42.5,
+                        "3.00",
+                        "1.50",
+                        17.25,
+                        2048000,
+                        1024000,
+                        12,
+                        30,
+                        8.5,
+                        4.25,
+                        125000000,
+                        1100,
+                        11.75,
+                        6.5,
+                        5.5,
+                        12.5,
+                        512000,
+                        256000
+                    ]
+                },
+                {
+                    "id": "bbbb2222-0000-0000-0000-000000000002",
+                    "values": [
+                        "batch-vmss",
+                        "Batch-RG",
+                        "NVMe",
+                        "N/A",
+                        310,
+                        "0.25",
+                        "6.00",
+                        20,
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        71.5,
+                        93.25,
+                        20,
+                        310,
+                        1500000,
+                        52000000
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -27,20 +27,23 @@ var sshOptions = {
 */
 function validate() {
     console.info("Validating SSH login only...");
-    var d = D.q.defer();
     sshOptions.commands = ["echo 'Connected'"];
-    D.device.sendSSHCommands(sshOptions, function(out, err) {
-        if (err) {
-            console.error("Validation failed with SSH error");
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            console.info("SSH connection established.");
-            D.success();
-            d.resolve();
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(sshOptions, function (out, err) {
+            if (err) {
+                console.error("Validation failed with SSH error");
+                checkSshError(err);
+                reject(err);
+            } else {
+                console.info("SSH connection established.");
+                D.success();
+                resolve();
+            }
+        });
+    }).catch(function (err) {
+        // checkSshError has already reported the failure
+        console.error("Validation error handled: " + (err && err.message ? err.message : err));
     });
-    return d.promise;
 }
 
 /**
@@ -52,24 +55,24 @@ function backup() {
     var backupCommand = "show configuration json | cat";
 
     executeCommand(backupCommand)
-        .then(function(outputArray) {
+        .then(function (outputArray) {
             var configText = extractJsonFromOutputs(outputArray);
             if (!configText) {
                 console.error("Failed to extract valid configuration.");
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
                 return;
             }
-                try {
-                    var parsedJson = JSON.parse(configText);
-                    var formattedJson = JSON.stringify(parsedJson, null, 2); // 2-space indentation
-                    D.success(D.createBackup({
-                label: "VyOS Configuration (JSON)",
-                running: formattedJson
+            try {
+                var parsedJson = JSON.parse(configText);
+                var formattedJson = JSON.stringify(parsedJson, null, 2); // 2-space indentation
+                D.success(D.createBackup({
+                    label: "VyOS Configuration (JSON)",
+                    running: formattedJson
                 }));
-                    } catch (e) {
-                        console.error("Failed to parse JSON for formatting: " + e);
-                        D.failure(D.errorType.GENERIC_ERROR);
-                    }
+            } catch (e) {
+                console.error("Failed to parse JSON for formatting: " + e);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
         })
         .catch(checkSshError);
 }
@@ -105,7 +108,7 @@ function cleanOutput(raw) {
     if (!raw) {
         return "";
     }
-    return raw.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').replace(/[\r\n]+/g, '\n').trim();
+    return raw.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "").replace(/[\r\n]+/g, "\n").trim();
 }
 
 /**
@@ -131,17 +134,17 @@ function checkSshError(err) {
  */
 function executeCommand(command) {
     console.info("Executing command on VyOS device: " + command);
-    var d = D.q.defer();
     sshOptions.commands = [command];
-    D.device.sendSSHCommands(sshOptions, function(out, err) {
-        if (err) {
-            console.error("Error during SSH execution: " + JSON.stringify(err));
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            console.info("Command execution successful");
-            d.resolve(out);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommands(sshOptions, function (out, err) {
+            if (err) {
+                console.error("Error during SSH execution: " + JSON.stringify(err));
+                checkSshError(err);
+                reject(err);
+            } else {
+                console.info("Command execution successful");
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }

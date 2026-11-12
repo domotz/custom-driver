@@ -1,0 +1,122 @@
+{
+    "online device, firmware current validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "online device, firmware current get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "product-model",
+                "name": "Model",
+                "value": "CONVERGE Pro 2 128",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "C2P128A00417",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "3.1.0.0",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "locate-mode",
+                "name": "Locate Mode",
+                "value": false,
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "relative-status",
+                "name": "Status",
+                "value": "ONLINE - 3 days",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "location",
+                "name": "Location",
+                "value": "Boardroom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "part-number",
+                "name": "Part Number",
+                "value": "910-3200-006",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "offline device in locate mode with new firmware pending validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "offline device in locate mode with new firmware pending get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "product-model",
+                "name": "Model",
+                "value": "CONVERGE Pro 2 128",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "C2P128A00552",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "3.0.2.1 *",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "locate-mode",
+                "name": "Locate Mode",
+                "value": true,
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "relative-status",
+                "name": "Status",
+                "value": "OFFLINE - 4 hours",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "location",
+                "name": "Location",
+                "value": "Training room",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "part-number",
+                "name": "Part Number",
+                "value": "910-3200-006",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,129 @@
+{
+    "standard account and idle premium file account with unavailable primary validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "standard account and idle premium file account with unavailable primary get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Azure Storage Accounts",
+            "columnHeaders": [
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Provisioning State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Creation Time",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Primary Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status of Primary",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "SKU Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "SKU Tier",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Kind",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Availability",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Egress",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Ingress",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Success E2E Latency",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Success Server Latency",
+                    "valueType": "NUMBER",
+                    "unit": "ms"
+                },
+                {
+                    "label": "Transactions",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Used Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                }
+            ],
+            "records": [
+                {
+                    "id": "prodstore01",
+                    "values": [
+                        "Prod-RG",
+                        "westeurope",
+                        "Succeeded",
+                        "05/12/2024 10:11:12 UTC",
+                        "westeurope",
+                        "available",
+                        "Standard_LRS",
+                        "Standard",
+                        "StorageV2",
+                        "99.50",
+                        "5.24",
+                        "1.57",
+                        "32.46",
+                        "21.50",
+                        "480",
+                        "107374.18"
+                    ]
+                },
+                {
+                    "id": "datafiles02",
+                    "values": [
+                        "Data-RG",
+                        "northeurope",
+                        "Succeeded",
+                        "09/03/2025 01:02:03 UTC",
+                        "northeurope",
+                        "unavailable",
+                        "Premium_ZRS",
+                        "Premium",
+                        "FileStorage",
+                        "N/A",
+                        "0.00",
+                        "0.00",
+                        "N/A",
+                        "N/A",
+                        "12",
+                        "5497558.14"
+                    ]
+                }
+            ]
+        }
+    }
+}

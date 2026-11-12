@@ -1,0 +1,154 @@
+{
+    "two container groups, one failed validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two container groups, one failed get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Azure Containers",
+            "columnHeaders": [
+                {
+                    "label": "Image",
+                    "key": "containerImage"
+                },
+                {
+                    "label": "Memory",
+                    "key": "containerResourcesMemory",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "CPU",
+                    "key": "containerResourcesCPU"
+                },
+                {
+                    "label": "Resource Group",
+                    "key": "resourceGroup"
+                },
+                {
+                    "label": "Container Group",
+                    "key": "resourceName"
+                },
+                {
+                    "label": "DNS Name Label",
+                    "key": "dnsNameLabel"
+                },
+                {
+                    "label": "IP Address",
+                    "key": "ipAddress"
+                },
+                {
+                    "label": "IP Address Type",
+                    "key": "ipAddressType"
+                },
+                {
+                    "label": "Location",
+                    "key": "location"
+                },
+                {
+                    "label": "OS Type",
+                    "key": "osType"
+                },
+                {
+                    "label": "Provisioning State",
+                    "key": "provisioningState"
+                },
+                {
+                    "label": "Restart Policy",
+                    "key": "restartPolicy"
+                },
+                {
+                    "label": "Cpu Usage",
+                    "valueType": "NUMBER",
+                    "unit": "millicores",
+                    "key": "CpuUsage"
+                },
+                {
+                    "label": "Memory Usage",
+                    "valueType": "NUMBER",
+                    "unit": "Gb",
+                    "key": "MemoryUsage"
+                },
+                {
+                    "label": "Network Received",
+                    "valueType": "NUMBER",
+                    "unit": "B/s",
+                    "key": "NetworkBytesReceivedPerSecond"
+                },
+                {
+                    "label": "Network Transmitted",
+                    "valueType": "NUMBER",
+                    "unit": "B/s",
+                    "key": "NetworkBytesTransmittedPerSecond"
+                }
+            ],
+            "records": [
+                {
+                    "id": "29a2a4abccbd1dbc72d171b5c77ab6c5",
+                    "values": [
+                        "nginx:1.25",
+                        1.5,
+                        1,
+                        "Prod-RG",
+                        "web-group",
+                        "web-group-prod",
+                        "20.50.10.7",
+                        "Public",
+                        "westeurope",
+                        "Linux",
+                        "Succeeded",
+                        "Always",
+                        250,
+                        "1.25",
+                        2621440,
+                        1048576
+                    ]
+                },
+                {
+                    "id": "e6159760390ce5658e8e052b87deac32",
+                    "values": [
+                        "mcr.microsoft.com/azuredocs/aci-helloworld:latest",
+                        0.5,
+                        0.5,
+                        "Prod-RG",
+                        "web-group",
+                        "web-group-prod",
+                        "20.50.10.7",
+                        "Public",
+                        "westeurope",
+                        "Linux",
+                        "Succeeded",
+                        "Always",
+                        250,
+                        "1.25",
+                        2621440,
+                        1048576
+                    ]
+                },
+                {
+                    "id": "513a878cdd7ceb9f82070510ec7d4245",
+                    "values": [
+                        "myregistry.azurecr.io/worker:2.1",
+                        4,
+                        2,
+                        "Batch-RG",
+                        "batch-job",
+                        "N/A",
+                        "10.0.2.4",
+                        "Private",
+                        "northeurope",
+                        "Windows",
+                        "Failed",
+                        "Never",
+                        1800,
+                        "3.00",
+                        0,
+                        524288
+                    ]
+                }
+            ]
+        }
+    }
+}

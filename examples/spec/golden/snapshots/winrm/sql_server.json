@@ -1,0 +1,20 @@
+{
+    "sql server running, connection open validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "sql server running, connection open get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "server",
+                "name": "Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

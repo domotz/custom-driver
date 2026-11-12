@@ -1,0 +1,57 @@
+{
+    "proxmox 8.0.3 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "proxmox 8.0.3 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "pve-manager/8.0.3/bbf3993334bfa916 (running kernel: 6.2.16-3-pve)"
+            },
+            {
+                "uid": "cpu_bogomips",
+                "name": "CPU bogomips",
+                "value": 38400
+            },
+            {
+                "uid": "regex_second",
+                "name": "Regex Operations per Second",
+                "value": 1485469
+            },
+            {
+                "uid": "hd_size",
+                "name": "Hard Disk Size",
+                "value": 93.93,
+                "unit": "GB"
+            },
+            {
+                "uid": "buffered_reads",
+                "name": "Buffered Disk Reads",
+                "value": 134.54,
+                "unit": "MB/sec"
+            },
+            {
+                "uid": "average_seek_time",
+                "name": "Average Seek Time",
+                "value": 0.15,
+                "unit": "ms"
+            },
+            {
+                "uid": "filesync_second",
+                "name": "File Syncs per Second",
+                "value": 2159.41
+            },
+            {
+                "uid": "dns_external",
+                "name": "DNS Resolution Time",
+                "value": 24.62,
+                "unit": "ms"
+            }
+        ],
+        "table": null
+    }
+}

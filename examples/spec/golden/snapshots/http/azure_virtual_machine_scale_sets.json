@@ -1,0 +1,234 @@
+{
+    "two scale sets, one updating validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two scale sets, one updating get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Azure Virtual Machine Scale Sets",
+            "columnHeaders": [
+                {
+                    "key": "name",
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "resourceGroup",
+                    "label": "Resource Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "location",
+                    "label": "Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "skuName",
+                    "label": "SKU Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "skuTier",
+                    "label": "SKU Tier",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "skuCapacity",
+                    "label": "SKU Capacity",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "key": "etag",
+                    "label": "Etag",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "orchestrationMode",
+                    "label": "Orchestration Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "upgradePolicyMode",
+                    "label": "Upgrade Policy Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "scaleInPolicyRules",
+                    "label": "Scale-in Policy Rules",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "scaleInForceDeletion",
+                    "label": "Scale-in Force Deletion"
+                },
+                {
+                    "key": "computerNamePrefix",
+                    "label": "Computer Name Prefix",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "osType",
+                    "label": "OS Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "imagePublisher",
+                    "label": "Image Publisher",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "imageOffer",
+                    "label": "Image Offer",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "imageSku",
+                    "label": "Image SKU",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "imageVersion",
+                    "label": "Image Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "networkInterfaceName",
+                    "label": "Network Interface Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "networkIPConfigurations",
+                    "label": "Network IP Configurations",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "provisioningState",
+                    "label": "Provisioning State",
+                    "valueType": "STRING"
+                },
+                {
+                    "key": "platformFaultDomainCount",
+                    "label": "Platform Fault Domain Count",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "key": "timeCreated",
+                    "label": "Time Created",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Available Memory",
+                    "valueType": "NUMBER",
+                    "unit": "Gb",
+                    "key": "Available Memory Bytes"
+                },
+                {
+                    "label": "Network Out Total",
+                    "valueType": "NUMBER",
+                    "unit": "Gb",
+                    "key": "Network Out Total"
+                },
+                {
+                    "label": "Network In Total",
+                    "valueType": "NUMBER",
+                    "unit": "Gb",
+                    "key": "Network In Total"
+                },
+                {
+                    "label": "CPU Credits Left",
+                    "valueType": "NUMBER",
+                    "key": "CPU Credits Remaining"
+                },
+                {
+                    "label": "Percentage CPU",
+                    "valueType": "NUMBER",
+                    "unit": "%",
+                    "key": "Percentage CPU"
+                },
+                {
+                    "label": "CPU Credits Used",
+                    "valueType": "NUMBER",
+                    "key": "CPU Credits Consumed"
+                },
+                {
+                    "label": "Vm Availability",
+                    "valueType": "NUMBER",
+                    "key": "VmAvailabilityMetric"
+                }
+            ],
+            "records": [
+                {
+                    "id": "aaaa1111-0000-0000-0000-000000000001",
+                    "values": [
+                        "web-vmss",
+                        "Prod-RG",
+                        "westeurope",
+                        "Standard_B2s",
+                        "Standard",
+                        3,
+                        "\"7\"",
+                        "Uniform",
+                        "Manual",
+                        "Default",
+                        false,
+                        "webvm",
+                        "N/A",
+                        "Canonical",
+                        "0001-com-ubuntu-server-jammy",
+                        "22_04-lts-gen2",
+                        "latest",
+                        "web-vmss-nic",
+                        "ipconfig1",
+                        "Succeeded",
+                        5,
+                        "10/12/2025 07:08:09 UTC",
+                        "2.50",
+                        "3.00",
+                        "1.25",
+                        120,
+                        35.75,
+                        4.5,
+                        1
+                    ]
+                },
+                {
+                    "id": "bbbb2222-0000-0000-0000-000000000002",
+                    "values": [
+                        "batch-vmss",
+                        "Batch-RG",
+                        "northeurope",
+                        "Standard_D4s_v3",
+                        "Standard",
+                        10,
+                        "\"2\"",
+                        "Flexible",
+                        "Automatic",
+                        "OldestVM",
+                        true,
+                        "batch",
+                        "Windows",
+                        "MicrosoftWindowsServer",
+                        "WindowsServer",
+                        "2022-datacenter-azure-edition",
+                        "20348.2113.231109",
+                        "batch-nic",
+                        "batch-ipconfig",
+                        "Updating",
+                        1,
+                        "01/02/2026 23:59:01 UTC",
+                        "8.00",
+                        "0.50",
+                        "0.75",
+                        "N/A",
+                        88.2,
+                        "N/A",
+                        0.8
+                    ]
+                }
+            ]
+        }
+    }
+}

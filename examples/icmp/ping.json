@@ -1,6 +1,6 @@
 {
     "logo": "network-diagnostics.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "ICMP Ping to Device",
     "description": "Pings the monitored device over ICMP and publishes round-trip time and loss statistics (jitter, average, min, max, standard deviation and packet loss) as variables.",
     "category": "Network Diagnostics",

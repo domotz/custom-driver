@@ -1,0 +1,40 @@
+{
+    "irmc s5 power validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "irmc s5 power get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Power Supply Status",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "psu1",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "psu2",
+                    "values": [
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "psu3",
+                    "values": [
+                        "Not enabled"
+                    ]
+                }
+            ]
+        }
+    }
+}

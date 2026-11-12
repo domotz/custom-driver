@@ -1,0 +1,336 @@
+{
+    "director by device ip validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "director by device ip get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-alarms",
+                "name": "Total Active Alarms",
+                "value": 5,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "critical-alarms",
+                "name": "Critical Alarms",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "major-alarms",
+                "name": "Major Alarms",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "warning-alarms",
+                "name": "Warning Alarms",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-with-alarms",
+                "name": "Sites With Alarms",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-clean",
+                "name": "Sites Clean",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Alarms by Site",
+            "columnHeaders": [
+                {
+                    "label": "Total Alarms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Critical",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Major",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Warning",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Other",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Distinct Types",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Alarm Types",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Worst Severity",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Most Recent",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latest Alarm",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Source",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan",
+                    "values": [
+                        3,
+                        1,
+                        1,
+                        1,
+                        0,
+                        3,
+                        "cpu-high, interface-down, sla-violation",
+                        "critical",
+                        "2026-01-15 09:30:00 UTC",
+                        "Interface vni-0/1 operationally down",
+                        "Inventory"
+                    ]
+                },
+                {
+                    "id": "branch-rome",
+                    "values": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "None",
+                        "None",
+                        "N/A",
+                        "N/A",
+                        "Inventory"
+                    ]
+                },
+                {
+                    "id": "controller-1",
+                    "values": [
+                        1,
+                        0,
+                        0,
+                        0,
+                        1,
+                        1,
+                        "cert-expiry",
+                        "minor",
+                        "2026-01-14 14:13:20 UTC",
+                        "Certificate expires in 14 days",
+                        "Alarm feed only"
+                    ]
+                },
+                {
+                    "id": "hub-frankfurt",
+                    "values": [
+                        1,
+                        0,
+                        0,
+                        0,
+                        1,
+                        1,
+                        "sla-violation",
+                        "indeterminate",
+                        "2026-01-15 08:50:00 UTC",
+                        "SLA probe indeterminate",
+                        "Inventory"
+                    ]
+                }
+            ]
+        }
+    },
+    "director by hostname with custom ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "director by hostname with custom ports get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-alarms",
+                "name": "Total Active Alarms",
+                "value": 5,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "critical-alarms",
+                "name": "Critical Alarms",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "major-alarms",
+                "name": "Major Alarms",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "warning-alarms",
+                "name": "Warning Alarms",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-with-alarms",
+                "name": "Sites With Alarms",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-clean",
+                "name": "Sites Clean",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Alarms by Site",
+            "columnHeaders": [
+                {
+                    "label": "Total Alarms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Critical",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Major",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Warning",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Other",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Distinct Types",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Alarm Types",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Worst Severity",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Most Recent",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latest Alarm",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Source",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan",
+                    "values": [
+                        3,
+                        1,
+                        1,
+                        1,
+                        0,
+                        3,
+                        "cpu-high, interface-down, sla-violation",
+                        "critical",
+                        "2026-01-15 09:30:00 UTC",
+                        "Interface vni-0/1 operationally down",
+                        "Inventory"
+                    ]
+                },
+                {
+                    "id": "branch-rome",
+                    "values": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "None",
+                        "None",
+                        "N/A",
+                        "N/A",
+                        "Inventory"
+                    ]
+                },
+                {
+                    "id": "controller-1",
+                    "values": [
+                        1,
+                        0,
+                        0,
+                        0,
+                        1,
+                        1,
+                        "cert-expiry",
+                        "minor",
+                        "2026-01-14 14:13:20 UTC",
+                        "Certificate expires in 14 days",
+                        "Alarm feed only"
+                    ]
+                },
+                {
+                    "id": "hub-frankfurt",
+                    "values": [
+                        1,
+                        0,
+                        0,
+                        0,
+                        1,
+                        1,
+                        "sla-violation",
+                        "indeterminate",
+                        "2026-01-15 08:50:00 UTC",
+                        "SLA probe indeterminate",
+                        "Inventory"
+                    ]
+                }
+            ]
+        }
+    }
+}

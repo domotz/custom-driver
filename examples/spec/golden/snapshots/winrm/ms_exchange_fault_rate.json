@@ -1,0 +1,86 @@
+{
+    "exchange, two databases validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, two databases get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Database Page Faults",
+            "columnHeaders": [
+                {
+                    "label": "Instance Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Page faults",
+                    "unit": "rate/s",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Page fault stalls",
+                    "unit": "rate/s",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "information-store-mbxdb01",
+                    "values": [
+                        "information store - mbxdb01",
+                        18.5,
+                        0
+                    ]
+                },
+                {
+                    "id": "information-store-mbxdb02",
+                    "values": [
+                        "information store - mbxdb02",
+                        240.125,
+                        2.75
+                    ]
+                }
+            ]
+        }
+    },
+    "exchange, a single sample is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, a single sample is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Database Page Faults",
+            "columnHeaders": [
+                {
+                    "label": "Instance Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Page faults",
+                    "unit": "rate/s",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Page fault stalls",
+                    "unit": "rate/s",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "information-store-mbxdb01",
+                    "values": [
+                        "information store - mbxdb01",
+                        null,
+                        0
+                    ]
+                }
+            ]
+        }
+    }
+}

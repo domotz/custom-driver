@@ -1,6 +1,6 @@
 {
     "logo": "opnsense.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "OPNSense Gateway statistics",
     "description": "Retrieves gateway statistics from an OPNsense firewall, including information such as gateway name, address, status, ping response delay, etc.",
     "category": "Software Integration",

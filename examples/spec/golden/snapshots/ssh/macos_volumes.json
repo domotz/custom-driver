@@ -1,0 +1,90 @@
+{
+    "macos 14.5 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "macos 14.5 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Volumes",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Node",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partition",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partition Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Mount Point",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "File System",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ReadOnly",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "disk4s2",
+                    "values": [
+                        "Photos",
+                        "/dev/disk4s2",
+                        "disk4",
+                        "25.00",
+                        "/Volumes/Photos",
+                        "APFS",
+                        "No",
+                        "Failing"
+                    ]
+                },
+                {
+                    "id": "disk5s1",
+                    "values": [
+                        "Backup",
+                        "/dev/disk5s1",
+                        "disk5",
+                        "75.00",
+                        "/Volumes/Backup",
+                        "Journaled HFS+",
+                        "No",
+                        "Not Supported"
+                    ]
+                },
+                {
+                    "id": "disk6s1",
+                    "values": [
+                        "Installer",
+                        "/dev/disk6s1",
+                        "disk6",
+                        "100.00",
+                        "/Volumes/Installer",
+                        "HFS+",
+                        "Yes",
+                        "Not Supported"
+                    ]
+                }
+            ]
+        }
+    }
+}

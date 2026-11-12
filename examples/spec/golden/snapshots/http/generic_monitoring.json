@@ -1,0 +1,64 @@
+{
+    "example configuration validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "example configuration get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "HTTP Monitoring",
+            "columnHeaders": [
+                {
+                    "label": "Link"
+                },
+                {
+                    "label": "Port"
+                },
+                {
+                    "label": "HTTP Method"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Elapsed",
+                    "unit": "s"
+                },
+                {
+                    "label": "Extracted value"
+                },
+                {
+                    "label": "Validation"
+                }
+            ],
+            "records": [
+                {
+                    "id": "domotz_feature_page_title",
+                    "values": [
+                        "/features.php",
+                        "443",
+                        "get",
+                        200,
+                        0,
+                        "Network Monitoring Features",
+                        true
+                    ]
+                },
+                {
+                    "id": "domotz_feature_page_title3",
+                    "values": [
+                        "/features.php",
+                        "443",
+                        "get",
+                        200,
+                        0,
+                        "Network Monitoring Features",
+                        true
+                    ]
+                }
+            ]
+        }
+    }
+}

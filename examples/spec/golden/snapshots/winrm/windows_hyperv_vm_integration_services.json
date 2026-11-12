@@ -1,0 +1,95 @@
+{
+    "hyper-v vm, six services validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hyper-v vm, six services get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "integration services",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Enabled"
+                }
+            ],
+            "records": [
+                {
+                    "id": "6c09bb55-d683-4da0-8931-c9bf705f6480",
+                    "values": [
+                        "Heartbeat",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "2497f4de-e9fa-4204-80e4-4b75c46419c0",
+                    "values": [
+                        "Time Synchronization",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "9f8233ac-be49-4c79-8ee3-e7e1985b2077",
+                    "values": [
+                        "Shutdown",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "35fa2e29-ea23-4236-96ae-3a6ebacba440",
+                    "values": [
+                        "Key-Value Pair Exchange",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "5ced1297-4598-4915-a5fc-ad21bb4d02a4",
+                    "values": [
+                        "VSS",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "68ec4d5e-1c47-4f6b-9f5d-3b1d5b9f0c13",
+                    "values": [
+                        "Guest Service Interface",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    },
+    "hyper-v vm, one service is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hyper-v vm, one service is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "integration services",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Enabled"
+                }
+            ],
+            "records": [
+                {
+                    "id": "6c09bb55-d683-4da0-8931-c9bf705f6480",
+                    "values": [
+                        "Heartbeat",
+                        "Yes"
+                    ]
+                }
+            ]
+        }
+    }
+}

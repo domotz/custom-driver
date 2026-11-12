@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare Monitoring VM list",
     "description": "Diplays a list of all the VMs and their properties in a VMWare server",
     "category": "Software Integration",

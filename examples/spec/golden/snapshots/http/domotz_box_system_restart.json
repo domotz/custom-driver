@@ -1,0 +1,17 @@
+{
+    "box ubuntu_core_private validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "box ubuntu_core_private get_status": {
+        "type": "success",
+        "variables": [],
+        "table": null
+    },
+    "box ubuntu_core_private custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

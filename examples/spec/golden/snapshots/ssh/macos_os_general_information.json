@@ -1,0 +1,122 @@
+{
+    "intel MacBook Pro validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "intel MacBook Pro get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "os-name",
+                "name": "OS Name",
+                "value": "macOS",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os-version",
+                "name": "OS Version",
+                "value": "14.5",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "build-number",
+                "name": "Build Number",
+                "value": "23F79",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "machine-model",
+                "name": "Machine Model",
+                "value": "MacBookPro16,1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "machine-name",
+                "name": "Machine Name",
+                "value": "MacBook Pro",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "architecture",
+                "name": "Architecture",
+                "value": "x86_64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "C02XK1ABJGH5",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "apple silicon Mac mini validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "apple silicon Mac mini get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "os-name",
+                "name": "OS Name",
+                "value": "macOS",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os-version",
+                "name": "OS Version",
+                "value": "14.5",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "build-number",
+                "name": "Build Number",
+                "value": "23F79",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "machine-model",
+                "name": "Machine Model",
+                "value": "Mac14,12",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "machine-name",
+                "name": "Machine Name",
+                "value": "Mac mini",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "architecture",
+                "name": "Architecture",
+                "value": "arm64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "F4KJ7Y2Q9M",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

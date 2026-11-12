@@ -1,0 +1,54 @@
+{
+    "hue bridge with two lights validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hue bridge with two lights get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Philips Hue Lights",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "State"
+                },
+                {
+                    "label": "Brightness",
+                    "unit": "lux"
+                },
+                {
+                    "label": "Software Version"
+                },
+                {
+                    "label": "Update Available"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "Living room 1",
+                        "ON",
+                        254,
+                        "1.108.9",
+                        "noupdates"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "Kitchen",
+                        "OFF",
+                        1,
+                        "1.104.2",
+                        "readytoinstall"
+                    ]
+                }
+            ]
+        }
+    }
+}

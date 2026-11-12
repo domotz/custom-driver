@@ -1,0 +1,98 @@
+{
+    "esxi 8.0.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Services Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is Required",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is Uninstallable",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is Running",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Policy",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "DCUI",
+                    "values": [
+                        "Direct Console UI",
+                        "false",
+                        "false",
+                        "true",
+                        "on"
+                    ]
+                },
+                {
+                    "id": "TSM",
+                    "values": [
+                        "ESXi Shell",
+                        "false",
+                        "false",
+                        "false",
+                        "off"
+                    ]
+                },
+                {
+                    "id": "TSM-SSH",
+                    "values": [
+                        "SSH",
+                        "false",
+                        "false",
+                        "true",
+                        "on"
+                    ]
+                },
+                {
+                    "id": "ntpd",
+                    "values": [
+                        "NTP Daemon",
+                        "false",
+                        "false",
+                        "false",
+                        "off"
+                    ]
+                },
+                {
+                    "id": "lbtd",
+                    "values": [
+                        "Load-Based Teaming Daemon",
+                        "false",
+                        "false",
+                        "true",
+                        "on"
+                    ]
+                },
+                {
+                    "id": "vpxa",
+                    "values": [
+                        "vpxa",
+                        "false",
+                        "false",
+                        "true",
+                        "automatic"
+                    ]
+                }
+            ]
+        }
+    }
+}

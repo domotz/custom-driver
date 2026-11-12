@@ -1,0 +1,482 @@
+{
+    "pfsense 2.6.0 two NICs validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "pfsense 2.6.0 two NICs get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "bsnmpd",
+                "name": "SNMP Service",
+                "value": "on"
+            },
+            {
+                "uid": "dpinger",
+                "name": "Gateway Monitoring Daemon",
+                "value": "on"
+            },
+            {
+                "uid": "ntpd",
+                "name": "NTP clock sync",
+                "value": "on"
+            },
+            {
+                "uid": "openvpn",
+                "name": "OpenVPN server",
+                "value": "off"
+            },
+            {
+                "uid": "sshd",
+                "name": "Secure Shell Daemon",
+                "value": "on"
+            },
+            {
+                "uid": "syslogd",
+                "name": "System Logger Daemon",
+                "value": "on"
+            },
+            {
+                "uid": "unbound",
+                "name": "DNS Resolver",
+                "value": "on"
+            },
+            {
+                "uid": "dns_8.8.8.8",
+                "name": "DNS(8.8.8.8)",
+                "value": "on"
+            },
+            {
+                "uid": "dns_192.168.1.53",
+                "name": "DNS(192.168.1.53)",
+                "value": "off"
+            },
+            {
+                "uid": "cpu_count",
+                "name": "Number of CPUs",
+                "value": 4,
+                "unit": ""
+            },
+            {
+                "uid": "user_cpu_time",
+                "name": "User CPU time",
+                "value": "6",
+                "unit": "%"
+            },
+            {
+                "uid": "system_cpu_time",
+                "name": "System CPU time",
+                "value": "3",
+                "unit": "%"
+            },
+            {
+                "uid": "idle_cpu_time",
+                "name": "Idle CPU time",
+                "value": "90",
+                "unit": "%"
+            },
+            {
+                "uid": "cpu_interrupt_time",
+                "name": "CPU interrupt time",
+                "value": 30,
+                "unit": "raw/s",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "cpu_iowait_time",
+                "name": "CPU iowait time",
+                "value": 20,
+                "unit": "raw/s",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "cpu_nice_time",
+                "name": "CPU nice time",
+                "value": 100,
+                "unit": "raw/s",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "cpu_system_time",
+                "name": "CPU system time",
+                "value": 500,
+                "unit": "raw/s",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "cpu_user_time",
+                "name": "CPU user time",
+                "value": 1000,
+                "unit": "raw/s",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "context_switches_per_second",
+                "name": "Context switches per second",
+                "value": "1500",
+                "unit": "",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "total_swap_size",
+                "name": "Total Swap Size",
+                "value": "2097148",
+                "unit": "Kb"
+            },
+            {
+                "uid": "available_swap_space",
+                "name": "Available Swap Space",
+                "value": "2000000",
+                "unit": "Kb"
+            },
+            {
+                "uid": "swap_usage",
+                "name": "Swap usage",
+                "value": 4,
+                "unit": "%"
+            },
+            {
+                "uid": "total_ram_in_machine",
+                "name": "Total RAM in machine",
+                "value": "8165396",
+                "unit": "Kb"
+            },
+            {
+                "uid": "total_ram_available",
+                "name": "Total RAM Available",
+                "value": "3265000",
+                "unit": "Kb"
+            },
+            {
+                "uid": "memory_usage",
+                "name": "Memory usage",
+                "value": 60,
+                "unit": "%"
+            },
+            {
+                "uid": "dhcp_server_status",
+                "name": "DHCP server status",
+                "value": "1",
+                "unit": ""
+            },
+            {
+                "uid": "dns_server_status",
+                "name": "DNS server status",
+                "value": "1",
+                "unit": ""
+            },
+            {
+                "uid": "firewall_rules_count",
+                "name": "Firewall rules count",
+                "value": "87",
+                "unit": ""
+            },
+            {
+                "uid": "fragmented_packets",
+                "name": "Fragmented packets",
+                "value": "21",
+                "unit": "pps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "interrupts_per_second",
+                "name": "Interrupts per second",
+                "value": "850",
+                "unit": "",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "normalized_packets",
+                "name": "Normalized packets",
+                "value": "42",
+                "unit": "pps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "load_average_1m_avg",
+                "name": "Load average (1m avg)",
+                "value": "0.31",
+                "unit": ""
+            },
+            {
+                "uid": "load_average_5m_avg",
+                "name": "Load average (5m avg)",
+                "value": "0.42",
+                "unit": ""
+            },
+            {
+                "uid": "load_average_15m_avg",
+                "name": "Load average (15m avg)",
+                "value": "0.37",
+                "unit": ""
+            },
+            {
+                "uid": "packet_filter_running_status",
+                "name": "Packet filter running status",
+                "value": "1",
+                "unit": ""
+            },
+            {
+                "uid": "packets_dropped_due_to_memory_limitation",
+                "name": "Packets dropped due to memory limitation",
+                "value": "0",
+                "unit": "pps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "packets_matched_a_filter_rule",
+                "name": "Packets matched a filter rule",
+                "value": "9812345",
+                "unit": "pps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "packets_with_bad_offset",
+                "name": "Packets with bad offset",
+                "value": "3",
+                "unit": "pps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "short_packets",
+                "name": "Short packets",
+                "value": "5",
+                "unit": "pps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "source_tracking_tbl_current",
+                "name": "Source tracking table current",
+                "value": "7",
+                "unit": ""
+            },
+            {
+                "uid": "source_tracking_tbl_limit",
+                "name": "Source tracking table limit",
+                "value": "10000",
+                "unit": ""
+            },
+            {
+                "uid": "source_tracking_tbl_utilization",
+                "name": "Source tracking table utilization",
+                "value": 0.07,
+                "unit": "%"
+            },
+            {
+                "uid": "state_of_nginx_process",
+                "name": "State of nginx process",
+                "value": "1",
+                "unit": ""
+            },
+            {
+                "uid": "states_tbl_current",
+                "name": "States table current",
+                "value": "1234",
+                "unit": ""
+            },
+            {
+                "uid": "states_tbl_limit",
+                "name": "States table limit",
+                "value": "100000",
+                "unit": ""
+            },
+            {
+                "uid": "states_tbl_utilization",
+                "name": "States table utilization",
+                "value": 1.234,
+                "unit": "%"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": "129600000",
+                "unit": "uptime"
+            }
+        ],
+        "table": {
+            "label": "Table interfaces",
+            "columnHeaders": [
+                {
+                    "label": "Bits received",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Bits sent",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv4 packets blocked",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv4 packets passed",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv4 traffic blocked",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv4 traffic passed",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv6 packets blocked",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv6 packets passed",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv6 traffic blocked",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound IPv6 traffic passed",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Inbound packets discarded"
+                },
+                {
+                    "label": "Inbound packets with errors"
+                },
+                {
+                    "label": "Interface type"
+                },
+                {
+                    "label": "Operational status"
+                },
+                {
+                    "label": "Outbound IPv4 packets blocked",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv4 packets passed",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv4 traffic blocked",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv4 traffic passed",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv6 packets blocked",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv6 packets passed",
+                    "unit": "pps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv6 traffic blocked",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound IPv6 traffic passed",
+                    "unit": "bps",
+                    "type": "RATE"
+                },
+                {
+                    "label": "Outbound packets discarded"
+                },
+                {
+                    "label": "Outbound packets with errors"
+                },
+                {
+                    "label": "Rules references count"
+                },
+                {
+                    "label": "Speed",
+                    "unit": "bps"
+                }
+            ],
+            "records": [
+                {
+                    "id": "em0",
+                    "values": [
+                        8000000,
+                        4000000,
+                        "12020",
+                        "11020",
+                        64160,
+                        56160,
+                        "20020",
+                        "19020",
+                        128160,
+                        120160,
+                        "11",
+                        "12",
+                        "6",
+                        "1",
+                        "14020",
+                        "13020",
+                        80160,
+                        72160,
+                        "22020",
+                        "21020",
+                        144160,
+                        136160,
+                        "13",
+                        "14",
+                        "6020",
+                        1000000000
+                    ]
+                },
+                {
+                    "id": "em1",
+                    "values": [
+                        0,
+                        0,
+                        "12030",
+                        "11030",
+                        64240,
+                        56240,
+                        "20030",
+                        "19030",
+                        128240,
+                        120240,
+                        "0",
+                        "0",
+                        "6",
+                        "2",
+                        "14030",
+                        "13030",
+                        80240,
+                        72240,
+                        "22030",
+                        "21030",
+                        144240,
+                        136240,
+                        "0",
+                        "0",
+                        "6030",
+                        10000000
+                    ]
+                }
+            ]
+        }
+    }
+}

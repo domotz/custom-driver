@@ -1,0 +1,219 @@
+{
+    "two nics, one with accelerated networking and one forwarding ip validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two nics, one with accelerated networking and one forwarding ip get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Interfaces Table",
+            "columnHeaders": [
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING",
+                    "key": "resourceGroupName"
+                },
+                {
+                    "label": "Provisioning State",
+                    "valueType": "STRING",
+                    "key": "provisioningState"
+                },
+                {
+                    "label": "Resource GUID",
+                    "valueType": "STRING",
+                    "key": "resourceGuid"
+                },
+                {
+                    "label": "IP Configuration Name",
+                    "valueType": "STRING",
+                    "key": "ipConfigurationName"
+                },
+                {
+                    "label": "IP Config Provisioning State",
+                    "valueType": "STRING",
+                    "key": "ipConfigProvisioningState"
+                },
+                {
+                    "label": "Private IP Address",
+                    "valueType": "STRING",
+                    "key": "privateIPAddress"
+                },
+                {
+                    "label": "IP Allocation Method",
+                    "valueType": "STRING",
+                    "key": "ipAllocationMethod"
+                },
+                {
+                    "label": "Primary IP Configuration",
+                    "valueType": "STRING",
+                    "key": "primaryIpConfiguration"
+                },
+                {
+                    "label": "Private IP Version",
+                    "valueType": "STRING",
+                    "key": "privateIPAddressVersion"
+                },
+                {
+                    "label": "DNS servers",
+                    "valueType": "STRING",
+                    "key": "dnsServers"
+                },
+                {
+                    "label": "Applied DNS servers",
+                    "valueType": "STRING",
+                    "key": "appliedDnsServers"
+                },
+                {
+                    "label": "Internal Domain Name Suffix",
+                    "valueType": "STRING",
+                    "key": "internalDomainNameSuffix"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING",
+                    "key": "macAddress"
+                },
+                {
+                    "label": "Accelerated Networking",
+                    "valueType": "STRING",
+                    "key": "enableAcceleratedNetworking"
+                },
+                {
+                    "label": "Virtual Network Encryption",
+                    "valueType": "STRING",
+                    "key": "vnetEncryptionSupported"
+                },
+                {
+                    "label": "IP Forwarding",
+                    "valueType": "STRING",
+                    "key": "enableIPForwarding"
+                },
+                {
+                    "label": "Disable TCP State Tracking",
+                    "valueType": "STRING",
+                    "key": "disableTcpStateTracking"
+                },
+                {
+                    "label": "Network Security Group",
+                    "valueType": "STRING",
+                    "key": "networkSecurityGroup"
+                },
+                {
+                    "label": "Primary Network Interface",
+                    "valueType": "STRING",
+                    "key": "primaryNetworkInterface"
+                },
+                {
+                    "label": "Associated Virtual Machine",
+                    "valueType": "STRING",
+                    "key": "associatedVirtualMachine"
+                },
+                {
+                    "label": "NIC Type",
+                    "valueType": "STRING",
+                    "key": "nicType"
+                },
+                {
+                    "label": "Location",
+                    "valueType": "STRING",
+                    "key": "location"
+                },
+                {
+                    "label": "Kind",
+                    "valueType": "STRING",
+                    "key": "kind"
+                },
+                {
+                    "label": "Bytes Sent",
+                    "unit": "B",
+                    "valueType": "NUMBER",
+                    "key": "BytesSentRate"
+                },
+                {
+                    "label": "Bytes Received",
+                    "unit": "B",
+                    "valueType": "NUMBER",
+                    "key": "BytesReceivedRate"
+                },
+                {
+                    "label": "Packets Sent",
+                    "valueType": "NUMBER",
+                    "key": "PacketsSentRate"
+                },
+                {
+                    "label": "Packets Received",
+                    "valueType": "NUMBER",
+                    "key": "PacketsReceivedRate"
+                }
+            ],
+            "records": [
+                {
+                    "id": "web-01-nic",
+                    "values": [
+                        "Prod-RG",
+                        "Succeeded",
+                        "aaaa0000-1111-2222-3333-444455556666",
+                        "ipconfig1",
+                        "Succeeded",
+                        "10.0.1.4",
+                        "Dynamic",
+                        true,
+                        "IPv4",
+                        "10.0.0.10, 10.0.0.11",
+                        "10.0.0.10, 10.0.0.11",
+                        "abc123.ax.internal.cloudapp.net",
+                        "00-0D-3A-12-34-56",
+                        true,
+                        false,
+                        false,
+                        false,
+                        "web-01-nsg",
+                        true,
+                        "web-01",
+                        "Standard",
+                        "westeurope",
+                        "Regular",
+                        1500000,
+                        4200000,
+                        9500,
+                        12000
+                    ]
+                },
+                {
+                    "id": "db-01-nic2",
+                    "values": [
+                        "Data-RG",
+                        "Succeeded",
+                        "bbbb0000-1111-2222-3333-444455556666",
+                        "ipconfig-secondary",
+                        "Succeeded",
+                        "10.1.0.20",
+                        "Static",
+                        true,
+                        "IPv4",
+                        "N/A",
+                        "N/A",
+                        "def456.fx.internal.cloudapp.net",
+                        "00-0D-3A-AA-BB-CC",
+                        false,
+                        false,
+                        true,
+                        false,
+                        "N/A",
+                        false,
+                        "db-01",
+                        "Standard",
+                        "northeurope",
+                        "Regular",
+                        250000,
+                        800000,
+                        1200,
+                        2400
+                    ]
+                }
+            ]
+        }
+    }
+}

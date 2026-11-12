@@ -1,0 +1,144 @@
+{
+    "esxi 8.0.0 four volumes validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 four volumes get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "File System Volume Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Access Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is Accessible",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Block Size",
+                    "valueType": "NUMBER",
+                    "unit": "MB"
+                },
+                {
+                    "label": "Max Blocks",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Major Version",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Disk Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partition",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Path",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is VMFS Upgradable",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1 - 65013d1a-6f2b8c4e-91aa-b083fee52d10",
+                    "values": [
+                        "datastore1",
+                        "VMFS",
+                        "readWrite",
+                        "true",
+                        "892.98",
+                        "1",
+                        "62914560",
+                        "6",
+                        "6.82",
+                        "naa.600508b1001c3a2f9d41d5e8a1f7c9b4",
+                        "1",
+                        "/vmfs/volumes/65013d1a-6f2b8c4e-91aa-b083fee52d10",
+                        "false"
+                    ]
+                },
+                {
+                    "id": "2 - 65013d9c-2e7f10b3-4d5e-b083fee52d10",
+                    "values": [
+                        "ssd-fast",
+                        "VMFS",
+                        "readWrite",
+                        "true",
+                        "1862.50",
+                        "1",
+                        "62914560",
+                        "5",
+                        "5.81",
+                        "naa.5002538e40a3b1c7",
+                        "3",
+                        "/vmfs/volumes/65013d9c-2e7f10b3-4d5e-b083fee52d10",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "3 - 6501a7e0-00000000-0000-000000000000",
+                    "values": [
+                        "nfs-backup",
+                        "NFS",
+                        "readOnly",
+                        "false",
+                        "0.00",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "/vmfs/volumes/6501a7e0-00000000-0000-000000000000",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "4 - 2c1b7e11-5a0d3f9e-8d2c-b083fee52d10",
+                    "values": [
+                        "BOOTBANK1",
+                        "OTHER",
+                        "readOnly",
+                        "true",
+                        "4.00",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "/vmfs/volumes/2c1b7e11-5a0d3f9e-8d2c-b083fee52d10",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

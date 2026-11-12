@@ -1,0 +1,375 @@
+{
+    "freebsd 12.3 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "freebsd 12.3 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "last_pid",
+                "name": "Last pid",
+                "value": "41208"
+            },
+            {
+                "uid": "load_avg_1m",
+                "name": "Load average 1m",
+                "value": "1.52"
+            },
+            {
+                "uid": "load_avg_5m",
+                "name": "Load average 5m",
+                "value": "0.98"
+            },
+            {
+                "uid": "load_avg_15m",
+                "name": "Load average 15m",
+                "value": "0.61"
+            },
+            {
+                "uid": "processes",
+                "name": "Processes",
+                "value": "58"
+            },
+            {
+                "uid": "processes_running",
+                "name": "Running processes",
+                "value": "3"
+            },
+            {
+                "uid": "processes_sleeping",
+                "name": "Sleeping processes",
+                "value": "55"
+            },
+            {
+                "uid": "cpu_user",
+                "name": "CPU user",
+                "value": "12.5",
+                "unit": "%"
+            },
+            {
+                "uid": "cpu_nice",
+                "name": "CPU nice",
+                "value": "0.0",
+                "unit": "%"
+            },
+            {
+                "uid": "cpu_system",
+                "name": "CPU system",
+                "value": "4.2",
+                "unit": "%"
+            },
+            {
+                "uid": "cpu_interrupt",
+                "name": "CPU interrupt",
+                "value": "0.3",
+                "unit": "%"
+            },
+            {
+                "uid": "cpu_idle",
+                "name": "CPU idle",
+                "value": "83.0",
+                "unit": "%"
+            },
+            {
+                "uid": "mem_active",
+                "name": "Mem active",
+                "value": 450000,
+                "unit": "K"
+            },
+            {
+                "uid": "mem_inact",
+                "name": "Mem inactive",
+                "value": 1200000,
+                "unit": "K"
+            },
+            {
+                "uid": "mem_wired",
+                "name": "Mem wired",
+                "value": 2100000,
+                "unit": "K"
+            },
+            {
+                "uid": "mem_free",
+                "name": "Mem free",
+                "value": 3500000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_total",
+                "name": "ARC total",
+                "value": 1500000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_mfu",
+                "name": "ARC MFU",
+                "value": 800000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_mru",
+                "name": "ARC MRU",
+                "value": 600000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_anon",
+                "name": "ARC Anon",
+                "value": 4000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_header",
+                "name": "ARC Header",
+                "value": 20000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_other",
+                "name": "ARC Other",
+                "value": 76000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_compressed",
+                "name": "ARC Compressed",
+                "value": 1200000,
+                "unit": "K"
+            },
+            {
+                "uid": "arc_uncompressed",
+                "name": "ARC Uncompressed",
+                "value": 3100000,
+                "unit": "K"
+            },
+            {
+                "uid": "swap_total",
+                "name": "SWAP Total",
+                "value": 2048000,
+                "unit": "K"
+            },
+            {
+                "uid": "swap_free",
+                "name": "SWAP Free",
+                "value": 2000000,
+                "unit": "K"
+            }
+        ],
+        "table": {
+            "label": "Top processes",
+            "columnHeaders": [
+                {
+                    "label": "PID"
+                },
+                {
+                    "label": "USERNAME"
+                },
+                {
+                    "label": "THR"
+                },
+                {
+                    "label": "PRI"
+                },
+                {
+                    "label": "NICE"
+                },
+                {
+                    "label": "SIZE"
+                },
+                {
+                    "label": "RES"
+                },
+                {
+                    "label": "STATE"
+                },
+                {
+                    "label": "C"
+                },
+                {
+                    "label": "TIME"
+                },
+                {
+                    "label": "WCPU",
+                    "unit": "%"
+                },
+                {
+                    "label": "COMMAND"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "41200",
+                        "www",
+                        "4",
+                        "52",
+                        "0",
+                        512000,
+                        180000,
+                        "CPU1 1",
+                        null,
+                        "3:45",
+                        "95.12",
+                        "php-fpm"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "912",
+                        "mysql",
+                        "28",
+                        "20",
+                        "0",
+                        1024000,
+                        640000,
+                        "select 0",
+                        null,
+                        "41:09",
+                        "12.30",
+                        "mysqld"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "41190",
+                        "root",
+                        "1",
+                        "20",
+                        "0",
+                        14000,
+                        "3600",
+                        "CPU2 2",
+                        null,
+                        "0:12",
+                        "4.55",
+                        "top"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "655",
+                        "root",
+                        "1",
+                        "20",
+                        "0",
+                        22000,
+                        "8400",
+                        "select 3",
+                        null,
+                        "9:50",
+                        "0.98",
+                        "sshd"
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "701",
+                        "unbound",
+                        "2",
+                        "20",
+                        "0",
+                        48000,
+                        30000,
+                        "kqread 1",
+                        null,
+                        "5:02",
+                        "0.20",
+                        "unbound"
+                    ]
+                },
+                {
+                    "id": "5",
+                    "values": [
+                        "733",
+                        "ntpd",
+                        "1",
+                        "20",
+                        "0",
+                        24000,
+                        "5200",
+                        "select 0",
+                        null,
+                        "0:31",
+                        "0.05",
+                        "ntpd"
+                    ]
+                },
+                {
+                    "id": "6",
+                    "values": [
+                        "480",
+                        "root",
+                        "1",
+                        "52",
+                        "0",
+                        12000,
+                        "2800",
+                        "select 2",
+                        null,
+                        "0:02",
+                        "0.00",
+                        "devd"
+                    ]
+                },
+                {
+                    "id": "7",
+                    "values": [
+                        "541",
+                        "root",
+                        "1",
+                        "20",
+                        "0",
+                        12000,
+                        "2500",
+                        "select 3",
+                        null,
+                        "0:07",
+                        "0.00",
+                        "syslogd"
+                    ]
+                },
+                {
+                    "id": "8",
+                    "values": [
+                        "798",
+                        "root",
+                        "1",
+                        "20",
+                        "0",
+                        13000,
+                        "2900",
+                        "nanslp 1",
+                        null,
+                        "0:11",
+                        "0.00",
+                        "cron"
+                    ]
+                },
+                {
+                    "id": "9",
+                    "values": [
+                        "622",
+                        "root",
+                        "1",
+                        "20",
+                        "0",
+                        16000,
+                        "4100",
+                        "select 2",
+                        null,
+                        "1:15",
+                        "0.00",
+                        "moused"
+                    ]
+                }
+            ]
+        }
+    }
+}

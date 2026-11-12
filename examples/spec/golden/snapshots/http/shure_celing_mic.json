@@ -1,0 +1,84 @@
+{
+    "unmuted microphone validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "unmuted microphone get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "Audio Mute",
+                "name": "Mute Status",
+                "value": "OFF"
+            },
+            {
+                "uid": "Serial Number",
+                "name": "Serial Number",
+                "value": "2105AB1234"
+            },
+            {
+                "uid": "Firmware Version",
+                "name": "Firmware Version",
+                "value": "5.5.3.2"
+            }
+        ],
+        "table": null
+    },
+    "unmuted microphone custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "unmuted microphone custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "unmuted microphone custom_3": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "muted microphone validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "muted microphone get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "Audio Mute",
+                "name": "Mute Status",
+                "value": "ON"
+            },
+            {
+                "uid": "Serial Number",
+                "name": "Serial Number",
+                "value": "2208CD5678"
+            },
+            {
+                "uid": "Firmware Version",
+                "name": "Firmware Version",
+                "value": "5.1.0.9"
+            }
+        ],
+        "table": null
+    },
+    "muted microphone custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "muted microphone custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "muted microphone custom_3": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

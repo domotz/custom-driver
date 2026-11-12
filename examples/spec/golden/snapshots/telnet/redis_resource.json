@@ -1,0 +1,218 @@
+{
+    "redis 7.0.15 near maxmemory validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "redis 7.0.15 near maxmemory get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "used_cpu_sys",
+                "name": "used cpu sys",
+                "value": "812.118344"
+            },
+            {
+                "uid": "used_cpu_user",
+                "name": "used cpu user",
+                "value": "1389.774512"
+            },
+            {
+                "uid": "used_cpu_sys_children",
+                "name": "used cpu sys children",
+                "value": "12.5"
+            },
+            {
+                "uid": "used_cpu_user_children",
+                "name": "used cpu user children",
+                "value": "40.25"
+            },
+            {
+                "uid": "used_cpu_sys_main_thread",
+                "name": "used cpu sys main thread",
+                "value": "811.9"
+            },
+            {
+                "uid": "used_cpu_user_main_thread",
+                "name": "used cpu user main thread",
+                "value": "1389.5"
+            },
+            {
+                "uid": "used_memory",
+                "name": "used memory",
+                "value": "1610612736"
+            },
+            {
+                "uid": "used_memory_rss",
+                "name": "used memory rss",
+                "value": "1763500032"
+            },
+            {
+                "uid": "used_memory_peak",
+                "name": "used memory peak",
+                "value": "1717986918"
+            },
+            {
+                "uid": "used_memory_peak_perc",
+                "name": "used memory peak perc",
+                "value": "93.75%"
+            },
+            {
+                "uid": "used_memory_overhead",
+                "name": "used memory overhead",
+                "value": "2411520"
+            },
+            {
+                "uid": "used_memory_startup",
+                "name": "used memory startup",
+                "value": "865016"
+            },
+            {
+                "uid": "used_memory_dataset",
+                "name": "used memory dataset",
+                "value": "1608201216"
+            },
+            {
+                "uid": "used_memory_dataset_perc",
+                "name": "used memory dataset perc",
+                "value": "99.90%"
+            },
+            {
+                "uid": "allocator_allocated",
+                "name": "allocator allocated",
+                "value": "1611000000"
+            },
+            {
+                "uid": "allocator_active",
+                "name": "allocator active",
+                "value": "1650000000"
+            },
+            {
+                "uid": "allocator_resident",
+                "name": "allocator resident",
+                "value": "1760000000"
+            },
+            {
+                "uid": "total_system_memory",
+                "name": "total system memory",
+                "value": "8365543424"
+            },
+            {
+                "uid": "used_memory_lua",
+                "name": "used memory lua",
+                "value": "31744"
+            },
+            {
+                "uid": "used_memory_vm_eval",
+                "name": "used memory vm eval",
+                "value": "31744"
+            },
+            {
+                "uid": "maxmemory",
+                "name": "maxmemory",
+                "value": "2147483648"
+            },
+            {
+                "uid": "maxmemory_policy",
+                "name": "maxmemory policy",
+                "value": "allkeys-lru"
+            },
+            {
+                "uid": "allocator_frag_ratio",
+                "name": "allocator frag ratio",
+                "value": "1.02"
+            },
+            {
+                "uid": "allocator_frag_bytes",
+                "name": "allocator frag bytes",
+                "value": "39000000"
+            },
+            {
+                "uid": "allocator_rss_ratio",
+                "name": "allocator rss ratio",
+                "value": "1.07"
+            },
+            {
+                "uid": "allocator_rss_bytes",
+                "name": "allocator rss bytes",
+                "value": "110000000"
+            },
+            {
+                "uid": "rss_overhead_ratio",
+                "name": "rss overhead ratio",
+                "value": "1.00"
+            },
+            {
+                "uid": "rss_overhead_bytes",
+                "name": "rss overhead bytes",
+                "value": "3500032"
+            },
+            {
+                "uid": "mem_fragmentation_ratio",
+                "name": "mem fragmentation ratio",
+                "value": "1.10"
+            },
+            {
+                "uid": "mem_fragmentation_bytes",
+                "name": "mem fragmentation bytes",
+                "value": "152887296"
+            },
+            {
+                "uid": "mem_not_counted_for_evict",
+                "name": "mem not counted for evict",
+                "value": "0"
+            },
+            {
+                "uid": "mem_replication_backlog",
+                "name": "mem replication backlog",
+                "value": "0"
+            },
+            {
+                "uid": "mem_total_replication_buffers",
+                "name": "mem total replication buffers",
+                "value": "0"
+            },
+            {
+                "uid": "mem_clients_slaves",
+                "name": "mem clients slaves",
+                "value": "0"
+            },
+            {
+                "uid": "mem_clients_normal",
+                "name": "mem clients normal",
+                "value": "245000"
+            },
+            {
+                "uid": "mem_cluster_links",
+                "name": "mem cluster links",
+                "value": "0"
+            },
+            {
+                "uid": "mem_aof_buffer",
+                "name": "mem aof buffer",
+                "value": "0"
+            },
+            {
+                "uid": "mem_allocator",
+                "name": "mem allocator",
+                "value": "jemalloc-5.2.1"
+            },
+            {
+                "uid": "active_defrag_running",
+                "name": "active defrag running",
+                "value": "0"
+            },
+            {
+                "uid": "lazyfree_pending_objects",
+                "name": "lazyfree pending objects",
+                "value": "0"
+            },
+            {
+                "uid": "lazyfreed_objects",
+                "name": "lazyfreed objects",
+                "value": "0"
+            }
+        ],
+        "table": null
+    }
+}

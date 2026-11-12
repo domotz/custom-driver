@@ -1,0 +1,123 @@
+{
+    "healthy api server, scheduler component status false validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy api server, scheduler component status false get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "CronJob_count",
+                "name": "CronJob count",
+                "value": 2
+            },
+            {
+                "uid": "Deployment_count",
+                "name": "Deployment count",
+                "value": 3
+            },
+            {
+                "uid": "endpoint_count",
+                "name": "Endpoint count",
+                "value": 1
+            },
+            {
+                "uid": "job_count",
+                "name": "Job count",
+                "value": 1
+            },
+            {
+                "uid": "service_count",
+                "name": "Service count",
+                "value": 2
+            },
+            {
+                "uid": "namespace_count",
+                "name": "Namespace count",
+                "value": 3
+            },
+            {
+                "uid": "node_count",
+                "name": "Node count",
+                "value": 2
+            },
+            {
+                "uid": "statefulset_count",
+                "name": "Statefulset count",
+                "value": 0
+            },
+            {
+                "uid": "component_controller-manager",
+                "name": "Component controller-manager Healthy",
+                "value": "True"
+            },
+            {
+                "uid": "component_scheduler",
+                "name": "Component scheduler Healthy",
+                "value": "False"
+            },
+            {
+                "uid": "component_etcd-0",
+                "name": "Component etcd-0 Healthy",
+                "value": "True"
+            },
+            {
+                "uid": "livez_ping",
+                "name": "Livez ping healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "livez_log",
+                "name": "Livez log healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "livez_etcd",
+                "name": "Livez etcd healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "livez_start-kube-apiserver-admission-initializer",
+                "name": "Livez poststarthook/start-kube-apiserver-admission-initializer healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "livez_generic-apiserver-start-informers",
+                "name": "Livez poststarthook/generic-apiserver-start-informers healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "readyz_ping",
+                "name": "Readyz ping healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "readyz_log",
+                "name": "Readyz log healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "readyz_etcd",
+                "name": "Readyz etcd healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "readyz_informer-sync",
+                "name": "Readyz informer-sync healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "readyz_start-kube-apiserver-admission-initializer",
+                "name": "Readyz poststarthook/start-kube-apiserver-admission-initializer healthcheck",
+                "value": "ok"
+            },
+            {
+                "uid": "readyz_shutdown",
+                "name": "Readyz shutdown healthcheck",
+                "value": "ok"
+            }
+        ],
+        "table": null
+    }
+}

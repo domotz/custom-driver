@@ -1,0 +1,46 @@
+{
+    "irmc s5 memory validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "irmc s5 memory get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Memory Status",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dimm-1a",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "dimm-2a",
+                    "values": [
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "dimm-3a",
+                    "values": [
+                        "Empty slot"
+                    ]
+                },
+                {
+                    "id": "dimm-4a",
+                    "values": [
+                        "Critical"
+                    ]
+                }
+            ]
+        }
+    }
+}

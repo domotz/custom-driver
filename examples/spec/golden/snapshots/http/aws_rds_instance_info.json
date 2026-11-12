@@ -1,0 +1,65 @@
+{
+    "replica instance in backing-up state validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "replica instance in backing-up state get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "class",
+                "name": "Class",
+                "value": "db.t3.medium"
+            },
+            {
+                "uid": "create_time",
+                "name": "Create time",
+                "value": "2023-11-14T22:13:20.123Z"
+            },
+            {
+                "uid": "engine",
+                "name": "Engine",
+                "value": "postgres"
+            },
+            {
+                "uid": "version",
+                "name": "Engine version",
+                "value": "15.4"
+            },
+            {
+                "uid": "read_replica_state",
+                "name": "Read replica: State",
+                "value": true
+            },
+            {
+                "uid": "read_replica_status",
+                "name": "Read replica: Status",
+                "value": "replicating"
+            },
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "backing-up"
+            },
+            {
+                "uid": "allocated",
+                "name": "Storage: Allocated",
+                "value": 200,
+                "unit": "GiB"
+            },
+            {
+                "uid": "max_allocated",
+                "name": "Storage: Max allocated",
+                "value": 1000,
+                "unit": "GiB"
+            },
+            {
+                "uid": "storage_type",
+                "name": "Storage type",
+                "value": "gp3"
+            }
+        ],
+        "table": null
+    }
+}

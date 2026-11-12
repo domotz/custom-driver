@@ -1,0 +1,67 @@
+{
+    "winrm, server 2019 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, server 2019 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Monitored services",
+            "columnHeaders": [
+                {
+                    "label": "Service Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Start Type"
+                }
+            ],
+            "records": [
+                {
+                    "id": "DHCP Client",
+                    "values": [
+                        "Dhcp",
+                        "Running",
+                        "Automatic"
+                    ]
+                },
+                {
+                    "id": "DNS Client",
+                    "values": [
+                        "Dnscache",
+                        "Running",
+                        "Automatic"
+                    ]
+                },
+                {
+                    "id": "Server",
+                    "values": [
+                        "LanmanServer",
+                        "Running",
+                        "Automatic"
+                    ]
+                },
+                {
+                    "id": "Windows Defender Firewall",
+                    "values": [
+                        "mpssvc",
+                        "Running",
+                        "Automatic"
+                    ]
+                },
+                {
+                    "id": "Windows Time",
+                    "values": [
+                        "W32Time",
+                        "Stopped",
+                        "Manual"
+                    ]
+                }
+            ]
+        }
+    }
+}

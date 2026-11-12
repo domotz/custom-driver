@@ -1,0 +1,62 @@
+{
+    "dl380 gen10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "dl380 gen10 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Fan Status",
+            "columnHeaders": [
+                {
+                    "label": "Speed",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "fan-1",
+                    "values": [
+                        21,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "fan-2",
+                    "values": [
+                        35,
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "fan-3",
+                    "values": [
+                        22,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "fan-4",
+                    "values": [
+                        0,
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "fan-5",
+                    "values": [
+                        "N/A",
+                        "Absent"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,174 @@
+{
+    "named applications validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "named applications get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "macOS Applications",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Path",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Architecture",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Last modified",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Source",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Signed by",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "safari-17.5",
+                    "values": [
+                        "Safari",
+                        "17.5",
+                        "/Applications/Safari.app",
+                        "arch_arm_i64",
+                        "05-14-2024 18:32:11",
+                        "apple",
+                        "Software Signing, Apple Code Signing Certification Authority, Apple Root CA"
+                    ]
+                },
+                {
+                    "id": "slack-4.38.125",
+                    "values": [
+                        "Slack",
+                        "4.38.125",
+                        "/Applications/Slack.app",
+                        "arch_arm_i64",
+                        "05-04-2024 09:05:03",
+                        "identified_developer",
+                        "Developer ID Application: Slack Technologies, Inc. (BQR82RBBHL), Developer ID Certification Authority, Apple Root CA"
+                    ]
+                },
+                {
+                    "id": "legacytool-n/a",
+                    "values": [
+                        "LegacyTool",
+                        "N/A",
+                        "/Applications/LegacyTool.app",
+                        "arch_i64",
+                        "11-20-2019 23:59:59",
+                        "unknown",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    },
+    "all applications validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "all applications get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "macOS Applications",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Path",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Architecture",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Last modified",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Source",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Signed by",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "safari-17.5",
+                    "values": [
+                        "Safari",
+                        "17.5",
+                        "/Applications/Safari.app",
+                        "arch_arm_i64",
+                        "05-14-2024 18:32:11",
+                        "apple",
+                        "Software Signing, Apple Code Signing Certification Authority, Apple Root CA"
+                    ]
+                },
+                {
+                    "id": "slack-4.38.125",
+                    "values": [
+                        "Slack",
+                        "4.38.125",
+                        "/Applications/Slack.app",
+                        "arch_arm_i64",
+                        "05-04-2024 09:05:03",
+                        "identified_developer",
+                        "Developer ID Application: Slack Technologies, Inc. (BQR82RBBHL), Developer ID Certification Authority, Apple Root CA"
+                    ]
+                },
+                {
+                    "id": "calculator-10.16",
+                    "values": [
+                        "Calculator",
+                        "10.16",
+                        "/System/Applications/Calculator.app",
+                        "arch_arm_i64",
+                        "03-01-2024 12:00:00",
+                        "apple",
+                        "Software Signing, Apple Code Signing Certification Authority, Apple Root CA"
+                    ]
+                },
+                {
+                    "id": "legacytool-n/a",
+                    "values": [
+                        "LegacyTool",
+                        "N/A",
+                        "/Applications/LegacyTool.app",
+                        "arch_i64",
+                        "11-20-2019 23:59:59",
+                        "unknown",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

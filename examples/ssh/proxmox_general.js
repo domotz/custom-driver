@@ -1,11 +1,11 @@
-/** 
+/**
  * Name: Proxmox VE General
  * Description: Monitors general and performance properties of a Virtual Machines Proxmox
- *   
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested under Proxmox version 8.0.3
- * 
+ *
  * Creates custom driver variables:
  *      - Version : Proxmox server Version
  *      - CPU bogomips : The Bogomips value of the CPU, which is a measurement of CPU speed.
@@ -28,39 +28,39 @@ var sshConfig = {
 
 // Checks and handles SSH errors
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 // Executes a SSH command and returns a promise
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            d.resolve({error: error.message});
-        }else{
-            d.resolve(output);
-        }
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                resolve({ error: error.message });
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 function execute() {
-    return D.q.all([
+    return Promise.all([
         executeCommand(cmdPVEVersion),
         executeCommand(cmdPVEPerf)
     ]);
 }
 
 function parseValidateOutput(output) {
-    for(var i = 0; i<output.length; i++){
-        if(!output[i].error){
+    for (var i = 0; i < output.length; i++) {
+        if (!output[i].error) {
             console.log("Validation successful");
             return D.success();
-        }else{
+        } else {
             console.error("Validation failed");
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
@@ -78,13 +78,13 @@ function validate() {
         .catch(checkSshError);
 }
 
-// Parses the output of the SSH command 
+// Parses the output of the SSH command
 function parseData(data) {
-    var variables = []; 
+    var variables = [];
     var config = {};
-    var lines = data[1].split('\n');
+    var lines = data[1].split("\n");
     lines.forEach(function (line) {
-        var parts = line.split(':');
+        var parts = line.split(":");
         if (parts.length === 2) {
             var key = parts[0].trim();
             var value = parseFloat(parts[1].trim());

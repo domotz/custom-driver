@@ -1,0 +1,41 @@
+{
+    "dl380 gen10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "dl380 gen10 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "system-type",
+                "name": "System Type",
+                "value": "ProLiant DL380 Gen10",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "bios-version",
+                "name": "BIOS Version",
+                "value": "U30 v2.72 (05/24/2022)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "CZ2311ABCD",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-status",
+                "name": "System Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,120 @@
+{
+    "freebsd 12.3 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "freebsd 12.3 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Routing table",
+            "columnHeaders": [
+                {
+                    "label": "Destination"
+                },
+                {
+                    "label": "Gateway"
+                },
+                {
+                    "label": "Flags"
+                },
+                {
+                    "label": "Netif Expire"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ip_v4>default",
+                    "values": [
+                        "default",
+                        "192.168.1.1",
+                        "UGS",
+                        "em0"
+                    ]
+                },
+                {
+                    "id": "ip_v4>127.0.0.1",
+                    "values": [
+                        "127.0.0.1",
+                        "link#2",
+                        "UH",
+                        "lo0"
+                    ]
+                },
+                {
+                    "id": "ip_v4>192.168.1.0/24",
+                    "values": [
+                        "192.168.1.0/24",
+                        "link#1",
+                        "U",
+                        "em0"
+                    ]
+                },
+                {
+                    "id": "ip_v4>192.168.1.20",
+                    "values": [
+                        "192.168.1.20",
+                        "link#1",
+                        "UHS",
+                        "lo0"
+                    ]
+                },
+                {
+                    "id": "ip_v4>10.8.0.0/24",
+                    "values": [
+                        "10.8.0.0/24",
+                        "10.8.0.2",
+                        "UGS",
+                        "tun0"
+                    ]
+                },
+                {
+                    "id": "ip_v6>::/96",
+                    "values": [
+                        "::/96",
+                        "::1",
+                        "URS",
+                        "lo0"
+                    ]
+                },
+                {
+                    "id": "ip_v6>::1",
+                    "values": [
+                        "::1",
+                        "link#2",
+                        "UHS",
+                        "lo0"
+                    ]
+                },
+                {
+                    "id": "ip_v6>fe80::%lo0/64",
+                    "values": [
+                        "fe80::%lo0/64",
+                        "link#2",
+                        "U",
+                        "lo0"
+                    ]
+                },
+                {
+                    "id": "ip_v6>fe80::%em0/64",
+                    "values": [
+                        "fe80::%em0/64",
+                        "link#1",
+                        "U",
+                        "em0"
+                    ]
+                },
+                {
+                    "id": "ip_v6>ff02::/16",
+                    "values": [
+                        "ff02::/16",
+                        "::1",
+                        "URS",
+                        "lo0"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,143 @@
+{
+    "apache 2.4.41 worker table validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "apache 2.4.41 worker table get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Apache processes",
+            "columnHeaders": [
+                {
+                    "label": "Srv"
+                },
+                {
+                    "label": "PID"
+                },
+                {
+                    "label": "Acc"
+                },
+                {
+                    "label": "M"
+                },
+                {
+                    "label": "CPU"
+                },
+                {
+                    "label": "SS"
+                },
+                {
+                    "label": "Req"
+                },
+                {
+                    "label": "Dur"
+                },
+                {
+                    "label": "Conn"
+                },
+                {
+                    "label": "Child"
+                },
+                {
+                    "label": "Slot"
+                },
+                {
+                    "label": "Client"
+                },
+                {
+                    "label": "Protocol"
+                },
+                {
+                    "label": "VHost"
+                },
+                {
+                    "label": "Request"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "0-0",
+                        "2412",
+                        "0/12/12",
+                        "Waiting for Connection",
+                        "0.20",
+                        "35",
+                        "0",
+                        "412",
+                        "0.0",
+                        "0.05",
+                        "0.05",
+                        "192.168.1.20",
+                        "http/1.1",
+                        "www.example.com:80",
+                        "GET /index.html HTTP/1.1"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "0-0",
+                        "2412",
+                        "1/9/9",
+                        "Sending Reply",
+                        "0.18",
+                        "0",
+                        "2",
+                        "97",
+                        "1.8",
+                        "0.03",
+                        "0.03",
+                        "127.0.0.1",
+                        "http/1.1",
+                        "localhost:80",
+                        "GET /server-status HTTP/1.1"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1-0",
+                        "2413",
+                        "0/3/3",
+                        "Keepalive (read)",
+                        "0.05",
+                        "4",
+                        "11",
+                        "58",
+                        "0.0",
+                        "0.01",
+                        "0.01",
+                        "192.168.1.31",
+                        "http/1.1",
+                        "www.example.com:80",
+                        "POST /api/login HTTP/1.1"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "-",
+                        "-",
+                        "0/0/0",
+                        "Open slot with no current process",
+                        "0.00",
+                        "0",
+                        "0",
+                        "0",
+                        "0.0",
+                        "0.00",
+                        "0.00",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ]
+                }
+            ]
+        }
+    }
+}

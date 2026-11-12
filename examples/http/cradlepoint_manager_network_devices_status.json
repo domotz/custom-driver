@@ -1,6 +1,6 @@
 {
     "logo": "cradlepoint.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Cradlepoint NetCloud Manager - Network Device Status",
     "description": "Retrieves the status of network devices for monitoring.",
     "category": "Hardware Integration",

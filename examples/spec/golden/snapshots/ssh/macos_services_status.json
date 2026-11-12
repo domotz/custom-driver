@@ -1,0 +1,58 @@
+{
+    "macos 14.5 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "macos 14.5 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Services List",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "com.openssh.sshd",
+                    "values": [
+                        "Running"
+                    ]
+                },
+                {
+                    "id": "com.apple.cfprefsd.xpc.daemon",
+                    "values": [
+                        "Running"
+                    ]
+                },
+                {
+                    "id": "com.apple.mdworker.shared",
+                    "values": [
+                        "Not Running"
+                    ]
+                },
+                {
+                    "id": "com.apple.analyticsd",
+                    "values": [
+                        "Terminated (SIGTERM)"
+                    ]
+                },
+                {
+                    "id": "com.apple.backupd",
+                    "values": [
+                        "Exited with error (code 78)"
+                    ]
+                },
+                {
+                    "id": "com.apple.softwareupdated",
+                    "values": [
+                        "Exited with error (code 1)"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{
+    "ubuntu 22.04 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 22.04 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Updates List",
+            "columnHeaders": [
+                {
+                    "label": "Current Version"
+                },
+                {
+                    "label": "New Version"
+                }
+            ],
+            "records": [
+                {
+                    "id": "libssl3",
+                    "values": [
+                        "3.0.2-0ubuntu1.10",
+                        "3.0.2-0ubuntu1.12"
+                    ]
+                },
+                {
+                    "id": "openssl",
+                    "values": [
+                        "3.0.2-0ubuntu1.10",
+                        "3.0.2-0ubuntu1.12"
+                    ]
+                },
+                {
+                    "id": "curl",
+                    "values": [
+                        "7.81.0-1ubuntu1.14",
+                        "7.81.0-1ubuntu1.15"
+                    ]
+                },
+                {
+                    "id": "libcurl4",
+                    "values": [
+                        "7.81.0-1ubuntu1.14",
+                        "7.81.0-1ubuntu1.15"
+                    ]
+                },
+                {
+                    "id": "linux-image-5.15.0-94-generic",
+                    "values": [
+                        "N/A",
+                        "5.15.0-94.104"
+                    ]
+                }
+            ]
+        }
+    },
+    "ubuntu 22.04, up to date validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 22.04, up to date get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Updates List",
+            "columnHeaders": [
+                {
+                    "label": "Current Version"
+                },
+                {
+                    "label": "New Version"
+                }
+            ],
+            "records": []
+        }
+    }
+}

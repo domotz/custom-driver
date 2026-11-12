@@ -1,0 +1,134 @@
+{
+    "hyper-v vm, two drives validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hyper-v vm, two drives get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual Hard Drives",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Pool"
+                },
+                {
+                    "label": "Path"
+                },
+                {
+                    "label": "Attached"
+                },
+                {
+                    "label": "Capacity",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Controller Number"
+                },
+                {
+                    "label": "Location Number"
+                },
+                {
+                    "label": "Disk Number"
+                },
+                {
+                    "label": "Deleted"
+                }
+            ],
+            "records": [
+                {
+                    "id": "83f8638b-8dca-4152-9eda-2ca8b33039b4\\0\\0\\d",
+                    "values": [
+                        "Hard Drive",
+                        "Primordial",
+                        "D:\\Hyper-V\\dc-01\\dc-01.vhdx",
+                        "Yes",
+                        127,
+                        0,
+                        0,
+                        "N/A",
+                        "No"
+                    ]
+                },
+                {
+                    "id": "83f8638b-8dca-4152-9eda-2ca8b33039b4\\0\\1\\d",
+                    "values": [
+                        "Hard Drive",
+                        "Primordial",
+                        "E:\\Hyper-V\\dc-01\\dc-01-data.vhdx",
+                        "No",
+                        512.5,
+                        0,
+                        1,
+                        "N/A",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    },
+    "hyper-v vm, one drive is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hyper-v vm, one drive is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual Hard Drives",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Pool"
+                },
+                {
+                    "label": "Path"
+                },
+                {
+                    "label": "Attached"
+                },
+                {
+                    "label": "Capacity",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Controller Number"
+                },
+                {
+                    "label": "Location Number"
+                },
+                {
+                    "label": "Disk Number"
+                },
+                {
+                    "label": "Deleted"
+                }
+            ],
+            "records": [
+                {
+                    "id": "83f8638b-8dca-4152-9eda-2ca8b33039b4\\0\\0\\d",
+                    "values": [
+                        "Hard Drive",
+                        "Primordial",
+                        "D:\\Hyper-V\\dc-01\\dc-01.vhdx",
+                        "Yes",
+                        127,
+                        0,
+                        0,
+                        "N/A",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}

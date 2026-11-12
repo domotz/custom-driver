@@ -1,0 +1,41 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Processors Health Info",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Clock Speed",
+                    "unit": "MHz",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "cpu-1",
+                    "values": [
+                        "Normal",
+                        2400
+                    ]
+                },
+                {
+                    "id": "cpu-2",
+                    "values": [
+                        "Critical",
+                        2100
+                    ]
+                }
+            ]
+        }
+    }
+}

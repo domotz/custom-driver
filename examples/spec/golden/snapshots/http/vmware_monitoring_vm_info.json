@@ -1,0 +1,136 @@
+{
+    "vcenter 7.0.3 web-frontend-01 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 7.0.3 web-frontend-01 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "web-frontend-01",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "instance-uuid",
+                "name": "Instance UUID",
+                "value": "5002a1b2-c3d4-4e5f-8a9b-0c1d2e3f4a5b",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os",
+                "name": "Operating System",
+                "value": "UBUNTU_64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "memory",
+                "name": "Memory",
+                "value": 8,
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "processors",
+                "name": "Processors",
+                "value": 4,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores",
+                "name": "Cores per socket",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "VMX_19",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "Power-state",
+                "name": "Power state",
+                "value": "POWERED_ON",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "vcenter 7.0.3 legacy-db validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 7.0.3 legacy-db get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "legacy-db",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "instance-uuid",
+                "name": "Instance UUID",
+                "value": "5002ffee-dd11-4a22-b333-c4445555d666",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os",
+                "name": "Operating System",
+                "value": "WINDOWS_SERVER_2012_R2_64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "memory",
+                "name": "Memory",
+                "value": 1.5,
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "processors",
+                "name": "Processors",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores",
+                "name": "Cores per socket",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "VMX_13",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "Power-state",
+                "name": "Power state",
+                "value": "POWERED_OFF",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

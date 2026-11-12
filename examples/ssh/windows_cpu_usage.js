@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Windows CPU usage
  * Description: This driver retrieves the average CPU load average percentage of a Windows server.
- *   
+ *
  * Communication protocol is SSH
- * 
+ *
  * Tested on Windows Versions:
  *      - Windows 10
  *      - Microsoft Windows Server 2019
@@ -12,7 +12,7 @@
  *      - 5.1.19041.2364
  *
  * Creates a Custom Driver Variable with CPU load average percentage
- * 
+ *
  */
 
 var sshConfig = {
@@ -27,7 +27,7 @@ function checkSshError(err) {
     if (err.message) console.error(err.message);
     if (err.code == 5) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-    } else if (err.code == 255){
+    } else if (err.code == 255) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
         console.error(err);
@@ -42,7 +42,7 @@ function checkSshError(err) {
 */
 function validate() {
     console.info("Verifying device can respond correctly to command ... ");
-    D.device.sendSSHCommand(sshConfig, function(output, error){
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
         if (error) {
             checkSshError(error);
         } else if (!output || output.indexOf("is not recognized") !== -1) {
@@ -53,7 +53,6 @@ function validate() {
     });
 }
 
-
 /**
 * @remote_procedure
 * @label Get CPU usage percentage
@@ -63,7 +62,6 @@ function get_status() {
     D.device.sendSSHCommand(sshConfig, parseOutput);
 }
 
-
 /**
  * Parses the output of the SSH command and extracts the CPU load percentage.
  * @param {object} output - The output of the SSH command.
@@ -71,7 +69,7 @@ function get_status() {
 function parseOutput(output, error) {
     if (error) {
         checkSshError(error);
-    } else{
+    } else {
         var outputLines = output.split(/\r?\n/);
         var cpuValue = outputLines[2].replace(/\s+/g, ""); // To remove all spaces
         var cpuLoadAverage = D.device.createVariable("cpu-load-average", "CPU Load Average", cpuValue, "%", D.valueType.NUMBER);

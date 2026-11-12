@@ -1,0 +1,62 @@
+{
+    "dl380 gen10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "dl380 gen10 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Components Temperatures",
+            "columnHeaders": [
+                {
+                    "label": "Temperature",
+                    "unit": "C",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "01-inlet-ambient",
+                    "values": [
+                        22,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "02-cpu-1",
+                    "values": [
+                        40,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "03-cpu-2",
+                    "values": [
+                        74,
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "04-p1-dimm-1-6",
+                    "values": [
+                        31,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "05-p2-dimm-7-12",
+                    "values": [
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

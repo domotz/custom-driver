@@ -1,6 +1,6 @@
 {
     "logo": "opnsense.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "OPNSense Filter Rules",
     "description": "Retrieves filter rules data from an OPNsense firewall",
     "category": "Software Integration",

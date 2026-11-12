@@ -1,0 +1,55 @@
+{
+    "msa 2050 fans validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 fans get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Fans",
+            "columnHeaders": [
+                {
+                    "label": "Health",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Speed",
+                    "unit": "RPM",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "fan-loc:left-psu-1",
+                    "values": [
+                        "OK",
+                        "Up",
+                        "4980"
+                    ]
+                },
+                {
+                    "id": "fan-loc:right-psu-2",
+                    "values": [
+                        "OK",
+                        "Up",
+                        "5120"
+                    ]
+                },
+                {
+                    "id": "fan-loc:left-psu-3",
+                    "values": [
+                        "Fault",
+                        "Error",
+                        "0"
+                    ]
+                }
+            ]
+        }
+    }
+}

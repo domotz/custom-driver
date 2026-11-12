@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare Monitoring VM Info",
     "description": "Monitors Virtual Machines running on VMware server",
     "category": "Software Integration",

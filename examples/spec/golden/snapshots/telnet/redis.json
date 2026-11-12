@@ -1,0 +1,853 @@
+{
+    "redis 7.0.15 master with replica validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "redis 7.0.15 master with replica get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "redis_version",
+                "name": "redis version",
+                "value": "7.0.15"
+            },
+            {
+                "uid": "redis_git_sha1",
+                "name": "redis git sha1",
+                "value": "00000000"
+            },
+            {
+                "uid": "redis_git_dirty",
+                "name": "redis git dirty",
+                "value": "0"
+            },
+            {
+                "uid": "redis_build_id",
+                "name": "redis build id",
+                "value": "4f2a1c9b8d7e6f50"
+            },
+            {
+                "uid": "redis_mode",
+                "name": "redis mode",
+                "value": "standalone"
+            },
+            {
+                "uid": "os",
+                "name": "os",
+                "value": "Linux 5.15.0-91-generic x86_64"
+            },
+            {
+                "uid": "arch_bits",
+                "name": "arch bits",
+                "value": "64"
+            },
+            {
+                "uid": "monotonic_clock",
+                "name": "monotonic clock",
+                "value": "POSIX clock_gettime"
+            },
+            {
+                "uid": "multiplexing_api",
+                "name": "multiplexing api",
+                "value": "epoll"
+            },
+            {
+                "uid": "atomicvar_api",
+                "name": "atomicvar api",
+                "value": "c11-builtin"
+            },
+            {
+                "uid": "gcc_version",
+                "name": "gcc version",
+                "value": "11.4.0"
+            },
+            {
+                "uid": "process_id",
+                "name": "process id",
+                "value": "1"
+            },
+            {
+                "uid": "process_supervised",
+                "name": "process supervised",
+                "value": "no"
+            },
+            {
+                "uid": "run_id",
+                "name": "run id",
+                "value": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+            },
+            {
+                "uid": "tcp_port",
+                "name": "tcp port",
+                "value": "6379"
+            },
+            {
+                "uid": "server_time_usec",
+                "name": "server time usec",
+                "value": "1768471200123456"
+            },
+            {
+                "uid": "uptime_in_seconds",
+                "name": "uptime in seconds",
+                "value": "864000"
+            },
+            {
+                "uid": "uptime_in_days",
+                "name": "uptime in days",
+                "value": "10"
+            },
+            {
+                "uid": "hz",
+                "name": "hz",
+                "value": "10"
+            },
+            {
+                "uid": "configured_hz",
+                "name": "configured hz",
+                "value": "10"
+            },
+            {
+                "uid": "lru_clock",
+                "name": "lru clock",
+                "value": "6272000"
+            },
+            {
+                "uid": "executable",
+                "name": "executable",
+                "value": "/data/redis-server"
+            },
+            {
+                "uid": "config_file",
+                "name": "config file",
+                "value": ""
+            },
+            {
+                "uid": "io_threads_active",
+                "name": "io threads active",
+                "value": "0"
+            },
+            {
+                "uid": "connected_clients",
+                "name": "connected clients",
+                "value": "12"
+            },
+            {
+                "uid": "cluster_connections",
+                "name": "cluster connections",
+                "value": "0"
+            },
+            {
+                "uid": "maxclients",
+                "name": "maxclients",
+                "value": "10000"
+            },
+            {
+                "uid": "client_recent_max_input_buffer",
+                "name": "client recent max input buffer",
+                "value": "20480"
+            },
+            {
+                "uid": "client_recent_max_output_buffer",
+                "name": "client recent max output buffer",
+                "value": "0"
+            },
+            {
+                "uid": "blocked_clients",
+                "name": "blocked clients",
+                "value": "1"
+            },
+            {
+                "uid": "tracking_clients",
+                "name": "tracking clients",
+                "value": "0"
+            },
+            {
+                "uid": "clients_in_timeout_table",
+                "name": "clients in timeout table",
+                "value": "1"
+            },
+            {
+                "uid": "used_memory",
+                "name": "used memory",
+                "value": "1610612736"
+            },
+            {
+                "uid": "used_memory_rss",
+                "name": "used memory rss",
+                "value": "1763500032"
+            },
+            {
+                "uid": "used_memory_peak",
+                "name": "used memory peak",
+                "value": "1717986918"
+            },
+            {
+                "uid": "used_memory_peak_perc",
+                "name": "used memory peak perc",
+                "value": "93.75%"
+            },
+            {
+                "uid": "used_memory_overhead",
+                "name": "used memory overhead",
+                "value": "2411520"
+            },
+            {
+                "uid": "used_memory_startup",
+                "name": "used memory startup",
+                "value": "865016"
+            },
+            {
+                "uid": "used_memory_dataset",
+                "name": "used memory dataset",
+                "value": "1608201216"
+            },
+            {
+                "uid": "used_memory_dataset_perc",
+                "name": "used memory dataset perc",
+                "value": "99.90%"
+            },
+            {
+                "uid": "allocator_allocated",
+                "name": "allocator allocated",
+                "value": "1611000000"
+            },
+            {
+                "uid": "allocator_active",
+                "name": "allocator active",
+                "value": "1650000000"
+            },
+            {
+                "uid": "allocator_resident",
+                "name": "allocator resident",
+                "value": "1760000000"
+            },
+            {
+                "uid": "total_system_memory",
+                "name": "total system memory",
+                "value": "8365543424"
+            },
+            {
+                "uid": "used_memory_lua",
+                "name": "used memory lua",
+                "value": "31744"
+            },
+            {
+                "uid": "used_memory_vm_eval",
+                "name": "used memory vm eval",
+                "value": "31744"
+            },
+            {
+                "uid": "maxmemory",
+                "name": "maxmemory",
+                "value": "2147483648"
+            },
+            {
+                "uid": "maxmemory_policy",
+                "name": "maxmemory policy",
+                "value": "allkeys-lru"
+            },
+            {
+                "uid": "allocator_frag_ratio",
+                "name": "allocator frag ratio",
+                "value": "1.02"
+            },
+            {
+                "uid": "allocator_frag_bytes",
+                "name": "allocator frag bytes",
+                "value": "39000000"
+            },
+            {
+                "uid": "allocator_rss_ratio",
+                "name": "allocator rss ratio",
+                "value": "1.07"
+            },
+            {
+                "uid": "allocator_rss_bytes",
+                "name": "allocator rss bytes",
+                "value": "110000000"
+            },
+            {
+                "uid": "rss_overhead_ratio",
+                "name": "rss overhead ratio",
+                "value": "1.00"
+            },
+            {
+                "uid": "rss_overhead_bytes",
+                "name": "rss overhead bytes",
+                "value": "3500032"
+            },
+            {
+                "uid": "mem_fragmentation_ratio",
+                "name": "mem fragmentation ratio",
+                "value": "1.10"
+            },
+            {
+                "uid": "mem_fragmentation_bytes",
+                "name": "mem fragmentation bytes",
+                "value": "152887296"
+            },
+            {
+                "uid": "mem_not_counted_for_evict",
+                "name": "mem not counted for evict",
+                "value": "0"
+            },
+            {
+                "uid": "mem_replication_backlog",
+                "name": "mem replication backlog",
+                "value": "0"
+            },
+            {
+                "uid": "mem_total_replication_buffers",
+                "name": "mem total replication buffers",
+                "value": "0"
+            },
+            {
+                "uid": "mem_clients_slaves",
+                "name": "mem clients slaves",
+                "value": "0"
+            },
+            {
+                "uid": "mem_clients_normal",
+                "name": "mem clients normal",
+                "value": "245000"
+            },
+            {
+                "uid": "mem_cluster_links",
+                "name": "mem cluster links",
+                "value": "0"
+            },
+            {
+                "uid": "mem_aof_buffer",
+                "name": "mem aof buffer",
+                "value": "0"
+            },
+            {
+                "uid": "mem_allocator",
+                "name": "mem allocator",
+                "value": "jemalloc-5.2.1"
+            },
+            {
+                "uid": "active_defrag_running",
+                "name": "active defrag running",
+                "value": "0"
+            },
+            {
+                "uid": "lazyfree_pending_objects",
+                "name": "lazyfree pending objects",
+                "value": "0"
+            },
+            {
+                "uid": "lazyfreed_objects",
+                "name": "lazyfreed objects",
+                "value": "0"
+            },
+            {
+                "uid": "loading",
+                "name": "loading",
+                "value": "0"
+            },
+            {
+                "uid": "async_loading",
+                "name": "async loading",
+                "value": "0"
+            },
+            {
+                "uid": "current_cow_peak",
+                "name": "current cow peak",
+                "value": "0"
+            },
+            {
+                "uid": "current_cow_size",
+                "name": "current cow size",
+                "value": "0"
+            },
+            {
+                "uid": "current_cow_size_age",
+                "name": "current cow size age",
+                "value": "0"
+            },
+            {
+                "uid": "current_fork_perc",
+                "name": "current fork perc",
+                "value": "0.00"
+            },
+            {
+                "uid": "current_save_keys_processed",
+                "name": "current save keys processed",
+                "value": "0"
+            },
+            {
+                "uid": "current_save_keys_total",
+                "name": "current save keys total",
+                "value": "0"
+            },
+            {
+                "uid": "rdb_changes_since_last_save",
+                "name": "rdb changes since last save",
+                "value": "154"
+            },
+            {
+                "uid": "rdb_bgsave_in_progress",
+                "name": "rdb bgsave in progress",
+                "value": "0"
+            },
+            {
+                "uid": "rdb_last_save_time",
+                "name": "rdb last save time",
+                "value": "1768470000"
+            },
+            {
+                "uid": "rdb_last_bgsave_status",
+                "name": "rdb last bgsave status",
+                "value": "ok"
+            },
+            {
+                "uid": "rdb_last_bgsave_time_sec",
+                "name": "rdb last bgsave time sec",
+                "value": "2"
+            },
+            {
+                "uid": "rdb_current_bgsave_time_sec",
+                "name": "rdb current bgsave time sec",
+                "value": "-1"
+            },
+            {
+                "uid": "rdb_saves",
+                "name": "rdb saves",
+                "value": "240"
+            },
+            {
+                "uid": "rdb_last_cow_size",
+                "name": "rdb last cow size",
+                "value": "2097152"
+            },
+            {
+                "uid": "rdb_last_load_keys_expired",
+                "name": "rdb last load keys expired",
+                "value": "0"
+            },
+            {
+                "uid": "rdb_last_load_keys_loaded",
+                "name": "rdb last load keys loaded",
+                "value": "0"
+            },
+            {
+                "uid": "aof_enabled",
+                "name": "aof enabled",
+                "value": "0"
+            },
+            {
+                "uid": "aof_rewrite_in_progress",
+                "name": "aof rewrite in progress",
+                "value": "0"
+            },
+            {
+                "uid": "aof_rewrite_scheduled",
+                "name": "aof rewrite scheduled",
+                "value": "0"
+            },
+            {
+                "uid": "aof_last_rewrite_time_sec",
+                "name": "aof last rewrite time sec",
+                "value": "-1"
+            },
+            {
+                "uid": "aof_current_rewrite_time_sec",
+                "name": "aof current rewrite time sec",
+                "value": "-1"
+            },
+            {
+                "uid": "aof_last_bgrewrite_status",
+                "name": "aof last bgrewrite status",
+                "value": "ok"
+            },
+            {
+                "uid": "aof_rewrites",
+                "name": "aof rewrites",
+                "value": "0"
+            },
+            {
+                "uid": "aof_rewrites_consecutive_failures",
+                "name": "aof rewrites consecutive failures",
+                "value": "0"
+            },
+            {
+                "uid": "aof_last_write_status",
+                "name": "aof last write status",
+                "value": "ok"
+            },
+            {
+                "uid": "aof_last_cow_size",
+                "name": "aof last cow size",
+                "value": "0"
+            },
+            {
+                "uid": "module_fork_in_progress",
+                "name": "module fork in progress",
+                "value": "0"
+            },
+            {
+                "uid": "module_fork_last_cow_size",
+                "name": "module fork last cow size",
+                "value": "0"
+            },
+            {
+                "uid": "total_connections_received",
+                "name": "total connections received",
+                "value": "90211"
+            },
+            {
+                "uid": "total_commands_processed",
+                "name": "total commands processed",
+                "value": "48211873"
+            },
+            {
+                "uid": "instantaneous_ops_per_sec",
+                "name": "instantaneous ops per sec",
+                "value": "412"
+            },
+            {
+                "uid": "total_net_input_bytes",
+                "name": "total net input bytes",
+                "value": "5821373311"
+            },
+            {
+                "uid": "total_net_output_bytes",
+                "name": "total net output bytes",
+                "value": "9183772122"
+            },
+            {
+                "uid": "total_net_repl_input_bytes",
+                "name": "total net repl input bytes",
+                "value": "0"
+            },
+            {
+                "uid": "total_net_repl_output_bytes",
+                "name": "total net repl output bytes",
+                "value": "0"
+            },
+            {
+                "uid": "instantaneous_input_kbps",
+                "name": "instantaneous input kbps",
+                "value": "52.13"
+            },
+            {
+                "uid": "instantaneous_output_kbps",
+                "name": "instantaneous output kbps",
+                "value": "98.77"
+            },
+            {
+                "uid": "instantaneous_input_repl_kbps",
+                "name": "instantaneous input repl kbps",
+                "value": "0.00"
+            },
+            {
+                "uid": "instantaneous_output_repl_kbps",
+                "name": "instantaneous output repl kbps",
+                "value": "0.00"
+            },
+            {
+                "uid": "rejected_connections",
+                "name": "rejected connections",
+                "value": "0"
+            },
+            {
+                "uid": "sync_full",
+                "name": "sync full",
+                "value": "0"
+            },
+            {
+                "uid": "sync_partial_ok",
+                "name": "sync partial ok",
+                "value": "0"
+            },
+            {
+                "uid": "sync_partial_err",
+                "name": "sync partial err",
+                "value": "0"
+            },
+            {
+                "uid": "expired_keys",
+                "name": "expired keys",
+                "value": "1823391"
+            },
+            {
+                "uid": "expired_stale_perc",
+                "name": "expired stale perc",
+                "value": "0.12"
+            },
+            {
+                "uid": "expired_time_cap_reached_count",
+                "name": "expired time cap reached count",
+                "value": "0"
+            },
+            {
+                "uid": "expire_cycle_cpu_milliseconds",
+                "name": "expire cycle cpu milliseconds",
+                "value": "92133"
+            },
+            {
+                "uid": "evicted_keys",
+                "name": "evicted keys",
+                "value": "15002"
+            },
+            {
+                "uid": "evicted_clients",
+                "name": "evicted clients",
+                "value": "0"
+            },
+            {
+                "uid": "total_eviction_exceeded_time",
+                "name": "total eviction exceeded time",
+                "value": "0"
+            },
+            {
+                "uid": "current_eviction_exceeded_time",
+                "name": "current eviction exceeded time",
+                "value": "0"
+            },
+            {
+                "uid": "keyspace_hits",
+                "name": "keyspace hits",
+                "value": "30211873"
+            },
+            {
+                "uid": "keyspace_misses",
+                "name": "keyspace misses",
+                "value": "1882301"
+            },
+            {
+                "uid": "pubsub_channels",
+                "name": "pubsub channels",
+                "value": "2"
+            },
+            {
+                "uid": "pubsub_patterns",
+                "name": "pubsub patterns",
+                "value": "0"
+            },
+            {
+                "uid": "pubsubshard_channels",
+                "name": "pubsubshard channels",
+                "value": "0"
+            },
+            {
+                "uid": "latest_fork_usec",
+                "name": "latest fork usec",
+                "value": "2310"
+            },
+            {
+                "uid": "total_forks",
+                "name": "total forks",
+                "value": "240"
+            },
+            {
+                "uid": "migrate_cached_sockets",
+                "name": "migrate cached sockets",
+                "value": "0"
+            },
+            {
+                "uid": "slave_expires_tracked_keys",
+                "name": "slave expires tracked keys",
+                "value": "0"
+            },
+            {
+                "uid": "active_defrag_hits",
+                "name": "active defrag hits",
+                "value": "0"
+            },
+            {
+                "uid": "active_defrag_misses",
+                "name": "active defrag misses",
+                "value": "0"
+            },
+            {
+                "uid": "active_defrag_key_hits",
+                "name": "active defrag key hits",
+                "value": "0"
+            },
+            {
+                "uid": "active_defrag_key_misses",
+                "name": "active defrag key misses",
+                "value": "0"
+            },
+            {
+                "uid": "total_active_defrag_time",
+                "name": "total active defrag time",
+                "value": "0"
+            },
+            {
+                "uid": "current_active_defrag_time",
+                "name": "current active defrag time",
+                "value": "0"
+            },
+            {
+                "uid": "tracking_total_keys",
+                "name": "tracking total keys",
+                "value": "0"
+            },
+            {
+                "uid": "tracking_total_items",
+                "name": "tracking total items",
+                "value": "0"
+            },
+            {
+                "uid": "tracking_total_prefixes",
+                "name": "tracking total prefixes",
+                "value": "0"
+            },
+            {
+                "uid": "unexpected_error_replies",
+                "name": "unexpected error replies",
+                "value": "0"
+            },
+            {
+                "uid": "total_error_replies",
+                "name": "total error replies",
+                "value": "7"
+            },
+            {
+                "uid": "dump_payload_sanitizations",
+                "name": "dump payload sanitizations",
+                "value": "0"
+            },
+            {
+                "uid": "total_reads_processed",
+                "name": "total reads processed",
+                "value": "48300000"
+            },
+            {
+                "uid": "total_writes_processed",
+                "name": "total writes processed",
+                "value": "48250000"
+            },
+            {
+                "uid": "io_threaded_reads_processed",
+                "name": "io threaded reads processed",
+                "value": "0"
+            },
+            {
+                "uid": "io_threaded_writes_processed",
+                "name": "io threaded writes processed",
+                "value": "0"
+            },
+            {
+                "uid": "role",
+                "name": "role",
+                "value": "master"
+            },
+            {
+                "uid": "connected_slaves",
+                "name": "connected slaves",
+                "value": "1"
+            },
+            {
+                "uid": "slave0",
+                "name": "slave0",
+                "value": "ip=10.0.0.6,port=6379,state=online,offset=70001234,lag=0"
+            },
+            {
+                "uid": "master_failover_state",
+                "name": "master failover state",
+                "value": "no-failover"
+            },
+            {
+                "uid": "master_replid",
+                "name": "master replid",
+                "value": "8a1c3e5f7b9d0f2a4c6e8b0d2f4a6c8e0b2d4f6a"
+            },
+            {
+                "uid": "master_replid2",
+                "name": "master replid2",
+                "value": "0000000000000000000000000000000000000000"
+            },
+            {
+                "uid": "master_repl_offset",
+                "name": "master repl offset",
+                "value": "70001234"
+            },
+            {
+                "uid": "second_repl_offset",
+                "name": "second repl offset",
+                "value": "-1"
+            },
+            {
+                "uid": "repl_backlog_active",
+                "name": "repl backlog active",
+                "value": "1"
+            },
+            {
+                "uid": "repl_backlog_size",
+                "name": "repl backlog size",
+                "value": "1048576"
+            },
+            {
+                "uid": "repl_backlog_first_byte_offset",
+                "name": "repl backlog first byte offset",
+                "value": "69000000"
+            },
+            {
+                "uid": "repl_backlog_histlen",
+                "name": "repl backlog histlen",
+                "value": "1001235"
+            },
+            {
+                "uid": "used_cpu_sys",
+                "name": "used cpu sys",
+                "value": "812.118344"
+            },
+            {
+                "uid": "used_cpu_user",
+                "name": "used cpu user",
+                "value": "1389.774512"
+            },
+            {
+                "uid": "used_cpu_sys_children",
+                "name": "used cpu sys children",
+                "value": "12.5"
+            },
+            {
+                "uid": "used_cpu_user_children",
+                "name": "used cpu user children",
+                "value": "40.25"
+            },
+            {
+                "uid": "used_cpu_sys_main_thread",
+                "name": "used cpu sys main thread",
+                "value": "811.9"
+            },
+            {
+                "uid": "used_cpu_user_main_thread",
+                "name": "used cpu user main thread",
+                "value": "1389.5"
+            },
+            {
+                "uid": "errorstat_ERR",
+                "name": "errorstat ERR",
+                "value": "count=5"
+            },
+            {
+                "uid": "errorstat_WRONGTYPE",
+                "name": "errorstat WRONGTYPE",
+                "value": "count=2"
+            },
+            {
+                "uid": "cluster_enabled",
+                "name": "cluster enabled",
+                "value": "0"
+            },
+            {
+                "uid": "db0",
+                "name": "db0",
+                "value": "keys=204011,expires=87012,avg_ttl=3412290"
+            },
+            {
+                "uid": "db1",
+                "name": "db1",
+                "value": "keys=12,expires=0,avg_ttl=0"
+            }
+        ],
+        "table": null
+    }
+}

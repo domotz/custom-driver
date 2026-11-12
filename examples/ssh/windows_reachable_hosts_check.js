@@ -1,28 +1,28 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Windows - check reachable hosts from endpoint
- * Description: Checks if a list of hosts are reachable from the windows endpoint where the script is run this can be used 
- * for various case scenarios, including checking if a VPN connection is up or not (indirectly by checking if you 
+ * Description: Checks if a list of hosts are reachable from the windows endpoint where the script is run this can be used
+ * for various case scenarios, including checking if a VPN connection is up or not (indirectly by checking if you
  * can reach some hosts which are reachable only by VPN)
- *   
+ *
  * Communication protocol is SSH. Utilizing the native windows powershell command.
- * 
+ *
  * Tested on Windows Versions:
  *  - Windows 10
  *  - Microsoft Windows Server 2019
- * 
+ *
  * Powershell Version:
  *  - 5.1.19041.2364
- * 
- * 
+ *
+ *
  * Creates a Custom Variables:
  *  - Label/Name: Hostname [Taken from the list of hostsToCheck]
  *  - Value: Reachable [True, False]
- * 
- * 
+ *
+ *
  **/
 
-var hostsToCheck  = D.getParameter('hostsToCheck');
+var hostsToCheck  = D.getParameter("hostsToCheck");
 // SSH options when running the commands
 var sshConfig = {
     // SSh command run on the endpoint
@@ -65,7 +65,7 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get if Hosts/IPs are reachable or not and display them in a table 
+ * @label Get if Hosts/IPs are reachable or not and display them in a table
  * @documentation This procedure is used for crating the table from the data we are getting from the powershell command issued on the Windows Computer
  */
 

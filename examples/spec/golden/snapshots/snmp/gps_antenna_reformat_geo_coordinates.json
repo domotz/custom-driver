@@ -1,0 +1,72 @@
+{
+    "active antenna validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active antenna get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "1",
+                "name": "Antenna Status",
+                "value": "Active",
+                "unit": " "
+            },
+            {
+                "uid": "2",
+                "name": "Latitude",
+                "value": "37° 31\"",
+                "unit": "N"
+            },
+            {
+                "uid": "3",
+                "name": "Longitude",
+                "value": "13° 31\"",
+                "unit": "E"
+            },
+            {
+                "uid": "4",
+                "name": "Heading",
+                "value": "123.5°",
+                "unit": " "
+            }
+        ],
+        "table": null
+    },
+    "idle antenna validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "idle antenna get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "1",
+                "name": "Antenna Status",
+                "value": "Idle",
+                "unit": " "
+            },
+            {
+                "uid": "2",
+                "name": "Latitude",
+                "value": "45° 23\"",
+                "unit": "N"
+            },
+            {
+                "uid": "3",
+                "name": "Longitude",
+                "value": "09° 23\"",
+                "unit": "E"
+            },
+            {
+                "uid": "4",
+                "name": "Heading",
+                "value": "270°",
+                "unit": " "
+            }
+        ],
+        "table": null
+    }
+}

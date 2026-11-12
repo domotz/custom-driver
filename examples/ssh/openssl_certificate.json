@@ -1,6 +1,6 @@
 {
     "logo": "ssl-checker.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "OpenSSL - SSL/TLS Certificate Monitoring",
     "description": "Check whether a list of servers have valid SSL certificates and if there is any error with the Certificate Authority; check when the certificate expires; be ready to issue a new the Certificate by monitoring the remaining days on the current certificate",
     "category": "Software Integration",

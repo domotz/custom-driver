@@ -1,0 +1,233 @@
+{
+    "running linux vm and deallocated windows vm validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "running linux vm and deallocated windows vm get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual Machines Metrics",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "OS Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "OS Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "OS Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Extension Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Extension Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Extension Status msg",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Power State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Network Out Total",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Network In Total",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Available Memory",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Percentage CPU",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "CPU Credits Remaining",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "CPU Credits Consumed",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "Gb"
+                },
+                {
+                    "label": "Disk Read Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Disk Write Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Data Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Data Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Data Disk Latency",
+                    "valueType": "NUMBER",
+                    "unit": "ms"
+                },
+                {
+                    "label": "OS Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "OS Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "OS Disk Latency",
+                    "valueType": "NUMBER",
+                    "unit": "ms"
+                },
+                {
+                    "label": "OS Disk Read Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "OS Disk Write Ops",
+                    "valueType": "NUMBER",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Vm Availability",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Temp Disk Latency",
+                    "valueType": "NUMBER",
+                    "unit": "ms"
+                },
+                {
+                    "label": "Temp Disk Read",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Temp Disk Write",
+                    "valueType": "NUMBER",
+                    "unit": "bps"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0a1b2c3d-1111-2222-3333-444455556666",
+                    "values": [
+                        "web-01",
+                        "Prod-RG",
+                        "Linux",
+                        "ubuntu",
+                        "22.04",
+                        "Microsoft.Azure.Monitor.AzureMonitorLinuxAgent",
+                        "ProvisioningState/succeeded",
+                        "Plugin enabled",
+                        "VM running",
+                        "2.00",
+                        "0.50",
+                        "3.25",
+                        23.456,
+                        "N/A",
+                        "N/A",
+                        "0.13",
+                        "0.38",
+                        4.5,
+                        "11.23",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        450000,
+                        900000,
+                        1.8,
+                        4.5,
+                        11.25,
+                        "Yes",
+                        0.4,
+                        12000,
+                        34000
+                    ]
+                },
+                {
+                    "id": "9f8e7d6c-aaaa-bbbb-cccc-ddddeeeeffff",
+                    "values": [
+                        "db-01",
+                        "Data-RG",
+                        "Windows",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "VM deallocated",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "No",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

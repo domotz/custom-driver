@@ -22,20 +22,20 @@
  **/
 
 // URL endpoint for accessing the vSphere SDK
-const url = '/sdk'
+const url = "/sdk";
 
 // Specify the variable definitions IDs, names, paths, and value types.
 const variables = [
-  { id: 'name', name: 'Name', path: 'summary.config.name', "valueType": D.valueType.STRING},
-  { id: 'connection-state', name: 'Connection State', path: 'runtime.connectionState', "valueType": D.valueType.STRING },
-  { id: 'model', name: 'System Model', path: 'hardware.systemInfo.model', "valueType": D.valueType.STRING },
-  { id: 'vendor', name: 'System Vendor', path: 'hardware.systemInfo.vendor', "valueType": D.valueType.STRING },
-  { id: 'num-nics', name: 'Number of NICs', path: 'summary.hardware.numNics', "valueType": D.valueType.NUMBER },
-  { id: 'num-hbas', name: 'Number of HBAs', path: 'summary.hardware.numHBAs', "valueType": D.valueType.NUMBER },
-  { id: 'product-version', name: 'Product Version', path: 'summary.config.product.version', "valueType": D.valueType.STRING },
-  { id: 'api-version', name: 'API Version', path: 'summary.config.product.apiVersion', "valueType": D.valueType.STRING },
-  { id: 'os-type', name: 'OS Type', path: 'summary.config.product.osType', "valueType": D.valueType.STRING },
-  { id: 'product-line-id', name: 'Product Line ID', path: 'summary.config.product.productLineId', "valueType": D.valueType.STRING }
+    { id: "name", name: "Name", path: "summary.config.name", "valueType": D.valueType.STRING },
+    { id: "connection-state", name: "Connection State", path: "runtime.connectionState", "valueType": D.valueType.STRING },
+    { id: "model", name: "System Model", path: "hardware.systemInfo.model", "valueType": D.valueType.STRING },
+    { id: "vendor", name: "System Vendor", path: "hardware.systemInfo.vendor", "valueType": D.valueType.STRING },
+    { id: "num-nics", name: "Number of NICs", path: "summary.hardware.numNics", "valueType": D.valueType.NUMBER },
+    { id: "num-hbas", name: "Number of HBAs", path: "summary.hardware.numHBAs", "valueType": D.valueType.NUMBER },
+    { id: "product-version", name: "Product Version", path: "summary.config.product.version", "valueType": D.valueType.STRING },
+    { id: "api-version", name: "API Version", path: "summary.config.product.apiVersion", "valueType": D.valueType.STRING },
+    { id: "os-type", name: "OS Type", path: "summary.config.product.osType", "valueType": D.valueType.STRING },
+    { id: "product-line-id", name: "Product Line ID", path: "summary.config.product.productLineId", "valueType": D.valueType.STRING }
 ];
 
 /**
@@ -44,33 +44,33 @@ const variables = [
  * @param {function} extractData  A call back function to extract data from body and response.
  * @returns A promise that resolves with the parsed response.
  */
-function sendSoapRequest (body, extractData) {
-  const d = D.q.defer()
+function sendSoapRequest(body, extractData) {
 
-  let config ={
-    url,
-    protocol: "https",
-    rejectUnauthorized: false,
-    body,
-    jar: true
-  }
+    let config = {
+        url,
+        protocol: "https",
+        rejectUnauthorized: false,
+        body,
+        jar: true
+    };
 
-  D.device.http.post(config, function (error, response, body) {
-    if (error) {
-      console.error(error)
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else if (!response) {
-      D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-    } else if (response.statusCode === 400 || isInvalidLogin(body)) {
-      D.failure(D.errorType.AUTHENTICATION_ERROR)
-    } else if (response.statusCode !== 200) {
-      D.failure(D.errorType.GENERIC_ERROR)
-    } else {
-      const result = extractData(body)
-      d.resolve(result)
-    }
-  })
-  return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 400 || isInvalidLogin(body)) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                const result = extractData(body);
+                resolve(result);
+            }
+        });
+    });
 }
 
 /**
@@ -78,10 +78,10 @@ function sendSoapRequest (body, extractData) {
  * @param {string} soapBody - The content to be included in the SOAP body.
  * @returns {string} The complete SOAP payload as a string, including the envelope and body.
  */
-function createSoapPayload (soapBody) {
-  return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
+function createSoapPayload(soapBody) {
+    return '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25"><soapenv:Body>'
       + soapBody +
-      '</soapenv:Body></soapenv:Envelope>'
+      "</soapenv:Body></soapenv:Envelope>";
 }
 
 /**
@@ -90,8 +90,8 @@ function createSoapPayload (soapBody) {
  * @returns {string} The Session Key extracted from the SOAP response.
  */
 function getSessionKey(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').find('key').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("key").first().text();
 }
 
 /**
@@ -100,11 +100,11 @@ function getSessionKey(soapResponse) {
  * @param {string} value - The text to escape.
  * @returns {string} The escaped text.
  */
-function escapeXml (value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+function escapeXml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
 /**
@@ -112,26 +112,26 @@ function escapeXml (value) {
  * @param {string} body - The SOAP response body.
  * @returns {boolean} True if the response is an InvalidLogin fault.
  */
-function isInvalidLogin (body) {
-  const text = String(body || '')
-  return text.indexOf('InvalidLoginFault') !== -1 ||
-    text.indexOf('Cannot complete login due to an incorrect user name or password.') !== -1
+function isInvalidLogin(body) {
+    const text = String(body || "");
+    return text.indexOf("InvalidLoginFault") !== -1 ||
+    text.indexOf("Cannot complete login due to an incorrect user name or password.") !== -1;
 }
 
 /**
  * Constructs and sends a SOAP login request to the ESXi server.
  * @returns {Promise} A promise that resolves with the response of the login request.
  */
-function login () {
-  const payload = createSoapPayload(
-      '<vim25:Login>' +
+function login() {
+    const payload = createSoapPayload(
+        "<vim25:Login>" +
       '   <_this type="SessionManager">ha-sessionmgr</_this>' +
-      '   <userName>' + escapeXml(D.device.username()) + '</userName>' +
-      '   <password>' + escapeXml(D.device.password()) + '</password>' +
-      '</vim25:Login>'
-  )
-  // Send the SOAP request and handle the response to extract the Session Key.
-  return sendSoapRequest(payload, getSessionKey)
+      "   <userName>" + escapeXml(D.device.username()) + "</userName>" +
+      "   <password>" + escapeXml(D.device.password()) + "</password>" +
+      "</vim25:Login>"
+    );
+    // Send the SOAP request and handle the response to extract the Session Key.
+    return sendSoapRequest(payload, getSessionKey);
 }
 
 /**
@@ -140,8 +140,8 @@ function login () {
  * @returns {string} The container ID extracted from the SOAP response.
  */
 function getContainerIdFromSoap(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').text();
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").text();
 }
 
 /**
@@ -149,16 +149,16 @@ function getContainerIdFromSoap(soapResponse) {
  * @returns {Promise} A promise that resolves with the container ID from the SOAP response.
  */
 function createAllHostContainer() {
-  const payload = createSoapPayload(
-      '<CreateContainerView xmlns="urn:vim25">' +
+    const payload = createSoapPayload(
+        '<CreateContainerView xmlns="urn:vim25">' +
       '    <_this type="ViewManager">ViewManager</_this>' +
       '    <container type="Folder">ha-folder-root</container>' +
-      '    <type>HostSystem</type>' +
-      '    <recursive>true</recursive>' +
-      '</CreateContainerView>'
-  )
-  // Send the SOAP request and extract the container ID from the response.
-  return sendSoapRequest(payload, getContainerIdFromSoap)
+      "    <type>HostSystem</type>" +
+      "    <recursive>true</recursive>" +
+      "</CreateContainerView>"
+    );
+    // Send the SOAP request and extract the container ID from the response.
+    return sendSoapRequest(payload, getContainerIdFromSoap);
 }
 
 /**
@@ -167,8 +167,8 @@ function createAllHostContainer() {
  * @returns {string} The host reference extracted from the SOAP response.
  */
 function getHostRefFromSoap(soapResponse) {
-  const $ = D.htmlParse(soapResponse)
-  return $('returnval').find('ManagedObjectReference').first().text()
+    const $ = D.htmlParse(soapResponse);
+    return $("returnval").find("ManagedObjectReference").first().text();
 }
 
 /**
@@ -177,14 +177,14 @@ function getHostRefFromSoap(soapResponse) {
  * @returns {Promise} A promise that resolves with the host reference extracted from the SOAP response.
  */
 function fetchContainer(containerId) {
-  const payload = createSoapPayload(
-      '<Fetch xmlns="urn:vim25">' +
-      '    <_this type="ContainerView">' + containerId + '</_this>' +
-      '    <prop>view</prop>' +
-      '</Fetch>'
-  )
-  // Send the SOAP request and extract the host reference from the response.
-  return sendSoapRequest(payload, getHostRefFromSoap)
+    const payload = createSoapPayload(
+        '<Fetch xmlns="urn:vim25">' +
+      '    <_this type="ContainerView">' + containerId + "</_this>" +
+      "    <prop>view</prop>" +
+      "</Fetch>"
+    );
+    // Send the SOAP request and extract the host reference from the response.
+    return sendSoapRequest(payload, getHostRefFromSoap);
 }
 
 /**
@@ -193,12 +193,10 @@ function fetchContainer(containerId) {
  * @returns {string} An XML-formatted string representing the path sets for each variable.
  */
 function generatesPathSetXml() {
-  return variables.map(function(variable) {
-    return '<vim25:pathSet>' + variable.path + '</vim25:pathSet>';
-  }).join(' ');
+    return variables.map(function (variable) {
+        return "<vim25:pathSet>" + variable.path + "</vim25:pathSet>";
+    }).join(" ");
 }
-
-
 
 /**
  * Constructs and sends a SOAP request to retrieve properties for a specified host reference.
@@ -206,22 +204,22 @@ function generatesPathSetXml() {
  * @returns {Promise} A promise that resolves with the properties of the host as extracted from the SOAP response.
  */
 function retrieveProprieties(hostRef) {
-  const payload = createSoapPayload(
-      '<vim25:RetrieveProperties>' +
+    const payload = createSoapPayload(
+        "<vim25:RetrieveProperties>" +
       '   <vim25:_this type="PropertyCollector">ha-property-collector</vim25:_this>' +
-      '   <vim25:specSet>' +
-      '      <vim25:propSet>' +
-      '         <vim25:type>HostSystem</vim25:type>' +
+      "   <vim25:specSet>" +
+      "      <vim25:propSet>" +
+      "         <vim25:type>HostSystem</vim25:type>" +
                 generatesPathSetXml() +
-      '      </vim25:propSet>' +
-      '      <vim25:objectSet>' +
-      '         <vim25:obj type="HostSystem">' + hostRef + '</vim25:obj>' +
-      '      </vim25:objectSet>' +
-      '   </vim25:specSet>' +
-      '</vim25:RetrieveProperties>'
-  )
-  // Send the SOAP request and handle the response to generate the desired variables.
-  return sendSoapRequest(payload, generateVariables)
+      "      </vim25:propSet>" +
+      "      <vim25:objectSet>" +
+      '         <vim25:obj type="HostSystem">' + hostRef + "</vim25:obj>" +
+      "      </vim25:objectSet>" +
+      "   </vim25:specSet>" +
+      "</vim25:RetrieveProperties>"
+    );
+    // Send the SOAP request and handle the response to generate the desired variables.
+    return sendSoapRequest(payload, generateVariables);
 }
 
 /**
@@ -230,23 +228,23 @@ function retrieveProprieties(hostRef) {
  * @returns {Array} An array of variables created from the extracted properties.
  */
 function generateVariables(soapResponse) {
-  const $ = D.htmlParse(soapResponse);
+    const $ = D.htmlParse(soapResponse);
 
-  // Helper function to extract the value of a property from the parsed response based on the given path.
-  function getPropSetValue(path) {
-    return $("propSet").has("name:contains('" + path + "')").find("val").text() || "N/A";
-  }
+    // Helper function to extract the value of a property from the parsed response based on the given path.
+    function getPropSetValue(path) {
+        return $("propSet").has("name:contains('" + path + "')").find("val").text() || "N/A";
+    }
 
-  let result = [];
+    let result = [];
 
-  for (let i = 0; i < variables.length; i++) {
-    const variable = variables[i]
-    result.push( variable.valueType ?
-        D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null, variable.valueType) :
-        D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null)
-    )
-  }
-  return result
+    for (let i = 0; i < variables.length; i++) {
+        const variable = variables[i];
+        result.push(variable.valueType ?
+            D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null, variable.valueType) :
+            D.createVariable(variable.id, variable.name, getPropSetValue(variable.path), variable.unit || null)
+        );
+    }
+    return result;
 }
 
 /**
@@ -254,16 +252,18 @@ function generateVariables(soapResponse) {
  * @label Validate Association
  * @documentation This procedure is used to validate if the driver can be applied on a device during association as well as validate any credentials provided
  */
-function validate () {
-  login()
-      .then(function (sessionKey) {
-        if(sessionKey && sessionKey.length > 0){
-          D.success();
-        }
-      })
-      .catch(function () {
-        D.failure(D.errorType.GENERIC_ERROR);
-      });
+function validate() {
+    login()
+        .then(function (sessionKey) {
+            if (sessionKey && sessionKey.length > 0) {
+                D.success();
+            } else {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        })
+        .catch(function () {
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -272,13 +272,13 @@ function validate () {
  * @documentation This procedure retrieves the general information of the ESXi host
  */
 function get_status() {
-  login().
-  then(createAllHostContainer).
-  then(fetchContainer).
-  then(retrieveProprieties).
-  then(D.success)
-      .catch(function (err) {
-        console.error(err);
-        D.failure(D.errorType.GENERIC_ERROR);
-      });
+    login().
+        then(createAllHostContainer).
+        then(fetchContainer).
+        then(retrieveProprieties).
+        then(D.success)
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

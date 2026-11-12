@@ -1,19 +1,19 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Windows Update - Count, List, and Install Missing Updates
  * Description: Shows the number of updates available listed by their severity or category, provides a button to install them on demand
- * 
+ *
  * Please note that to be able to use the button 'Install Updates' you must be using an Administrative user
  * please see this online thread: https://social.technet.microsoft.com/Forums/azure/en-US/969b16c7-bd7a-4204-9ae0-b5a5d7663d14/how-to-allow-nonadministrator-install-windows-update?forum=winserverGP
- * 
+ *
  * Communication protocol is SSH. Utilizing the native windows powershell command
- * 
+ *
  * Tested on Windows Versions:
  *      - Windows 10
  *      - Microsoft Windows Server 2019
  * Powershell Version:
  *      - 5.1.19041.2364
- * 
+ *
  * Creates custom driver variables for missing updates severity counts:
  *  - Severity Critical
  *  - Severity Important
@@ -30,7 +30,6 @@
  *   - URL (microsoft website)
  */
 
-
 var getWindowsUpdatesCommand = "powershell -command \"$UpdateSession = New-Object -ComObject Microsoft.Update.Session;$UpdateSearcher = $UpdateSession.CreateupdateSearcher();$Updates = @($UpdateSearcher.Search('IsHidden=0 and IsInstalled=0 and AutoSelectOnWebSites=1').Updates);$Updates| select  @{n='KB';e={$($_.KBArticleIDs) -join ','}},title,MsrcSeverity,@{n='Category';e={[array](($_.Categories | select Name).Name) -join '|'}}, @{n='URL';e={$($_.moreinfourls) -join ' - '}}|ConvertTo-Json\"";
 var sshOptions = {
     "command": getWindowsUpdatesCommand,
@@ -41,7 +40,7 @@ var sshOptions = {
 
 // Helper function to parse the windows update info response and call the success callback
 function dataParserCallback(output) {
-    // Creation of custom driver table 
+    // Creation of custom driver table
     var missingUpdatesTable = D.createTable(
         "Missing Updates",
         [
@@ -70,28 +69,28 @@ function dataParserCallback(output) {
         var title = jsonOutput[k].Title;
         var severity = jsonOutput[k].MsrcSeverity || "Unspecified";
         var category = jsonOutput[k].Category;
-        var url = jsonOutput[k].URL ;
-        
+        var url = jsonOutput[k].URL;
+
         if (category.indexOf("Security") >= 0) {
-            SecurityCount++ ;
+            SecurityCount++;
         }
-        switch(severity) {
-        case "Critical":
-            CriticalCount++;
-            break;
-        case "Important":
-            ImportantCount++;
-            break;
-        case "Low":
-            LowCount++;
-            break;
-        case "Moderate":
-            ModerateCount++;
-            break;
-        case "Unspecified":
-            UnspecifiedCount++;
-            break;
-        default:
+        switch (severity) {
+            case "Critical":
+                CriticalCount++;
+                break;
+            case "Important":
+                ImportantCount++;
+                break;
+            case "Low":
+                LowCount++;
+                break;
+            case "Moderate":
+                ModerateCount++;
+                break;
+            case "Unspecified":
+                UnspecifiedCount++;
+                break;
+            default:
         }
 
         missingUpdatesTable.insertRecord(
@@ -105,9 +104,9 @@ function dataParserCallback(output) {
         D.createVariable("2-severity-low", "Severity - Low", LowCount, null, D.valueType.NUMBER),
         D.createVariable("3-severity-important", "Severity - Important", ImportantCount, null, D.valueType.NUMBER),
         D.createVariable("4-severity-critical", "Severity - Critical", CriticalCount, null, D.valueType.NUMBER),
-        D.createVariable("99-category-security", "Category - Security", SecurityCount, null, D.valueType.NUMBER),
+        D.createVariable("99-category-security", "Category - Security", SecurityCount, null, D.valueType.NUMBER)
     ];
-    D.success(updateSeverityCounterVariables,missingUpdatesTable);
+    D.success(updateSeverityCounterVariables, missingUpdatesTable);
 }
 /**
 * SSH Command execution Callback
@@ -155,7 +154,7 @@ function get_status() {
 * @label Install Updates
 * @documentation Installs all the missing updates from the list. No reboot is triggered upon completion.
 */
-function custom_1(){
+function custom_1() {
     function installUpdatesCallback(output, error) {
         if (error) {
             console.error("Error: ", error);
@@ -172,7 +171,7 @@ function custom_1(){
                 D.success();
             }
         }
-    }    
+    }
     var installMissingUpdates = "powershell -c \"$UpdateSession = New-Object -ComObject Microsoft.Update.Session;$UpdateSearcher = $UpdateSession.CreateupdateSearcher();$Updates = $UpdateSearcher.Search('IsHidden=0 and IsInstalled=0 and AutoSelectOnWebSites=1').Updates;$Downloader = $UpdateSession.CreateUpdateDownloader();$Downloader.Updates = $Updates;$Downloader.Download();$Installer = New-Object -ComObject Microsoft.Update.Installer;$Installer.Updates = $Updates;$Result = $Installer.Install()\"";
     sshOptions.command = installMissingUpdates;
     D.device.sendSSHCommand(sshOptions, installUpdatesCallback);

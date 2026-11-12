@@ -1,0 +1,79 @@
+{
+    "ups tower on mains, charging validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ups tower on mains, charging get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "Battery Level - 1",
+                "name": "Battery Level",
+                "value": "87",
+                "unit": "%"
+            },
+            {
+                "uid": "Charging - 2",
+                "name": "Charging",
+                "value": "Yes",
+                "unit": ""
+            },
+            {
+                "uid": "Battery Mode - 3",
+                "name": "Battery Mode",
+                "value": "No",
+                "unit": ""
+            },
+            {
+                "uid": "Output Voltage - 4",
+                "name": "Output Voltage",
+                "value": "120.40",
+                "unit": "V"
+            },
+            {
+                "uid": "Output Current - 5",
+                "name": "Output Current",
+                "value": "2.35",
+                "unit": "A"
+            },
+            {
+                "uid": "Output Power - 6",
+                "name": "Output Power",
+                "value": "283",
+                "unit": "W"
+            },
+            {
+                "uid": "Power Budget - 7",
+                "name": "Power Budget",
+                "value": "1500",
+                "unit": "W"
+            },
+            {
+                "uid": "Power Factor - 8",
+                "name": "Power Factor",
+                "value": "0.98",
+                "unit": ""
+            },
+            {
+                "uid": "Ready Count - 9",
+                "name": "Ready Count",
+                "value": "3",
+                "unit": ""
+            },
+            {
+                "uid": "Available Battery Count - 10",
+                "name": "Available Battery Count",
+                "value": "4",
+                "unit": ""
+            },
+            {
+                "uid": "Time To Remain - 11",
+                "name": "Time To Remain",
+                "value": "5400",
+                "unit": "s"
+            }
+        ],
+        "table": null
+    }
+}

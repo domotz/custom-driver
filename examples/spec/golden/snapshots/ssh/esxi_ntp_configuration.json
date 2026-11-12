@@ -1,0 +1,61 @@
+{
+    "esxi 8.0.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "ntp-1",
+                "name": "NTP Configuration - 1",
+                "value": "tos maxdist 15",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-2",
+                "name": "NTP Configuration - 2",
+                "value": "server 0.pool.ntp.org",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-3",
+                "name": "NTP Configuration - 3",
+                "value": "server 1.pool.ntp.org",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-4",
+                "name": "NTP Configuration - 4",
+                "value": "restrict default kod nomodify notrap nopeer noquery",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-5",
+                "name": "NTP Configuration - 5",
+                "value": "restrict -6 default kod nomodify notrap nopeer noquery",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-6",
+                "name": "NTP Configuration - 6",
+                "value": "restrict 127.0.0.1",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-7",
+                "name": "NTP Configuration - 7",
+                "value": "restrict -6 ::1",
+                "unit": "line"
+            },
+            {
+                "uid": "ntp-8",
+                "name": "NTP Configuration - 8",
+                "value": "driftfile /etc/ntp.drift",
+                "unit": "line"
+            }
+        ],
+        "table": null
+    }
+}

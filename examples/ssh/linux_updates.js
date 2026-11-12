@@ -1,29 +1,32 @@
-/** 
+/**
  * Name: Linux Updates List (apt-based)
  * Description: Display the list of Updates available in a Linux host
- * 
+ *
  * Communication protocol is SSH
- * 
+ *
  * Tested on Linux: Ubuntu 22.04.3 LTS"
- * 
+ *
  * Requires:
  *    - requires apt
  *    - requires grep
- *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL 
- * 
+ *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL
+ *
  * Creates a Custom Driver Table with the following columns:
  *      - Current Version
- *      - New Version 
- * 
+ *      - New Version
+ *
 **/
 
-var packagesFilter = D.getParameter('packagesFilter');
-var cmdListUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep ^Inst";
+var packagesFilter = D.getParameter("packagesFilter");
+// apt-get failing (or missing, on non-Debian hosts) exits 1 before grep runs, so it maps to RESOURCE_UNAVAILABLE
+var cmdListUpdates = "out=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade) || exit 1; printf '%s\\n' \"$out\" | /bin/grep ^Inst";
 
 if (packagesFilter.length > 0) {
     var packages = packagesFilter.join("\\|");
     cmdListUpdates += " | grep -E " + packages;
 }
+// grep exits 1 when nothing matches, i.e. on an up-to-date host: that is a success with no updates
+cmdListUpdates += "; test $? -le 1";
 
 // SSH options when running the commands
 var sshConfig = {
@@ -50,17 +53,17 @@ function checkSshError(err) {
 }
 
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) {
-            checkSshError(err);
-            d.reject(err);
-        } else {
-            d.resolve(out);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) {
+                checkSshError(err);
+                reject(err);
+            } else {
+                resolve(out);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -86,19 +89,24 @@ function parseValidateOutput(output) {
 
 function parseData(executionResult) {
     var listOfUpdates = executionResult.split(/\r?\n/);
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    // "Inst <pkg> [<installed>] (<new> <origin> [<arch>])"; a package not installed yet has no [<installed>]
+    var instRegex = /^Inst (\S+) (?:\[([^\]]*)\] )?\((\S+)/;
     for (var i = 0; i < listOfUpdates.length; i++) {
-        var fields = listOfUpdates[i].replace(/[\[\]()]/g, "").split(" ");
-        var pkgName = fields[1];
-        var pkgOldV = fields[2];
-        var pkgNewV = fields[3]; 
-        var recordId = pkgName.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();;
+        var match = instRegex.exec(listOfUpdates[i].trim());
+        if (!match) {
+            continue;
+        }
+        var pkgName = match[1];
+        var pkgOldV = match[2] || "N/A";
+        var pkgNewV = match[3];
+        var recordId = pkgName.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase(); ;
         updateListTable.insertRecord(
             recordId, [pkgOldV, pkgNewV]
         );
     }
-    D.success(updateListTable); 
+    D.success(updateListTable);
 }
 
 /**
@@ -110,4 +118,4 @@ function get_status() {
     executeCommand(cmdListUpdates)
         .then(parseData)
         .catch(checkSshError);
-}       
+}

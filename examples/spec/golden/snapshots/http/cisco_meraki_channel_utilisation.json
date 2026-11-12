@@ -1,0 +1,111 @@
+{
+    "two wireless networks and one wired validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two wireless networks and one wired get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Channel Utilization",
+            "columnHeaders": [
+                {
+                    "label": "Network",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Device",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Channel",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Channel Utilization",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Wifi Utilization",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Non Wifi Utilization",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "hq-wireless-mr46-wifi0",
+                    "values": [
+                        "HQ Wireless",
+                        "MR46",
+                        "wifi0",
+                        12.5,
+                        9.1,
+                        3.4
+                    ]
+                },
+                {
+                    "id": "hq-wireless-mr46-wifi1",
+                    "values": [
+                        "HQ Wireless",
+                        "MR46",
+                        "wifi1",
+                        41.2,
+                        30,
+                        11.2
+                    ]
+                },
+                {
+                    "id": "hq-wireless-mr36-wifi0",
+                    "values": [
+                        "HQ Wireless",
+                        "MR36",
+                        "wifi0",
+                        4,
+                        3,
+                        1
+                    ]
+                },
+                {
+                    "id": "hq-wireless-mr36-wifi1",
+                    "values": [
+                        "HQ Wireless",
+                        "MR36",
+                        "wifi1",
+                        85.7,
+                        20.2,
+                        65.5
+                    ]
+                },
+                {
+                    "id": "branch-wireless-mr33-wifi0",
+                    "values": [
+                        "Branch Wireless",
+                        "MR33",
+                        "wifi0",
+                        7.7,
+                        6.6,
+                        1.1
+                    ]
+                },
+                {
+                    "id": "branch-wireless-mr28-wifi0",
+                    "values": [
+                        "Branch Wireless",
+                        "MR28",
+                        "wifi0",
+                        2.5,
+                        2,
+                        0.5
+                    ]
+                }
+            ]
+        }
+    }
+}

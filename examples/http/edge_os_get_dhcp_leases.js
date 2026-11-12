@@ -36,7 +36,7 @@ function login(callbackMethod) {
         rejectUnauthorized: false,
         url: "/",
         body: loginBody,
-        jar: true,
+        jar: true
     };
     D.device.http.post(httpLoginOptions, callbackMethod);
 }

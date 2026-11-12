@@ -1,0 +1,24 @@
+{
+    "router up 100 days validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "router up 100 days get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "1",
+                "name": "System Uptime in Days",
+                "value": 100,
+                "unit": "days"
+            }
+        ],
+        "table": null
+    },
+    "router up 100 days custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

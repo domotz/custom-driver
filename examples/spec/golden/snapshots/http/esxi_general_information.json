@@ -1,0 +1,83 @@
+{
+    "esxi 8.0.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "esxi01.lab.local",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection-state",
+                "name": "Connection State",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "System Model",
+                "value": "PowerEdge R740",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "vendor",
+                "name": "System Vendor",
+                "value": "Dell Inc.",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "num-nics",
+                "name": "Number of NICs",
+                "value": "4",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "num-hbas",
+                "name": "Number of HBAs",
+                "value": "3",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "product-version",
+                "name": "Product Version",
+                "value": "8.0.0",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "api-version",
+                "name": "API Version",
+                "value": "8.0.0.1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "os-type",
+                "name": "OS Type",
+                "value": "vmnix-x86",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-line-id",
+                "name": "Product Line ID",
+                "value": "embeddedEsx",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

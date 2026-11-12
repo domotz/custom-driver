@@ -1,0 +1,16 @@
+{
+    "edgerouter 2.0.9 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "edgerouter 2.0.9 backup": {
+        "type": "success",
+        "backup": {
+            "label": "Device Configuration",
+            "running": "firewall {\r\n    all-ping enable\r\n    name WAN_IN {\r\n        default-action drop\r\n    }\r\n}\r\ninterfaces {\r\n    ethernet eth0 {\r\n        address dhcp\r\n        description WAN\r\n    }\r\n    ethernet eth1 {\r\n        address 192.168.1.1/24\r\n    }\r\n}\r\nservice {\r\n    ssh {\r\n        port 22\r\n        protocol-version v2\r\n    }\r\n}\r\nsystem {\r\n    host-name EdgeRouter\r\n    login {\r\n        user ubnt {\r\n            level admin\r\n        }\r\n    }\r\n}\r",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}
