@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver
+ * Domotz Custom Driver 
  * Name: Sonicwall - VPN Stats info
  * Description: Monitors VPN sessions for Sonicwall devices and populates a custom table with session information
- *
+ * 
  * Communication protocol is HTTPS
- *
+ * 
  * Tested on SonicWALL TZ 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
@@ -12,10 +12,10 @@
  *      - Local IP Address: Local IP address of the VPN session
  *      - Remote IP Address: Remote IP address of the VPN session
  *      - Logged in: Timestamp when the user logged in to the VPN session
- *
- * Creates a custom Driver Variable:
+ * 
+ * Creates a custom Driver Variable: 
  *      - VPN sessions count: Number of active VPN sessions
- *
+ * 
  **/
 
 var table = D.createTable(
@@ -26,69 +26,12 @@ var table = D.createTable(
     ]
 );
 
-// SonicOS can require a bearer token on every API request after login ("Non-GUI Management Login Bearer
-// Token Session Check", on by default from SonicOS 7.3.4-7015). When it does, the login reply carries the
-// token in status.info[].bearer_token; a firewall with the check off returns none.
-var bearerToken = null;
-
-/**
- * Reads the bearer token from the login reply.
- * @param {string|object} body The login reply
- * @returns {string|null} The token, or null when the firewall did not return one
- */
-function readBearerToken(body) {
-    try {
-        var reply = typeof body === "string" ? JSON.parse(body) : body;
-        var info = reply && reply.status && reply.status.info;
-        for (var i = 0; info && i < info.length; i++) {
-            if (info[i] && info[i].bearer_token) {
-                return info[i].bearer_token;
-            }
-        }
-    } catch (e) {
-        console.warn("The login reply is not JSON, no bearer token read");
-    }
-    return null;
-}
-
-/**
- * Sends a GET to the SonicOS API. When the login returned a bearer token the request carries it instead of
- * the session cookie; if the firewall refuses the token (401) the request is sent once more with the cookie.
- * @param {object} config The HTTP configuration
- * @param {function} callback Called with (error, response, body)
- */
-function authenticatedGet(config, callback) {
-    if (!bearerToken) {
-        D.device.http.get(config, callback);
-        return;
-    }
-    var withToken = {};
-    for (var key in config) {
-        if (key !== "jar") {
-            withToken[key] = config[key];
-        }
-    }
-    withToken.headers = {};
-    for (var name in config.headers) {
-        withToken.headers[name] = config.headers[name];
-    }
-    withToken.headers.Authorization = "Bearer " + bearerToken;
-    D.device.http.get(withToken, function (error, response, body) {
-        if (!error && response && response.statusCode == 401) {
-            console.warn("The firewall refused the bearer token (401), retrying with the session cookie");
-            D.device.http.get(config, callback);
-            return;
-        }
-        callback(error, response, body);
-    });
-}
-
 //Processes the HTTP response and handles errors
-function processResponse(resolve, reject) {
+function processResponse(d) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            return D.failure(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -99,7 +42,7 @@ function processResponse(resolve, reject) {
         if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        resolve(body);
+        d.resolve(body);
     };
 }
 
@@ -108,6 +51,7 @@ function processResponse(resolve, reject) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
+    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -118,16 +62,13 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    return new Promise(function (resolve, reject) {
-        D.device.http.post(config, processResponse(function (body) {
-            bearerToken = readBearerToken(body);
-            resolve(body);
-        }, reject));
-    });
+    D.device.http.post(config, processResponse(d));
+    return d.promise;
 }
 
 // Retrieves VPN Sessions data from the SonicWALL device.
 function getVpnSessions() {
+    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/reporting/ssl-vpn/sessions",
         protocol: "https",
@@ -135,15 +76,14 @@ function getVpnSessions() {
         jar: true,
         rejectUnauthorized: false
     };
-    return new Promise(function (resolve, reject) {
-        authenticatedGet(config, processResponse(resolve, reject));
-    });
+    D.device.http.get(config, processResponse(d));
+    return d.promise;
 }
 
-function sanitize(output) {
-    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
-    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
 //Extracts data from the HTTP response and populates the custom table
@@ -153,7 +93,7 @@ function extractData(body) {
     var vpnsessioncount = 0;
     for (var i = 0; i < data.length; i++) {
         var session = data[i];
-        var recordId = sanitize(session.user_name);
+        var recordId = sanitize(session.user_name); 
         table.insertRecord(recordId, [
             session.client_virtual_ip,
             session.client_wan_ip,
@@ -161,7 +101,7 @@ function extractData(body) {
         ]);
         vpnsessioncount++;
     }
-    var vpnSessionVariable = [(D.createVariable("vpnsessioncount", "VPN sessions count", vpnsessioncount, null, D.valueType.NUMBER))];
+    var vpnSessionVariable = [(D.createVariable("vpnsessioncount", "VPN sessions count", vpnsessioncount,null, D.valueType.NUMBER))];
     D.success(vpnSessionVariable, table);
 }
 
@@ -170,7 +110,7 @@ function extractData(body) {
  * @label Validate Connection
  * @documentation This procedure is used to validate the connection and retrieve VPN session data from the SonicWALL device.
  */
-function validate() {
+function validate(){
     login()
         .then(getVpnSessions)
         .then(function (response) {

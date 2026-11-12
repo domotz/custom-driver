@@ -1,8 +1,8 @@
-/**
+/** 
  * This driver gets nodes and cluster metrics from RabbitMQ management plugin provided an HTTP-based API using HTTP agent.
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
  */
 
 var port = 15672;
@@ -13,29 +13,29 @@ var healthcheck = {};
  * @returns promise for http response body
  */
 function httpGet(url) {
-    return new Promise(function (resolve) {
-        D.device.http.get({
-            url: url,
-            port: port,
-            username: D.device.username(),
-            password: D.device.password(),
-            auth: "basic"
-        }, function (err, response, body) {
-            if (err) {
-                return D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode == 401) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            resolve(body);
-        });
+    var d = D.q.defer();
+    D.device.http.get({
+        url: url,
+        port: port,
+        username: D.device.username(),
+        password: D.device.password(),
+        auth: "basic"
+    }, function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(body);
     });
+    return d.promise;
 }
 
 /**
@@ -122,7 +122,7 @@ function getHealthcheckVirtualHosts() {
 }
 
 /**
- * @param {value} value to convert to number
+ * @param {value} value to convert to number  
  * @returns numeric value
  */
 function convertToNumber(value) {
@@ -158,14 +158,6 @@ function extractValue(data, key) {
     };
 }
 
-/**
- * @param {object} details a message_stats "*_details" object, e.g. { rate: 25.5 }
- * @returns the per second rate
- */
-function extractRate(details) {
-    return details && details.rate !== undefined ? details.rate : 0;
-}
-
 // The list of custom driver variables to monitor
 function fillConfig() {
     monitoringList = [
@@ -191,7 +183,7 @@ function fillConfig() {
             //The rate of messages (per second) returned to a publisher as unroutable.
             uid: "return_unroutab_details",
             label: "Messages returned unroutable per second",
-            execute: [extractValue(overview.message_stats, "return_unroutable_details"), extractRate],
+            execute: extractValue(overview.message_stats, "return_unroutable_details"),
             type: D.valueType.RATE
         },
         {
@@ -204,7 +196,7 @@ function fillConfig() {
             //The rate of subset of messages (per second) in the `deliver_get`, which had the `redelivered` flag set.
             uid: "redeliver_details",
             label: "Messages returned redeliver per second",
-            execute: [extractValue(overview.message_stats, "redeliver_details"), extractRate],
+            execute: extractValue(overview.message_stats, "redeliver_details"),
             type: D.valueType.RATE
         },
         {
@@ -217,13 +209,13 @@ function fillConfig() {
             //The number of messages ready for delivery.
             uid: "messages_ready",
             label: "Messages ready for delivery",
-            execute: extractValue(overview.queue_totals, "messages_ready")
+            execute: extractValue(overview.message_stats, "messages_ready")
         },
         {
             //The rate of messages (per second) published from this overview into queues.
             uid: "publish_out_details",
             label: "Messages publish_out per second",
-            execute: [extractValue(overview.message_stats, "publish_out_details"), extractRate],
+            execute: extractValue(overview.message_stats, "publish_out_details"),
             type: D.valueType.RATE
         },
         {
@@ -236,7 +228,7 @@ function fillConfig() {
             //The rate of messages (per second) published from the channels into this overview.
             uid: "publish_in_details",
             label: "Messages publish_in per second",
-            execute: [extractValue(overview.message_stats, "publish_in_details"), extractRate],
+            execute: extractValue(overview.message_stats, "publish_in_details"),
             type: D.valueType.RATE
         },
         {
@@ -249,7 +241,7 @@ function fillConfig() {
             //The rate of published messages per second.
             uid: "publish_details",
             label: "Messages published per second",
-            execute: [extractValue(overview.message_stats, "publish_details"), extractRate],
+            execute: extractValue(overview.message_stats, "publish_details"),
             type: D.valueType.RATE
         },
         {
@@ -262,7 +254,7 @@ function fillConfig() {
             //The rate of the sum of messages (per second) delivered to consumers in acknowledgement and no-acknowledgement mode.
             uid: "deliver_get_details",
             label: "Messages delivered per second",
-            execute: [extractValue(overview.message_stats, "deliver_get_details"), extractRate],
+            execute: extractValue(overview.message_stats, "deliver_get_details"),
             type: D.valueType.RATE
         },
         {
@@ -275,7 +267,7 @@ function fillConfig() {
             //The rate of confirmed messages per second.
             uid: "confirm_details",
             label: "Messages confirmed per second",
-            execute: [extractValue(overview.message_stats, "confirm_details"), extractRate],
+            execute: extractValue(overview.message_stats, "confirm_details"),
             type: D.valueType.RATE
         },
         {
@@ -288,7 +280,7 @@ function fillConfig() {
             //The rate of messages (per second) delivered to clients and acknowledged.
             uid: "ack_details",
             label: "Messages acknowledged per second",
-            execute: [extractValue(overview.message_stats, "ack_details"), extractRate],
+            execute: extractValue(overview.message_stats, "ack_details"),
             type: D.valueType.RATE
         },
         {
@@ -348,7 +340,7 @@ function fillConfig() {
             unit: "B"
         },
         {
-            //Checks if there are classic mirrored queues without synchronized mirrors online
+            //Checks if there are classic mirrored queues without synchronized mirrors online 
             uid: "mirror_sync",
             label: "Healthcheck: classic mirrored queues without synchronized mirrors online",
             execute: extractValue(healthcheck.mirror_sync, "status")
@@ -456,8 +448,8 @@ function fillConfig() {
 }
 
 /**
-*
-* @param {[object]} data array of objects
+* 
+* @param {[object]} data array of objects 
 * @returns list of domotz variables
 */
 function extract(data) {
@@ -480,7 +472,7 @@ function extract(data) {
 
 // load overview, helthcheck and exchanges informations
 function loadData() {
-    return Promise.all([
+    return D.q.all([
         getOverview(),
         getHealthcheck(),
         getHealthcheckMirrorSync(),
@@ -503,10 +495,6 @@ function validate() {
     loadData()
         .then(function () {
             D.success();
-        })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
@@ -531,3 +519,4 @@ function get_status() {
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
+

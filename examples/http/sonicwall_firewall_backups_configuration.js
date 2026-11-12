@@ -9,8 +9,6 @@
  *
  * Notes:
  * - If 2FA fails, script falls back to legacy /auth flow using session cookies
- * - If /auth returns a bearer token (SonicOS bearer token session check, default from 7.3.4-7015), the
- *   export is requested with that token
  * - Domotz marks all params as required, so for no-2FA use, enter a space in TOTP seed
  */
 
@@ -82,6 +80,7 @@ function generateTotpCode(secret) {
 }
 
 function attemptTfaLogin() {
+    var d = D.q.defer();
     var username = D.device.username();
     var password = D.device.password();
     var totp = generateTotpCode(totpSeed);
@@ -105,50 +104,28 @@ function attemptTfaLogin() {
     };
 
     console.log("Attempting login via /tfa...");
-    return new Promise(function (resolve, reject) {
-        D.device.http.post(tfaPayload, function (err, res, body) {
-            if (!err && res && res.statusCode === 200) {
-                try {
-                    var parsed = JSON.parse(body);
-                    var token = parsed.status && parsed.status.info && parsed.status.info[0].bearer_token;
-                    if (token) {
-                        console.log("Bearer token acquired.");
-                        resolve({ type: "bearer", value: token });
-                        return;
-                    }
-                } catch (e) {
-                    console.warn("TFA response parse failed.");
+    D.device.http.post(tfaPayload, function (err, res, body) {
+        if (!err && res && res.statusCode === 200) {
+            try {
+                var parsed = JSON.parse(body);
+                var token = parsed.status && parsed.status.info && parsed.status.info[0].bearer_token;
+                if (token) {
+                    console.log("Bearer token acquired.");
+                    d.resolve({ type: "bearer", value: token });
+                    return;
                 }
-            }
-            reject("TFA failed");
-        });
-    });
-}
-
-/**
- * Reads the bearer token from a SonicOS login reply.
- * SonicOS can require a bearer token on every API request after login ("Non-GUI Management Login Bearer
- * Token Session Check", on by default from SonicOS 7.3.4-7015). When it does, the /auth reply carries the
- * token in status.info[].bearer_token; a firewall with the check off returns none.
- * @param {string|object} body The login reply
- * @returns {string|null} The token, or null when the firewall did not return one
- */
-function readBearerToken(body) {
-    try {
-        var reply = typeof body === "string" ? JSON.parse(body) : body;
-        var info = reply && reply.status && reply.status.info;
-        for (var i = 0; info && i < info.length; i++) {
-            if (info[i] && info[i].bearer_token) {
-                return info[i].bearer_token;
+            } catch (e) {
+                console.warn("TFA response parse failed.");
             }
         }
-    } catch (e) {
-        console.warn("The login reply is not JSON, no bearer token read");
-    }
-    return null;
+        d.reject("TFA failed");
+    });
+
+    return d.promise;
 }
 
 function fallbackToLegacyAuth() {
+    var d = D.q.defer();
     var authOptions = {
         url: authPath,
         protocol: "https",
@@ -167,18 +144,17 @@ function fallbackToLegacyAuth() {
     };
 
     console.log("Attempting fallback login via /auth...");
-    return new Promise(function (resolve, reject) {
-        D.device.http.post(authOptions, function (err, res, body) {
-            if (!err && res && res.statusCode === 200) {
-                var token = readBearerToken(body);
-                console.log("Fallback login succeeded" + (token ? ", the firewall returned a bearer token." : "."));
-                resolve({ type: "cookie", jar: true, bearer: token });
-            } else {
-                console.error("Fallback login failed.");
-                reject(D.errorType.AUTHENTICATION_ERROR);
-            }
-        });
+    D.device.http.post(authOptions, function (err, res) {
+        if (!err && res && res.statusCode === 200) {
+            console.log("Fallback login succeeded.");
+            d.resolve({ type: "cookie", jar: true });
+        } else {
+            console.error("Fallback login failed.");
+            d.reject(D.errorType.AUTHENTICATION_ERROR);
+        }
     });
+
+    return d.promise;
 }
 
 function loginAndGetToken() {
@@ -187,13 +163,9 @@ function loginAndGetToken() {
     });
 }
 
-/**
- * Sends one export request, with a bearer token or with the session cookie.
- * @param {string|null} token The bearer token, or null for the session cookie
- * @param {boolean} [retryOn401] True when a 401 will be retried, so it is logged as a warning
- * @returns {Promise} Resolves with the formatted configuration; rejects with { status } or { parseError }
- */
-function requestCliConfig(token, retryOn401) {
+function getCliConfig(authMode) {
+    var d = D.q.defer();
+
     var request = {
         url: cliExportPath,
         protocol: "https",
@@ -206,11 +178,9 @@ function requestCliConfig(token, retryOn401) {
         encoding: null
     };
 
-    if (token) {
-        request.headers.Authorization = "Bearer " + token;
+    if (authMode.type === "bearer") {
+        request.headers.Authorization = "Bearer " + authMode.value;
     } else {
-        // The session cookie authenticates this request. The auth object is kept as it has always been
-        // sent to the sandbox, which only honours auth: "basic" and drops any other value.
         request.jar = true;
         request.auth = {
             user: D.device.username(),
@@ -219,68 +189,24 @@ function requestCliConfig(token, retryOn401) {
         };
     }
 
-    return new Promise(function (resolve, reject) {
-        D.device.http.get(request, function (err, res, body) {
-            if (err || !res || res.statusCode !== 200) {
-                var reply = "";
-                try {
-                    reply = body ? body.toString("utf8").replace(/\s+/g, " ").slice(0, 300) : "";
-                } catch (e) {
-                    reply = "";
-                }
-                var message = "Fetch failed (" + (token ? "bearer token" : "session cookie") + "): " + (err || res.statusCode) + (reply ? " | reply: " + reply : "");
-                if (retryOn401 && res && res.statusCode === 401) {
-                    console.warn(message);
-                } else {
-                    console.error(message);
-                }
-                reject({ status: res ? res.statusCode : null });
-                return;
-            }
-
-            try {
-                var bodyText = body.toString("utf8");
-                resolve(prettifyJSON(bodyText));
-            } catch (e) {
-                console.error("JSON parse failed: " + e);
-                reject({ parseError: true });
-            }
-        });
-    });
-}
-
-/**
- * Maps a failed export to the error reported to Domotz: a refused login (401, 403) is an authentication
- * error, an unreadable configuration a generic error, anything else an unavailable resource.
- */
-function toDriverError(failure) {
-    if (failure && failure.parseError) {
-        return D.errorType.GENERIC_ERROR;
-    }
-    if (failure && (failure.status === 401 || failure.status === 403)) {
-        return D.errorType.AUTHENTICATION_ERROR;
-    }
-    return D.errorType.RESOURCE_UNAVAILABLE;
-}
-
-function getCliConfig(authMode) {
-    var token = authMode.type === "bearer" ? authMode.value : authMode.bearer;
-    var canRetry = authMode.type === "cookie" && !!token;
-
     console.log("Fetching CLI config...");
-    return requestCliConfig(token || null, canRetry)
-        .catch(function (failure) {
-            // A token from /auth that the firewall refuses: send the request once more the way it was
-            // sent before the bearer token session check existed (session cookie).
-            if (canRetry && failure && failure.status === 401) {
-                console.warn("The firewall refused the bearer token (401), retrying with the session cookie");
-                return requestCliConfig(null);
-            }
-            throw failure;
-        })
-        .catch(function (failure) {
-            throw toDriverError(failure);
-        });
+    D.device.http.get(request, function (err, res, body) {
+        if (err || !res || res.statusCode !== 200) {
+            console.error("Fetch failed: " + (err || res.statusCode));
+            d.reject(D.errorType.RESOURCE_UNAVAILABLE);
+            return;
+        }
+
+        try {
+            var bodyText = body.toString("utf8");
+            d.resolve(prettifyJSON(bodyText));
+        } catch (e) {
+            console.error("JSON parse failed: " + e);
+            d.reject(D.errorType.GENERIC_ERROR);
+        }
+    });
+
+    return d.promise;
 }
 
 /**
@@ -327,7 +253,7 @@ function backup() {
                     "\\n\\s*\"pop_pass\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"client_password\"\\s*:\\s*\"6,.*\",?",
                     "\\n\\s*\"identity_dn_password\"\\s*:\\s*\"6,.*\",?",
-                    "\\n\\s*\"admin_user_password\"\\s*:\\s*\"6,.*\",?"
+                    "\\n\\s*\"admin_user_password\"\\s*:\\s*\"6,.*\",?",
                 ]
             }));
         })
@@ -340,7 +266,7 @@ function prettifyJSON(json) {
     const normalized = json.replaceAll(/(?<!")(\b0x(\d|[a-f])+\b)(?!")/gi, function (res) {
         return '"' + res + '"';
     });
-    return JSON.stringify(JSON.parse(normalized), null, 2).replaceAll(/"0x[0-9a-fA-F]+"/gi, function (res) {
-        return res.replaceAll('"', "");
-    });
+    return JSON.stringify(JSON.parse(normalized), null, 2).replaceAll(/"0x[0-9a-fA-F]+"/gi, function(res){
+        return res.replaceAll('"', '');
+    })
 }

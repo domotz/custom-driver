@@ -1,5 +1,5 @@
 /**
- * This driver retrieves information about AWS EC2 instances and attached EBS volumes using the DescribeVolumes API action.
+ * This driver retrieves information about AWS EC2 instances and attached EBS volumes using the DescribeVolumes API action. 
  * Uses HTTPS to communicate with the API, and computes hash-based message authentication codes (HMAC) using the SHA256 algorithm to sign requests.
  *
  * Communication protocol is https
@@ -21,6 +21,7 @@ var instanceId = "ADD_INSTANCE_ID";
 var monitoringList, volumes;
 var vars = [];
 var volumesList = [];
+var attachments = [];
 
 function sign(key, message) {
     var hex = hmac("sha256", key, message);
@@ -42,14 +43,18 @@ function prepareParams(params) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
         }
+        else {
+            result.push(prepareObject(key, params[key]));
+        }
     });
     return result.join("&");
 }
 
 /**
- * @returns  HTTP GET request to an AWS EC2 API to retrieve information about DB instances.
+ * @returns  HTTP GET request to an AWS EC2 API to retrieve information about DB instances. 
  */
 function httpGet(params) {
+    var d = D.q.defer();
     var service = "ec2";
     var data = "";
     var method = "GET";
@@ -68,38 +73,37 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    return new Promise(function (resolve) {
-        device.http.get({
-            url: canonicalUri + "?" + params,
-            protocol: "https",
-            headers: {
-                "x-amz-date": amzdate,
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Content-Encoding": "amz-1.0",
-                "Authorization": auth
-            }
-        },
-        function (err, response, body) {
-            if (err) {
-                return D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode === 401 || response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            resolve(body);
-        });
+    device.http.get({
+        url: canonicalUri + "?" + params,
+        protocol: "https",
+        headers: {
+            "x-amz-date": amzdate,
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Content-Encoding": "amz-1.0",
+            "Authorization": auth
+        }
+    },
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(body);
     });
+    return d.promise;
 }
 
 /**
- * @returns promise for http response containing EC2 metrics
+ * @returns promise for http response containing EC2 metrics 
  */
 function getVolumesData(nextToken) {
     var payload = {};
@@ -111,13 +115,11 @@ function getVolumesData(nextToken) {
     payload["NextToken"] = nextToken;
     return httpGet(prepareParams(payload))
         .then(function (data) {
-            // The HTML parser does not close self-closing XML tags (e.g. <snapshotId/> on a blank volume): expand them first.
-            var $ = D.htmlParse(data.replace(/<([A-Za-z][\w.-]*)\s*\/>/g, "<$1></$1>"));
+            var $ = D.htmlParse(data);
             volumes = $("DescribeVolumesResponse > volumeSet > item").map(function (index, element) {
                 var volume = {};
                 $(element).children().each(function (index, child) {
                     if (child.tagName == "attachmentset") {
-                        var attachments = [];
                         $(child).children("item").each(function (index, attachmentElement) {
                             var attachment = {};
                             $(attachmentElement).children().each(function (index, attachmentChild) {
@@ -131,11 +133,14 @@ function getVolumesData(nextToken) {
                     }
                 });
                 return volume;
-            }).get();
+            });
             volumesList = volumesList.concat(volumes);
             nextToken = $("DescribeVolumesResponse > nextToken").text();
             if (nextToken) {
-                return getVolumesData(nextToken);
+                return getVolumesData(instanceId, nextToken)
+                    .then(function (volumeList) {
+                        return volumes.concat(volumeList);
+                    });
             }
             return volumesList;
         });
@@ -146,7 +151,7 @@ function getVolumesData(nextToken) {
  */
 function extractVolumes(property) {
     return function () {
-        return volumesList.map(function (volume) { return volume[property]; });
+        return volumesList.map(function (volume) { return volume[0][property]; });
     };
 }
 
@@ -157,7 +162,7 @@ function fillConfig() {
             //The state of the volume.
             uid: "status",
             label: "Status",
-            execute: extractVolumes("status")
+            execute: extractVolumes("status"),
         },
         {
             //The device name specified in the block device mapping.
@@ -165,7 +170,7 @@ function fillConfig() {
             label: "Device",
             execute: function () {
                 return volumesList.map(function (volume) {
-                    return volume.attachmentset[0].device;
+                    return volume[0].attachmentset[0].device;
                 });
             }
         },
@@ -181,26 +186,26 @@ function fillConfig() {
             label: "Attachment time",
             execute: function () {
                 return volumesList.map(function (volume) {
-                    return volume.attachmentset[0].attachtime;
+                    return volume[0].attachmentset[0].attachtime;
                 });
             }
         },
         {
-            //The attachment state of the volume.
+            //The attachment state of the volume. 
             uid: "attachment_status",
             label: "Attachment state",
             execute: function () {
                 return volumesList.map(function (volume) {
-                    return volume.attachmentset[0].status;
+                    return volume[0].attachmentset[0].status;
                 });
 
             }
-        }
+        },
     ];
 }
 
 /**
-* @param {[object]} data array of objects
+* @param {[object]} data array of objects 
 * @returns list of domotz variables
 */
 function extract(data) {

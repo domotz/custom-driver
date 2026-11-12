@@ -1,30 +1,29 @@
-/**
+/** 
  * Name: Linux Updates Count (apt-based)
  * Description: Retrieve the count of available updates on a Linux host
- *
+ * 
  * Communication protocol is SSH
- *
+ * 
  * Tested on Linux: Ubuntu 22.04.3 LTS"
- *
+ * 
  * Requires:
  *    - requires apt
  *    - requires grep
- *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL
- *
+ *    - PLEASE NOTE: it requires to be run as a user from the sudoers group with the following settings: $username  ALL =  NOPASSWD : ALL 
+ * 
  * Creates custom driver variables for the count of available updates for specified packages
- *
+ * 
 **/
 
-var packagesFilter = D.getParameter("packagesFilter");
-// apt-get failing (or missing, on non-Debian hosts) exits 1 before grep runs, so it maps to RESOURCE_UNAVAILABLE
-var cmdCountUpdates = "out=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade) || exit 1; printf '%s\\n' \"$out\" | /bin/grep ^Inst";
+var packagesFilter = D.getParameter("packagesFilter")
+var cmdCountUpdates = "apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade ";
 
 if (packagesFilter.length > 0) {
     var packages = packagesFilter.join("\\|");
-    cmdCountUpdates += " | grep -E " + packages;
+    cmdCountUpdates += "| /bin/grep ^Inst | grep -E " + packages;
+} else {
+    cmdCountUpdates += "| /bin/grep ^Inst";
 }
-// grep exits 1 when nothing matches, i.e. on an up-to-date host: that is a success with no updates
-cmdCountUpdates += "; test $? -le 1";
 
 // SSH options when running the commands
 var sshConfig = {
@@ -43,17 +42,17 @@ function checkSshError(err) {
 }
 
 function executeCommand(command) {
+    var d = D.q.defer();
     sshConfig.command = command;
-    return new Promise(function (resolve, reject) {
-        D.device.sendSSHCommand(sshConfig, function (out, err) {
-            if (err) {
-                checkSshError(err);
-                reject(err);
-            } else {
-                resolve(out);
-            }
-        });
+    D.device.sendSSHCommand(sshConfig, function (out, err) {
+        if (err) {
+            checkSshError(err);
+            d.reject(err);
+        } else {
+            d.resolve(out);
+        }
     });
+    return d.promise;
 }
 
 /**

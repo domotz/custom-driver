@@ -1,22 +1,23 @@
+
 /**
- * Domotz Custom Driver
+ * Domotz Custom Driver 
  * Name: SSL Certificate Expiration check
  * Description: This script checks the SSL certificate status for a list of target servers specified in the 'targetServerHost' and 'targetServerPort' parameters.
- *
+ * 
  * Communication protocol is SSH
- *
+ * 
  * Tested on Linux Distributions:
  *      - Ubuntu 20.04 LTS
  * Shell Version:
  *      - Bash 5.1.16
- *
+ * 
  * Return a table containing the following columns for each server:
  *      - Issuer
  *      - Expiry
  *      - Remaining days
  *      - Is Valid
  *      - Authorization error
- *
+ * 
  **/
 
 var table = D.createTable(
@@ -30,38 +31,39 @@ var table = D.createTable(
     ]
 );
 
-var serversToCheck = D.getParameter("serversToCheck");
+var serversToCheck = D.getParameter('serversToCheck');
 
 var sshConfig = {
-    timeout: 10000
+    timeout: 10000,
 };
 
 function checkSshError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 function executeCommand(host) {
-    var command = "echo | openssl s_client -servername " + host + " -connect " + host + " 2>/dev/null | openssl x509 -enddate -issuer -noout";
+    var d = D.q.defer();
+    var command = 'echo | openssl s_client -servername ' + host + ' -connect ' + host + ' 2>/dev/null | openssl x509 -enddate -issuer -noout';
     sshConfig.command = command;
-    return new Promise(function (resolve) {
-        D.device.sendSSHCommand(sshConfig, function (output, error) {
-            if (error) {
-                console.error("Command execution error: " + error);
-                resolve({ error: error.message });
-            } else {
-                resolve(output);
-            }
-        });
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            console.error("Command execution error: " + error);
+            d.resolve({error: error.message});
+        } else {
+            d.resolve(output);
+        }
     });
+    return d.promise;
 }
 
+
 function parseValidateOutput(output) {
-    for (var i = 0; i < output.length; i++) {
-        if (!output[i].error) {
+    for(var i = 0; i<output.length; i++){
+        if(!output[i].error){
             console.info("Validation successful");
             return D.success();
         }
@@ -80,7 +82,7 @@ function validate() {
         var host = serversToCheck[i];
         promises.push(executeCommand(host));
     }
-    Promise.all(promises)
+    D.q.all(promises)
         .then(parseValidateOutput)
         .catch(checkSshError);
 }
@@ -91,29 +93,29 @@ function validate() {
  * @documentation Retrieves and stores SSL certificate information for the specified target servers.
  */
 function get_status() {
-    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
-    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     var promises = serversToCheck.map(function (host) {
         return executeCommand(host)
             .then(function (certificateInfo) {
                 var authError = "-";
-                var recordId = host.replace(recordIdSanitizationRegex, "").replace(":", "_").slice(0, 50);
-                if (certificateInfo.error) {
+                var recordId = host.replace(recordIdSanitizationRegex, '').replace(":", "_").slice(0, 50);
+                if(certificateInfo.error){
                     authError = certificateInfo.error;
                     table.insertRecord(
-                        recordId, ["N/A", "N/A", "N/A", "N/A", authError]
+                        recordId, ['N/A', 'N/A', 'N/A', 'N/A' , authError ]
                     );
-                } else {
+                }else{
                     var issuerRegEx = certificateInfo.match(/O = ([^,]+)/);
-                    var issuer = issuerRegEx ? issuerRegEx[1] : "-";
+                    var issuer = issuerRegEx ? issuerRegEx[1] : '-';
                     var expiryRegEx = certificateInfo.match(/notAfter=(.+)/);
-                    var expiry = expiryRegEx ? expiryRegEx[1] : "-";
+                    var expiry = expiryRegEx ? expiryRegEx[1] : '-';
                     var expiryDate = new Date(expiry);
                     var currentDate = new Date();
                     var remainingDays = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
                     var isValid = remainingDays > 0;
                     table.insertRecord(
-                        recordId, [issuer, expiry, remainingDays, isValid, authError]
+                        recordId, [issuer, expiry, remainingDays, isValid , authError ]
                     );
                 }
             })
@@ -122,7 +124,7 @@ function get_status() {
             });
     });
 
-    Promise.all(promises)
+    D.q.all(promises)
         .then(function () {
             D.success(table);
         })

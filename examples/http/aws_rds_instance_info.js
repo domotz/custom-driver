@@ -37,15 +37,19 @@ function prepareParams(params) {
         if (typeof params[key] !== "object") {
             result.push(key + "=" + encodeURIComponent(params[key]));
         }
+        else {
+            result.push(prepareObject(key, params[key]));
+        }
     });
     return result.join("&");
 }
 
 /**
- * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
- * @returns  HTTP GET request to an AWS RDS API to retrieve information about DB instances.
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
+ * @returns  HTTP GET request to an AWS RDS API to retrieve information about DB instances. 
  */
 function httpGet(params) {
+    var d = D.q.defer();
     var service = "rds";
     var method = "GET";
     var data = "";
@@ -64,34 +68,33 @@ function httpGet(params) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    return new Promise(function (resolve) {
-        device.http.get({
-            url: canonicalUri + "?" + params,
-            protocol: "https",
-            headers: {
-                "x-amz-date": amzdate,
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Content-Encoding": "amz-1.0",
-                "Authorization": auth
-            }
+    device.http.get({
+        url: canonicalUri + "?" + params,
+        protocol: "https",
+        headers: {
+            "x-amz-date": amzdate,
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Content-Encoding": "amz-1.0",
+            "Authorization": auth
         },
-        function (err, response, body) {
-            if (err) {
-                return D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode === 401 || response.statusCode === 403) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            resolve(JSON.parse(body));
-        });
+    },
+    function (err, response, body) {
+        if (err) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(JSON.parse(body));
     });
+    return d.promise;
 }
 
 /**
@@ -148,7 +151,7 @@ function fillConfig() {
             //Indicates the database engine version.
             uid: "version",
             label: "Engine version",
-            execute: extractValueByKey(instanceInfo, "EngineVersion")
+            execute: extractValueByKey(instanceInfo, "EngineVersion"),
         },
         {
             //The status of a read replica. If the instance isn't a read replica, this is blank.
@@ -156,9 +159,9 @@ function fillConfig() {
             label: "Read replica: State",
             execute: function () {
                 var data = instanceInfo.filter(function (item) { return item; })[0].StatusInfos;
-                if (data) {
-                    var resultat = data.filter(function (obj) { return obj; })[0];
-                    return resultat ? resultat.Normal : null;
+                if (data !== null) {
+                    var resultat = data.filter(function (obj) { return obj; }).Normal;
+                    return resultat;
                 }
             }
         },
@@ -168,9 +171,9 @@ function fillConfig() {
             label: "Read replica: Status",
             execute: function () {
                 var data = instanceInfo.filter(function (item) { return item; })[0].StatusInfos;
-                if (data) {
-                    var resultat = data.filter(function (obj) { return obj; })[0];
-                    return resultat ? resultat.Status : null;
+                if (data !== null) {
+                    var resultat = data.filter(function (obj) { return obj; }).Status;
+                    return resultat;
                 }
             }
         },
@@ -192,8 +195,7 @@ function fillConfig() {
             uid: "max_allocated",
             label: "Storage: Max allocated",
             execute: function () {
-                var maxAllocated = extractValueByKey(instanceInfo, "MaxAllocatedStorage")();
-                return (typeof maxAllocated === "undefined") ? -1 : maxAllocated;
+                return (typeof instanceInfo.MaxAllocatedStorage === "undefined") ? -1 : instanceInfo.MaxAllocatedStorage;
             },
             unit: "GiB"
         },
@@ -202,12 +204,12 @@ function fillConfig() {
             uid: "storage_type",
             label: "Storage type",
             execute: extractValueByKey(instanceInfo, "StorageType")
-        }
+        },
     ];
 }
 
 /**
- * @param {[object]} data array of objects
+ * @param {[object]} data array of objects 
  *  @returns list of domotz variables
  */
 function extract(data) {

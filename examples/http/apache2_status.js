@@ -31,25 +31,25 @@ var parametersConfig = [
         // Service version
         uid: "version",
         label: "Version",
-        path: "json.ServerVersion"
+        path: "json.ServerVersion",
     },
     {
         // Service Multi-Processing Module
         uid: "server_mpm",
         label: "ServerMPM",
-        path: "json.ServerMPM"
+        path: "json.ServerMPM",
     },
     {
         // Server Built
         uid: "server_built",
         label: "Server Built",
-        path: "json['Server Built']"
+        path: "json['Server Built']",
     },
     {
         // Service Restart Time
         uid: "restart_time",
         label: "Restart Time",
-        path: "json.RestartTime"
+        path: "json.RestartTime",
     },
     {
         // CPU Load 1 minute
@@ -165,6 +165,12 @@ var parametersConfig = [
         postProcess: toFloat
     },
     {
+        // Service version
+        uid: "version",
+        label: "Version",
+        path: "json.ServerVersion",
+    },
+    {
         // Number of workers in closing state
         uid: "workers_closing_connection",
         label: "Workers closing connection",
@@ -233,30 +239,34 @@ var parametersConfig = [
         label: "Workers waiting for connection",
         path: "json.Workers.waiting",
         postProcess: toFloat
-    }
+    },
+
 
 ];
 
+
 /**
- *
+ * 
  * @returns Promise wait for server-status page to be loaded
  */
 function getApache2Status() {
-    return new Promise(function (resolve) {
-        D.device.http.get(apacheHttpParams, function (error, response, body) {
-            if (error) {
-                return failure(error);
-            }
-            if (response.statusCode == 401) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            resolve(body);
-        });
+    var d = D.q.defer();
+    D.device.http.get(apacheHttpParams, function (error, response, body) {
+        if (error) {
+            failure(error);
+        }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        d.resolve(body);
     });
+
+    return d.promise;
 }
+
 
 function convertToJson(value) {
     // Convert Apache status to JSON

@@ -1,16 +1,16 @@
 /**
- * Domotz Custom Driver
+ * Domotz Custom Driver 
  * Name: Sonicwall Security Services Status and License
  * Description: Monitors the operational and licensing status of diverse security services on a SonicWALL device
- *
+ * 
  * Communication protocol is HTTPS
- *
+ * 
  * Tested on SonicWALL NSv 270 SonicOS version 7.0.1
  *
  * Creates a Custom Driver Table with the following columns:
  *  - Status: The operational status of the security services
  *  - Licensed: The licensing status of the security services
- *
+ * 
  **/
 
 // The variable "servicesToMonitor" is used to specify the desired services to monitor,
@@ -22,73 +22,16 @@ var servicesToMonitor = D.getParameter("servicesToMonitor");
 var table = D.createTable(
     "Security services status and license", [
         { label: "Status", valueType: D.valueType.STRING },
-        { label: "Licensed", valueType: D.valueType.STRING }
+        { label: "Licensed", valueType: D.valueType.STRING },
     ]
 );
 
-// SonicOS can require a bearer token on every API request after login ("Non-GUI Management Login Bearer
-// Token Session Check", on by default from SonicOS 7.3.4-7015). When it does, the login reply carries the
-// token in status.info[].bearer_token; a firewall with the check off returns none.
-var bearerToken = null;
-
-/**
- * Reads the bearer token from the login reply.
- * @param {string|object} body The login reply
- * @returns {string|null} The token, or null when the firewall did not return one
- */
-function readBearerToken(body) {
-    try {
-        var reply = typeof body === "string" ? JSON.parse(body) : body;
-        var info = reply && reply.status && reply.status.info;
-        for (var i = 0; info && i < info.length; i++) {
-            if (info[i] && info[i].bearer_token) {
-                return info[i].bearer_token;
-            }
-        }
-    } catch (e) {
-        console.warn("The login reply is not JSON, no bearer token read");
-    }
-    return null;
-}
-
-/**
- * Sends a GET to the SonicOS API. When the login returned a bearer token the request carries it instead of
- * the session cookie; if the firewall refuses the token (401) the request is sent once more with the cookie.
- * @param {object} config The HTTP configuration
- * @param {function} callback Called with (error, response, body)
- */
-function authenticatedGet(config, callback) {
-    if (!bearerToken) {
-        D.device.http.get(config, callback);
-        return;
-    }
-    var withToken = {};
-    for (var key in config) {
-        if (key !== "jar") {
-            withToken[key] = config[key];
-        }
-    }
-    withToken.headers = {};
-    for (var name in config.headers) {
-        withToken.headers[name] = config.headers[name];
-    }
-    withToken.headers.Authorization = "Bearer " + bearerToken;
-    D.device.http.get(withToken, function (error, response, body) {
-        if (!error && response && response.statusCode == 401) {
-            console.warn("The firewall refused the bearer token (401), retrying with the session cookie");
-            D.device.http.get(config, callback);
-            return;
-        }
-        callback(error, response, body);
-    });
-}
-
 //Processes the HTTP response and handles errors
-function processResponse(resolve, reject) {
+function processResponse(d) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            return D.failure(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -105,7 +48,7 @@ function processResponse(resolve, reject) {
                 }
             }
         }
-        resolve(JSON.parse(body));
+        d.resolve(JSON.parse(body));
     };
 }
 
@@ -114,6 +57,7 @@ function processResponse(resolve, reject) {
  * @returns A promise that resolves on successful login.
  */
 function login() {
+    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/auth",
         username: D.device.username(),
@@ -123,31 +67,27 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    return new Promise(function (resolve, reject) {
-        D.device.http.post(config, processResponse(function (body) {
-            bearerToken = readBearerToken(body);
-            resolve(body);
-        }, reject));
-    });
+    D.device.http.post(config, processResponse(d));
+    return d.promise;
 }
 
 // Retrieves security services data from the SonicWALL device.
 function getSecurityServices() {
+    var d = D.q.defer();
     var config = {
         url: "/api/sonicos/dynamic-file/getDashboardData.json",
         protocol: "https",
         jar: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
     };
-    return new Promise(function (resolve, reject) {
-        authenticatedGet(config, processResponse(resolve, reject));
-    });
+    D.device.http.get(config, processResponse(d));
+    return d.promise;
 }
 
-function sanitize(output) {
-    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
-    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+function sanitize(output){
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
+    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
 }
 
 // Extracts data from the retrieved security services data and creates Custom Driver variables.
@@ -160,7 +100,7 @@ function extractData(data) {
         "botnet": "Botnet Filter",
         "appctrl": "Application Control",
         "dpissl": "Deep Packet Inspection SSL",
-        "dpissh": "Deep Packet Inspection SSH",
+        "dpissh": "Deep Packet Inspection SSH", 
         "cfs": "Content Filtering",
         "cass": "Anti-Spam Service",
         "cees": "Endpoint security Client Capture",
@@ -170,8 +110,8 @@ function extractData(data) {
     for (var serviceId in availableServices) {
         var variableId = serviceId;
         var variableName = availableServices[serviceId];
-        if (servicesToMonitor[0].toLowerCase() == "all" || servicesToMonitor.some(function (service) { return service.toLowerCase() === variableId.toLowerCase(); })) {
-
+        if (servicesToMonitor[0].toLowerCase() == "all" || servicesToMonitor.some(function(service) { return service.toLowerCase() === variableId.toLowerCase(); })) {           
+            
             if (variableId in data) {
                 var status = data[variableId]["status"];
                 var serviceStatus = status ? "On" : "Off";
@@ -182,7 +122,7 @@ function extractData(data) {
                     serviceStatus,
                     licenseStatus
                 ]);
-
+                    
             } else {
                 console.error("Failed to retrieve data for " + variableId);
             }
@@ -192,10 +132,10 @@ function extractData(data) {
 }
 
 /**
- * @label Validate Connection
+ * @label Validate Connection 
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate() {
+function validate(){
     login()
         .then(getSecurityServices)
         .then(function (response) {

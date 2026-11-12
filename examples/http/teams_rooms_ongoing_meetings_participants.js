@@ -25,66 +25,66 @@
  *    - Absent: The number of attendees who have not responded or are absent
  **/
 
-const tenantId = D.getParameter("tenantId");
-const clientId = D.getParameter("clientId");
-const clientSecret = D.getParameter("clientSecret");
+const tenantId = D.getParameter('tenantId')
+const clientId = D.getParameter('clientId')
+const clientSecret = D.getParameter('clientSecret')
 
-const microsoftLoginService = D.createExternalDevice("login.microsoftonline.com");
-const teamsManagementService = D.createExternalDevice("graph.microsoft.com");
+const microsoftLoginService = D.createExternalDevice('login.microsoftonline.com')
+const teamsManagementService = D.createExternalDevice('graph.microsoft.com')
 
-let accessToken;
-let roomsTable;
-let email;
+let accessToken
+let roomsTable
+let email
 
 // Extractors for Room Information
 const roomInfoExtractors = [{
-    key: "id", extract: function (room) {
-        return sanitize(room.id);
+    key: 'id', extract: function (room) {
+        return sanitize(room.id)
     }
 }, {
-    label: "Email Address", valueType: D.valueType.STRING, key: "emailAddress", extract: function (room) {
-        return extractByKey(room, "emailAddress");
+    label: 'Email Address', valueType: D.valueType.STRING, key: 'emailAddress', extract: function (room) {
+        return extractByKey(room, 'emailAddress')
     }
 }, {
-    label: "Room Name", valueType: D.valueType.STRING, key: "displayName", extract: function (room) {
-        return extractByKey(room, "displayName");
+    label: 'Room Name', valueType: D.valueType.STRING, key: 'displayName', extract: function (room) {
+        return extractByKey(room, 'displayName')
     }
-}];
+}]
 
 // Extractors for ongoing meeting information
 const ongoingMeetingInfoExtractors = [{
-    label: "Total Attendees", valueType: D.valueType.STRING, key: "attendees", extract: function (meeting) {
-        return countAttendees(meeting.attendees).total;
+    label: 'Total Attendees', valueType: D.valueType.STRING, key: 'attendees', extract: function (meeting) {
+        return countAttendees(meeting.attendees).total
     }
 }, {
-    label: "Required Attendees", valueType: D.valueType.STRING, key: "required", extract: function (meeting) {
-        return countAttendees(meeting.attendees).required;
+    label: 'Required Attendees', valueType: D.valueType.STRING, key: 'required', extract: function (meeting) {
+        return countAttendees(meeting.attendees).required
     }
 }, {
-    label: "Optional Attendees", valueType: D.valueType.STRING, key: "optional", extract: function (meeting) {
-        return countAttendees(meeting.attendees).optional;
+    label: 'Optional Attendees', valueType: D.valueType.STRING, key: 'optional', extract: function (meeting) {
+        return countAttendees(meeting.attendees).optional
     }
 }, {
-    label: "Resource Attendees", valueType: D.valueType.STRING, key: "resource", extract: function (meeting) {
-        return countAttendees(meeting.attendees).resource;
+    label: 'Resource Attendees', valueType: D.valueType.STRING, key: 'resource', extract: function (meeting) {
+        return countAttendees(meeting.attendees).resource
     }
 }, {
-    label: "Accepted", valueType: D.valueType.STRING, key: "accepted", extract: function (meeting) {
-        return countAttendees(meeting.attendees).accepted;
+    label: 'Accepted', valueType: D.valueType.STRING, key: 'accepted', extract: function (meeting) {
+        return countAttendees(meeting.attendees).accepted
     }
 }, {
-    label: "Tentatively Accepted", valueType: D.valueType.STRING, key: "tentativelyAccepted", extract: function (meeting) {
-        return countAttendees(meeting.attendees).tentativelyAccepted;
+    label: 'Tentatively Accepted', valueType: D.valueType.STRING, key: 'tentativelyAccepted', extract: function (meeting) {
+        return countAttendees(meeting.attendees).tentativelyAccepted
     }
 }, {
-    label: "Declined", valueType: D.valueType.STRING, key: "declined", extract: function (meeting) {
-        return countAttendees(meeting.attendees).declined;
+    label: 'Declined', valueType: D.valueType.STRING, key: 'declined', extract: function (meeting) {
+        return countAttendees(meeting.attendees).declined
     }
 }, {
-    label: "Absent", valueType: D.valueType.STRING, key: "none", extract: function (meeting) {
-        return countAttendees(meeting.attendees).none;
+    label: 'Absent', valueType: D.valueType.STRING, key: 'none', extract: function (meeting) {
+        return countAttendees(meeting.attendees).none
     }
-}];
+}]
 
 /**
  * Combines room and availability extractors into a single list.
@@ -92,8 +92,8 @@ const ongoingMeetingInfoExtractors = [{
  */
 function generateRoomProperties() {
     return roomInfoExtractors.concat(ongoingMeetingInfoExtractors).filter(function (result) {
-        return result.label;
-    });
+        return result.label
+    })
 }
 
 /**
@@ -101,13 +101,14 @@ function generateRoomProperties() {
  * @param {Array} roomProperties - The properties to define the structure of the table.
  */
 function createRoomsTable(roomProperties) {
-    var tableHeaders = roomProperties.map(function (item) {return { label: item.label };});
+    var tableHeaders = roomProperties.map(function(item) {return { label: item.label }});
 
-    roomsTable = D.createTable("Microsoft Teams Rooms Meeting Participants", tableHeaders);
+    roomsTable = D.createTable('Microsoft Teams Rooms Meeting Participants', tableHeaders)
 }
 
-const roomProperties = generateRoomProperties(); // Generate the list of properties to display
-createRoomsTable(roomProperties); // Create the table with the defined properties
+const roomProperties= generateRoomProperties() // Generate the list of properties to display
+createRoomsTable(roomProperties) // Create the table with the defined properties
+
 
 /**
  * Extracts a specific property from the room object by key.
@@ -116,7 +117,7 @@ createRoomsTable(roomProperties); // Create the table with the defined propertie
  * @returns {string} The value of the extracted key, or 'N/A' if not found.
  */
 function extractByKey(room, key) {
-    return room && room[key] ? room[key] : "N/A";
+    return room && room[key] ? room[key] : 'N/A'
 }
 
 /**
@@ -134,15 +135,15 @@ function countAttendees(attendees) {
         declined: 0,
         tentativelyAccepted: 0,
         none: 0
-    };
-    attendees.forEach(function (attendee) {
-        var type = attendee.type;
-        var status = attendee.status;
-        var response = status.response;
-        if (counts[type] !== undefined) counts[type]++;
-        if (counts[response] !== undefined) counts[response]++;
-    });
-    return counts;
+    }
+    attendees.forEach(function(attendee) {
+        var type = attendee.type
+        var status = attendee.status
+        var response = status.response
+        if (counts[type] !== undefined) counts[type]++
+        if (counts[response] !== undefined) counts[response]++
+    })
+    return counts
 }
 
 /**
@@ -151,9 +152,9 @@ function countAttendees(attendees) {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
-    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
 }
 
 /**
@@ -163,93 +164,81 @@ function sanitize(output) {
  */
 function checkHTTPError(error, response) {
     if (error) {
-        console.error(error);
-        D.failure(D.errorType.GENERIC_ERROR);
+        console.error(error)
+        D.failure(D.errorType.GENERIC_ERROR)
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR);
+        D.failure(D.errorType.AUTHENTICATION_ERROR)
     } else if (response.statusCode !== 200) {
-        D.failure(D.errorType.GENERIC_ERROR);
+        D.failure(D.errorType.GENERIC_ERROR)
     }
 }
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Function} resolve - Resolves the promise.
- * @param {Function} reject - Rejects the promise.
+ * @param {Object} d - The deferred promise object.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(resolve, reject) {
+function processLoginResponse(d) {
     return function process(error, response, body) {
-        checkHTTPError(error, response);
-        const bodyAsJSON = JSON.parse(body);
+        checkHTTPError(error, response)
+        const bodyAsJSON = JSON.parse(body)
         if (bodyAsJSON.access_token) {
-            accessToken = bodyAsJSON.access_token;
-            resolve();
+            accessToken = bodyAsJSON.access_token
+            d.resolve()
         } else {
-            console.error("Access token not found in response body");
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
+            console.error('Access token not found in response body')
+            D.failure(D.errorType.AUTHENTICATION_ERROR)
         }
-    };
+    }
 }
 
 /**
  * Processes the response from the request to retrieve rooms from Microsoft Graph.
- * @param {Function} resolve - Resolves the promise.
- * @param {Function} reject - Rejects the promise.
+ * @param {Object} d - The deferred promise object.
  * @returns {Function} A function to process the HTTP response.
  */
-function processRoomsResponse(resolve, reject) {
+function processRoomsResponse(d) {
     return function process(error, response, body) {
-        checkHTTPError(error, response);
-        const bodyAsJSON = JSON.parse(body);
+        checkHTTPError(error, response)
+        const bodyAsJSON = JSON.parse(body)
         if (!bodyAsJSON.value) {
-            console.error("No Rooms found in the response");
-            D.failure(D.errorType.GENERIC_ERROR);
+            console.error('No Rooms found in the response')
+            D.failure(D.errorType.GENERIC_ERROR)
         }
-        let listRooms = bodyAsJSON.value.map(extractRoomsInfo);
+        let listRooms = bodyAsJSON.value.map(extractRoomsInfo)
         if (!listRooms.length) {
-            console.info("There is no Rooms");
+            console.info('There is no Rooms')
         }
-        resolve(listRooms);
-    };
+        d.resolve(listRooms)
+    }
 }
 
 /**
  * Processes the response from the API call that retrieves ongoing meetings.
- * @param {Function} resolve - Resolves the promise.
- * @param {Function} reject - Rejects the promise.
+ * @param {Object} d - The deferred object to resolve or reject the operation.
  * @returns {Function} A callback function that processes the API response.
  */
-function processOngoingMeetingsResponse(resolve, reject) {
+function processOngoingMeetingsResponse(d) {
     return function process(error, response, body) {
-        checkHTTPError(error, response);
-        const bodyAsJSON = JSON.parse(body);
+        checkHTTPError(error, response)
+        const bodyAsJSON = JSON.parse(body)
         if (!bodyAsJSON.value) {
-            console.error("No calendar data returned, cannot check for ongoing Microsoft Teams meetings");
-            D.failure(D.errorType.GENERIC_ERROR);
+            console.error('No calendar data returned, cannot check for ongoing Microsoft Teams meetings')
+            D.failure(D.errorType.GENERIC_ERROR)
         }
 
-        // Sum the attendee counts of every event in the window; a room without meetings counts 0.
-        const totals = {};
-        ongoingMeetingInfoExtractors.forEach(function (extractor) {
-            totals[extractor.key] = 0;
-        });
-        if (bodyAsJSON.value.length === 0) {
-            console.info("There are no ongoing meetings at the moment in room:", email);
-        }
-        bodyAsJSON.value.forEach(function (meeting) {
-            const ongoingMeeting = extractOngoingMeetingsInfo(meeting);
-            if (ongoingMeeting) {
-                Object.keys(totals).forEach(function (key) {
-                    totals[key] += ongoingMeeting[key];
-                });
+        let meetings = bodyAsJSON.value.map(function(room) {
+            let ongoingMeetings = extractOngoingMeetingsInfo(room)
+            if (!ongoingMeetings || ongoingMeetings.length === 0) {
+                console.info('There are no ongoing meetings at the moment in room:', email)
             }
-        });
+            return ongoingMeetings
+        })
 
-        resolve(totals);
-    };
+        d.resolve(meetings)
+    }
 }
 
 /**
@@ -257,19 +246,19 @@ function processOngoingMeetingsResponse(resolve, reject) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
+    const d = D.q.defer()
     const config = {
-        url: "/" + tenantId + "/oauth2/v2.0/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+        url: '/' + tenantId + '/oauth2/v2.0/token', protocol: 'https', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
         }, form: {
-            grant_type: "client_credentials",
+            grant_type: 'client_credentials',
             client_id: clientId,
             client_secret: clientSecret,
-            scope: "https://graph.microsoft.com/.default"
+            scope: 'https://graph.microsoft.com/.default'
         }, rejectUnauthorized: false, jar: true
-    };
-    return new Promise(function (resolve, reject) {
-        microsoftLoginService.http.post(config, processLoginResponse(resolve, reject));
-    });
+    }
+    microsoftLoginService.http.post(config, processLoginResponse(d))
+    return d.promise
 }
 
 /**
@@ -280,12 +269,12 @@ function login() {
  * @returns {Object} The extracted room information.
  */
 function extractInfo(room, idKey, extractors) {
-    if (!room || !room[idKey]) return null;
-    const extractedInfo = {};
+    if (!room || !room[idKey]) return null
+    const extractedInfo = {}
     extractors.forEach(function (row) {
-        extractedInfo[row.key] = row.extract(room);
-    });
-    return extractedInfo;
+        extractedInfo[row.key] = row.extract(room)
+    })
+    return extractedInfo
 }
 
 /**
@@ -294,7 +283,7 @@ function extractInfo(room, idKey, extractors) {
  * @returns {Object} The extracted room information.
  */
 function extractRoomsInfo(room) {
-    return extractInfo(room, "id", roomInfoExtractors);
+    return extractInfo(room, 'id', roomInfoExtractors)
 }
 
 /**
@@ -303,7 +292,7 @@ function extractRoomsInfo(room) {
  * @returns {Array} A list of extracted information for each meeting.
  */
 function extractOngoingMeetingsInfo(meetings) {
-    return extractInfo(meetings, "id", ongoingMeetingInfoExtractors);
+    return extractInfo(meetings, 'id', ongoingMeetingInfoExtractors)
 }
 
 /**
@@ -311,18 +300,18 @@ function extractOngoingMeetingsInfo(meetings) {
  * @returns {Promise} A promise that resolves with the list of rooms.
  */
 function retrieveListRooms() {
+    const d = D.q.defer()
     const config = {
-        url: "/v1.0/places/microsoft.graph.room",
-        protocol: "https",
+        url:  '/v1.0/places/microsoft.graph.room',
+        protocol: 'https',
         headers: {
-            "Authorization": "Bearer " + accessToken
+            'Authorization': 'Bearer ' + accessToken,
         },
         rejectUnauthorized: false,
         jar: true
-    };
-    return new Promise(function (resolve, reject) {
-        teamsManagementService.http.get(config, processRoomsResponse(resolve, reject));
-    });
+    }
+    teamsManagementService.http.get(config, processRoomsResponse(d))
+    return d.promise
 }
 
 /**
@@ -331,7 +320,7 @@ function retrieveListRooms() {
  * @returns {string} The ISO string representation of the date.
  */
 function toISOStringNoMs(date) {
-    return date.toISOString().split(".")[0];
+    return date.toISOString().split('.')[0]
 }
 
 /**
@@ -341,24 +330,24 @@ function toISOStringNoMs(date) {
  */
 function retrieveOngoingMeetings(meetings) {
     const promises = meetings.map(function (meeting) {
-        email = meeting.emailAddress;
-        const now = new Date();
-        const end = new Date(now.getTime() + 30 * 60000);
+        email = meeting.emailAddress
+        const now = new Date()
+        const end = new Date(now.getTime() + 30 * 60000)
+        const d = D.q.defer()
         const config = {
-            url: "/v1.0/users/" + email + "/calendarView?startDateTime=" + toISOStringNoMs(now) + "&endDateTime=" + toISOStringNoMs(end),
-            protocol: "https",
+            url: '/v1.0/users/' + email + '/calendarView?startDateTime=' + toISOStringNoMs(now) + '&endDateTime=' + toISOStringNoMs(end),
+            protocol: 'https',
             headers: {
-                "Authorization": "Bearer " + accessToken,
-                "Content-Type": "application/json"
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
             },
             rejectUnauthorized: false,
             jar: true
-        };
-        return new Promise(function (resolve, reject) {
-            teamsManagementService.http.get(config, processOngoingMeetingsResponse(resolve, reject));
-        });
-    });
-    return Promise.all(promises);
+        }
+        teamsManagementService.http.get(config, processOngoingMeetingsResponse(d))
+        return d.promise
+    })
+    return D.q.all(promises)
 }
 
 /**
@@ -366,10 +355,11 @@ function retrieveOngoingMeetings(meetings) {
  * @param {Object} room - Room object containing various properties.
  */
 function insertRecord(room) {
+    const roomData = room['0'] || {}
     const recordValues = roomProperties.map(function (item) {
-        return room[item.key] !== undefined ? room[item.key] : "N/A";
-    });
-    roomsTable.insertRecord(room.id, recordValues);
+        return room[item.key] || 'N/A' && roomData[item.key] || 'N/A'
+    })
+    roomsTable.insertRecord(room.id, recordValues)
 }
 
 /**
@@ -377,7 +367,7 @@ function insertRecord(room) {
  * @param {Array} roomsInfoList - The list of rooms and their details.
  */
 function populateTable(roomsInfoList) {
-    roomsInfoList.map(insertRecord);
+    roomsInfoList.map(insertRecord)
 }
 
 /**
@@ -388,14 +378,14 @@ function populateTable(roomsInfoList) {
 function validate() {
     login()
         .then(retrieveListRooms)
-        .then(function (rooms) {
+        .then(function(rooms) {
             return retrieveOngoingMeetings(rooms)
-                .then(function () { D.success(); });
+                .then(function() { D.success() })
         })
         .catch(function (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error(error)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }
 
 /**
@@ -406,18 +396,18 @@ function validate() {
 function get_status() {
     login()
         .then(retrieveListRooms)
-        .then(function (rooms) {
+        .then(function(rooms) {
             return retrieveOngoingMeetings(rooms)
-                .then(function (ongoingMeetings) {
+                .then(function(ongoingMeetings) {
                     const mergedRooms = rooms.map(function (room, index) {
-                        return Object.assign({}, room, ongoingMeetings[index]);
-                    });
-                    populateTable(mergedRooms);
-                    D.success(roomsTable);
-                });
+                        return Object.assign({}, room, ongoingMeetings[index])
+                    })
+                    populateTable(mergedRooms)
+                    D.success(roomsTable)
+                })
         })
         .catch(function (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        });
+            console.error(error)
+            D.failure(D.errorType.GENERIC_ERROR)
+        })
 }

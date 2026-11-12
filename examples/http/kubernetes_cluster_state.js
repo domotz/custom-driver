@@ -1,12 +1,14 @@
+
 /**
  * This driver monitor Kubernetes state that work without any external scripts. It works without external scripts and uses the script item to make HTTP requests to the Kubernetes API
  * Communication protocol is http
  * dynamically create cluster state metrics for Kubernetes depending from response of the service
- * communicate with http api using a jwt token generated with this command:
+ * communicate with http api using a jwt token generated with this command: 
  * # kubectl -n kube-system create token default --duration=8760h
  * this command returns a jwt token valid for a year for kube-system user
- * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS
+ * tested with minikube version: v1.28.0 under Ubuntu 22.04.1 LTS 
  */
+
 
 var _var = D.device.createVariable;
 var token = D.device.password();
@@ -22,37 +24,38 @@ function _find(arr, filterFn) {
     return _first(arr.filter(filterFn));
 }
 
-function httpGet(url) {
-    return new Promise(function (resolve) {
-        D.device.http.get({
-            url: url,
-            port: port,
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Content-Type": "application/json"
-            }
-        }, function (err, response, body) {
-            if (err) {
-                console.error(err);
-                return D.failure(D.errorType.GENERIC_ERROR);
-            }
-            if (response.statusCode == 404) {
-                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-            }
-            if (response.statusCode == 401) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            if (response.statusCode != 200) {
-                D.failure(D.errorType.GENERIC_ERROR);
-            }
-            resolve(body);
 
-        });
+function httpGet(url) {
+    var d = D.q.defer();
+    D.device.http.get({
+        url: url,
+        port: port,
+        headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+        }
+    }, function (err, response, body) {
+        if (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        if (response.statusCode == 404) {
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+        }
+        if (response.statusCode == 401) {
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        if (response.statusCode != 200) {
+            D.failure(D.errorType.GENERIC_ERROR);
+        }
+        d.resolve(body);
+
     });
+    return d.promise;
 }
 
 /**
- *
+ * 
  * @returns promise for http response body containig Kubernetes API metrics in PROMETHEUS format
  */
 function getMetrics() {
@@ -83,7 +86,7 @@ function convertVerboseData(body) {
 function getLivez() {
     return httpGet("/livez?verbose")
         .then(convertVerboseData);
-
+        
 }
 
 function getReadyz() {
@@ -92,7 +95,7 @@ function getReadyz() {
 }
 
 /**
- *
+ * 
  * @param {string} body containing metrics api response in PROMETHEUS format
  * @returns convert PROMETHEUS format to Javascript object
  */
@@ -115,7 +118,7 @@ function convert(body) {
 }
 
 /**
- *
+ * 
  * @param {string} key parameter key
  * @param {function} filterFn filter function
  * @returns sum of returned data based on the key and the filter function
@@ -129,73 +132,62 @@ function getValueSum(key, filterFn) {
     };
 }
 
-/**
- *
- * @param {string} key parameter key
- * @returns number of series returned for the key (one kube_*_created series per object)
- */
-function getCount(key) {
-    return function () {
-        return metrics.filter(function (d) { return d.key == key; }).length;
-    };
-}
-
 // config variable containing the list of monitoring parameters
 var config = [
     {
         uid: "CronJob_count",
         label: "CronJob count",
-        execute: getCount("kube_cronjob_created")
+        execute: getValueSum("kube_cronjob_created")
     },
     {
         uid: "Deployment_count",
         label: "Deployment count",
-        execute: getCount("kube_deployment_created")
+        execute: getValueSum("kube_deployment_created")
     },
     {
         uid: "endpoint_count",
         label: "Endpoint count",
-        execute: getCount("kube_endpoint_created")
+        execute: getValueSum("kube_endpoint_created")
     },
     {
         uid: "job_count",
         label: "Job count",
-        execute: getCount("kube_job_created")
+        execute: getValueSum("kube_job_created")
     },
     {
         uid: "service_count",
         label: "Service count",
-        execute: getCount("kube_service_created")
+        execute: getValueSum("kube_service_created")
     },
     {
         uid: "namespace_count",
         label: "Namespace count",
-        execute: getCount("kube_namespace_created")
+        execute: getValueSum("kube_namespace_created")
     },
     {
         uid: "node_count",
         label: "Node count",
-        execute: getCount("kube_node_created")
+        execute: getValueSum("kube_node_created")
     },
     {
         uid: "statefulset_count",
         label: "Statefulset count",
-        execute: getCount("kube_statefulset_created")
-    }
+        execute: getValueSum("kube_statefulset_created")
+    },
 
 ];
 
 /**
  * fill component statuses variables in config
  */
-function fillComponentsStatuses() {
-    componentStatuses.items.forEach(function (cs) {
+function fillComponentsStatuses(){
+    componentStatuses.items.forEach(function(cs){
         config.push({
             uid: "component_" + cs.metadata.name,
             label: "Component " + cs.metadata.name + " Healthy",
-            execute: function () {
-                var healthy = _find(cs.conditions, function (c) { return c.type == "Healthy";});
-                if (healthy) return healthy.status;
+            execute: function(){
+                var healthy = _find(cs.conditions, function(c) { return c.type == "Healthy";});
+                if(healthy) return healthy.status;
                 return null;
             }
         });
@@ -205,40 +197,42 @@ function fillComponentsStatuses() {
 /**
  * fill livez variables in config
  */
-function fillLivez() {
-    livez.forEach(function (l) {
+function fillLivez(){
+    livez.forEach(function(l){
         var index = l.name.lastIndexOf("/");
         config.push({
-            uid: ("livez_" + l.name.substring(index + 1)).substring(0, 50),
+            uid: ("livez_" + l.name.substring(index+1)).substring(0, 50),
             label: "Livez " + l.name + " healthcheck",
-            execute: function () { return l.value; }
+            execute: function() { return l.value; }
         });
     });
 }
 /**
  * fill readyz variables in config
  */
-function fillReadyz() {
-    readyz.forEach(function (l) {
+function fillReadyz(){
+    readyz.forEach(function(l){
         var index = l.name.lastIndexOf("/");
         config.push({
-            uid: ("readyz_" + l.name.substring(index + 1)).substring(0, 50),
+            uid: ("readyz_" + l.name.substring(index+1)).substring(0, 50),
             label: "Readyz " + l.name + " healthcheck",
-            execute: function () { return l.value; }
+            execute: function() { return l.value; }
         });
     });
 }
 
-function fillConfig() {
+
+function fillConfig(){
     fillComponentsStatuses();
     fillLivez();
     fillReadyz();
 
 }
 
+
 /**
- *
- * @param {[object]} data array of objects
+ * 
+ * @param {[object]} data array of objects 
  * @returns list of domotz variables
  */
 function extract() {
@@ -249,7 +243,7 @@ function extract() {
         } else if (typeof (c.execute) == "function") {
             result = c.execute();
         }
-        if (result != null) {
+        if (result) {
             return _var(c.uid, c.label, result, c.unit, c.type);
         } else {
             return null;
@@ -260,12 +254,12 @@ function extract() {
 }
 
 function loadData() {
-    return Promise.all([
+    return D.q.all([
         getMetrics(),
         getComponentStatuses(),
         getLivez(),
         getReadyz()
-    ]).then(function (data) {
+    ]).then(function(data){
         metrics = data[0];
         componentStatuses = data[1];
         livez = data[2];
@@ -282,10 +276,6 @@ function validate() {
     loadData()
         .then(function () {
             D.success();
-        })
-        .catch(function (err) {
-            console.error(err);
-            D.failure(D.errorType.GENERIC_ERROR);
         });
 }
 
@@ -300,7 +290,7 @@ function success() {
 */
 function get_status() {
     loadData()
-        .then(function () {
+        .then(function(){
             fillConfig();
         })
         .then(extract)

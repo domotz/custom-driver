@@ -1,11 +1,11 @@
 /**
  * Name: Dell iDRAC CPUs Monitoring
  * Description: Monitors the operational status of CPUs on a Dell server with iDRAC
- *
+ * 
  * Communication protocol is SSH.
- *
+ * 
  * Tested under iDRAC version 7.0.3 21053776 U3 P70
- *
+ * 
  * Keyboard Interactive option: true/false (depends on iDRAC version).
  *
  * Creates a Custom Driver Table with the following columns:
@@ -18,7 +18,7 @@
  *      - Current Clock Speed
  *      - Virtualization Technology Enabled
  *      - Hyper Threading Enabled
- *
+ * 
  */
 
 // SSH command to retrieve cpus information
@@ -41,8 +41,8 @@ var table = D.createTable(
         { label: "Model", valueType: D.valueType.STRING },
         { label: "Primary Status", valueType: D.valueType.STRING },
         { label: "CPU Status", valueType: D.valueType.STRING },
-        { label: "Max Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER },
-        { label: "Current Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER },
+        { label: "Max Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER },      
+        { label: "Current Clock Speed", unit: "MHZ", valueType: D.valueType.NUMBER }, 
         { label: "Virt Tech Enabled", valueType: D.valueType.STRING },
         { label: "Hyper Threading Enabled", valueType: D.valueType.STRING }
     ]
@@ -50,29 +50,29 @@ var table = D.createTable(
 
 //Handle SSH errors
 function checkSshError(err) {
-    if (err.message) console.error(err.message);
-    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if(err.message) console.error(err.message);
+    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
 // Execute SSH command and return a promise
 function executeCommand(command) {
+    var d = D.q.defer();
     sshConfig.command = command;
-    return new Promise(function (resolve) {
-        D.device.sendSSHCommand(sshConfig, function (output, err) {
-            if (err) {
-                checkSshError(err);
+    D.device.sendSSHCommand(sshConfig, function (output, err) {
+        if (err) {
+            checkSshError(err);
+        } else {           
+            if (output && output.indexOf("COMMAND NOT RECOGNIZED")!==-1) {
+                D.failure(D.errorType.PARSING_ERROR);
             } else {
-                if (output && output.indexOf("COMMAND NOT RECOGNIZED") !== -1) {
-                    D.failure(D.errorType.PARSING_ERROR);
-                } else {
-                    resolve(output);
-                }
-            }
-        });
+                d.resolve(output);
+            }           
+        }
     });
+    return d.promise;
 }
 
 /**
@@ -93,7 +93,7 @@ function validate() {
 function parseValidateOutput(output) {
     if (output.trim() !== "") {
         console.info("Validation successful");
-    }
+    } 
 }
 
 /**
@@ -111,43 +111,28 @@ function get_status() {
 }
 
 // Parse cpu information output
-/**
- * Converts a clock speed as racadm prints it ("4000 MHz", "2.1 GHz") to MHz
- * @param {string} value The clock speed with its unit
- * @returns {number|string} The speed in MHz, or "-" when it cannot be read
- */
-function toMegahertz(value) {
-    var match = /^([\d.]+)\s*(GHz|MHz)?$/i.exec((value || "").trim());
-    if (!match) {
-        return "-";
-    }
-    var speed = parseFloat(match[1]);
-    return match[2] && match[2].toLowerCase() === "ghz" ? Math.round(speed * 1000) : speed;
-}
-
 function parseData(output) {
-    // The collector trims stdout, so add back the blank line that ends the last section
-    var lines = (output + "\n").split("\n");
+    var lines = output.split("\n");
     var data = {};
-    var instanceIdCpu = false;
-    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    var instanceIdCpu = false; 
+    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line.indexOf("[InstanceID: CPU.Socket") >= 0) {
             instanceIdCpu = true;
-            data = {};
+            data = {}; 
         } else if (instanceIdCpu && line.length === 0) {
-            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase(); ;
-            var type = data["Device Type"] || "-";
-            var description = data["DeviceDescription"] || "-";
-            var model = data["Model"] || "-";
-            var primaryStatus = data["PrimaryStatus"] || "-";
-            var cpuStatus = data["CPUStatus"] || "-";
-            var maxClockSpeed = toMegahertz(data["MaxClockSpeed"]);
-            var currentClockSpeed = toMegahertz(data["CurrentClockSpeed"]);
-            var virtualizationTechnologyEnabled = data["VirtualizationTechnologyEnabled"] || "-";
-            var hyperThreadingEnabled = data["HyperThreadingEnabled"] || "-";
+            var recordId = (data["InstanceID"]).replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();;
+            var type = data["Device Type"] || "-"; 
+            var description = data["DeviceDescription"] || "-"; 
+            var model = data["Model"] || "-"; 
+            var primaryStatus = data["PrimaryStatus"] || "-"; 
+            var cpuStatus = data["CPUStatus"] || "-"; 
+            var maxClockSpeed = (data["MaxClockSpeed"] || "").replace(/\D+/g, "") || "-";
+            var currentClockSpeed = (data["CurrentClockSpeed"] || "").replace(/\D+/g, "") || "-";
+            var virtualizationTechnologyEnabled = data["VirtualizationTechnologyEnabled"] || "-"; 
+            var hyperThreadingEnabled = data["HyperThreadingEnabled"] || "-";           
             table.insertRecord(
                 recordId, [
                     type,
@@ -164,7 +149,7 @@ function parseData(output) {
             data = {};
             instanceIdCpu = false;
         } else if (instanceIdCpu) {
-            var keyValue = line.split("=");
+            var keyValue = line.split('=');
             if (keyValue.length === 2) {
                 var key = keyValue[0].trim();
                 var value = keyValue[1].trim();

@@ -1,6 +1,6 @@
 {
     "logo": "versa.svg",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "name": "Versa Director - SD-WAN Alarms",
     "description": "Reports Versa SD-WAN active alarms per site by severity",
     "category": "Software Integration",

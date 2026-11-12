@@ -27,16 +27,16 @@
  **/
 
 // Parameters for Azure authentication
-const tenantId = D.getParameter("tenantID");
-const clientId = D.getParameter("clientId");
-const clientSecret = D.getParameter("clientSecret");
-const subscriptionId = D.getParameter("subscriptionId");
+const tenantId = D.getParameter('tenantID');
+const clientId = D.getParameter('clientId');
+const clientSecret = D.getParameter('clientSecret');
+const subscriptionId = D.getParameter('subscriptionId');
 
-const resourceGroups = D.getParameter("resourceGroups");
-const containerNames = D.getParameter("containerNames");
+const resourceGroups = D.getParameter('resourceGroups');
+const containerNames = D.getParameter('containerNames');
 
-const azureCloudLoginService = D.createExternalDevice("login.microsoftonline.com");
-const azureCloudManagementService = D.createExternalDevice("management.azure.com");
+const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com');
+const azureCloudManagementService = D.createExternalDevice('management.azure.com');
 
 let accessToken;
 let containerGroupsTable;
@@ -45,71 +45,73 @@ let containerGroupsTable;
 // To include a specific metric for retrieval, move it to the performanceMetrics list, and it will appear dynamically in the output table.
 // const allowedPerformanceMetrics = [];
 
+
 // This is the list of selected performance metrics retrieved.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
-// Azure Monitor reports CpuUsage in millicores and the network metrics in bytes per second.
 const performanceMetrics = [{
-    label: "Cpu Usage", valueType: D.valueType.NUMBER, unit: "millicores", key: "CpuUsage"
-}, { label: "Memory Usage", valueType: D.valueType.NUMBER, unit: "Gb", key: "MemoryUsage", callback: convertBytesToGb }, {
-    label: "Network Received",
+    label: 'Cpu Usage', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'CpuUsage', callback: convertBytesToGb
+}, {label: 'Memory Usage', valueType: D.valueType.NUMBER, unit: 'Gb', key: 'MemoryUsage', callback: convertBytesToGb}, {
+    label: 'Network Received',
     valueType: D.valueType.NUMBER,
-    unit: "B/s",
-    key: "NetworkBytesReceivedPerSecond"
+    unit: 'bps',
+    key: 'NetworkBytesReceivedPerSecond',
+    callback: convertBytesToGb
 }, {
-    label: "Network Transmitted",
+    label: 'Network Transmitted',
     valueType: D.valueType.NUMBER,
-    unit: "B/s",
-    key: "NetworkBytesTransmittedPerSecond"
-}];
+    unit: 'bps',
+    key: 'NetworkBytesTransmittedPerSecond',
+    callback: convertBytesToGb
+}]
 
 const containerDetailsExtractors = [{
-    label: "Image", key: "containerImage", extract: function (container) {
+    label: 'Image', key: 'containerImage', extract: function (container) {
         return container.properties && container.properties.image ? container.properties.image : "N/A";
     }
 }, {
-    label: "Memory", key: "containerResourcesMemory", unit: "Gb", extract: function (container) {
+    label: 'Memory', key: 'containerResourcesMemory', unit: 'Gb', extract: function (container) {
         return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.memoryInGB ? container.properties.resources.requests.memoryInGB : "N/A";
     }
 }, {
-    label: "CPU", key: "containerResourcesCPU", extract: function (container) {
+    label: 'CPU', key: 'containerResourcesCPU', extract: function (container) {
         return container.properties && container.properties.resources && container.properties.resources.requests && container.properties.resources.requests.cpu ? container.properties.resources.requests.cpu : "N/A";
     }
 }];
 
 const containerGroupExtractors = [{
-    key: "containers", extract: function (value) {
+    key: 'containers', extract: function (value) {
         return value.properties.containers || [];
     }
-}, { label: "Resource Group", key: "resourceGroup", extract: extractResourceGroup }, {
-    label: "Container Group", key: "resourceName", extract: function (value) {
+}, {label: 'Resource Group', key: 'resourceGroup', extract: extractResourceGroup}, {
+    label: 'Container Group', key: 'resourceName', extract: function (value) {
         return value.name || "N/A";
     }
 }, {
-    label: "DNS Name Label", key: "dnsNameLabel", extract: function (value) {
+    label: 'DNS Name Label', key: 'dnsNameLabel', extract: function (value) {
         return value.properties && value.properties.ipAddress && value.properties.ipAddress.dnsNameLabel ? value.properties.ipAddress.dnsNameLabel : "N/A";
     }
 }, {
-    label: "IP Address", key: "ipAddress", extract: function (value) {
+    label: 'IP Address', key: 'ipAddress', extract: function (value) {
         return value.properties && value.properties.ipAddress && value.properties.ipAddress.ip ? value.properties.ipAddress.ip : "N/A";
     }
 }, {
-    label: "IP Address Type", key: "ipAddressType", extract: function (value) {
+    label: 'IP Address Type', key: 'ipAddressType', extract: function (value) {
         return value.properties && value.properties.ipAddress && value.properties.ipAddress.type ? value.properties.ipAddress.type : "N/A";
     }
 }, {
-    label: "Location", key: "location", extract: function (value) {
+    label: 'Location', key: 'location', extract: function (value) {
         return value.location || "N/A";
     }
 }, {
-    label: "OS Type", key: "osType", extract: function (value) {
+    label: 'OS Type', key: 'osType', extract: function (value) {
         return value.properties && value.properties.osType ? value.properties.osType : "N/A";
     }
 }, {
-    label: "Provisioning State", key: "provisioningState", extract: function (value) {
+    label: 'Provisioning State', key: 'provisioningState', extract: function (value) {
         return value.properties && value.properties.provisioningState ? value.properties.provisioningState : "N/A";
     }
 }, {
-    label: "Restart Policy", key: "restartPolicy", extract: function (value) {
+    label: 'Restart Policy', key: 'restartPolicy', extract: function (value) {
         return value.properties && value.properties.restartPolicy ? value.properties.restartPolicy : "N/A";
     }
 }];
@@ -120,7 +122,7 @@ const containerGroupExtractors = [{
  */
 function generateContainerGroupProperties() {
     return containerDetailsExtractors.concat(containerGroupExtractors).concat(performanceMetrics).filter(function (result) {
-        return result.label;
+        return result.label
     });
 }
 
@@ -128,7 +130,7 @@ function generateContainerGroupProperties() {
  * Creates a table for displaying Azure Container Group properties.
  */
 function createContainerGroupTable(containerGroupProperties) {
-    containerGroupsTable = D.createTable("Azure Containers", containerGroupProperties);
+    containerGroupsTable = D.createTable('Azure Containers', containerGroupProperties);
 }
 
 /**
@@ -165,22 +167,21 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Function} resolve - Resolves the promise.
- * @param {Function} reject - Rejects the promise.
+ * @param {Object} d - The deferred promise object.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(resolve, reject) {
+function processLoginResponse(d) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            resolve();
+            d.resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    };
+    }
 }
 
 /**
@@ -190,37 +191,37 @@ function processLoginResponse(resolve, reject) {
  */
 function filterContainerGroupInfoList(containerGroupInfoList) {
     return containerGroupInfoList.filter(function (containerGroup) {
-        return containerGroup.containers.length && ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === "all") || resourceGroups.some(function (group) {
-            return group.toLowerCase() === containerGroup.resourceGroup.toLowerCase();
-        })) && ((containerNames.length === 1 && containerNames[0].toLowerCase() === "all") || containerNames.some(function (containerName) {
-            return containerName.toLowerCase() === containerGroup.resourceName.toLowerCase();
-        }));
+        return containerGroup.containers.length && ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (group) {
+            return group.toLowerCase() === containerGroup.resourceGroup.toLowerCase()
+        })) && ((containerNames.length === 1 && containerNames[0].toLowerCase() === 'all') || containerNames.some(function (containerName) {
+                return containerName.toLowerCase() === containerGroup.resourceName.toLowerCase()
+            }))
     });
 }
 
+
 /**
  * Processes the response from the Container Groups API call, extracts Container Groups data, and populates the table.
- * @param {Function} resolve - Resolves the promise.
- * @param {Function} reject - Rejects the promise.
+ * @param {Object} d - The deferred promise object.
  * @returns {Function} A function to process the HTTP response.
  */
-function processContainerGroupsResponse(resolve, reject) {
+function processContainerGroupsResponse(d) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
-            D.failure(D.errorType.GENERIC_ERROR);
-            reject("No Container Groups found in the response");
+            D.failure(D.errorType.GENERIC_ERROR)
+            d.reject("No Container Groups found in the response");
             return;
         }
         let containerGroupInfoList = bodyAsJSON.value.map(extractContainerGroupInfo);
         if (!containerGroupInfoList.length) {
-            console.info("There is no Container Group");
+            console.info('There is no Container Group');
         } else {
             containerGroupInfoList = filterContainerGroupInfoList(containerGroupInfoList);
         }
-        resolve(containerGroupInfoList);
-    };
+        d.resolve(containerGroupInfoList);
+    }
 }
 
 /**
@@ -228,9 +229,10 @@ function processContainerGroupsResponse(resolve, reject) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
+    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/x-www-form-urlencoded",
         }, form: {
             grant_type: "client_credentials",
             client_id: clientId,
@@ -238,9 +240,8 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    return new Promise(function (resolve, reject) {
-        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
-    });
+    azureCloudLoginService.http.post(config, processLoginResponse(d));
+    return d.promise;
 }
 
 /**
@@ -249,9 +250,9 @@ function login() {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
-    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
+    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
+    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
 }
 
 /**
@@ -277,7 +278,7 @@ function convertBytesToGb(bytesValue) {
     if (bytesValue !== "N/A") {
         return (bytesValue / (1024 * 1024 * 1024)).toFixed(2);
     }
-    return bytesValue;
+    return bytesValue
 }
 
 /**
@@ -296,7 +297,7 @@ function md5(value) {
  */
 function insertRecord(container, containerGroupProperties) {
     const recordValues = containerGroupProperties.map(function (item) {
-        const value = container[item.key] === undefined || container[item.key] === null ? "N/A" : container[item.key];
+        const value = container[item.key] || "N/A";
         return item.callback ? item.callback(value) : value;
     });
     containerGroupsTable.insertRecord(sanitize(md5(container.resourceGroup + container.resourceName + container.containerName)), recordValues);
@@ -310,7 +311,7 @@ function insertRecord(container, containerGroupProperties) {
 function generateConfig(url) {
     return {
         url: "/subscriptions/" + subscriptionId + url, protocol: "https", headers: {
-            "Authorization": "Bearer " + accessToken
+            "Authorization": "Bearer " + accessToken,
         }, rejectUnauthorized: false, jar: true
     };
 }
@@ -320,10 +321,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the Container Group data upon successful retrieval from the Azure API.
  */
 function retrieveContainerGroups() {
+    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.ContainerInstance/containerGroups?api-version=2024-05-01-preview");
-    return new Promise(function (resolve, reject) {
-        azureCloudManagementService.http.get(config, processContainerGroupsResponse(resolve, reject));
-    });
+    azureCloudManagementService.http.get(config, processContainerGroupsResponse(d));
+    return d.promise;
 }
 
 /**
@@ -355,19 +356,18 @@ function extractContainerGroupPerformance(performanceInfo, containerGroupInfo) {
             const key = getNonTimeStampKey(performanceInfo.timeseries[0].data);
             containerGroupInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A";
         } else {
-            containerGroupInfo[performanceInfo.name.value] = "N/A";
+            containerGroupInfo[performanceInfo.name.value] = "N/A"
         }
     }
 }
 
 /**
  * Processes the response from the Container Groups API call and populates the table with Container Group data.
- * @param {Function} resolve - Resolves the promise.
- * @param {Function} reject - Rejects the promise.
+ * @param {Object} d - The deferred promise object.
  * @param {Object} containerGroupInfo - The Container Group information object containing resource group and Container Group details.
  * @returns {Function} A function to process the HTTP response.
  */
-function processContainerGroupPerformanceResponse(resolve, reject, containerGroupInfo) {
+function processContainerGroupPerformanceResponse(d, containerGroupInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         if (error || response.statusCode !== 200) {
@@ -376,18 +376,18 @@ function processContainerGroupPerformanceResponse(resolve, reject, containerGrou
         try {
             const bodyAsJSON = JSON.parse(body);
             if (!bodyAsJSON.value) {
-                D.failure(D.errorType.GENERIC_ERROR);
+                D.failure(D.errorType.GENERIC_ERROR)
                 return;
             }
             bodyAsJSON.value.map(function (performanceInfo) {
-                extractContainerGroupPerformance(performanceInfo, containerGroupInfo);
+                extractContainerGroupPerformance(performanceInfo, containerGroupInfo)
             });
-            resolve(containerGroupInfo);
+            d.resolve(containerGroupInfo);
         } catch (parseError) {
             console.error("Error parsing Container Groups configuration:", parseError);
-            reject("Failed to parse response for " + containerGroupInfo.name);
+            d.reject("Failed to parse response for " + containerGroupInfo.name);
         }
-    };
+    }
 }
 
 /**
@@ -397,24 +397,24 @@ function processContainerGroupPerformanceResponse(resolve, reject, containerGrou
  */
 function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
     const performanceKeyGroups = [];
-    const promises = [];
+    const promises = []
     const maxGroupSize = 20;
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-            return metric.key;
-        }).join(","));
+            return metric.key
+        }).join(','));
     }
     containerGroupInfoList.forEach(function (containerGroupInfo) {
         performanceKeyGroups.forEach(function (group) {
+            const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + containerGroupInfo.resourceGroup + "/providers/Microsoft.ContainerInstance/containerGroups/" + containerGroupInfo.resourceName + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-            promises.push(new Promise(function (resolve, reject) {
-                azureCloudManagementService.http.get(config, function (error, response, body) {
-                    processContainerGroupPerformanceResponse(resolve, reject, containerGroupInfo)(error, response, body);
-                });
-            }));
+            azureCloudManagementService.http.get(config, function (error, response, body) {
+                processContainerGroupPerformanceResponse(d, containerGroupInfo)(error, response, body);
+            });
+            promises.push(d.promise);
         });
     });
-    return Promise.all(promises);
+    return D.q.all(promises);
 }
 
 /**
@@ -424,15 +424,13 @@ function retrieveContainerGroupsPerformanceMetrics(containerGroupInfoList) {
  */
 function populateTable(containerGroupInfoList, containerGroupProperties) {
     containerGroupInfoList.map(function (groupInfo) {
-        // One row per container: the container fields change, the group fields and metrics are shared.
         groupInfo.containers.forEach(function (containerInfo) {
-            groupInfo.containerName = containerInfo.name;
             containerDetailsExtractors.map(function (containerExtractor) {
                 groupInfo[containerExtractor.key] = containerExtractor.extract(containerInfo);
-            });
-            insertRecord(groupInfo, containerGroupProperties);
-        });
-    });
+            })
+        })
+        insertRecord(groupInfo, containerGroupProperties)
+    })
 }
 
 /**
@@ -463,9 +461,9 @@ function get_status() {
         .then(retrieveContainerGroups)
         .then(retrieveContainerGroupsPerformanceMetrics)
         .then(function (containerGroupInfoList) {
-            const containerGroupProperties = generateContainerGroupProperties();
-            createContainerGroupTable(containerGroupProperties);
-            populateTable(containerGroupInfoList, containerGroupProperties);
+            const containerGroupProperties = generateContainerGroupProperties()
+            createContainerGroupTable(containerGroupProperties)
+            populateTable(containerGroupInfoList, containerGroupProperties)
             D.success(containerGroupsTable);
         })
         .catch(function (error) {

@@ -104,7 +104,7 @@ var table = D.createTable("Pfsense interface statistics", [
     { label: "Out6/Pass (Packets)", unit: "packet" },
     { label: "Out6/Pass (Bytes)", unit: "byte" },
     { label: "Out6/Block (Packets)", unit: "packet" },
-    { label: "Out6/Block (Bytes)", unit: "byte" }
+    { label: "Out6/Block (Bytes)", unit: "byte" },
 ]);
 
 var em1StatsRegex = new RegExp(
@@ -139,7 +139,7 @@ var totalRateParams = [
             "state-limit",
             "src-limit",
             "synproxy",
-            "map-failed"
+            "map-failed",
         ]
     },
     {
@@ -207,10 +207,10 @@ var syncookiesRegex = new RegExp(
     , "m");
 
 /**
- *
- * @param {string} title
- * @param {[string]} params
- * @returns
+ * 
+ * @param {string} title 
+ * @param {[string]} params 
+ * @returns 
  */
 function totalRateStatsRegex(title, params) {
     var regexBuilder = "\n" + title + ".*\n";
@@ -234,20 +234,20 @@ var http_config = {
  */
 function get_login_form(config) {
     config.url = "/";
-    return new Promise(function (resolve) {
-        D.device.http.get(config, function (err, response, body) {
-            if (err) {
-                console.error(err);
-                return D.failure();
-            }
-            resolve(body);
-        });
+    var d = D.q.defer();
+    D.device.http.get(config, function (err, response, body) {
+        if (err) {
+            console.error(err);
+            return D.failure();
+        }
+        d.resolve(body);
     });
+    return d.promise;
 }
 
 /**
  * extract a code used for login
- * @param {*} body html login page
+ * @param {*} body html login page 
  * @returns csrf_magic code
  */
 function get_csrf_magic(body) {
@@ -258,11 +258,12 @@ function get_csrf_magic(body) {
 }
 
 /**
- *
+ * 
  * @param {*} csrf_magic csrf code used to make login
  * @returns promise processing login and add cookie to http config
  */
 function login(csrf_magic) {
+    var d = D.q.defer();
     var config = clone({
         form: {
             "__csrf_magic": csrf_magic,
@@ -274,66 +275,66 @@ function login(csrf_magic) {
     }, http_config);
     config.url = "/";
 
-    return new Promise(function (resolve) {
-        D.device.http.post(config, function (err, response, body) {
-            if (err) {
-                console.error(err);
-                return D.failure();
-            }
-            delete http_config.body;
-            resolve();
-        });
+    D.device.http.post(config, function (err, response, body) {
+        if (err) {
+            console.error(err);
+            return D.failure();
+        }
+        delete http_config.body;
+        d.resolve();
     });
+    return d.promise;
 }
 
 /**
- *
+ * 
  * @returns promise contains csrf_magic code to query pfinfo page
  */
 function get_pfinfo_csrf_magic() {
+    var d = D.q.defer();
     var config = clone({
-        url: "/diag_pf_info.php"
+        url: "/diag_pf_info.php",
     }, http_config);
-    return new Promise(function (resolve) {
-        D.device.http.get(config, function (err, response, body) {
-            if (err) {
-                console.error(err);
-                return D.failure();
-            }
-            resolve(get_csrf_magic(body));
-        });
+    D.device.http.get(config, function (err, response, body) {
+        if (err) {
+            console.error(err);
+            return D.failure();
+        }
+        d.resolve(get_csrf_magic(body));
     });
+    return d.promise;
 }
 
 /**
- *
+ * 
  * @param {*} csrf_magic code to query pfinfo page
  * @returns promise for html pfinfo page
  */
 function get_pfinfo_body(csrf_magic) {
+    var d = D.q.defer();
     var config = clone({
         url: "/diag_pf_info.php",
         form: {
             "__csrf_magic": csrf_magic, "refresh": "yes", "getactivity": "yes"
         }
     }, http_config);
-    return new Promise(function (resolve) {
-        D.device.http.post(config, function (err, response, body) {
-            if (err) {
-                console.error(err);
-                return D.failure();
-            }
-            if (!body || body.indexOf("Hostid") < 0) {
-                D.failure(D.errorType.AUTHENTICATION_ERROR);
-            }
-            resolve(body);
-        });
+    D.device.http.post(config, function (err, response, body) {
+        if (err) {
+            console.error(err);
+            return D.failure();
+        }
+        if(!body || body.indexOf("Hostid") < 0){
+            D.failure(D.errorType.AUTHENTICATION_ERROR);
+        }
+        d.resolve(body);
     });
+    return d.promise;
 
 }
 
+
 /**
- *
+ * 
  * @param {*} init object initialisation
  * @param {*} object object to clone
  * @returns cloned object
@@ -351,7 +352,7 @@ function trim(s) {
 }
 
 /**
- *
+ * 
  * @param {*} body pfinfo page
  * @param {*} paramName parameter name to extract from pfinfo page
  * @returns the value of the parameter and it's unit
@@ -371,9 +372,11 @@ function extractParameterValue(body, paramName) {
     }
 }
 
+
+
 /**
  * This function extracts variables from the pfinfo page
- * @param {string} body
+ * @param {string} body 
  */
 function extract_variables(body) {
     // extract em1 interface stats
@@ -402,10 +405,7 @@ function extract_variables(body) {
                 var j = (i - 1) / 2;
                 var variableIdPartial = p.title.replace("table", "tbl");
                 _vars.push(_var(variableIdPartial + "_" + p.params[j].replace("table", "tbl") + "_total", p.title + ": " + p.params[j] + " (total)", match[i]));
-                // pfctl prints rates as "117.4/s", and no rate for "current entries"
-                if (match[i + 1]) {
-                    _vars.push(_var(p.title + "_" + p.params[j].replace("table", "tbl") + "_rate", p.title + ": " + p.params[j] + " (rate)", match[i + 1].substring(0, match[i + 1].length - 2), "/s"));
-                }
+                _vars.push(_var(p.title + "_" + p.params[j].replace("table", "tbl") + "_rate", p.title + ": " + p.params[j] + " (rate)", match[i + 1].substring(0, match[i + 1].length - 2), "s"));
             }
         }
     });
@@ -420,8 +420,8 @@ function extract_variables(body) {
 }
 
 /**
- *
- * @param {string} body
+ * 
+ * @param {string} body 
  */
 function extract_table(body) {
     // get interfaces
@@ -467,9 +467,7 @@ var exec = [
 ];
 function execute() {
 
-    return exec.reduce(function (promise, step) {
-        return promise.then(step);
-    }, Promise.resolve(clone({}, http_config)));
+    return exec.reduce(D.q.when, D.q(clone({}, http_config)));
 }
 
 /**
@@ -480,7 +478,7 @@ function execute() {
 function validate() {
     execute().then(function () {
         D.success();
-    }).catch(failure);
+    });
 }
 
 /**

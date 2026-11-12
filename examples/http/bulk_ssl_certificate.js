@@ -1,12 +1,14 @@
+
+
 /**
  * This driver checks the status of https certificate for a list of devices specified in serversToCheck var
  * Communication protocol is https
  * return a table with this columns:
  * %server name
- * %Issuer,
- * %Expiry,
- * %Remaining days,
- * %Is valid,
+ * %Issuer, 
+ * %Expiry, 
+ * %Remaining days, 
+ * %Is valid, 
  * %Certificate authorization error
  */
 
@@ -17,46 +19,47 @@ var table = D.createTable(
         { label: "Expiry" },
         { label: "Remaining days", unit: "day" },
         { label: "Is valid" },
-        { label: "Auth error" }
+        { label: "Auth error" },
     ]
 );
 
 // list of servers to check the status of their https certificate
-var serversToCheck = D.getParameter("serversToCheck");
+var serversToCheck = D.getParameter('serversToCheck');
 
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
- *
+ * 
  * @returns Promise wait until all https calls are done to the target servers
  */
 function getAllCertificateData() {
-    return Promise.all(
+    return D.q.all(
         serversToCheck.map(getCertificateData)
     );
 }
 
 /**
- *
+ * 
  * @param {*} targetServer server to check its https certificate status
  * @returns Promise that wait for the https call to the targetServer and parse the needed data
  */
 function getCertificateData(targetServer) {
+    var d = D.q.defer();
     var website = D.createExternalDevice(targetServer);
-    return new Promise(function (resolve) {
-        website.http.getTLSCertificate({}, function (err, resp) {
+    website.http.getTLSCertificate({}, function (err, resp) {
             if (err) {
                 console.error(err);
-                return resolve();
+                return d.resolve();
             }
             resp.server = targetServer;
-            resolve(resp);
+            d.resolve(resp);
         });
-    });
+
+    return d.promise;
 }
 
 /**
- *
+ * 
  * @param {*} dataList https parsed data for each server in the serversToCheck
  * @returns same dataList with added remainingDays attribute for each data in the list
  */
@@ -64,8 +67,9 @@ function parseDates(dataList) {
     return dataList.map(parseDate);
 }
 
+
 /**
- *
+ * 
  * @param {*} data contains the data passed by getCertificateData function to calculate remaining days for the certificate
  * @returns the same data in the input with added remainingDays attribute
  */
@@ -112,10 +116,11 @@ function validate() {
             .then(callback)
             .catch(failure);
     }
-    verify(function () {
+    verify(function(){
         D.success();
     });
 }
+
 
 /**
 * @remote_procedure

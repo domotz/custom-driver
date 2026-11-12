@@ -1,3 +1,4 @@
+
 /**
  * This driver checks the status of https certificate for the target device
  * Communication protocol is https
@@ -13,28 +14,28 @@ var _var = D.device.createVariable;
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
- *
+ * 
  * @returns Promise that wait for the https call to the target machine and parse the needed data
  */
 function getCertificateData() {
-    return new Promise(function (resolve) {
-        D.device.http.getTLSCertificate({}, function (err, resp) {
+    var d = D.q.defer();
+    D.device.http.getTLSCertificate({}, function (err, resp) {
             if (err) {
-                console.error("" + err);
-                return D.failure();
+                console.error(""+err);
+                D.failure();
             }
-            resolve(resp);
+            d.resolve(resp);
         });
-    });
+    return d.promise;
 }
 
 /**
- *
+ * 
  * @param {*} data contains the data passed by getCertificateData function to calculate remaining days for the certificate
  * @returns the same data in the input with added remainingDays attribute
  */
 function parseDate(data) {
-    if (data && data.expiry) {
+    if(data && data.expiry){
         var expiryParsed = data.expiry.match(/^(...) (..) (..):(..):(..) (....) GMT$/);
         var month = months.indexOf(expiryParsed[1]);
         var day = expiryParsed[2];
@@ -53,18 +54,18 @@ function parseDate(data) {
 }
 
 /**
- *
- * @param {*} data
+ * 
+ * @param {*} data 
  * @returns list of variables to be monitored
  */
 function createVars(data) {
-    if (!data) D.failure(D.errorType.GENERIC_ERROR);
+    if(!data) D.failure(D.errorType.GENERIC_ERROR);
     D.success([
         _var("issuer", "Issuer", data.issuer),
         _var("expiry", "Expiry", data.expiry),
         _var("remainingDays", "Remaining days", data.remainingDays, "day"),
         _var("valid", "Is valid", data.valid),
-        _var("certError", "Certificate authorization error", data.certError)
+        _var("certError", "Certificate authorization error", data.certError),
     ]);
 }
 
@@ -89,10 +90,11 @@ function validate() {
     });
 }
 
+
 /**
 * @remote_procedure
-* @label Get https certificate info
-* @documentation This procedure make a https call to the target device, extract the necessary data
+* @label Get https certificate info 
+* @documentation This procedure make a https call to the target device, extract the necessary data 
 * then create variables for %Issuer, %Expiry, %Remaining days, %Is valid, %Certificate authorization error
 */
 function get_status() {

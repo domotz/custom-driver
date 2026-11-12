@@ -1,6 +1,6 @@
 {
     "logo": "azure.svg",
-    "version": "1.0.2",
+    "version": "1.0.0",
     "name": "Azure Containers",
     "description": "Monitor Azure Containers: this script retrieves information about Containers",
     "category": "Software Integration",
@@ -56,8 +56,8 @@
         },
         {
             "value_type": "LIST",
-            "name": "containerNames",
-            "label": "Container Group Name",
+            "name": "vmNames",
+            "label": "VM Name",
             "value": [
                 "All"
             ]

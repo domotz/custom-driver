@@ -48,11 +48,11 @@ function get_status() {
     var table = D.createTable(
         "Philips Hue Lights",
         [
-            { label: "Name" },
-            { label: "State" },
+            { label: "Name", unit: null },
+            { label: "State", unit: null },
             { label: "Brightness", unit: "lux" },
-            { label: "Software Version" },
-            { label: "Update Available" }
+            { label: "Software Version", unit: null },
+            { label: "Update Available", unit: null },
         ]
     );
     function callbackMethod(error, response, body) {
@@ -76,6 +76,7 @@ function get_status() {
         D.success(table);
     }
 
-    // httpOptions.url already points to /api/<key>/lights
+    httpOptions.url += "/lights";
     D.device.http.get(httpOptions, callbackMethod);
 }
+

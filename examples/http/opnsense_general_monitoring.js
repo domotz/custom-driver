@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver
+ * Domotz Custom Driver 
  * Name: OPNSense General / Monitoring
  * Description: This script is designed to retrieve information about an OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage
- *
+ *   
  * Communication protocol is HTTPS
- *
+ * 
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Custom Driver Variables:
@@ -20,11 +20,11 @@
 var port = D.getParameter("portNumber");
 
 //Processes the HTTP response and handles errors
-function processResponse(resolve, reject) {
+function processResponse(d) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            return D.failure(D.errorType.GENERIC_ERROR);
+            D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
             D.failure(D.errorType.RESOURCE_UNAVAILABLE);
@@ -33,12 +33,13 @@ function processResponse(resolve, reject) {
         } else if (response.statusCode != 200) {
             D.failure(D.errorType.GENERIC_ERROR);
         }
-        resolve(JSON.parse(body));
+        d.resolve(JSON.parse(body));
     };
 }
 
 // Retrieves firmware status from the OPNsense device
 function  getFirmwareStatus() {
+    var d = D.q.defer();
     var config = {
         url: "/api/core/firmware/status",
         username: D.device.username(), //api key == username
@@ -49,13 +50,13 @@ function  getFirmwareStatus() {
         rejectUnauthorized: false,
         port: port
     };
-    return new Promise(function (resolve, reject) {
-        D.device.http.get(config, processResponse(resolve, reject));
-    });
+    D.device.http.get(config, processResponse(d));
+    return d.promise;
 }
 
 // Retrieves activity data from the OPNsense device
 function getActivity() {
+    var d = D.q.defer();
     var config = {
         url: "/api/diagnostics/activity/getActivity",
         protocol: "https",
@@ -64,62 +65,33 @@ function getActivity() {
         rejectUnauthorized: false,
         port: port
     };
-    return new Promise(function (resolve, reject) {
-        D.device.http.post(config, processResponse(resolve, reject));
-    });
+    D.device.http.post(config, processResponse(d));
+    return d.promise;
 }
 
 function extractHeaders(headers) {
-    return headers.split(",").map(function (item) {
-        return parseFloat(item.match(/-?\d+(\.\d+)?/));
+    return headers.split(',').map(function (item) { 
+        return parseFloat(item.match(/-?\d+(\.\d+)?/)); 
     });
-}
-
-/**
- * Parses a FreeBSD top(1) memory line ("Mem: 214M Active, 1245M Inact, 52M Laundry, 980M Wired, 512M Buf, 12G Free"
- * or "Swap: 8192M Total, 8100M Free") into kilobytes by label; the fields present vary with the FreeBSD version.
- * @param {string} line The top line
- * @returns {Object} Kilobytes by label
- */
-function parseTopMemory(line) {
-    var multipliers = { K: 1, M: 1024, G: 1024 * 1024, T: 1024 * 1024 * 1024 };
-    var values = {};
-    var fieldRegex = /([\d.]+)([KMGT]?)\s+([A-Za-z]+)/g;
-    var match;
-    while ((match = fieldRegex.exec(line.replace(/^\w+:/, ""))) !== null) {
-        values[match[3]] = parseFloat(match[1]) * (match[2] ? multipliers[match[2]] : 1 / 1024);
-    }
-    return values;
-}
-
-// Returns the top header line starting with the given label (e.g. "Swap:"); on ZFS an "ARC:" line shifts the positions
-function findHeader(headers, label) {
-    for (var i = 0; i < headers.length; i++) {
-        if (headers[i].trim().indexOf(label) === 0) return headers[i];
-    }
-    return "";
 }
 
 // Extracts relevant data from the API response
 function extractData(data) {
     var productVersion = data[0].product_version;
     var firmwareUpdates = data[0].status_msg.indexOf("There are no updates available on the selected mirror.") !== -1 ? "No updates" : data[0].status_msg;
-
+   
     var cpuHeaders = extractHeaders(data[1].headers[2]);
     var cpuUsage = cpuHeaders[0] + cpuHeaders[1] + cpuHeaders[2] + cpuHeaders[3];
 
-    // Memory in use is every field but Free (Buf is kept in, as before)
-    var memory = parseTopMemory(findHeader(data[1].headers, "Mem:"));
-    var freeMem = memory.Free || 0;
-    var usedMem = Object.keys(memory).reduce(function (sum, label) {
-        return label === "Free" ? sum : sum + memory[label];
-    }, 0);
+    var memHeaders = extractHeaders(data[1].headers[3]);
+    var usedMem = memHeaders[0] + memHeaders[1] + memHeaders[2] + memHeaders[3];
+    var freeMem = memHeaders[4];
     var memUsage = (usedMem / (usedMem + freeMem) * 100).toFixed(2);
 
-    var swap = parseTopMemory(findHeader(data[1].headers, "Swap:"));
-    var totalSwap = swap.Total || 0;
-    var freeSwap = swap.Free || 0;
-    var swapUsage = totalSwap ? ((totalSwap - freeSwap) / totalSwap * 100).toFixed(2) : "0.00";
+    var swapHeaders = extractHeaders(data[1].headers[4]);
+    var totalSwap = swapHeaders[0];
+    var freeSwap = swapHeaders[1];
+    var swapUsage = ((totalSwap - freeSwap) / totalSwap * 100).toFixed(2);
 
     var variables = [
         D.createVariable("product-version", "Product Version", productVersion, null, D.valueType.STRING),
@@ -131,12 +103,13 @@ function extractData(data) {
     D.success(variables);
 }
 
+
 // Loads firmware status and activity informations
 function loadData() {
-    return Promise.all([
+    return D.q.all([
         getFirmwareStatus(),
         getActivity()
-    ]);
+    ]);    
 }
 
 /**
@@ -144,7 +117,7 @@ function loadData() {
  * @label Validate OPENSense Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate() {
+function validate(){
     loadData()
         .then(function (response) {
             if (response) {
@@ -163,7 +136,7 @@ function validate() {
 
 /**
  * @remote_procedure
- * @label Get OPENSense informations
+ * @label Get OPENSense informations 
  * @documentation This procedure is used to extract information about the OPNsense device, including product version, firmware updates, CPU usage, memory usage, and swap usage.
  */
 function get_status() {

@@ -36,8 +36,9 @@
  **/
 const hours = 1;
 
+
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter("protocol");
+const protocol = D.getParameter('protocol');
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
@@ -50,7 +51,7 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000            // per-command timeout in milliseconds
+    timeout: 30000,            // per-command timeout in milliseconds
 };
 
 /**
@@ -58,16 +59,16 @@ const config = {
  * @const object auditedEvents
  **/
 const auditedEvents = {
-    4720: { description: "A user account was created.", count: 0 },
-    4722: { description: "A user account was enabled.", count: 0 },
-    4731: { description: "A security-enabled local group was created.", count: 0 },
-    4732: { description: "A member was added to a security-enabled local group.", count: 0 },
-    4649: { description: "A replay attack was detected.", count: 0 },
-    4741: { description: "A computer account was created.", count: 0 },
-    4625: { description: "An account failed to log on.", count: 0 },
-    4817: { description: "Auditing settings on object were changed.", count: 0 },
-    4947: { description: "A change has been made to Windows Firewall exception list. A rule was modified.", count: 0 },
-    4948: { description: "A change has been made to Windows Firewall exception list. A rule was deleted.", count: 0 }
+    4720: {description: "A user account was created.", count:0 },
+    4722: {description: "A user account was enabled.", count:0 },
+    4731: {description: "A security-enabled local group was created.", count:0 },
+    4732: {description: "A member was added to a security-enabled local group.", count:0 },
+    4649: {description: "A replay attack was detected.", count:0 },
+    4741: {description: "A computer account was created.", count:0 },
+    4625: {description: "An account failed to log on.", count:0 },
+    4817: {description: "Auditing settings on object were changed.", count:0 },
+    4947: {description: "A change has been made to Windows Firewall exception list. A rule was modified.", count:0 },
+    4948: {description: "A change has been made to Windows Firewall exception list. A rule was deleted.", count:0 },
 };
 
 const idArray = Object.keys(auditedEvents);
@@ -75,8 +76,8 @@ const idArray = Object.keys(auditedEvents);
 const eventTable = D.createTable(
     "Security events",
     [
-        { label: "Description" },
-        { label: "Last " + hours + " hour(s) occurrences" }
+        {label: "Description"},
+        {label: "Last " + hours + " hour(s) occurrences"}
     ]
 );
 
@@ -109,7 +110,7 @@ function validate() {
  * @documentation This procedure Retrieves the occurrences count of selected Windows security events in the last hour.
  */
 function get_status() {
-    const command = "$Hours=" + hours + ";$events=Get-WinEvent -FilterHashTable @{LogName=\"Security\";ID=" + idArray + ";StartTime=((Get-Date).AddHours(-($Hours)));EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {@{name=\"\";count=\"0\"}|ConvertTo-Json};";
+    const command = "$Hours=" + hours + ";$events=Get-WinEvent -FilterHashTable @{LogName=\"Security\";ID=" + idArray + ";StartTime=((Get-Date).AddHours(-($Hours)).Date);EndTime=(Get-Date)} -ErrorAction SilentlyContinue |group id|select name,count;if ($events){$events | ConvertTo-Json} else {@{name=\"\";count=\"0\"}|ConvertTo-Json};";
     instance.executeCommand(command)
         .then(instance.parseOutputToJson)
         .then(parseOutput)
@@ -117,7 +118,7 @@ function get_status() {
 }
 
 function setAuditedEventCount(event) {
-    if (event.Name) auditedEvents[event.Name].count = event.Count;
+    if(event.Name) auditedEvents[event.Name].count = event.Count
 }
 
 // Parses the output of the command and fills the eventTable with the retrieved events.
@@ -152,32 +153,31 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-};
+}
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const self = this;
+    const d = D.q.defer();
     config.command = command;
-    return new Promise(function (resolve, reject) {
-        D.device.sendWinRMCommand(config, function (output) {
-            if (output.error) {
-                self.checkError(output);
-                reject(output.error);
-            } else {
-                resolve(output);
-            }
-        });
+    D.device.sendWinRMCommand(config, function (output) {
+        if (output.error) {
+            self.checkError(output);
+            d.reject(output.error);
+        } else {
+            d.resolve(output);
+        }
     });
-};
+    return d.promise;
+}
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout;
+    const jsonString = output.outcome.stdout
     return jsonString ? JSON.parse(jsonString) : null;
-};
+}
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout;
-};
+    return output.outcome && output.outcome.stdout
+}
 
 // SSH functions
 function SSHHandler() {}
@@ -191,9 +191,10 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-};
+}
 
 SSHHandler.prototype.executeCommand = function (command) {
+    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -203,22 +204,21 @@ SSHHandler.prototype.executeCommand = function (command) {
         timeout: config.timeout,
         command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
     };
-    return new Promise(function (resolve, reject) {
-        D.device.sendSSHCommand(sshConfig, function (output, error) {
-            if (error) {
-                self.checkError(output, error);
-                reject(error);
-            } else {
-                resolve(output);
-            }
-        });
+    D.device.sendSSHCommand(sshConfig, function (output, error) {
+        if (error) {
+            self.checkError(output, error);
+            d.reject(error);
+        } else {
+            d.resolve(output);
+        }
     });
-};
+    return d.promise;
+}
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-};
+}
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined;
-};
+    return output !== undefined
+}
