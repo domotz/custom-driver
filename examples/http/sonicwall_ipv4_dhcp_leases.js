@@ -32,6 +32,59 @@ function generateConfig(url) {
     };
 }
 
+// SonicOS can require a bearer token on every API request after login ("Non-GUI Management Login Bearer
+// Token Session Check", on by default from SonicOS 7.3.4-7015). When it does, the login reply carries the
+// token in status.info[].bearer_token; a firewall with the check off returns none.
+var bearerToken = null;
+
+/**
+ * Reads the bearer token from the login reply.
+ * @param {string|object} body The login reply
+ * @returns {string|null} The token, or null when the firewall did not return one
+ */
+function readBearerToken(body) {
+    try {
+        var reply = typeof body === "string" ? JSON.parse(body) : body;
+        var info = reply && reply.status && reply.status.info;
+        for (var i = 0; info && i < info.length; i++) {
+            if (info[i] && info[i].bearer_token) {
+                return info[i].bearer_token;
+            }
+        }
+    } catch (e) {
+        console.warn("The login reply is not JSON, no bearer token read");
+    }
+    return null;
+}
+
+/**
+ * Sends a GET to the SonicOS API. When the login returned a bearer token the request carries it instead of
+ * the session cookie; if the firewall refuses the token (401) the request is sent once more with the cookie.
+ * @param {object} config The HTTP configuration
+ * @param {function} callback Called with (error, response, body)
+ */
+function authenticatedGet(config, callback) {
+    if (!bearerToken) {
+        D.device.http.get(config, callback);
+        return;
+    }
+    var withToken = {};
+    for (var key in config) {
+        if (key !== "jar") {
+            withToken[key] = config[key];
+        }
+    }
+    withToken.headers = { Authorization: "Bearer " + bearerToken };
+    D.device.http.get(withToken, function (error, response, body) {
+        if (!error && response && response.statusCode == 401) {
+            console.warn("The firewall refused the bearer token (401), retrying with the session cookie");
+            D.device.http.get(config, callback);
+            return;
+        }
+        callback(error, response, body);
+    });
+}
+
 //Processes the HTTP response and handles errors
 function processResponse(resolve, reject) {
     return function process(error, response, body) {
@@ -62,7 +115,10 @@ function login() {
     config.username = D.device.username();
     config.password = D.device.password();
     return new Promise(function (resolve, reject) {
-        D.device.http.post(config, processResponse(resolve, reject));
+        D.device.http.post(config, processResponse(function (body) {
+            bearerToken = readBearerToken(body);
+            resolve(body);
+        }, reject));
     });
 }
 
@@ -73,7 +129,7 @@ function login() {
 function getDHCPLeases() {
     var config = generateConfig("/api/sonicos/reporting/dhcp-server/ipv4/leases/statistic");
     return new Promise(function (resolve, reject) {
-        D.device.http.get(config, processResponse(resolve, reject));
+        authenticatedGet(config, processResponse(resolve, reject));
     });
 }
 

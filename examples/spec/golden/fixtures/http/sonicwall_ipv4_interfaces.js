@@ -4,6 +4,7 @@
 // management: { https, ping, snmp, ssh }, user_login: { http, https } } }] }. X1 is a DHCP WAN (mode.dhcp, no
 // static block) and X3 has no ip_assignment, as unassigned ports have in the SonicOS interface list.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -53,3 +54,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases[0]));

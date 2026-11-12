@@ -3,6 +3,7 @@
 // read by the driver as a JSON object keyed by service id (gav, spyw, ips, ...) with boolean status and licensed.
 // The full dashboard payload is not published; only the keys the driver reads (plus a few unrelated ones) are simulated.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -30,3 +31,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases[0]));

@@ -3,6 +3,7 @@
 // GET /api/sonicos/reporting/ssl-vpn/sessions, a JSON array of sessions with user_name, client_virtual_ip,
 // client_wan_ip and logged_in. logged_in is "MM/DD/YYYY HH:MM:SS", as production stores it.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -22,3 +23,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases[0]));

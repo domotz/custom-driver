@@ -5,6 +5,7 @@
 // One group with the primary WAN up and active and the backup WAN down, one group with a single member
 // whose probe target is unreachable.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 const MEMBERS = [
@@ -24,3 +25,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases[0]));

@@ -6,6 +6,7 @@
 // the `request` library hands the body over as a Buffer.
 // Case 1: 2FA account (bearer token). Case 2: no 2FA, /tfa is refused and the driver falls back to /auth.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const CONFIG = `{
   "system_time": "2026-01-15 10:00:00",
@@ -59,3 +60,6 @@ module.exports = {
         }
     ]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases[1]));

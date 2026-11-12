@@ -322,5 +322,167 @@
             }
         ],
         "table": null
+    },
+    "sonicwall NSv 25, bearer token required validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "sonicwall NSv 25, bearer token required get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "lod",
+                "name": "Last Order Day (LOD)",
+                "value": "2022-04-15",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "arm",
+                "name": "Active Retirement (ARM)",
+                "value": "2022-04-16",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "one-year-lod",
+                "name": "One-Year Support Last Order Day",
+                "value": "2025-04-15",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "lrm",
+                "name": "Limited Retirement Mode (LRM)",
+                "value": "2024-04-16",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "eos",
+                "name": "End of Support (EOS)",
+                "value": "2026-04-16",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "lod-remaining-days",
+                "name": "Last Order Day (LOD) - Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "arm-remaining-days",
+                "name": "Active Retirement (ARM) -Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "one-year-lod-remaining-days",
+                "name": "One-Year Support Last Order Day - Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "lrm-remaining-days",
+                "name": "Limited Retirement Mode (LRM) - Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "eos-remaining-days",
+                "name": "End of Support (EOS) - Remaining Days",
+                "value": 91,
+                "unit": "days",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "sonicwall NSv 25, bearer token refused validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "sonicwall NSv 25, bearer token refused get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "lod",
+                "name": "Last Order Day (LOD)",
+                "value": "2022-04-15",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "arm",
+                "name": "Active Retirement (ARM)",
+                "value": "2022-04-16",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "one-year-lod",
+                "name": "One-Year Support Last Order Day",
+                "value": "2025-04-15",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "lrm",
+                "name": "Limited Retirement Mode (LRM)",
+                "value": "2024-04-16",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "eos",
+                "name": "End of Support (EOS)",
+                "value": "2026-04-16",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "lod-remaining-days",
+                "name": "Last Order Day (LOD) - Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "arm-remaining-days",
+                "name": "Active Retirement (ARM) -Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "one-year-lod-remaining-days",
+                "name": "One-Year Support Last Order Day - Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "lrm-remaining-days",
+                "name": "Limited Retirement Mode (LRM) - Remaining Days",
+                "value": 0,
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "eos-remaining-days",
+                "name": "End of Support (EOS) - Remaining Days",
+                "value": 91,
+                "unit": "days",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
     }
 }
