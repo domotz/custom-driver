@@ -7,7 +7,7 @@
  * E_UNAUTHORIZED "Unauthorized. Bearer token is invalid." (firewall replies as captured by Support in
  * BT-7109 / ZD-91187). A firewall with the check off returns no token and accepts the session cookie.
  *
- * bearerCases(baseCase) derives two cases from a fixture's session-cookie case:
+ * bearerCases(cases) derives two cases from a fixture's session-cookie case (the one that calls /auth):
  *   - "bearer token required": /auth returns a token and each SonicOS data request must carry it;
  *   - "bearer token refused": /auth returns a token, the firewall answers 401 to the request that
  *     carries it, and the driver must retry once the way it did before (no Bearer header).
@@ -22,7 +22,8 @@ const UNAUTHORIZED = { status: { success: false, info: [{ level: "error", code: 
 const BEARER = { Authorization: "Bearer " + TOKEN };
 const NO_BEARER = { Authorization: undefined };
 
-const isLogin = (call) => call.method === "post" && call.target === "/api/sonicos/auth";
+const AUTH_PATH = "/api/sonicos/auth";
+const isLogin = (call) => call.method === "post" && call.target === AUTH_PATH;
 const isData = (call) => call.method === "get" && !call.host && String(call.target).startsWith("/api/sonicos/");
 
 function tokenRequired(calls) {
@@ -57,11 +58,21 @@ function derive(baseCase, suffix, transform) {
     return Object.assign({}, baseCase, { name: baseCase.name + ", " + suffix, entryPoints });
 }
 
-function bearerCases(baseCase) {
+// The fixture case that logs in through /auth with the session cookie (not, e.g., the 2FA /tfa flow).
+function cookieCase(cases) {
+    return cases.find((c) => !/bearer token/.test(c.name)
+        && Object.keys(c.entryPoints).every((name) => c.entryPoints[name].calls.some(isLogin)));
+}
+
+function bearerCases(cases) {
+    const baseCase = cookieCase(cases);
+    if (!baseCase) {
+        throw new Error("no fixture case logs in through " + AUTH_PATH);
+    }
     return [
         derive(baseCase, "bearer token required", tokenRequired),
         derive(baseCase, "bearer token refused", tokenRefused)
     ];
 }
 
-module.exports = { bearerCases, TOKEN, AUTH_WITH_TOKEN, TOKEN_INVALID, UNAUTHORIZED, BEARER, NO_BEARER };
+module.exports = { bearerCases, cookieCase, AUTH_PATH, TOKEN, AUTH_WITH_TOKEN, TOKEN_INVALID, UNAUTHORIZED, BEARER, NO_BEARER };

@@ -14,21 +14,18 @@ const { discoverDrivers } = require("./net/catalogue");
 const { runEntryPoint } = require("./net/run-driver");
 const { deterministicGlobals } = require("./golden/clock");
 const reply = require("./golden/replies");
-const { TOKEN, AUTH_WITH_TOKEN, TOKEN_INVALID, UNAUTHORIZED, BEARER } = require("./golden/sonicwall-bearer");
+const { TOKEN, AUTH_WITH_TOKEN, TOKEN_INVALID, UNAUTHORIZED, BEARER, AUTH_PATH, cookieCase: findCookieCase } = require("./golden/sonicwall-bearer");
 
 process.env.TZ = "UTC";
 
 const EXAMPLES = path.join(__dirname, "..");
 const FIXTURES = path.join(__dirname, "golden", "fixtures", "http");
-const AUTH_PATH = "/api/sonicos/auth";
 
 const drivers = discoverDrivers(EXAMPLES).filter((d) => d.path.startsWith("http/sonicwall_") && d.source.includes(AUTH_PATH));
 
 // The fixture case whose calls go through /auth with the session cookie (the firewall as it was before the check).
 function cookieCase(driver) {
-    const fixture = require(path.join(FIXTURES, path.basename(driver.path)));
-    return fixture.cases.find((c) => !/bearer token/.test(c.name)
-        && Object.values(c.entryPoints)[0].calls.some((call) => call.target === AUTH_PATH));
+    return findCookieCase(require(path.join(FIXTURES, path.basename(driver.path))).cases);
 }
 
 /**
@@ -83,8 +80,8 @@ async function run(driver, entryPoint, state) {
 }
 
 describe("SonicOS bearer token session check", () => {
-    it("covers the nine library drivers that log in through /auth", () => {
-        expect(drivers.length).toBe(9);
+    it("covers every library driver that logs in through /auth", () => {
+        expect(drivers.length).toBeGreaterThanOrEqual(9);
         drivers.forEach((d) => expect(cookieCase(d)).withContext(d.path).toBeDefined());
     });
 

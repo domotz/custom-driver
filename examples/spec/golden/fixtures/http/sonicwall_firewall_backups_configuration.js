@@ -62,4 +62,4 @@ module.exports = {
 };
 
 // The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
-module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases[1]));
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases));

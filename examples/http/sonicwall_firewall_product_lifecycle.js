@@ -66,7 +66,11 @@ function authenticatedGet(config, callback) {
             withToken[key] = config[key];
         }
     }
-    withToken.headers = { Authorization: "Bearer " + bearerToken };
+    withToken.headers = {};
+    for (var name in config.headers) {
+        withToken.headers[name] = config.headers[name];
+    }
+    withToken.headers.Authorization = "Bearer " + bearerToken;
     D.device.http.get(withToken, function (error, response, body) {
         if (!error && response && response.statusCode == 401) {
             console.warn("The firewall refused the bearer token (401), retrying with the session cookie");

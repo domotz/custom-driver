@@ -130,12 +130,12 @@ function attemptTfaLogin() {
  * SonicOS can require a bearer token on every API request after login ("Non-GUI Management Login Bearer
  * Token Session Check", on by default from SonicOS 7.3.4-7015). When it does, the /auth reply carries the
  * token in status.info[].bearer_token; a firewall with the check off returns none.
- * @param {string} body The login reply
+ * @param {string|object} body The login reply
  * @returns {string|null} The token, or null when the firewall did not return one
  */
 function readBearerToken(body) {
     try {
-        var reply = JSON.parse(body ? body.toString() : "");
+        var reply = typeof body === "string" ? JSON.parse(body) : body;
         var info = reply && reply.status && reply.status.info;
         for (var i = 0; info && i < info.length; i++) {
             if (info[i] && info[i].bearer_token) {
@@ -143,7 +143,7 @@ function readBearerToken(body) {
             }
         }
     } catch (e) {
-        console.warn("The /auth reply is not JSON, no bearer token read");
+        console.warn("The login reply is not JSON, no bearer token read");
     }
     return null;
 }
@@ -188,7 +188,7 @@ function loginAndGetToken() {
 }
 
 /**
- * Sends one export request, with a bearer token or with the session cookie and basic authentication.
+ * Sends one export request, with a bearer token or with the session cookie.
  * @param {string|null} token The bearer token, or null for the session cookie
  * @param {boolean} [retryOn401] True when a 401 will be retried, so it is logged as a warning
  * @returns {Promise} Resolves with the formatted configuration; rejects with { status } or { parseError }
@@ -209,6 +209,8 @@ function requestCliConfig(token, retryOn401) {
     if (token) {
         request.headers.Authorization = "Bearer " + token;
     } else {
+        // The session cookie authenticates this request. The auth object is kept as it has always been
+        // sent to the sandbox, which only honours auth: "basic" and drops any other value.
         request.jar = true;
         request.auth = {
             user: D.device.username(),
