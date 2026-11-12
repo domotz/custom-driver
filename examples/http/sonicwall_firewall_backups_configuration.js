@@ -190,9 +190,10 @@ function loginAndGetToken() {
 /**
  * Sends one export request, with a bearer token or with the session cookie and basic authentication.
  * @param {string|null} token The bearer token, or null for the session cookie
+ * @param {boolean} [retryOn401] True when a 401 will be retried, so it is logged as a warning
  * @returns {Promise} Resolves with the formatted configuration; rejects with { status } or { parseError }
  */
-function requestCliConfig(token) {
+function requestCliConfig(token, retryOn401) {
     var request = {
         url: cliExportPath,
         protocol: "https",
@@ -225,7 +226,12 @@ function requestCliConfig(token) {
                 } catch (e) {
                     reply = "";
                 }
-                console.error("Fetch failed (" + (token ? "bearer token" : "session cookie") + "): " + (err || res.statusCode) + (reply ? " | reply: " + reply : ""));
+                var message = "Fetch failed (" + (token ? "bearer token" : "session cookie") + "): " + (err || res.statusCode) + (reply ? " | reply: " + reply : "");
+                if (retryOn401 && res && res.statusCode === 401) {
+                    console.warn(message);
+                } else {
+                    console.error(message);
+                }
                 reject({ status: res ? res.statusCode : null });
                 return;
             }
@@ -257,13 +263,14 @@ function toDriverError(failure) {
 
 function getCliConfig(authMode) {
     var token = authMode.type === "bearer" ? authMode.value : authMode.bearer;
+    var canRetry = authMode.type === "cookie" && !!token;
 
     console.log("Fetching CLI config...");
-    return requestCliConfig(token || null)
+    return requestCliConfig(token || null, canRetry)
         .catch(function (failure) {
             // A token from /auth that the firewall refuses: send the request once more the way it was
-            // sent before the bearer token session check existed (session cookie and basic authentication).
-            if (authMode.type === "cookie" && token && failure && failure.status === 401) {
+            // sent before the bearer token session check existed (session cookie).
+            if (canRetry && failure && failure.status === 401) {
                 console.warn("The firewall refused the bearer token (401), retrying with the session cookie");
                 return requestCliConfig(null);
             }
