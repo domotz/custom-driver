@@ -21,7 +21,7 @@ const { deterministicGlobals } = require("./golden/clock");
 process.env.TZ = "UTC";
 
 const TIME_LIMIT_MS = 2000;
-const EXAMPLES = path.join(__dirname, "..");
+const EXAMPLES = path.join(__dirname, "..", "examples");
 const FIXTURES = path.join(__dirname, "golden", "fixtures");
 const SNAPSHOTS = path.join(__dirname, "golden", "snapshots");
 const update = process.env.UPDATE_GOLDEN === "1";

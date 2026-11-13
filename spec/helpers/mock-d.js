@@ -24,7 +24,7 @@ var fs = require("fs");
 var path = require("path");
 var vm = require("vm");
 
-var EXAMPLES_ROOT = path.resolve(__dirname, "..", "..");
+var EXAMPLES_ROOT = path.resolve(__dirname, "..", "..", "examples");
 
 function createMockD(options) {
     options = options || {};
