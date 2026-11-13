@@ -1,0 +1,113 @@
+{
+    "opnsense 23.7 all rules validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 all rules get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Nat Rules",
+            "columnHeaders": [
+                {
+                    "label": "Evaluations",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Bytes",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States creation",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "automatic-outbound-nat",
+                    "values": [
+                        31002,
+                        1745129800,
+                        98,
+                        502113
+                    ]
+                },
+                {
+                    "id": "port-forward-https-to-web-server",
+                    "values": [
+                        8812,
+                        14129800,
+                        3,
+                        1290
+                    ]
+                },
+                {
+                    "id": "unused-redirect",
+                    "values": [
+                        8812,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    "opnsense 23.7 rules matching a name validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 rules matching a name get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Nat Rules",
+            "columnHeaders": [
+                {
+                    "label": "Evaluations",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Bytes",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States creation",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "automatic-outbound-nat",
+                    "values": [
+                        31002,
+                        1745129800,
+                        98,
+                        502113
+                    ]
+                },
+                {
+                    "id": "port-forward-https-to-web-server",
+                    "values": [
+                        8812,
+                        14129800,
+                        3,
+                        1290
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,153 @@
+{
+    "three queues over two pages, one backlog without consumers validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three queues over two pages, one backlog without consumers get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Queues",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Vhost"
+                },
+                {
+                    "label": "Sum delivered per second"
+                },
+                {
+                    "label": "Sum delivered"
+                },
+                {
+                    "label": "Unacknowledged per second"
+                },
+                {
+                    "label": "Unacknowledged"
+                },
+                {
+                    "label": "Redelivered per second"
+                },
+                {
+                    "label": "Redelivered"
+                },
+                {
+                    "label": "Ready per second"
+                },
+                {
+                    "label": "Ready"
+                },
+                {
+                    "label": "Published per second"
+                },
+                {
+                    "label": "Published"
+                },
+                {
+                    "label": "Messages per second"
+                },
+                {
+                    "label": "Messages delivered per second"
+                },
+                {
+                    "label": "Delivered"
+                },
+                {
+                    "label": "Acknowledged per second"
+                },
+                {
+                    "label": "Acknowledged"
+                },
+                {
+                    "label": "Messages"
+                },
+                {
+                    "label": "Memory"
+                },
+                {
+                    "label": "Consumers"
+                }
+            ],
+            "records": [
+                {
+                    "id": "[orders.new][shop]",
+                    "values": [
+                        "orders.new",
+                        "shop",
+                        10.1,
+                        4975,
+                        0.2,
+                        5,
+                        0.05,
+                        3,
+                        0.2,
+                        20,
+                        10.5,
+                        5000,
+                        0.4,
+                        10.1,
+                        4975,
+                        10,
+                        4970,
+                        25,
+                        55248,
+                        3
+                    ]
+                },
+                {
+                    "id": "[orders.dead][shop]",
+                    "values": [
+                        "orders.dead",
+                        "shop",
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        2.5,
+                        15000,
+                        2.5,
+                        15000,
+                        2.5,
+                        0,
+                        0,
+                        0,
+                        0,
+                        15000,
+                        1250000,
+                        0
+                    ]
+                },
+                {
+                    "id": "[audit][/]",
+                    "values": [
+                        "audit",
+                        "/",
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        21000,
+                        1
+                    ]
+                }
+            ]
+        }
+    }
+}

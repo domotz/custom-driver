@@ -1,0 +1,16 @@
+{
+    "pfSense 2.7.2 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "pfSense 2.7.2 backup": {
+        "type": "success",
+        "backup": {
+            "label": "pfSense Configuration Backup",
+            "running": "<?xml version=\"1.0\"?>\n<pfsense>\n\t<version>23.3</version>\n\t<lastchange></lastchange>\n\t<system>\n\t\t<optimization>normal</optimization>\n\t\t<hostname>pfSense</hostname>\n\t\t<domain>home.arpa</domain>\n\t\t<dnsserver>9.9.9.9</dnsserver>\n\t\t<timezone>Europe/Rome</timezone>\n\t\t<user>\n\t\t\t<name>admin</name>\n\t\t\t<descr><![CDATA[System Administrator]]></descr>\n\t\t\t<scope>system</scope>\n\t\t\t<bcrypt-hash>$2y$10$abcdefghijklmnopqrstuuAbCdEfGhIjKlMnOpQrStUvWxYz01234</bcrypt-hash>\n\t\t</user>\n\t</system>\n\t<interfaces>\n\t\t<wan><if>igb0</if><descr>WAN</descr><enable></enable><ipaddr>dhcp</ipaddr></wan>\n\t\t<lan><if>igb1</if><descr>LAN</descr><enable></enable><ipaddr>192.168.1.1</ipaddr><subnet>24</subnet></lan>\n\t</interfaces>\n</pfsense>\n",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

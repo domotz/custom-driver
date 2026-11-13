@@ -1,0 +1,106 @@
+{
+    "dl380 gen10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "dl380 gen10 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "System status",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "agentless-management-service",
+                    "values": [
+                        "Unavailable"
+                    ]
+                },
+                {
+                    "id": "bios-or-hardware-health",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "fan-redundancy",
+                    "values": [
+                        "Redundant"
+                    ]
+                },
+                {
+                    "id": "fans",
+                    "values": [
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "memory",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "network",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "power-supplies",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "power-supplies-mismatch",
+                    "values": [
+                        false
+                    ]
+                },
+                {
+                    "id": "power-supply-redundancy",
+                    "values": [
+                        "Redundant"
+                    ]
+                },
+                {
+                    "id": "processors",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "storage",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "temperature",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "power-state",
+                    "values": [
+                        "On"
+                    ]
+                },
+                {
+                    "id": "post-state",
+                    "values": [
+                        "FinishedPost"
+                    ]
+                }
+            ]
+        }
+    }
+}

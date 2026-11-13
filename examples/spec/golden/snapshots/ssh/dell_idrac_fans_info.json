@@ -1,0 +1,91 @@
+{
+    "iDRAC 9 with one failed fan validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 with one failed fan get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Fans Info",
+            "columnHeaders": [
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Description",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Redundancy Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Active Cooling",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Variable Speed",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "PWM",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Current Reading",
+                    "unit": "RPM",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "fan.embedded.1a",
+                    "values": [
+                        "Fan",
+                        "System Board Fan1A",
+                        "Ok",
+                        "Fully Redundant",
+                        "1",
+                        "1",
+                        "33",
+                        "4800"
+                    ]
+                },
+                {
+                    "id": "fan.embedded.1b",
+                    "values": [
+                        "Fan",
+                        "System Board Fan1B",
+                        "Ok",
+                        "Fully Redundant",
+                        "1",
+                        "1",
+                        "31",
+                        "4560"
+                    ]
+                },
+                {
+                    "id": "fan.embedded.2a",
+                    "values": [
+                        "Fan",
+                        "System Board Fan2A",
+                        "Critical",
+                        "Lost",
+                        "1",
+                        "1",
+                        "0",
+                        "0"
+                    ]
+                }
+            ]
+        }
+    }
+}

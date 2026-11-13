@@ -1,0 +1,36 @@
+{
+    "path with a blind hop and a lossy destination validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "path with a blind hop and a lossy destination get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "dst_loss",
+                "name": "Destination packet loss",
+                "value": 10,
+                "unit": "%"
+            },
+            {
+                "uid": "dst_rtt_avg",
+                "name": "Destination average RTT",
+                "value": 3.9,
+                "unit": "ms"
+            },
+            {
+                "uid": "dst_jitter_avg",
+                "name": "Destination jitter",
+                "value": 1.3,
+                "unit": "ms"
+            },
+            {
+                "uid": "hop_count",
+                "name": "Number of hops",
+                "value": 4
+            }
+        ],
+        "table": null
+    }
+}

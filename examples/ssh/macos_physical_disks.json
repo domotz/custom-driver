@@ -1,6 +1,6 @@
 {
     "logo": "macos.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "macOS - Physical Disks",
     "description": "Monitors the status of physical disks within a Macintosh machine",
     "category": "Software Integration",

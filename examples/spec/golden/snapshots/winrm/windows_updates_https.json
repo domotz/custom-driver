@@ -1,0 +1,278 @@
+{
+    "winrm, three missing updates validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three missing updates get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "0-severity-unspecified",
+                "name": "Severity - Unspecified",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1-severity-moderate",
+                "name": "Severity - Moderate",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "2-severity-low",
+                "name": "Severity - Low",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "3-severity-important",
+                "name": "Severity - Important",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "4-severity-critical",
+                "name": "Severity - Critical",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "99-category-security",
+                "name": "Category - Security",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Missing Updates",
+            "columnHeaders": [
+                {
+                    "label": "Title"
+                },
+                {
+                    "label": "Severity"
+                },
+                {
+                    "label": "Categories"
+                },
+                {
+                    "label": "URL"
+                }
+            ],
+            "records": [
+                {
+                    "id": "KB5034768",
+                    "values": [
+                        "2024-02 Cumulative Update for Windows Server 2019 (1809) for x64-based Systems (KB5034768)",
+                        "Critical",
+                        "Security Updates|Windows Server 2019",
+                        "https://support.microsoft.com/help/5034768"
+                    ]
+                },
+                {
+                    "id": "KB5034863",
+                    "values": [
+                        "2024-02 Security Update for Microsoft server operating system version 21H2 (KB5034863)",
+                        "Important",
+                        "Security Updates|Windows Server 2019",
+                        "https://support.microsoft.com/help/5034863"
+                    ]
+                },
+                {
+                    "id": "KB2267602",
+                    "values": [
+                        "Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.405.1210.0)",
+                        "Unspecified",
+                        "Definition Updates|Microsoft Defender Antivirus",
+                        "https://go.microsoft.com/fwlink/?LinkId=52661"
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one missing update is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one missing update is a bare object get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "0-severity-unspecified",
+                "name": "Severity - Unspecified",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1-severity-moderate",
+                "name": "Severity - Moderate",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "2-severity-low",
+                "name": "Severity - Low",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "3-severity-important",
+                "name": "Severity - Important",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "4-severity-critical",
+                "name": "Severity - Critical",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "99-category-security",
+                "name": "Category - Security",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Missing Updates",
+            "columnHeaders": [
+                {
+                    "label": "Title"
+                },
+                {
+                    "label": "Severity"
+                },
+                {
+                    "label": "Categories"
+                },
+                {
+                    "label": "URL"
+                }
+            ],
+            "records": [
+                {
+                    "id": "KB5034768",
+                    "values": [
+                        "2024-02 Cumulative Update for Windows Server 2019 (1809) for x64-based Systems (KB5034768)",
+                        "Critical",
+                        "Security Updates|Windows Server 2019",
+                        "https://support.microsoft.com/help/5034768"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three missing updates validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three missing updates get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "0-severity-unspecified",
+                "name": "Severity - Unspecified",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1-severity-moderate",
+                "name": "Severity - Moderate",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "2-severity-low",
+                "name": "Severity - Low",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "3-severity-important",
+                "name": "Severity - Important",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "4-severity-critical",
+                "name": "Severity - Critical",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "99-category-security",
+                "name": "Category - Security",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Missing Updates",
+            "columnHeaders": [
+                {
+                    "label": "Title"
+                },
+                {
+                    "label": "Severity"
+                },
+                {
+                    "label": "Categories"
+                },
+                {
+                    "label": "URL"
+                }
+            ],
+            "records": [
+                {
+                    "id": "KB5034768",
+                    "values": [
+                        "2024-02 Cumulative Update for Windows Server 2019 (1809) for x64-based Systems (KB5034768)",
+                        "Critical",
+                        "Security Updates|Windows Server 2019",
+                        "https://support.microsoft.com/help/5034768"
+                    ]
+                },
+                {
+                    "id": "KB5034863",
+                    "values": [
+                        "2024-02 Security Update for Microsoft server operating system version 21H2 (KB5034863)",
+                        "Important",
+                        "Security Updates|Windows Server 2019",
+                        "https://support.microsoft.com/help/5034863"
+                    ]
+                },
+                {
+                    "id": "KB2267602",
+                    "values": [
+                        "Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.405.1210.0)",
+                        "Unspecified",
+                        "Definition Updates|Microsoft Defender Antivirus",
+                        "https://go.microsoft.com/fwlink/?LinkId=52661"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -25,19 +25,19 @@
  * @description Meraki API Key for Authentication
  * @type SECRET_TEXT
  */
-const apiKey = D.getParameter('apiKey')
+const apiKey = D.getParameter("apiKey");
 
 /**
  * @description Organization ID for the organization to monitor
  * @type STRING
  */
-const organizationId = D.getParameter('organizationID')
+const organizationId = D.getParameter("organizationID");
 
 // External Device representing the Meraki API endpoint
-const externalDevice = D.createExternalDevice('api.meraki.com')
+const externalDevice = D.createExternalDevice("api.meraki.com");
 
 // URL for accessing the organization's data from Meraki API
-const organizationUrl = '/api/v1/organizations/' + encodeURIComponent(organizationId)
+const organizationUrl = "/api/v1/organizations/" + encodeURIComponent(organizationId);
 
 const table = D.createTable("Meraki Device Statuses", [
     { label: "Device Name", valueType: D.valueType.STRING },
@@ -46,22 +46,22 @@ const table = D.createTable("Meraki Device Statuses", [
     { label: "Network ID", valueType: D.valueType.STRING },
     { label: "Product Type", valueType: D.valueType.STRING },
     { label: "Tags", valueType: D.valueType.STRING }
-])
+]);
 
 /**
  * @description Creates options for the API request to Meraki
  * @param {string} url The API endpoint URL
  * @returns {Object} The configuration object for the request
  */
-function createRequestOptions(url){
+function createRequestOptions(url) {
     return {
         url: url,
-        protocol: 'https',
+        protocol: "https",
         headers: {
-            'Content-Type': 'application/json',
-            'X-Cisco-Meraki-API-Key': apiKey
+            "Content-Type": "application/json",
+            "X-Cisco-Meraki-API-Key": apiKey
         }
-    }
+    };
 }
 
 /**
@@ -73,22 +73,22 @@ function createRequestOptions(url){
  */
 function handleApiError(error, response, body) {
     if (error) {
-        console.error('❌ Network Error:', error)
-        return D.failure(D.errorType.GENERIC_ERROR)
+        console.error("❌ Network Error:", error);
+        return D.failure(D.errorType.GENERIC_ERROR);
     }
     if (response.statusCode === 404) {
-        console.error('❌ Resource Not Found: Invalid Organization Id')
-        return D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        console.error("❌ Resource Not Found: Invalid Organization Id");
+        return D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     }
     if (response.statusCode === 401) {
-        console.error('❌ Invalid API Key')
-        return D.failure(D.errorType.AUTHENTICATION_ERROR)
+        console.error("❌ Invalid API Key");
+        return D.failure(D.errorType.AUTHENTICATION_ERROR);
     }
     if (response.statusCode !== 200) {
-        console.error('❌ Unexpected response:', response.statusCode, body)
-        return D.failure(D.errorType.GENERIC_ERROR)
+        console.error("❌ Unexpected response:", response.statusCode, body);
+        return D.failure(D.errorType.GENERIC_ERROR);
     }
-    return null
+    return null;
 }
 
 /**
@@ -97,24 +97,24 @@ function handleApiError(error, response, body) {
  * @returns {Promise} A promise that resolves with the parsed response data or rejects with an error
  */
 function getApiResponse(url) {
-    const d = D.q.defer()
-    const requestOptions = createRequestOptions(url)
-    console.log('🌍Sending API request to:', url)
-    externalDevice.http.get(requestOptions, function (error, response, body) {
-        const errorResponse = handleApiError(error, response, body)
-        if (errorResponse) {
-            d.reject(errorResponse)
-            return
-        }
-        if (body) {
-            const parsedBody = JSON.parse(body)
-            d.resolve(parsedBody)
-        } else {
-            console.error('❌ No response body received')
-            D.failure(D.errorType.PARSING_ERROR)
-        }
-    })
-    return d.promise
+    const requestOptions = createRequestOptions(url);
+    console.log("🌍Sending API request to:", url);
+    return new Promise(function (resolve, reject) {
+        externalDevice.http.get(requestOptions, function (error, response, body) {
+            const errorResponse = handleApiError(error, response, body);
+            if (errorResponse) {
+                reject(errorResponse);
+                return;
+            }
+            if (body) {
+                const parsedBody = JSON.parse(body);
+                resolve(parsedBody);
+            } else {
+                console.error("❌ No response body received");
+                D.failure(D.errorType.PARSING_ERROR);
+            }
+        });
+    });
 }
 
 /**
@@ -122,7 +122,7 @@ function getApiResponse(url) {
  * @returns {Promise} A promise that resolves with the device statuses
  */
 function getDeviceStatuses() {
-    return getApiResponse(organizationUrl + '/devices/availabilities')
+    return getApiResponse(organizationUrl + "/devices/availabilities");
 }
 
 /**
@@ -130,7 +130,7 @@ function getDeviceStatuses() {
  * @returns {Promise} A promise that resolves with the organization's data
  */
 function getOrganizationId() {
-    return getApiResponse(organizationUrl)
+    return getApiResponse(organizationUrl);
 }
 
 /**
@@ -140,21 +140,21 @@ function getOrganizationId() {
  */
 function extractDevicesInfo(result) {
     if (!Array.isArray(result) || result.length === 0) {
-        console.error('❌ Invalid response format or no devices found')
-        D.failure(D.errorType.PARSING_ERROR)
+        console.error("❌ Invalid response format or no devices found");
+        D.failure(D.errorType.PARSING_ERROR);
     }
     const extractedDevices = result.map(function (device) {
         return {
             serial: device.serial,
-            name: device.name || 'N/A',
-            status: device.status || 'N/A',
-            mac: device.mac || 'N/A',
-            networkId: device.network ? (device.network.id || 'N/A') : 'N/A',
-            productType: device.productType || 'N/A',
-            tags: device.tags.length ? device.tags.join(', ') : 'N/A'
-        }
-    })
-    return extractedDevices
+            name: device.name || "N/A",
+            status: device.status || "N/A",
+            mac: device.mac || "N/A",
+            networkId: device.network ? (device.network.id || "N/A") : "N/A",
+            productType: device.productType || "N/A",
+            tags: device.tags.length ? device.tags.join(", ") : "N/A"
+        };
+    });
+    return extractedDevices;
 }
 
 /**
@@ -170,9 +170,9 @@ function insertDevicesIntoTable(devices) {
             device.networkId,
             device.productType,
             device.tags
-        ])
-    })
-    D.success(table)
+        ]);
+    });
+    D.success(table);
 }
 
 /**
@@ -182,18 +182,18 @@ function insertDevicesIntoTable(devices) {
  */
 function validate() {
     getOrganizationId()
-        .then(function(parsedBody) {
+        .then(function (parsedBody) {
             if (!parsedBody || !parsedBody.id) {
-                console.error('❌ Invalid response format from Meraki API')
-                return D.failure(D.errorType.PARSING_ERROR)
+                console.error("❌ Invalid response format from Meraki API");
+                return D.failure(D.errorType.PARSING_ERROR);
             }
-            console.log('✅ Organization Verified:', parsedBody.name)
-            return D.success()
+            console.log("✅ Organization Verified:", parsedBody.name);
+            return D.success();
         })
-        .catch(function(err) {
-            console.error('❌ Error while verifying organization:', err)
-            return D.failure(D.errorType.GENERIC_ERROR)
-        })
+        .catch(function (err) {
+            console.error("❌ Error while verifying organization:", err);
+            return D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -204,12 +204,12 @@ function validate() {
 function get_status() {
     getDeviceStatuses()
         .then(function (result) {
-            console.log('✅ Device statuses retrieved successfully')
-            const extractedDevices = extractDevicesInfo(result)
-            insertDevicesIntoTable(extractedDevices)
+            console.log("✅ Device statuses retrieved successfully");
+            const extractedDevices = extractDevicesInfo(result);
+            insertDevicesIntoTable(extractedDevices);
         })
         .catch(function (err) {
-            console.error('❌ Error fetching device statuses:', err)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error("❌ Error fetching device statuses:", err);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }

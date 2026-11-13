@@ -1,0 +1,131 @@
+{
+    "opnsense 23.7 all rules validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 all rules get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Filter Rules",
+            "columnHeaders": [
+                {
+                    "label": "Evaluations",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Bytes",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States creation",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "default-allow-lan-to-any-rule",
+                    "values": [
+                        48210,
+                        7345129800,
+                        211,
+                        1048213
+                    ]
+                },
+                {
+                    "id": "default-allow-lan-ipv6-to-any-rule",
+                    "values": [
+                        48210,
+                        45129800,
+                        4,
+                        2213
+                    ]
+                },
+                {
+                    "id": "block-private-networks",
+                    "values": [
+                        912,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "id": "anti-lockout-rule",
+                    "values": [
+                        48210,
+                        412800,
+                        1,
+                        17
+                    ]
+                }
+            ]
+        }
+    },
+    "opnsense 23.7 rules matching a name validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 rules matching a name get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Filter Rules",
+            "columnHeaders": [
+                {
+                    "label": "Evaluations",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Bytes",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "States creation",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "default-allow-lan-to-any-rule",
+                    "values": [
+                        48210,
+                        7345129800,
+                        211,
+                        1048213
+                    ]
+                },
+                {
+                    "id": "default-allow-lan-ipv6-to-any-rule",
+                    "values": [
+                        48210,
+                        45129800,
+                        4,
+                        2213
+                    ]
+                },
+                {
+                    "id": "anti-lockout-rule",
+                    "values": [
+                        48210,
+                        412800,
+                        1,
+                        17
+                    ]
+                }
+            ]
+        }
+    }
+}

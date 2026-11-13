@@ -24,14 +24,13 @@ function exec_command(last, next) {
     var config = clone({ command: this.command }, sshConfig);
     D.device.sendSSHCommand(config, function (out, err) {
         next(out ? out.split("\n") : null);
-        
+
     });
 }
 
 function to_bin(n) {
     return n && parseInt(n).toString(2) || "";
 }
-
 
 function get_ntp_status(last, next) {
     var _this = this;
@@ -72,7 +71,6 @@ var service_status_exec = [
         next(this._var);
     }
 ];
-
 
 /** snmp init */
 
@@ -127,8 +125,8 @@ function snmp_generate_variable(result, callback) {
     callback(this._var);
 }
 
-function update_array(array, index){
-    return function(result, callback){
+function update_array(array, index) {
+    return function (result, callback) {
         array[index] = this.result;
         callback(result);
     };
@@ -147,9 +145,9 @@ function multiply_result(number) {
     };
 }
 
-function exec(fnSeq, callback){
+function exec(fnSeq, callback) {
     var finalSeq = [];
-    fnSeq.forEach(function(fn){
+    fnSeq.forEach(function (fn) {
         finalSeq.push(fn);
     });
     finalSeq.push(callback);
@@ -167,32 +165,32 @@ var snmp_walk_get_multiply_1000000_exec = [snmp_walk, update_oid, snmp_get, mult
 var em0_row = Array.apply(null, { length: 26 });
 var em1_row = Array.apply(null, { length: 26 });
 var interface_table = D.createTable("Table interfaces", [
-    {label: "Bits received", unit: "bps", type: D.valueType.RATE},
-    {label: "Bits sent", unit: "bps", type: D.valueType.RATE},
-    {label: "Inbound IPv4 packets blocked", unit: "pps", type: D.valueType.RATE},
-    {label: "Inbound IPv4 packets passed", unit: "pps", type: D.valueType.RATE},
-    {label: "Inbound IPv4 traffic blocked", unit: "bps", type: D.valueType.RATE},
-    {label: "Inbound IPv4 traffic passed", unit: "bps", type: D.valueType.RATE},
-    {label: "Inbound IPv6 packets blocked", unit: "pps", type: D.valueType.RATE},
-    {label: "Inbound IPv6 packets passed", unit: "pps", type: D.valueType.RATE},
-    {label: "Inbound IPv6 traffic blocked", unit: "bps", type: D.valueType.RATE},
-    {label: "Inbound IPv6 traffic passed", unit: "bps", type: D.valueType.RATE},
-    {label: "Inbound packets discarded"},
-    {label: "Inbound packets with errors"},
-    {label: "Interface type"},
-    {label: "Operational status"},
-    {label: "Outbound IPv4 packets blocked", unit: "pps", type: D.valueType.RATE},
-    {label: "Outbound IPv4 packets passed", unit: "pps", type: D.valueType.RATE},
-    {label: "Outbound IPv4 traffic blocked", unit: "bps", type: D.valueType.RATE},
-    {label: "Outbound IPv4 traffic passed", unit: "bps", type: D.valueType.RATE},
-    {label: "Outbound IPv6 packets blocked", unit: "pps", type: D.valueType.RATE},
-    {label: "Outbound IPv6 packets passed", unit: "pps", type: D.valueType.RATE},
-    {label: "Outbound IPv6 traffic blocked", unit: "bps", type: D.valueType.RATE},
-    {label: "Outbound IPv6 traffic passed", unit: "bps", type: D.valueType.RATE},
-    {label: "Outbound packets discarded"},
-    {label: "Outbound packets with errors"},
-    {label: "Rules references count"},
-    {label: "Speed", unit: "bps"},
+    { label: "Bits received", unit: "bps", type: D.valueType.RATE },
+    { label: "Bits sent", unit: "bps", type: D.valueType.RATE },
+    { label: "Inbound IPv4 packets blocked", unit: "pps", type: D.valueType.RATE },
+    { label: "Inbound IPv4 packets passed", unit: "pps", type: D.valueType.RATE },
+    { label: "Inbound IPv4 traffic blocked", unit: "bps", type: D.valueType.RATE },
+    { label: "Inbound IPv4 traffic passed", unit: "bps", type: D.valueType.RATE },
+    { label: "Inbound IPv6 packets blocked", unit: "pps", type: D.valueType.RATE },
+    { label: "Inbound IPv6 packets passed", unit: "pps", type: D.valueType.RATE },
+    { label: "Inbound IPv6 traffic blocked", unit: "bps", type: D.valueType.RATE },
+    { label: "Inbound IPv6 traffic passed", unit: "bps", type: D.valueType.RATE },
+    { label: "Inbound packets discarded" },
+    { label: "Inbound packets with errors" },
+    { label: "Interface type" },
+    { label: "Operational status" },
+    { label: "Outbound IPv4 packets blocked", unit: "pps", type: D.valueType.RATE },
+    { label: "Outbound IPv4 packets passed", unit: "pps", type: D.valueType.RATE },
+    { label: "Outbound IPv4 traffic blocked", unit: "bps", type: D.valueType.RATE },
+    { label: "Outbound IPv4 traffic passed", unit: "bps", type: D.valueType.RATE },
+    { label: "Outbound IPv6 packets blocked", unit: "pps", type: D.valueType.RATE },
+    { label: "Outbound IPv6 packets passed", unit: "pps", type: D.valueType.RATE },
+    { label: "Outbound IPv6 traffic blocked", unit: "bps", type: D.valueType.RATE },
+    { label: "Outbound IPv6 traffic passed", unit: "bps", type: D.valueType.RATE },
+    { label: "Outbound packets discarded" },
+    { label: "Outbound packets with errors" },
+    { label: "Rules references count" },
+    { label: "Speed", unit: "bps" }
 ]
 );
 
@@ -220,7 +218,7 @@ var config_paramters = [
         uid: "cpu_count",
         label: "Number of CPUs",
         unit: "",
-        order: 0,
+        order: 0
     },
     {
         uid: "user_cpu_time",
@@ -405,7 +403,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em0_row, 2)),
         label: "Interface [em0()]: Inbound IPv4 packets blocked",
         unit: "pps",
-        type: D.valueType.RATE,
+        type: D.valueType.RATE
     },
     {
 
@@ -416,7 +414,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em0_row, 3)),
         label: "Interface [em0()]: Inbound IPv4 packets passed",
         unit: "pps",
-        type: D.valueType.RATE,
+        type: D.valueType.RATE
     },
     {
         uid: "interface_em0_inbound_ipv4_traffic_blocked",
@@ -594,7 +592,7 @@ var config_paramters = [
         label: "Interface [em0()]: Outbound packets discarded",
         type: D.valueType.RATE,
         unit: "",
-        exec: exec(snmp_get_exec, update_array(em0_row, 22)),
+        exec: exec(snmp_get_exec, update_array(em0_row, 22))
     },
     {
         uid: "interface_em0_outbound_packets_with_errors",
@@ -674,7 +672,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 5)),
         label: "Interface [em1()]: Inbound IPv4 traffic passed",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_inbound_ipv6_packets_blocked",
@@ -684,7 +682,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 6)),
         label: "Interface [em1()]: Inbound IPv6 packets blocked",
         type: D.valueType.RATE,
-        unit: "pps",
+        unit: "pps"
     },
     {
         uid: "interface_em1_inbound_ipv6_packets_passed",
@@ -694,7 +692,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 7)),
         label: "Interface [em1()]: Inbound IPv6 packets passed",
         type: D.valueType.RATE,
-        unit: "pps",
+        unit: "pps"
     },
     {
         uid: "interface_em1_inbound_ipv6_traffic_blocked",
@@ -704,7 +702,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 8)),
         label: "Interface [em1()]: Inbound IPv6 traffic blocked",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_inbound_ipv6_traffic_passed",
@@ -714,7 +712,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 9)),
         label: "Interface [em1()]: Inbound IPv6 traffic passed",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_inbound_packets_discarded",
@@ -750,7 +748,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 14)),
         label: "Interface [em1()]: Outbound IPv4 packets blocked",
         type: D.valueType.RATE,
-        unit: "pps",
+        unit: "pps"
     },
     {
         uid: "interface_em1_outbound_ipv4_packets_passed",
@@ -760,7 +758,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 15)),
         label: "Interface [em1()]: Outbound IPv4 packets passed",
         type: D.valueType.RATE,
-        unit: "pps",
+        unit: "pps"
     },
     {
         uid: "interface_em1_outbound_ipv4_traffic_blocked",
@@ -770,7 +768,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 16)),
         label: "Interface [em1()]: Outbound IPv4 traffic blocked",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_outbound_ipv4_traffic_passed",
@@ -780,7 +778,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 17)),
         label: "Interface [em1()]: Outbound IPv4 traffic passed",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_outbound_ipv6_packets_blocked",
@@ -790,7 +788,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 18)),
         label: "Interface [em1()]: Outbound IPv6 packets blocked",
         type: D.valueType.RATE,
-        unit: "pps",
+        unit: "pps"
     },
     {
         uid: "interface_em1_outbound_ipv6_packets_passed",
@@ -800,7 +798,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 19)),
         label: "Interface [em1()]: Outbound IPv6 packets passed",
         type: D.valueType.RATE,
-        unit: "pps",
+        unit: "pps"
     },
     {
         uid: "interface_em1_outbound_ipv6_traffic_blocked",
@@ -810,7 +808,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 20)),
         label: "Interface [em1()]: Outbound IPv6 traffic blocked",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_outbound_ipv6_traffic_passed",
@@ -820,7 +818,7 @@ var config_paramters = [
         exec: exec(snmp_walk_get_multiply_8_exec, update_array(em1_row, 21)),
         label: "Interface [em1()]: Outbound IPv6 traffic passed",
         type: D.valueType.RATE,
-        unit: "bps",
+        unit: "bps"
     },
     {
         uid: "interface_em1_outbound_packets_discarded",
@@ -845,7 +843,7 @@ var config_paramters = [
         walk_oid: "1.3.6.1.4.1.12325.1.200.1.8.2.1.6",
         exec: exec(snmp_walk_get_exec, update_array(em1_row, 24)),
         label: "Interface [em1()]: Rules references count",
-        unit: "",
+        unit: ""
     },
     {
         uid: "interface_em1_speed",
@@ -877,7 +875,7 @@ var config_paramters = [
         walk_oid: "1.3.6.1.4.1.2021.10.1.3",
         exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "Load average (1m avg)",
-        unit: "",
+        unit: ""
     },
     {
         uid: "load_average_5m_avg",
@@ -886,7 +884,7 @@ var config_paramters = [
         walk_oid: "1.3.6.1.4.1.2021.10.1.3",
         exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "Load average (5m avg)",
-        unit: "",
+        unit: ""
     },
     {
         uid: "load_average_15m_avg",
@@ -895,7 +893,7 @@ var config_paramters = [
         walk_oid: "1.3.6.1.4.1.2021.10.1.3",
         exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "Load average (15m avg)",
-        unit: "",
+        unit: ""
     },
     {
         uid: "packet_filter_running_status",
@@ -961,7 +959,7 @@ var config_paramters = [
             var limit = get_result("1.3.6.1.4.1.12325.1.200.1.5.2.0");
             this.result = (count * 100) / limit;
             next(this);
-        }, snmp_generate_variable],
+        }, snmp_generate_variable]
     },
     {
         uid: "state_of_nginx_process",
@@ -970,7 +968,7 @@ var config_paramters = [
         walk_oid: "1.3.6.1.2.1.25.4.2.1.7",
         exec: exec(snmp_walk_get_exec, snmp_generate_variable),
         label: "State of nginx process",
-        unit: "",
+        unit: ""
     },
     {
         uid: "states_tbl_current",
@@ -997,7 +995,7 @@ var config_paramters = [
             var limit = get_result("1.3.6.1.4.1.12325.1.200.1.5.1.0");
             this.result = (count * 100) / limit;
             next(this);
-        }, snmp_generate_variable],
+        }, snmp_generate_variable]
     },
     {
         uid: "uptime",
@@ -1021,7 +1019,7 @@ function clone(init, object) {
 }
 
 /**
- * 
+ *
  * @param {[Function]} arrayFn list of functions executed in the same time
  * @param {*} callback called when all functions are executed
  */
@@ -1043,7 +1041,7 @@ function execute_all(arrayFn, callback) {
 }
 
 /**
- * 
+ *
  * @param {[Function]} functions list of functions to execute sequentially
  * @param {*} callback called when the sequence of functions is done
  */
@@ -1061,7 +1059,7 @@ function execute_seq(functions, callback) {
 }
 
 /**
- * 
+ *
  * @param {*} oid snmp oid
  * @returns the result in {@link config_paramters}
  */
@@ -1074,7 +1072,7 @@ function get_result(oid) {
 }
 
 /**
- * 
+ *
  * @param {*} config contains list of monitoring variables and the way to extract them
  * @param {*} callback called when all the monitoring variables are fetched
  */
@@ -1112,7 +1110,7 @@ function execute_config(config, callback) {
                 param._var.forEach(function (_var) {
                     result.push(_var);
                 });
-            } else if(param._var) {
+            } else if (param._var) {
                 result.push(param._var);
             }
         });
@@ -1120,9 +1118,9 @@ function execute_config(config, callback) {
     });
 }
 function checkSshError(err) {
-    if(err.message) console.error(err.message);
-    if(err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
-    if(err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+    if (err.message) console.error(err.message);
+    if (err.code == 5) D.failure(D.errorType.AUTHENTICATION_ERROR);
+    if (err.code == 255) D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
 }
@@ -1134,9 +1132,9 @@ function checkSshError(err) {
 */
 function validate() {
     var valid = 0;
-    function success(){
+    function success() {
         valid++;
-        if(valid == 2){
+        if (valid == 2) {
             D.success();
         }
     }
@@ -1150,13 +1148,11 @@ function validate() {
 
     var config = clone({ command: "ls" }, sshConfig);
     D.device.sendSSHCommand(config, function (out, err) {
-        if(err) checkSshError(err);
+        if (err) checkSshError(err);
         success();
     });
 
-
 }
-
 
 /**
 * @remote_procedure

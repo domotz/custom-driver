@@ -41,40 +41,40 @@
 
 const endpointDetails = {
     "endpoint": "lsportip"
-}
+};
 
 const iSCSIPortsTable = D.createTable(
-    'iSCSI Ports',
+    "iSCSI Ports",
     [
-        {label: "Node ID", valueType: D.valueType.NUMBER},
-        {label: "Node Name", valueType: D.valueType.STRING},
-        {label: "IP Address", valueType: D.valueType.STRING},
-        {label: "Mask", valueType: D.valueType.STRING},
-        {label: "Gateway", valueType: D.valueType.STRING},
-        {label: "IP Address 6", valueType: D.valueType.STRING},
-        {label: "Prefix 6", valueType: D.valueType.STRING},
-        {label: "Gateway 6", valueType: D.valueType.STRING},
-        {label: "MAC", valueType: D.valueType.STRING},
-        {label: "Duplex", valueType: D.valueType.STRING},
-        {label: "State", valueType: D.valueType.STRING},
-        {label: "Speed", valueType: D.valueType.NUMBER, unit:"Gb/s"},
-        {label: "Failover", valueType: D.valueType.STRING},
-        {label: "Link State", valueType: D.valueType.STRING},
-        {label: "Host", valueType: D.valueType.STRING},
-        {label: "Remote Copy", valueType: D.valueType.NUMBER},
-        {label: "Host 6", valueType: D.valueType.STRING},
-        {label: "Remote Copy 6", valueType: D.valueType.NUMBER},
-        {label: "Remote Copy Status", valueType: D.valueType.STRING},
-        {label: "Remote Copy Status 6", valueType: D.valueType.STRING},
-        {label: "VLAN", valueType: D.valueType.STRING},
-        {label: "VLAN 6", valueType: D.valueType.STRING},
-        {label: "Adapter Location", valueType: D.valueType.NUMBER},
-        {label: "Adapter Port ID", valueType: D.valueType.NUMBER},
-        {label: "Storage", valueType: D.valueType.STRING},
-        {label: "Storage 6", valueType: D.valueType.STRING},
-        {label: "Host Port Group ID", valueType: D.valueType.NUMBER},
-        {label: "RDMA Type", valueType: D.valueType.STRING},
-        {label: "Is RDMA Clustering", valueType: D.valueType.STRING}
+        { label: "Node ID", valueType: D.valueType.NUMBER },
+        { label: "Node Name", valueType: D.valueType.STRING },
+        { label: "IP Address", valueType: D.valueType.STRING },
+        { label: "Mask", valueType: D.valueType.STRING },
+        { label: "Gateway", valueType: D.valueType.STRING },
+        { label: "IP Address 6", valueType: D.valueType.STRING },
+        { label: "Prefix 6", valueType: D.valueType.STRING },
+        { label: "Gateway 6", valueType: D.valueType.STRING },
+        { label: "MAC", valueType: D.valueType.STRING },
+        { label: "Duplex", valueType: D.valueType.STRING },
+        { label: "State", valueType: D.valueType.STRING },
+        { label: "Speed", valueType: D.valueType.NUMBER, unit: "Gb/s" },
+        { label: "Failover", valueType: D.valueType.STRING },
+        { label: "Link State", valueType: D.valueType.STRING },
+        { label: "Host", valueType: D.valueType.STRING },
+        { label: "Remote Copy", valueType: D.valueType.NUMBER },
+        { label: "Host 6", valueType: D.valueType.STRING },
+        { label: "Remote Copy 6", valueType: D.valueType.NUMBER },
+        { label: "Remote Copy Status", valueType: D.valueType.STRING },
+        { label: "Remote Copy Status 6", valueType: D.valueType.STRING },
+        { label: "VLAN", valueType: D.valueType.STRING },
+        { label: "VLAN 6", valueType: D.valueType.STRING },
+        { label: "Adapter Location", valueType: D.valueType.NUMBER },
+        { label: "Adapter Port ID", valueType: D.valueType.NUMBER },
+        { label: "Storage", valueType: D.valueType.STRING },
+        { label: "Storage 6", valueType: D.valueType.STRING },
+        { label: "Host Port Group ID", valueType: D.valueType.NUMBER },
+        { label: "RDMA Type", valueType: D.valueType.STRING },
+        { label: "Is RDMA Clustering", valueType: D.valueType.STRING }
     ]
 );
 
@@ -85,7 +85,6 @@ const iSCSIPortsTable = D.createTable(
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttps(endpoint, headers) {
-    const d = D.q.defer();
     const config = {
         url: endpoint,
         protocol: "https",
@@ -93,22 +92,22 @@ function callHttps(endpoint, headers) {
         rejectUnauthorized: false,
         headers: headers
     };
-    D.device.http.post(config, function (error, response, body) {
-        if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (!response || response.statusCode === 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        }
-        else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(JSON.parse(body));
-        }
-    })
-    return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response || response.statusCode === 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
+    });
 }
 
 /**
@@ -118,8 +117,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -127,13 +126,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -143,36 +142,36 @@ function login() {
 function populateTable(iSCSIPortsDetailsList) {
     for (let i = 0; i < iSCSIPortsDetailsList.length; i++) {
         const iSCSIPortsDetails = iSCSIPortsDetailsList[i];
-        iSCSIPortsTable.insertRecord(i+1 + "", [
-            iSCSIPortsDetails['node_id'] || "N/A",
-            iSCSIPortsDetails['node_name'] || "N/A",
-            iSCSIPortsDetails['IP_address'] || "N/A",
-            iSCSIPortsDetails['mask'] || "N/A",
-            iSCSIPortsDetails['gateway'] || "N/A",
-            iSCSIPortsDetails['IP_address_6'] || "N/A",
-            iSCSIPortsDetails['prefix_6'] || "N/A",
-            iSCSIPortsDetails['gateway_6'] || "N/A",
-            iSCSIPortsDetails['MAC'] || "N/A",
-            iSCSIPortsDetails['duplex'] || "N/A",
-            iSCSIPortsDetails['state'] || "N/A",
-            iSCSIPortsDetails['speed'] ? convertToGbps(iSCSIPortsDetails['speed']) : "N/A",
-            iSCSIPortsDetails['failover'] || "N/A",
-            iSCSIPortsDetails['link_state'] || "N/A",
-            iSCSIPortsDetails['host'] || "N/A",
-            iSCSIPortsDetails['remote_copy'] || "N/A",
-            iSCSIPortsDetails['host_6'] || "N/A",
-            iSCSIPortsDetails['remote_copy_6'] || "N/A",
-            iSCSIPortsDetails['remote_copy_status'] || "N/A",
-            iSCSIPortsDetails['remote_copy_status_6'] || "N/A",
-            iSCSIPortsDetails['vlan'] || "N/A",
-            iSCSIPortsDetails['vlan_6'] || "N/A",
-            iSCSIPortsDetails['adapter_location'] || "N/A",
-            iSCSIPortsDetails['adapter_port_id'] || "N/A",
-            iSCSIPortsDetails['storage'] || "N/A",
-            iSCSIPortsDetails['storage_6'] || "N/A",
-            iSCSIPortsDetails['host_port_grp_id'] || "N/A",
-            iSCSIPortsDetails['rdma_type'] || "N/A",
-            iSCSIPortsDetails['is_rdma_clustering'] || "N/A"
+        iSCSIPortsTable.insertRecord(i + 1 + "", [
+            iSCSIPortsDetails["node_id"] || "N/A",
+            iSCSIPortsDetails["node_name"] || "N/A",
+            iSCSIPortsDetails["IP_address"] || "N/A",
+            iSCSIPortsDetails["mask"] || "N/A",
+            iSCSIPortsDetails["gateway"] || "N/A",
+            iSCSIPortsDetails["IP_address_6"] || "N/A",
+            iSCSIPortsDetails["prefix_6"] || "N/A",
+            iSCSIPortsDetails["gateway_6"] || "N/A",
+            iSCSIPortsDetails["MAC"] || "N/A",
+            iSCSIPortsDetails["duplex"] || "N/A",
+            iSCSIPortsDetails["state"] || "N/A",
+            iSCSIPortsDetails["speed"] ? convertToGbps(iSCSIPortsDetails["speed"]) : "N/A",
+            iSCSIPortsDetails["failover"] || "N/A",
+            iSCSIPortsDetails["link_state"] || "N/A",
+            iSCSIPortsDetails["host"] || "N/A",
+            iSCSIPortsDetails["remote_copy"] || "N/A",
+            iSCSIPortsDetails["host_6"] || "N/A",
+            iSCSIPortsDetails["remote_copy_6"] || "N/A",
+            iSCSIPortsDetails["remote_copy_status"] || "N/A",
+            iSCSIPortsDetails["remote_copy_status_6"] || "N/A",
+            iSCSIPortsDetails["vlan"] || "N/A",
+            iSCSIPortsDetails["vlan_6"] || "N/A",
+            iSCSIPortsDetails["adapter_location"] || "N/A",
+            iSCSIPortsDetails["adapter_port_id"] || "N/A",
+            iSCSIPortsDetails["storage"] || "N/A",
+            iSCSIPortsDetails["storage_6"] || "N/A",
+            iSCSIPortsDetails["host_port_grp_id"] || "N/A",
+            iSCSIPortsDetails["rdma_type"] || "N/A",
+            iSCSIPortsDetails["is_rdma_clustering"] || "N/A"
         ]);
     }
 }
@@ -188,7 +187,7 @@ function convertToGbps(inputValue) {
     if (matchedResult) {
         return formatValueToGbps(parseFloat(matchedResult[1]), matchedResult[2].trim());
     } else {
-        throw new Error('Invalid input format');
+        throw new Error("Invalid input format");
     }
 }
 
@@ -200,14 +199,14 @@ function convertToGbps(inputValue) {
  */
 function formatValueToGbps(value, unit) {
     switch (unit.toLowerCase()) {
-        case 'mb/s':
+        case "mb/s":
             return (value / 1024).toFixed(4);
-        case 'gb/s':
+        case "gb/s":
             return value.toFixed(2);
-        case 'tb/s':
+        case "tb/s":
             return (value  * 1024).toFixed(2);
         default:
-            throw new Error('Unknown unit: ' + unit);
+            throw new Error("Unknown unit: " + unit);
     }
 }
 
@@ -221,11 +220,11 @@ function validate() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function () {
-                    D.success()
-                })
+                    D.success();
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -240,12 +239,12 @@ function get_status() {
         .then(function (body) {
             callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
                 .then(function (response) {
-                    populateTable(response)
-                    D.success(iSCSIPortsTable)
-                })
+                    populateTable(response);
+                    D.success(iSCSIPortsTable);
+                });
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

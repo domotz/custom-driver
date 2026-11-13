@@ -1,0 +1,283 @@
+{
+    "master and worker, paginated pod list, disk pressure on the worker validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "master and worker, paginated pod list, disk pressure on the worker get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Kubernetes Nodes and Pods Data",
+            "columnHeaders": [
+                {
+                    "label": "Node: Metadata Name"
+                },
+                {
+                    "label": "Node: Internal IP"
+                },
+                {
+                    "label": "Node: External IP"
+                },
+                {
+                    "label": "Node: Allocable CPU"
+                },
+                {
+                    "label": "Node Cnd: Memory pressure"
+                },
+                {
+                    "label": "Node Cnd: Network unavailable"
+                },
+                {
+                    "label": "Node Cnd: PID pressure"
+                },
+                {
+                    "label": "Node Cnd: Ready"
+                },
+                {
+                    "label": "Node Cnd: Disk pressure"
+                },
+                {
+                    "label": "Node Allocatable: Memory"
+                },
+                {
+                    "label": "Node Allocatable: Pods"
+                },
+                {
+                    "label": "Node Capacity: CPU"
+                },
+                {
+                    "label": "Node Capacity: Memory"
+                },
+                {
+                    "label": "Node Capacity: Pods"
+                },
+                {
+                    "label": "Node Info: Architecture"
+                },
+                {
+                    "label": "Node Info: Container runtime"
+                },
+                {
+                    "label": "Node Info: Kernel version"
+                },
+                {
+                    "label": "Node Info: Kubelet version"
+                },
+                {
+                    "label": "Node Info: KubeProxy version"
+                },
+                {
+                    "label": "Node Info: Operating system"
+                },
+                {
+                    "label": "Node Info: Roles"
+                },
+                {
+                    "label": "Node Limits: CPU"
+                },
+                {
+                    "label": "Node Limits: Memory"
+                },
+                {
+                    "label": "Node Requests: CPU"
+                },
+                {
+                    "label": "Node Requests: Memory"
+                },
+                {
+                    "label": "Node Uptime"
+                },
+                {
+                    "label": "Node Used: Pods"
+                },
+                {
+                    "label": "Pod Cnd: Containers ready"
+                },
+                {
+                    "label": "Pod Cnd: Initialized"
+                },
+                {
+                    "label": "Pod Cnd: Ready"
+                },
+                {
+                    "label": "Pod Cnd: Scheduled"
+                },
+                {
+                    "label": "Pod Containers: Restarts"
+                },
+                {
+                    "label": "Pod Status: Phase"
+                },
+                {
+                    "label": "Pod Start time"
+                },
+                {
+                    "label": "Pod IP"
+                }
+            ],
+            "records": [
+                {
+                    "id": "kube-apiserver-k8s-master-1",
+                    "values": [
+                        "k8s-master-1",
+                        "10.0.0.10",
+                        null,
+                        4,
+                        "False",
+                        null,
+                        "False",
+                        "True",
+                        "False",
+                        16395165696,
+                        "110",
+                        4,
+                        16500023296,
+                        "110",
+                        "amd64",
+                        "containerd://1.7.2",
+                        "5.15.0-91-generic",
+                        "v1.28.4",
+                        "v1.28.4",
+                        "linux",
+                        "control-plane",
+                        0,
+                        178257920,
+                        0.35,
+                        73400320,
+                        "2025-06-01T08:00:00Z",
+                        2,
+                        "True",
+                        "True",
+                        "True",
+                        "True",
+                        0,
+                        "Running",
+                        "2026-01-10T08:00:00Z",
+                        "10.0.0.10"
+                    ]
+                },
+                {
+                    "id": "coredns-5dd5756b68-abcde",
+                    "values": [
+                        "k8s-master-1",
+                        "10.0.0.10",
+                        null,
+                        4,
+                        "False",
+                        null,
+                        "False",
+                        "True",
+                        "False",
+                        16395165696,
+                        "110",
+                        4,
+                        16500023296,
+                        "110",
+                        "amd64",
+                        "containerd://1.7.2",
+                        "5.15.0-91-generic",
+                        "v1.28.4",
+                        "v1.28.4",
+                        "linux",
+                        "control-plane",
+                        0,
+                        178257920,
+                        0.35,
+                        73400320,
+                        "2025-06-01T08:00:00Z",
+                        2,
+                        "True",
+                        "True",
+                        "True",
+                        "True",
+                        1,
+                        "Running",
+                        "2026-01-10T08:00:00Z",
+                        "10.244.0.2"
+                    ]
+                },
+                {
+                    "id": "web-1",
+                    "values": [
+                        "k8s-worker-1",
+                        "10.0.0.11",
+                        "203.0.113.11",
+                        7.91,
+                        "False",
+                        null,
+                        "False",
+                        "True",
+                        "True",
+                        33462980608,
+                        "110",
+                        8,
+                        33567838208,
+                        "110",
+                        "amd64",
+                        "containerd://1.7.2",
+                        "5.15.0-91-generic",
+                        "v1.28.4",
+                        "v1.28.4",
+                        "linux",
+                        "worker",
+                        1.2,
+                        1342177280,
+                        2.1,
+                        2818572288,
+                        "2025-06-02T09:30:00Z",
+                        3,
+                        "True",
+                        "True",
+                        "True",
+                        "True",
+                        3,
+                        "Running",
+                        "2026-01-10T08:00:00Z",
+                        "10.244.1.5"
+                    ]
+                },
+                {
+                    "id": "crash-1",
+                    "values": [
+                        "k8s-worker-1",
+                        "10.0.0.11",
+                        "203.0.113.11",
+                        7.91,
+                        "False",
+                        null,
+                        "False",
+                        "True",
+                        "True",
+                        33462980608,
+                        "110",
+                        8,
+                        33567838208,
+                        "110",
+                        "amd64",
+                        "containerd://1.7.2",
+                        "5.15.0-91-generic",
+                        "v1.28.4",
+                        "v1.28.4",
+                        "linux",
+                        "worker",
+                        1.2,
+                        1342177280,
+                        2.1,
+                        2818572288,
+                        "2025-06-02T09:30:00Z",
+                        3,
+                        "False",
+                        "True",
+                        "False",
+                        "True",
+                        12,
+                        "Running",
+                        "2026-01-10T08:00:00Z",
+                        "10.244.1.9"
+                    ]
+                }
+            ]
+        }
+    }
+}

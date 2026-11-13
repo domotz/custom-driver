@@ -1,0 +1,70 @@
+{
+    "four psus validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four psus get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Power Supply Units",
+            "columnHeaders": [
+                {
+                    "label": "Enclosure ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "PSU ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Input Power",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "1",
+                        "1",
+                        "online",
+                        "ac"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "2",
+                        "offline",
+                        "none"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "2",
+                        "1",
+                        "online",
+                        "ac"
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "2",
+                        "2",
+                        "degraded",
+                        "ac"
+                    ]
+                }
+            ]
+        }
+    }
+}

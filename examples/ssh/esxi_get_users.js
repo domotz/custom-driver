@@ -5,7 +5,7 @@ var variables;
 
 /**
  * The SSH Command Options
- * @property {string} [prompt]  - The SSH prompt must be set if different than # 
+ * @property {string} [prompt]  - The SSH prompt must be set if different than #
  * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
@@ -53,18 +53,18 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used to collect 
+* @documentation This procedure is used to collect
 * the users in the system and store them as custom driver variables
 */
 function get_status() {
     console.info("Getting Users ... ");
     /**
      * command to get users
-     * 'cut' cuts out a section 
-     * from the '/etc/passwd' file; 
-     * option '-d:' sets the [d]elimiter 
-     *  as ':' - the separator in our file; 
-     *  option '-f1' takes only [f]ield '1' 
+     * 'cut' cuts out a section
+     * from the '/etc/passwd' file;
+     * option '-d:' sets the [d]elimiter
+     *  as ':' - the separator in our file;
+     *  option '-f1' takes only [f]ield '1'
      *  (the one containing the username);
     */
     var commandGetOSUsers = "cut -d: -f1 /etc/passwd";

@@ -1,0 +1,220 @@
+{
+    "winrm, two disks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, two disks get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Physical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Media Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partitions",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "\\\\.\\physicaldrive0",
+                    "values": [
+                        "Samsung SSD 980 PRO 500GB",
+                        "OK",
+                        465.76,
+                        206.45,
+                        55.68,
+                        "Fixed hard disk media",
+                        "0025_385A_01B2_4C3D.",
+                        3
+                    ]
+                },
+                {
+                    "id": "\\\\.\\physicaldrive1",
+                    "values": [
+                        "WDC WD20EZRZ-00Z5HB0",
+                        "Pred Fail",
+                        1863.01,
+                        402.18,
+                        78.41,
+                        "Fixed hard disk media",
+                        "WD-WCC4M0123456",
+                        1
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one disk is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one disk is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Physical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Media Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partitions",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "\\\\.\\physicaldrive0",
+                    "values": [
+                        "Samsung SSD 980 PRO 500GB",
+                        "OK",
+                        465.76,
+                        206.45,
+                        55.68,
+                        "Fixed hard disk media",
+                        "0025_385A_01B2_4C3D.",
+                        3
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, two disks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, two disks get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Physical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Media Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Partitions",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "\\\\.\\physicaldrive0",
+                    "values": [
+                        "Samsung SSD 980 PRO 500GB",
+                        "OK",
+                        465.76,
+                        206.45,
+                        55.68,
+                        "Fixed hard disk media",
+                        "0025_385A_01B2_4C3D.",
+                        3
+                    ]
+                },
+                {
+                    "id": "\\\\.\\physicaldrive1",
+                    "values": [
+                        "WDC WD20EZRZ-00Z5HB0",
+                        "Pred Fail",
+                        1863.01,
+                        402.18,
+                        78.41,
+                        "Fixed hard disk media",
+                        "WD-WCC4M0123456",
+                        1
+                    ]
+                }
+            ]
+        }
+    }
+}

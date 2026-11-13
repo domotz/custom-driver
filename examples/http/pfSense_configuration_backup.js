@@ -22,13 +22,13 @@ function validate() {
     fetchCSRFToken()
         .then(performLogin)
         .then(function () {
-            console.info("Validation successful")
-            D.success()
+            console.info("Validation successful");
+            D.success();
         })
         .catch(function (error) {
-            console.error("Validation failed: ", error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error("Validation failed: ", error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -41,9 +41,9 @@ function backup() {
         .then(performLogin)
         .then(downloadConfiguration)
         .catch(function (error) {
-            console.error("Backup operation failed:", error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        })
+            console.error("Backup operation failed:", error);
+            D.failure(D.errorType.GENERIC_ERROR);
+        });
 }
 
 /**
@@ -52,16 +52,16 @@ function backup() {
  * @param {Object} response - The HTTP response object.
  */
 function checkHTTPError(error, response) {
-    console.info("HTTP Response Code:", response ? response.statusCode : "No Response")
+    console.info("HTTP Response Code:", response ? response.statusCode : "No Response");
     if (error) {
-        console.error("HTTP Error:", error)
-        D.failure(D.errorType.GENERIC_ERROR)
+        console.error("HTTP Error:", error);
+        D.failure(D.errorType.GENERIC_ERROR);
     } else if (response.statusCode === 404) {
-        D.failure(D.errorType.RESOURCE_UNAVAILABLE)
+        D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else if (response.statusCode === 401 || response.statusCode === 403) {
-        D.failure(D.errorType.AUTHENTICATION_ERROR)
+        D.failure(D.errorType.AUTHENTICATION_ERROR);
     } else if (response.statusCode !== 200 && response.statusCode !== 302) {
-        D.failure(D.errorType.GENERIC_ERROR)
+        D.failure(D.errorType.GENERIC_ERROR);
     }
 }
 
@@ -72,12 +72,12 @@ function checkHTTPError(error, response) {
  */
 function handleRedirect(response) {
     if (response.statusCode === 302 && response.headers && response.headers.location) {
-        var baseUrl = "https://" + D.device.ip()
+        var baseUrl = "https://" + D.device.ip();
         return response.headers.location.startsWith("http")
             ? response.headers.location
-            : baseUrl + response.headers.location
+            : baseUrl + response.headers.location;
     }
-    return null
+    return null;
 }
 
 /**
@@ -97,7 +97,7 @@ function generateConfig(url, form) {
             "Content-Type": "application/x-www-form-urlencoded"
         },
         form: form
-    }
+    };
 }
 
 /**
@@ -105,21 +105,20 @@ function generateConfig(url, form) {
  * @returns {Promise<Object>} A promise resolving to the CSRF token.
  */
 function fetchCSRFToken() {
-    var d = D.q.defer()
-    var config =  generateConfig("/diag_backup.php")
+    var config =  generateConfig("/diag_backup.php");
 
-    D.device.http.get(config, function (error, response, body) {
-        checkHTTPError(error, response)
-        var tokenMatch = /var csrfMagicToken = "(.*?)"/.exec(body)
-        if (tokenMatch) {
-            d.resolve(tokenMatch[1])
-        } else {
-            console.error("CSRF token not found in response.")
-            D.failure(D.errorType.GENERIC_ERROR)
-        }
-    })
-
-    return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            checkHTTPError(error, response);
+            var tokenMatch = /var csrfMagicToken = "(.*?)"/.exec(body);
+            if (tokenMatch) {
+                resolve(tokenMatch[1]);
+            } else {
+                console.error("CSRF token not found in response.");
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+        });
+    });
 }
 
 /**
@@ -128,57 +127,53 @@ function fetchCSRFToken() {
  * @returns {Promise<Object>} A promise resolving to session data.
  */
 function performLogin(csrfToken) {
-    var d = D.q.defer()
     var config = generateConfig("/index.php", {
         login: "Login",
         usernamefld: D.device.username(),
         passwordfld: D.device.password(),
         __csrf_magic: csrfToken
-    })
+    });
 
-    D.device.http.post(config, function (error, response) {
-        checkHTTPError(error, response)
-        var redirectURL = handleRedirect(response)
-        if (redirectURL) {
-            fetchCSRFToken()
-                .then(function (data) {
-                    d.resolve(data)
-                }).catch(function (error) {
-                d.reject(error)
-            })
-        } else {
-            console.error("Login failed; redirect URL not found.")
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        }
-    })
-
-    return d.promise
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, function (error, response) {
+            checkHTTPError(error, response);
+            var redirectURL = handleRedirect(response);
+            if (redirectURL) {
+                fetchCSRFToken()
+                    .then(function (data) {
+                        resolve(data);
+                    }).catch(function (error) {
+                        reject(error);
+                    });
+            } else {
+                console.error("Login failed; redirect URL not found.");
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+        });
+    });
 }
 
 /**
  * Downloads the configuration file from pfSense after successful login.
  * @param {Object} csrfToken - The CSRF token to include in the download request.
- * @returns {Promise<Object>} A promise resolving to the configuration backup data.
  */
 function downloadConfiguration(csrfToken) {
-    var d = D.q.defer()
     var config = generateConfig("/diag_backup.php", {
         download: "download",
         donotbackuprrd: "yes",
         __csrf_magic: csrfToken
-    })
+    });
 
     D.device.http.post(config, function (error, response, body) {
-        checkHTTPError(error, response)
+        checkHTTPError(error, response);
         if (body && body.startsWith("<?xml")) {
             D.success(D.createBackup({
                 label: "pfSense Configuration Backup",
                 running: body
-            }))
+            }));
         } else {
-            console.error("Unexpected response; backup failed.")
-            D.failure(D.errorType.GENERIC_ERROR)
+            console.error("Unexpected response; backup failed.");
+            D.failure(D.errorType.GENERIC_ERROR);
         }
-    })
-    return d.promise
+    });
 }

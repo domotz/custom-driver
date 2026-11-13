@@ -1,0 +1,470 @@
+{
+    "winrm, three volumes validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three volumes get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Drive",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Physical Disk",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "File System",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ReadOnly",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Protection Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Encryption",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0463d35deb9500bde166adf5dd4de7fe",
+                    "values": [
+                        "C",
+                        "Windows",
+                        "Disk 0",
+                        "55.70",
+                        "206.00",
+                        "465.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "Fully Encrypted",
+                        "ON",
+                        100,
+                        "Ok"
+                    ]
+                },
+                {
+                    "id": "00e548a67c3ca134356453d25e21ea65",
+                    "values": [
+                        "D",
+                        "Data",
+                        "Disk 1",
+                        "78.46",
+                        "401.00",
+                        "1862.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "Encryption In Progress",
+                        "OFF",
+                        42,
+                        "Scan Needed"
+                    ]
+                },
+                {
+                    "id": "a8c788485e8ccb54fb8622983142e6dc",
+                    "values": [
+                        "E",
+                        "BACKUP",
+                        "Disk 2",
+                        "3.45",
+                        "28.00",
+                        "29.00",
+                        "FAT32",
+                        "Removable",
+                        "Yes",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "Ok"
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one BitLocker volume is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one BitLocker volume is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Drive",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Physical Disk",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "File System",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ReadOnly",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Protection Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Encryption",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0463d35deb9500bde166adf5dd4de7fe",
+                    "values": [
+                        "C",
+                        "Windows",
+                        "Disk 0",
+                        "55.70",
+                        "206.00",
+                        "465.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "Fully Encrypted",
+                        "ON",
+                        100,
+                        "Ok"
+                    ]
+                },
+                {
+                    "id": "00e548a67c3ca134356453d25e21ea65",
+                    "values": [
+                        "D",
+                        "Data",
+                        "Disk 1",
+                        "78.46",
+                        "401.00",
+                        "1862.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "Scan Needed"
+                    ]
+                },
+                {
+                    "id": "a8c788485e8ccb54fb8622983142e6dc",
+                    "values": [
+                        "E",
+                        "BACKUP",
+                        "Disk 2",
+                        "3.45",
+                        "28.00",
+                        "29.00",
+                        "FAT32",
+                        "Removable",
+                        "Yes",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "Ok"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three volumes validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three volumes get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Drive",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Physical Disk",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "File System",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ReadOnly",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Protection Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Encryption",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0463d35deb9500bde166adf5dd4de7fe",
+                    "values": [
+                        "C",
+                        "Windows",
+                        "Disk 0",
+                        "55.70",
+                        "206.00",
+                        "465.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "Fully Encrypted",
+                        "ON",
+                        100,
+                        "Ok"
+                    ]
+                },
+                {
+                    "id": "00e548a67c3ca134356453d25e21ea65",
+                    "values": [
+                        "D",
+                        "Data",
+                        "Disk 1",
+                        "78.46",
+                        "401.00",
+                        "1862.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "Encryption In Progress",
+                        "OFF",
+                        42,
+                        "Scan Needed"
+                    ]
+                },
+                {
+                    "id": "a8c788485e8ccb54fb8622983142e6dc",
+                    "values": [
+                        "E",
+                        "BACKUP",
+                        "Disk 2",
+                        "3.45",
+                        "28.00",
+                        "29.00",
+                        "FAT32",
+                        "Removable",
+                        "Yes",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "Ok"
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one volume is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one volume is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Logical Disks",
+            "columnHeaders": [
+                {
+                    "label": "Drive",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Physical Disk",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Space",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "File System",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "ReadOnly",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Protection Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "BitLocker Encryption",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0463d35deb9500bde166adf5dd4de7fe",
+                    "values": [
+                        "C",
+                        "Windows",
+                        "Disk 0",
+                        "55.70",
+                        "206.00",
+                        "465.00",
+                        "NTFS",
+                        "Fixed",
+                        "No",
+                        "Fully Encrypted",
+                        "ON",
+                        100,
+                        "Ok"
+                    ]
+                }
+            ]
+        }
+    }
+}

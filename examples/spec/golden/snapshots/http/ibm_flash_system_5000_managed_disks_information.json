@@ -1,0 +1,181 @@
+{
+    "two arrays and one unmanaged validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two arrays and one unmanaged get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Managed Disks Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Mode",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Managed Disk Group ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Managed Disk Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Capacity",
+                    "valueType": "NUMBER",
+                    "unit": "TB"
+                },
+                {
+                    "label": "Control LUN Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Controller Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "UID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Tier",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encrypted",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Site ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Site Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Distributed",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Deduplication Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Over Provisioned",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Supports Unmap",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "RAID Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "RAID Level",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Redundancy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Strip Size",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "mdisk0",
+                        "online",
+                        "array",
+                        "0",
+                        "Pool0",
+                        21.83,
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "tier1_flash",
+                        "yes",
+                        "N/A",
+                        "N/A",
+                        "yes",
+                        "no",
+                        "yes",
+                        "yes",
+                        "online",
+                        "raid6",
+                        "2",
+                        "256"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "mdisk1",
+                        "degraded",
+                        "array",
+                        "1",
+                        "Pool1",
+                        0.5453,
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "tier0_flash",
+                        "no",
+                        "N/A",
+                        "N/A",
+                        "no",
+                        "no",
+                        "no",
+                        "no",
+                        "degraded",
+                        "raid1",
+                        "0",
+                        "256"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "mdisk2",
+                        "online",
+                        "unmanaged",
+                        "N/A",
+                        "N/A",
+                        1.09,
+                        "0000000000000001",
+                        "controller0",
+                        "6005076801234567890000000000001a",
+                        "tier_enterprise",
+                        "no",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

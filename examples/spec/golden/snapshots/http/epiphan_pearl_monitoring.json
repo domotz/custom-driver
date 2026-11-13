@@ -1,0 +1,360 @@
+{
+    "healthy pearl-2 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "system-name",
+                "name": "System Name",
+                "value": "Studio A Pearl",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-location",
+                "name": "System Location",
+                "value": "Lecture hall 2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-description",
+                "name": "System Description",
+                "value": "Main lecture capture",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "4.24.1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-revision",
+                "name": "Firmware Revision",
+                "value": "7d1f2c9",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-name",
+                "name": "Product Name",
+                "value": "Pearl-2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-id",
+                "name": "Product ID",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "system-uptime",
+                "name": "System Uptime",
+                "value": 1209600,
+                "unit": "seconds",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-load",
+                "name": "CPU Load",
+                "value": 23,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-temperature",
+                "name": "CPU Temperature",
+                "value": 58,
+                "unit": "°C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "external-ip",
+                "name": "External IP",
+                "value": "203.0.113.45",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "dns-status",
+                "name": "DNS Status",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "http-status",
+                "name": "HTTP Status",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "https-status",
+                "name": "HTTPS Status",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "mdns-name",
+                "name": "mDNS Name",
+                "value": "studio-a-pearl.local",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "storage-state",
+                "name": "Storage State",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "storage-total",
+                "name": "Storage Total",
+                "value": 536870912000,
+                "unit": "bytes",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "storage-free",
+                "name": "Storage Free",
+                "value": 375809638400,
+                "unit": "bytes",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "storage-usage",
+                "name": "Storage Usage",
+                "value": 30,
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "healthy pearl-2 custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 custom_3": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 custom_4": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 custom_5": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 custom_6": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "healthy pearl-2 custom_7": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "system-name",
+                "name": "System Name",
+                "value": "Studio B Pearl",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-location",
+                "name": "System Location",
+                "value": "Room 14",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-description",
+                "name": "System Description",
+                "value": "Overflow room",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "4.22.0",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-revision",
+                "name": "Firmware Revision",
+                "value": "a93e0b1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-name",
+                "name": "Product Name",
+                "value": "Pearl Mini",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "product-id",
+                "name": "Product ID",
+                "value": 5,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "system-uptime",
+                "name": "System Uptime",
+                "value": 86400,
+                "unit": "seconds",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-load",
+                "name": "CPU Load",
+                "value": 91,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-temperature",
+                "name": "CPU Temperature",
+                "value": 83,
+                "unit": "°C",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "external-ip",
+                "name": "External IP",
+                "value": "198.51.100.7",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "dns-status",
+                "name": "DNS Status",
+                "value": "failed",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "http-status",
+                "name": "HTTP Status",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "https-status",
+                "name": "HTTPS Status",
+                "value": "ok",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "mdns-name",
+                "name": "mDNS Name",
+                "value": "studio-b-pearl.local",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "storage-state",
+                "name": "Storage State",
+                "value": "full",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "storage-total",
+                "name": "Storage Total",
+                "value": 268435456000,
+                "unit": "bytes",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "storage-free",
+                "name": "Storage Free",
+                "value": 2147483648,
+                "unit": "bytes",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "storage-usage",
+                "name": "Storage Usage",
+                "value": 99,
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "hot pearl with almost full storage custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage custom_3": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage custom_4": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage custom_5": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage custom_6": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hot pearl with almost full storage custom_7": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

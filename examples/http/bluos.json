@@ -1,6 +1,6 @@
 {
     "logo": "bluos.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "BluOS",
     "description": "Collects status information from BluOS devices and perform some actions. See also https://www.bluesoundprofessional.com/wp-content/uploads/2022/10/BluOS-Custom-Integration-API-v1.5.pdf for BluOS Custom Integration API",
     "category": "Hardware Integration",

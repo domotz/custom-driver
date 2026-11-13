@@ -1,0 +1,103 @@
+{
+    "ubuntu 22.04 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 22.04 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Disk Partitions Usage",
+            "columnHeaders": [
+                {
+                    "label": "Percentage Used",
+                    "unit": "%"
+                },
+                {
+                    "label": "Type"
+                },
+                {
+                    "label": "Size"
+                },
+                {
+                    "label": "Available"
+                }
+            ],
+            "records": [
+                {
+                    "id": "/run",
+                    "values": [
+                        "1",
+                        "tmpfs",
+                        "392M",
+                        "390M"
+                    ]
+                },
+                {
+                    "id": "/",
+                    "values": [
+                        "23",
+                        "ext4",
+                        "98G",
+                        "72G"
+                    ]
+                },
+                {
+                    "id": "/dev/shm",
+                    "values": [
+                        "0",
+                        "tmpfs",
+                        "2.0G",
+                        "2.0G"
+                    ]
+                },
+                {
+                    "id": "/run/lock",
+                    "values": [
+                        "1",
+                        "tmpfs",
+                        "5.0M",
+                        "5.0M"
+                    ]
+                },
+                {
+                    "id": "/snap/core20/1828",
+                    "values": [
+                        "100",
+                        "squashfs",
+                        "64M",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "/snap/snapd/18357",
+                    "values": [
+                        "100",
+                        "squashfs",
+                        "50M",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "/boot/efi",
+                    "values": [
+                        "2",
+                        "vfat",
+                        "512M",
+                        "506M"
+                    ]
+                },
+                {
+                    "id": "/run/user/1000",
+                    "values": [
+                        "1",
+                        "tmpfs",
+                        "392M",
+                        "392M"
+                    ]
+                }
+            ]
+        }
+    }
+}

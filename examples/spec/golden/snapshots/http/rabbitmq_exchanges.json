@@ -1,0 +1,147 @@
+{
+    "three exchanges over two pages, one with unroutable messages validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three exchanges over two pages, one with unroutable messages get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Exchanges",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Vhost"
+                },
+                {
+                    "label": "Type"
+                },
+                {
+                    "label": "Returned unroutable per second"
+                },
+                {
+                    "label": "Returned unroutable"
+                },
+                {
+                    "label": "Redelivered per second"
+                },
+                {
+                    "label": "Redelivered"
+                },
+                {
+                    "label": "Publish_out per second"
+                },
+                {
+                    "label": "Publish_out"
+                },
+                {
+                    "label": "Publish_in per second"
+                },
+                {
+                    "label": "Publish_in"
+                },
+                {
+                    "label": "Published per second"
+                },
+                {
+                    "label": "Published"
+                },
+                {
+                    "label": "Delivered per second"
+                },
+                {
+                    "label": "Delivered"
+                },
+                {
+                    "label": "Confirmed per second"
+                },
+                {
+                    "label": "Confirmed"
+                },
+                {
+                    "label": "Acknowledged per second"
+                },
+                {
+                    "label": "Acknowledged"
+                }
+            ],
+            "records": [
+                {
+                    "id": "[][/]",
+                    "values": [
+                        "",
+                        "/",
+                        "direct",
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "id": "[orders][shop]",
+                    "values": [
+                        "orders",
+                        "shop",
+                        "topic",
+                        0.1,
+                        12,
+                        0,
+                        0,
+                        5,
+                        3000,
+                        2.5,
+                        1500,
+                        0,
+                        0,
+                        0,
+                        0,
+                        2.4,
+                        1490,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "id": "[amq.fanout][shop]",
+                    "values": [
+                        "amq.fanout",
+                        "shop",
+                        "fanout",
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        20,
+                        0,
+                        10,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    }
+}

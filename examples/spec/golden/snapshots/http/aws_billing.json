@@ -1,0 +1,55 @@
+{
+    "one daily total validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "one daily total get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "AmortizedCost",
+                "name": "AmortizedCost",
+                "value": "12.346",
+                "unit": "USD"
+            },
+            {
+                "uid": "BlendedCost",
+                "name": "BlendedCost",
+                "value": "11.200",
+                "unit": "USD"
+            },
+            {
+                "uid": "NetAmortizedCost",
+                "name": "NetAmortizedCost",
+                "value": "10.988",
+                "unit": "USD"
+            },
+            {
+                "uid": "NetUnblendedCost",
+                "name": "NetUnblendedCost",
+                "value": "9.500",
+                "unit": "USD"
+            },
+            {
+                "uid": "NormalizedUsageAmount",
+                "name": "NormalizedUsageAmount",
+                "value": "1523.750",
+                "unit": "N/A"
+            },
+            {
+                "uid": "UnblendedCost",
+                "name": "UnblendedCost",
+                "value": "11.200",
+                "unit": "USD"
+            },
+            {
+                "uid": "UsageQuantity",
+                "name": "UsageQuantity",
+                "value": "30571.250",
+                "unit": "N/A"
+            }
+        ],
+        "table": null
+    }
+}

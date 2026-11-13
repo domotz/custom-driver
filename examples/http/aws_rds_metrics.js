@@ -33,7 +33,7 @@ function sign(key, message) {
     return result;
 }
 
-/**  
+/**
  * @returns CloudWatch metrics to be monitored for an AWS RDS instance.
  */
 function createMetricsPayload(period, dbInstanceId) {
@@ -133,11 +133,10 @@ function createMetricsPayload(period, dbInstanceId) {
 }
 
 /**
- * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html 
+ * Authorization based on: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost(data) {
-    var d = D.q.defer();
     var service = "monitoring";
     var body = JSON.stringify(data);
     var method = "POST";
@@ -156,39 +155,40 @@ function httpPost(data) {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.post({
-        url: canonicalUri,
-        protocol: "https",
-        headers: {
-            "x-amz-date": amzdate,
-            "X-Amz-Target": "GraniteServiceVersion20100801.GetMetricData",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Content-Encoding": "amz-1.0",
-            "Authorization": auth
+    return new Promise(function (resolve) {
+        device.http.post({
+            url: canonicalUri,
+            protocol: "https",
+            headers: {
+                "x-amz-date": amzdate,
+                "X-Amz-Target": "GraniteServiceVersion20100801.GetMetricData",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Content-Encoding": "amz-1.0",
+                "Authorization": auth
+            },
+            body: body
         },
-        body: body
-    },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+        function (err, response, body) {
+            if (err) {
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode === 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**
- * @returns promise for http response containing instance metrics 
+ * @returns promise for http response containing instance metrics
  */
 function getMetricsData() {
     var payload = {},
@@ -462,7 +462,7 @@ function fillConfig() {
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

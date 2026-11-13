@@ -1,0 +1,31 @@
+{
+    "edgerouter with a HomeRouter network validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "edgerouter with a HomeRouter network get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "b827eb123456",
+                "name": "192.168.1.101",
+                "value": "2026/01/15 18:23:41",
+                "unit": "date"
+            },
+            {
+                "uid": "3c22fbaabbcc",
+                "name": "192.168.1.102",
+                "value": "2026/01/16 02:05:09",
+                "unit": "date"
+            },
+            {
+                "uid": "f01898010203",
+                "name": "192.168.1.130",
+                "value": "2026/01/15 10:30:00",
+                "unit": "date"
+            }
+        ],
+        "table": null
+    }
+}

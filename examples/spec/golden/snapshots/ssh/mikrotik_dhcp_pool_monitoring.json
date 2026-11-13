@@ -1,0 +1,68 @@
+{
+    "routeros 7.13.3, one pool exhausted validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "routeros 7.13.3, one pool exhausted get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "DHCP addresses pools",
+            "columnHeaders": [
+                {
+                    "label": "Start IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "End IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Used",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dhcp_pool0",
+                    "values": [
+                        "192.168.88.10",
+                        "192.168.88.254",
+                        3,
+                        242,
+                        245
+                    ]
+                },
+                {
+                    "id": "guest_pool",
+                    "values": [
+                        "192.168.20.10",
+                        "192.168.20.50",
+                        1,
+                        40,
+                        41
+                    ]
+                },
+                {
+                    "id": "iot_pool",
+                    "values": [
+                        "10.10.10.2",
+                        "10.10.10.5",
+                        4,
+                        0,
+                        4
+                    ]
+                }
+            ]
+        }
+    }
+}

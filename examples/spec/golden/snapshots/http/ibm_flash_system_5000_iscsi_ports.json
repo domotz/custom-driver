@@ -1,0 +1,271 @@
+{
+    "four ip ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four ip ports get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "iSCSI Ports",
+            "columnHeaders": [
+                {
+                    "label": "Node ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Mask",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Gateway",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IP Address 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Prefix 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Gateway 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Speed",
+                    "valueType": "NUMBER",
+                    "unit": "Gb/s"
+                },
+                {
+                    "label": "Failover",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Link State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Host",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Copy",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Host 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Copy 6",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Remote Copy Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Copy Status 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VLAN",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VLAN 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Adapter Location",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Adapter Port ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Storage",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Storage 6",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Host Port Group ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "RDMA Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is RDMA Clustering",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "1",
+                        "node1",
+                        "10.20.0.11",
+                        "255.255.255.0",
+                        "10.20.0.1",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "40:f2:e9:aa:bb:01",
+                        "Full",
+                        "configured",
+                        "10.00",
+                        "no",
+                        "active",
+                        "yes",
+                        "0",
+                        "N/A",
+                        "0",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "0",
+                        "1",
+                        "yes",
+                        "N/A",
+                        "0",
+                        "None",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "2",
+                        "node2",
+                        "10.20.0.12",
+                        "255.255.255.0",
+                        "10.20.0.1",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "40:f2:e9:aa:bb:02",
+                        "Full",
+                        "configured",
+                        "1.00",
+                        "no",
+                        "active",
+                        "yes",
+                        "0",
+                        "N/A",
+                        "0",
+                        "N/A",
+                        "N/A",
+                        "120",
+                        "N/A",
+                        "0",
+                        "1",
+                        "yes",
+                        "N/A",
+                        "0",
+                        "None",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "1",
+                        "node1",
+                        "10.20.1.11",
+                        "255.255.255.0",
+                        "10.20.0.1",
+                        "2001:db8:20::11",
+                        "64",
+                        "2001:db8:20::1",
+                        "40:f2:e9:aa:bb:03",
+                        "Full",
+                        "configured",
+                        "0.0977",
+                        "no",
+                        "active",
+                        "yes",
+                        "0",
+                        "N/A",
+                        "0",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "0",
+                        "2",
+                        "yes",
+                        "N/A",
+                        "0",
+                        "None",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "2",
+                        "node2",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "40:f2:e9:aa:bb:04",
+                        "N/A",
+                        "unconfigured",
+                        "N/A",
+                        "no",
+                        "inactive",
+                        "N/A",
+                        "0",
+                        "N/A",
+                        "0",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "0",
+                        "2",
+                        "N/A",
+                        "N/A",
+                        "0",
+                        "None",
+                        "no"
+                    ]
+                }
+            ]
+        }
+    }
+}

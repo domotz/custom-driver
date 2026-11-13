@@ -1,0 +1,97 @@
+{
+    "iDRAC 9 two DIMMs, one critical validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 two DIMMs, one critical get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Memory Info",
+            "columnHeaders": [
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Description",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Bank Label",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Part Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Manufacturer",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Speed",
+                    "unit": "MHZ",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Current Operating Speed",
+                    "unit": "MHZ",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dimm.socket.a1",
+                    "values": [
+                        "Memory",
+                        "DIMM A1",
+                        "Ok",
+                        "A",
+                        "DDR4 DIMM",
+                        "HMA82GR7CJR8N-VK",
+                        "3C0D5A0E",
+                        "Hynix Semiconductor",
+                        17179869184,
+                        "2666",
+                        "2666"
+                    ]
+                },
+                {
+                    "id": "dimm.socket.a2",
+                    "values": [
+                        "Memory",
+                        "DIMM A2",
+                        "Critical",
+                        "A",
+                        "DDR4 DIMM",
+                        "HMA82GR7CJR8N-VK",
+                        "3C0D5B77",
+                        "Hynix Semiconductor",
+                        34359738368,
+                        "2933",
+                        "2666"
+                    ]
+                }
+            ]
+        }
+    }
+}

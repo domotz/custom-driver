@@ -1,0 +1,52 @@
+{
+    "exchange, three web service instances validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, three web service instances get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "_total",
+                "name": "_total",
+                "value": 37,
+                "unit": "",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "default-web-site",
+                "name": "default web site",
+                "value": 4,
+                "unit": "",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "exchange-back-end",
+                "name": "exchange back end",
+                "value": 31,
+                "unit": "",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "exchange, a single instance is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange, a single instance is a bare object get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "_total",
+                "name": "_total",
+                "value": 37,
+                "unit": "",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

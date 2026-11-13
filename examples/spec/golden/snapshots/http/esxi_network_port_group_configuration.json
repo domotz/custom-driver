@@ -1,0 +1,224 @@
+{
+    "esxi 8.0.0 three port groups validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 three port groups get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Port Group Configuration",
+            "columnHeaders": [
+                {
+                    "label": "Port Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VLAN ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Allow Promiscuous",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address Changes",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Forged Transmits",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Reverse Policy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Notify Switches",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Rolling Order",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Check Speed",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Speed",
+                    "valueType": "NUMBER",
+                    "unit": "Mbps"
+                },
+                {
+                    "label": "Check Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Full Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Check Error Percentage",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Error Percentage",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Check Beacon",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Active NIC",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Checksum Offload",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "TCP Segmentation",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Zero Copy Transmission",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Shaping Policy Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "vSwitch Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Security Policy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "NIC Teaming Policy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "NIC Teaming Failure Criteria",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Offload Policy",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Shaping Policy",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "key-vim.host.PortGroup-Management Network",
+                    "values": [
+                        "Management Network",
+                        0,
+                        "\"00:50:56:6b:ab:cd (host)\"",
+                        "false",
+                        "true",
+                        "true",
+                        "true",
+                        "true",
+                        "false",
+                        "minimum",
+                        10,
+                        "false",
+                        "false",
+                        "false",
+                        0,
+                        "false",
+                        "vmnic0",
+                        "true",
+                        "true",
+                        "true",
+                        "false",
+                        "vSwitch0",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.PortGroup-VM Network",
+                    "values": [
+                        "VM Network",
+                        0,
+                        "\"00:50:56:a1:00:01 (virtualMachine)\", \"00:50:56:a1:00:02 (virtualMachine)\"",
+                        "false",
+                        "true",
+                        "true",
+                        "true",
+                        "true",
+                        "false",
+                        "minimum",
+                        10,
+                        "false",
+                        "false",
+                        "false",
+                        0,
+                        "false",
+                        "vmnic0",
+                        "true",
+                        "true",
+                        "true",
+                        "false",
+                        "vSwitch0",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.PortGroup-Storage",
+                    "values": [
+                        "Storage",
+                        100,
+                        "",
+                        "true",
+                        "true",
+                        "true",
+                        "true",
+                        "true",
+                        "false",
+                        "minimum",
+                        10,
+                        "false",
+                        "false",
+                        "false",
+                        0,
+                        "false",
+                        "vmnic2, vmnic3",
+                        "true",
+                        "true",
+                        "true",
+                        "false",
+                        "vSwitch1",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

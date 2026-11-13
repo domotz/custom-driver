@@ -1,0 +1,95 @@
+{
+    "standby inside working hours, turned on validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "standby inside working hours, turned on get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "active"
+            },
+            {
+                "uid": "video-source",
+                "name": "Video Source",
+                "value": "HDMI 2"
+            }
+        ],
+        "table": null
+    },
+    "standby inside working hours, turned on custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "standby inside working hours, turned on custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active outside the schedule, turned off validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active outside the schedule, turned off get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "standby"
+            },
+            {
+                "uid": "video-source",
+                "name": "Video Source",
+                "value": "N/A"
+            }
+        ],
+        "table": null
+    },
+    "active outside the schedule, turned off custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active outside the schedule, turned off custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active on a broadcast channel inside the schedule validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active on a broadcast channel inside the schedule get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "active"
+            },
+            {
+                "uid": "video-source",
+                "name": "Video Source",
+                "value": "TV:DVBT"
+            }
+        ],
+        "table": null
+    },
+    "active on a broadcast channel inside the schedule custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "active on a broadcast channel inside the schedule custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

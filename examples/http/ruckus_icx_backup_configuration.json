@@ -1,6 +1,6 @@
 {
     "logo": "ruckus.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Ruckus ICX Configuration Backup",
     "description": "Extracts the running configuration of a Ruckus ICX switch and backs it up via SSH or TFTP.",
     "type": "CONFIGURATION_MANAGEMENT",

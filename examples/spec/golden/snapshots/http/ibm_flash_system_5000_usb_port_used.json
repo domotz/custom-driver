@@ -1,0 +1,82 @@
+{
+    "three usb ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three usb ports get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "USB Ports Information",
+            "columnHeaders": [
+                {
+                    "label": "Node ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Node Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Node Side",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Port ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encryption State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Service state",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "1",
+                        "node1",
+                        "left",
+                        "1",
+                        "active",
+                        "enabled",
+                        "inactive"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "1",
+                        "node1",
+                        "left",
+                        "2",
+                        "inactive",
+                        "N/A",
+                        "inactive"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "2",
+                        "node2",
+                        "right",
+                        "1",
+                        "active",
+                        "enabled",
+                        "active"
+                    ]
+                }
+            ]
+        }
+    }
+}

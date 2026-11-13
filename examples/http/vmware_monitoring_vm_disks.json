@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare Monitoring VM Disks",
     "description": "This script retrieves information about each disk connected to a Virtual Machine on VMware server",
     "category": "Software Integration",

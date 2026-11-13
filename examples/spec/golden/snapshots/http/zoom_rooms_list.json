@@ -1,0 +1,61 @@
+{
+    "three rooms in two locations validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three rooms in two locations get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Zoom Rooms",
+            "columnHeaders": [
+                {
+                    "label": "Room Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Location Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Time Zone",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "room_001",
+                    "values": [
+                        "Boardroom",
+                        "Available",
+                        "Milan Office",
+                        "Europe/Rome"
+                    ]
+                },
+                {
+                    "id": "room_002",
+                    "values": [
+                        "Huddle 2",
+                        "Offline",
+                        "London Office",
+                        "Europe/London"
+                    ]
+                },
+                {
+                    "id": "room_003",
+                    "values": [
+                        "Training",
+                        "InMeeting",
+                        "Milan Office",
+                        "Europe/Rome"
+                    ]
+                }
+            ]
+        }
+    }
+}

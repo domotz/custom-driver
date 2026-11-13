@@ -1,0 +1,251 @@
+{
+    "running node with one network partition, all health checks ok validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "running node with one network partition, all health checks ok get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "queues",
+                "name": "Queues total",
+                "value": 7
+            },
+            {
+                "uid": "messages_unacknowledged",
+                "name": "Messages unacknowledged",
+                "value": 5
+            },
+            {
+                "uid": "messages",
+                "name": "Messages total",
+                "value": 15025
+            },
+            {
+                "uid": "return_unroutab_details",
+                "name": "Messages returned unroutable per second",
+                "value": 0,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "return_unroutab",
+                "name": "Messages returned unroutable",
+                "value": 30
+            },
+            {
+                "uid": "redeliver_details",
+                "name": "Messages returned redeliver per second",
+                "value": 0.1,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "redeliver",
+                "name": "Messages returned redeliver",
+                "value": 15
+            },
+            {
+                "uid": "messages_ready",
+                "name": "Messages ready for delivery",
+                "value": 15020
+            },
+            {
+                "uid": "publish_out_details",
+                "name": "Messages publish_out per second",
+                "value": 50.25,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "publish_out",
+                "name": "Messages publish_out",
+                "value": 240000
+            },
+            {
+                "uid": "publish_in_details",
+                "name": "Messages publish_in per second",
+                "value": 25.5,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "publish_in",
+                "name": "Messages publish_in",
+                "value": 120000
+            },
+            {
+                "uid": "publish_details",
+                "name": "Messages published per second",
+                "value": 25.5,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "publish",
+                "name": "Messages published",
+                "value": 120000
+            },
+            {
+                "uid": "deliver_get_details",
+                "name": "Messages delivered per second",
+                "value": 49.5,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "deliver_get",
+                "name": "Messages delivered",
+                "value": 239000
+            },
+            {
+                "uid": "confirm_details",
+                "name": "Messages confirmed per second",
+                "value": 25.4,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "confirm",
+                "name": "Messages confirmed",
+                "value": 119900
+            },
+            {
+                "uid": "ack_details",
+                "name": "Messages acknowledged per second",
+                "value": 49.4,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "ack",
+                "name": "Messages acknowledged",
+                "value": 238900
+            },
+            {
+                "uid": "alarms",
+                "name": "Healthcheck: alarms in effect in the cluster",
+                "value": "ok"
+            },
+            {
+                "uid": "exchanges",
+                "name": "Exchanges total",
+                "value": 14
+            },
+            {
+                "uid": "consumers",
+                "name": "Consumers total",
+                "value": 9
+            },
+            {
+                "uid": "connections",
+                "name": "Connections total",
+                "value": 12
+            },
+            {
+                "uid": "channels",
+                "name": "Channels total",
+                "value": 18
+            },
+            {
+                "uid": "disk_free_alarm",
+                "name": "Disk free alarm",
+                "value": 0
+            },
+            {
+                "uid": "disk_free_limit",
+                "name": "Disk free limit",
+                "value": 50000000,
+                "unit": "B"
+            },
+            {
+                "uid": "disk_free",
+                "name": "Free disk space",
+                "value": 48000000000,
+                "unit": "B"
+            },
+            {
+                "uid": "mirror_sync",
+                "name": "Healthcheck: classic mirrored queues without synchronized mirrors online",
+                "value": "ok"
+            },
+            {
+                "uid": "certificate_expiration",
+                "name": "Healthcheck: expiration date on the certificates",
+                "value": "ok"
+            },
+            {
+                "uid": "local_alarms",
+                "name": "Healthcheck: local alarms in effect on this node",
+                "value": "ok"
+            },
+            {
+                "uid": "quorum",
+                "name": "Healthcheck: queues with minimum online quorum",
+                "value": "ok"
+            },
+            {
+                "uid": "virtual_hosts",
+                "name": "Healthcheck: virtual hosts on this node",
+                "value": "ok"
+            },
+            {
+                "uid": "running",
+                "name": "Is running",
+                "value": 1
+            },
+            {
+                "uid": "management_version",
+                "name": "Management plugin version",
+                "value": "3.12.10"
+            },
+            {
+                "uid": "mem_alarm",
+                "name": "Memory alarm",
+                "value": 0
+            },
+            {
+                "uid": "mem_limit",
+                "name": "Memory limit",
+                "value": 3300000000,
+                "unit": "B"
+            },
+            {
+                "uid": "mem_used",
+                "name": "Memory used",
+                "value": 190000000,
+                "unit": "B"
+            },
+            {
+                "uid": "partitions",
+                "name": "Number of network partitions",
+                "value": 1
+            },
+            {
+                "uid": "rabbitmq_version",
+                "name": "RabbitMQ version",
+                "value": "3.12.10"
+            },
+            {
+                "uid": "run_queue",
+                "name": "Runtime run queue",
+                "value": 1
+            },
+            {
+                "uid": "sockets_total",
+                "name": "Sockets available",
+                "value": 943626
+            },
+            {
+                "uid": "sockets_used",
+                "name": "Sockets used",
+                "value": 20
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": 90061,
+                "unit": "S"
+            },
+            {
+                "uid": "fd_used",
+                "name": "Used file descriptors",
+                "value": 55
+            }
+        ],
+        "table": null
+    }
+}

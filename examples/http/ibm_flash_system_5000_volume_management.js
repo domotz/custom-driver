@@ -66,54 +66,53 @@ const endpoints = [
     }
 ];
 
-let httpResponses = []
+let httpResponses = [];
 
 const volumeTable = D.createTable(
-    'Volumes Details',
+    "Volumes Details",
     [
-        {label: "Name", valueType: D.valueType.STRING},
-        {label: "IO Group ID", valueType: D.valueType.STRING},
-        {label: "IO Group Name", valueType: D.valueType.STRING},
-        {label: "Status", valueType: D.valueType.STRING},
-        {label: "Disk Group ID", valueType: D.valueType.STRING},
-        {label: "Disk Group Name", valueType: D.valueType.STRING},
-        {label: "Capacity", valueType: D.valueType.NUMBER, unit: "GB"},
-        {label: "Type", valueType: D.valueType.STRING},
-        {label: "VDisk UID", valueType: D.valueType.STRING},
-        {label: "FC Map Count", valueType: D.valueType.NUMBER},
-        {label: "Copy Count", valueType: D.valueType.NUMBER},
-        {label: "Fast Write State", valueType: D.valueType.STRING},
-        {label: "SE Copy Count", valueType: D.valueType.NUMBER},
-        {label: "RC Change", valueType: D.valueType.STRING},
-        {label: "Compressed Copy Count", valueType: D.valueType.NUMBER},
-        {label: "Parent Disk Group ID", valueType: D.valueType.STRING},
-        {label: "Parent Disk Group Name", valueType: D.valueType.STRING},
-        {label: "Formatting", valueType: D.valueType.STRING},
-        {label: "Encrypted", valueType: D.valueType.STRING},
-        {label: "State", valueType: D.valueType.STRING},
-        {label: "Analysis Time", valueType: D.valueType.STRING},
-        {label: "Thin Size", valueType: D.valueType.NUMBER, unit: "GB"},
-        {label: "Thin Savings", valueType: D.valueType.NUMBER, unit: "GB"},
-        {label: "Thin Savings Ratio", valueType: D.valueType.NUMBER, unit: "%"},
-        {label: "Compressed Size", valueType: D.valueType.NUMBER, unit: "GB"},
-        {label: "Compression Savings", valueType: D.valueType.NUMBER, unit: "GB"},
-        {label: "Compression Savings Ratio", valueType: D.valueType.NUMBER, unit: "%"},
-        {label: "Total Savings", valueType: D.valueType.NUMBER, unit: "GB"},
-        {label: "Total Savings Ratio", valueType: D.valueType.NUMBER, unit: "%"},
-        {label: "Copy ID", valueType: D.valueType.STRING},
-        {label: "Copy Status", valueType: D.valueType.STRING},
-        {label: "Sync", valueType: D.valueType.STRING},
-        {label: "Primary", valueType: D.valueType.STRING},
-        {label: "Copy Type", valueType: D.valueType.STRING},
-        {label: "SE Copy", valueType: D.valueType.STRING},
-        {label: "Easy Tier", valueType: D.valueType.STRING},
-        {label: "Easy Tier Status", valueType: D.valueType.STRING},
-        {label: "Compressed Copy", valueType: D.valueType.STRING},
-        {label: "Encrypted", valueType: D.valueType.STRING},
-        {label: "Deduplicated Copy", valueType: D.valueType.STRING}
+        { label: "Name", valueType: D.valueType.STRING },
+        { label: "IO Group ID", valueType: D.valueType.STRING },
+        { label: "IO Group Name", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Disk Group ID", valueType: D.valueType.STRING },
+        { label: "Disk Group Name", valueType: D.valueType.STRING },
+        { label: "Capacity", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Type", valueType: D.valueType.STRING },
+        { label: "VDisk UID", valueType: D.valueType.STRING },
+        { label: "FC Map Count", valueType: D.valueType.NUMBER },
+        { label: "Copy Count", valueType: D.valueType.NUMBER },
+        { label: "Fast Write State", valueType: D.valueType.STRING },
+        { label: "SE Copy Count", valueType: D.valueType.NUMBER },
+        { label: "RC Change", valueType: D.valueType.STRING },
+        { label: "Compressed Copy Count", valueType: D.valueType.NUMBER },
+        { label: "Parent Disk Group ID", valueType: D.valueType.STRING },
+        { label: "Parent Disk Group Name", valueType: D.valueType.STRING },
+        { label: "Formatting", valueType: D.valueType.STRING },
+        { label: "Encrypted", valueType: D.valueType.STRING },
+        { label: "State", valueType: D.valueType.STRING },
+        { label: "Analysis Time", valueType: D.valueType.STRING },
+        { label: "Thin Size", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Thin Savings", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Thin Savings Ratio", valueType: D.valueType.NUMBER, unit: "%" },
+        { label: "Compressed Size", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Compression Savings", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Compression Savings Ratio", valueType: D.valueType.NUMBER, unit: "%" },
+        { label: "Total Savings", valueType: D.valueType.NUMBER, unit: "GB" },
+        { label: "Total Savings Ratio", valueType: D.valueType.NUMBER, unit: "%" },
+        { label: "Copy ID", valueType: D.valueType.STRING },
+        { label: "Copy Status", valueType: D.valueType.STRING },
+        { label: "Sync", valueType: D.valueType.STRING },
+        { label: "Primary", valueType: D.valueType.STRING },
+        { label: "Copy Type", valueType: D.valueType.STRING },
+        { label: "SE Copy", valueType: D.valueType.STRING },
+        { label: "Easy Tier", valueType: D.valueType.STRING },
+        { label: "Easy Tier Status", valueType: D.valueType.STRING },
+        { label: "Compressed Copy", valueType: D.valueType.STRING },
+        { label: "Encrypted", valueType: D.valueType.STRING },
+        { label: "Deduplicated Copy", valueType: D.valueType.STRING }
     ]
 );
-
 
 /**
  * Sends an HTTPS POST request and returns the parsed JSON response.
@@ -122,7 +121,6 @@ const volumeTable = D.createTable(
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttps(endpoint, headers) {
-    const d = D.q.defer();
     const config = {
         url: endpoint,
         protocol: "https",
@@ -130,22 +128,22 @@ function callHttps(endpoint, headers) {
         rejectUnauthorized: false,
         headers: headers
     };
-    D.device.http.post(config, function (error, response, body) {
-        if (error) {
-            console.error(error)
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else if (!response || response.statusCode === 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE)
-        } else if (response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR)
-        }
-        else if (response.statusCode !== 200) {
-            D.failure(D.errorType.GENERIC_ERROR)
-        } else {
-            d.resolve(JSON.parse(body));
-        }
-    })
-    return d.promise
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (!response || response.statusCode === 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode !== 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
+    });
 }
 
 /**
@@ -155,8 +153,8 @@ function callHttps(endpoint, headers) {
  * @returns {Promise<Object>} Parsed JSON response.
  */
 function callHttpsEndpoint(token, endpoint) {
-    const headers = {"X-Auth-Token": token}
-    return callHttps(endpoint, headers)
+    const headers = { "X-Auth-Token": token };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -164,13 +162,13 @@ function callHttpsEndpoint(token, endpoint) {
  * @returns {Promise<Object>} Parsed JSON login response.
  */
 function login() {
-    const endpoint = "/rest/auth"
+    const endpoint = "/rest/auth";
     const headers = {
         "Content-Type": "application/json",
-        'X-Auth-Username': D.device.username(),
-        'X-Auth-Password': D.device.password()
-    }
-    return callHttps(endpoint, headers)
+        "X-Auth-Username": D.device.username(),
+        "X-Auth-Password": D.device.password()
+    };
+    return callHttps(endpoint, headers);
 }
 
 /**
@@ -179,7 +177,7 @@ function login() {
  * @returns {number|string} Cleaned value.
  */
 function cleanFloatValue(value) {
-    return parseFloat(value.replace(/[^0-9.]/g, ''))
+    return parseFloat(value.replace(/[^0-9.]/g, ""));
 }
 
 /**
@@ -189,47 +187,48 @@ function cleanFloatValue(value) {
 function populateTable(volumeDetailsList) {
     for (let i = 0; i < volumeDetailsList.length; i++) {
         const volumeDetails = volumeDetailsList[i];
-        volumeTable.insertRecord(volumeDetails['id'], [
-            volumeDetails['name'] || "N/A",
-            volumeDetails['IO_group_id'] || "N/A",
-            volumeDetails['IO_group_name'] || "N/A",
-            volumeDetails['status'] || "N/A",
-            volumeDetails['mdisk_grp_id'] || "N/A",
-            volumeDetails['mdisk_grp_name'] || "N/A",
-            volumeDetails['capacity'] ? convertToGigabytes(volumeDetails['capacity']) : "N/A",
-            volumeDetails['type'] || "N/A",
-            volumeDetails['vdisk_UID'] || "N/A",
-            volumeDetails['fc_map_count'] ? cleanFloatValue(volumeDetails['fc_map_count']) : "N/A",
-            volumeDetails['copy_count'] ? cleanFloatValue(volumeDetails['copy_count']) : "N/A",
-            volumeDetails['fast_write_state'] || "N/A",
-            volumeDetails['se_copy_count'] ? cleanFloatValue(volumeDetails['se_copy_count']) : "N/A",
-            volumeDetails['RC_change'] || "N/A",
-            volumeDetails['compressed_copy_count'] ? cleanFloatValue(volumeDetails['compressed_copy_count']) : "N/A",
-            volumeDetails['parent_mdisk_grp_id'] || "N/A",
-            volumeDetails['parent_mdisk_grp_name'] || "N/A",
-            volumeDetails['formatting'] || "N/A",
-            volumeDetails['encrypt'] || "N/A",
-            volumeDetails['state'] || "N/A",
-            volumeDetails['analysis_time'] ? formatDate(volumeDetails['analysis_time']) : "N/A",
-            volumeDetails['thin_size'] ? convertToGigabytes(volumeDetails['thin_size']) : "N/A",
-            volumeDetails['thin_savings'] ? convertToGigabytes(volumeDetails['thin_savings']) : "N/A",
-            volumeDetails['thin_savings_ratio'] ? cleanFloatValue(volumeDetails['thin_savings_ratio']) : "N/A",
-            volumeDetails['compressed_size'] ? convertToGigabytes(volumeDetails['compressed_size']) : "N/A",
-            volumeDetails['compression_savings'] ? convertToGigabytes(volumeDetails['compression_savings']) : "N/A",
-            volumeDetails['compression_savings_ratio'] ? cleanFloatValue(volumeDetails['compression_savings_ratio']) : "N/A",
-            volumeDetails['total_savings'] ? convertToGigabytes(volumeDetails['total_savings']) : "N/A",
-            volumeDetails['total_savings_ratio'] ? cleanFloatValue(volumeDetails['total_savings_ratio']) : "N/A",
-            volumeDetails['copy_id'] || "N/A",
-            volumeDetails['status'] || "N/A",
-            volumeDetails['sync'] || "N/A",
-            volumeDetails['primary'] || "N/A",
-            volumeDetails['type'] || "N/A",
-            volumeDetails['se_copy'] || "N/A",
-            volumeDetails['easy_tier'] || "N/A",
-            volumeDetails['easy_tier_status'] || "N/A",
-            volumeDetails['compressed_copy'] || "N/A",
-            volumeDetails['encrypt'] || "N/A",
-            volumeDetails['deduplicated_copy'] || "N/A"
+        const copy = volumeDetails.copy;
+        volumeTable.insertRecord(volumeDetails["id"], [
+            volumeDetails["name"] || "N/A",
+            volumeDetails["IO_group_id"] || "N/A",
+            volumeDetails["IO_group_name"] || "N/A",
+            volumeDetails["status"] || "N/A",
+            volumeDetails["mdisk_grp_id"] || "N/A",
+            volumeDetails["mdisk_grp_name"] || "N/A",
+            volumeDetails["capacity"] ? convertToGigabytes(volumeDetails["capacity"]) : "N/A",
+            volumeDetails["type"] || "N/A",
+            volumeDetails["vdisk_UID"] || "N/A",
+            volumeDetails["fc_map_count"] ? cleanFloatValue(volumeDetails["fc_map_count"]) : "N/A",
+            volumeDetails["copy_count"] ? cleanFloatValue(volumeDetails["copy_count"]) : "N/A",
+            volumeDetails["fast_write_state"] || "N/A",
+            volumeDetails["se_copy_count"] ? cleanFloatValue(volumeDetails["se_copy_count"]) : "N/A",
+            volumeDetails["RC_change"] || "N/A",
+            volumeDetails["compressed_copy_count"] ? cleanFloatValue(volumeDetails["compressed_copy_count"]) : "N/A",
+            volumeDetails["parent_mdisk_grp_id"] || "N/A",
+            volumeDetails["parent_mdisk_grp_name"] || "N/A",
+            volumeDetails["formatting"] || "N/A",
+            volumeDetails["encrypt"] || "N/A",
+            volumeDetails["state"] || "N/A",
+            volumeDetails["analysis_time"] ? formatDate(volumeDetails["analysis_time"]) : "N/A",
+            volumeDetails["thin_size"] ? convertToGigabytes(volumeDetails["thin_size"]) : "N/A",
+            volumeDetails["thin_savings"] ? convertToGigabytes(volumeDetails["thin_savings"]) : "N/A",
+            volumeDetails["thin_savings_ratio"] ? cleanFloatValue(volumeDetails["thin_savings_ratio"]) : "N/A",
+            volumeDetails["compressed_size"] ? convertToGigabytes(volumeDetails["compressed_size"]) : "N/A",
+            volumeDetails["compression_savings"] ? convertToGigabytes(volumeDetails["compression_savings"]) : "N/A",
+            volumeDetails["compression_savings_ratio"] ? cleanFloatValue(volumeDetails["compression_savings_ratio"]) : "N/A",
+            volumeDetails["total_savings"] ? convertToGigabytes(volumeDetails["total_savings"]) : "N/A",
+            volumeDetails["total_savings_ratio"] ? cleanFloatValue(volumeDetails["total_savings_ratio"]) : "N/A",
+            copy["copy_id"] || "N/A",
+            copy["status"] || "N/A",
+            copy["sync"] || "N/A",
+            copy["primary"] || "N/A",
+            copy["type"] || "N/A",
+            copy["se_copy"] || "N/A",
+            copy["easy_tier"] || "N/A",
+            copy["easy_tier_status"] || "N/A",
+            copy["compressed_copy"] || "N/A",
+            copy["encrypt"] || "N/A",
+            copy["deduplicated_copy"] || "N/A"
         ]);
     }
 }
@@ -240,16 +239,14 @@ function populateTable(volumeDetailsList) {
  * @returns {Promise} A promise that resolves when all data is retrieved and stored.
  */
 function retrieveAndStoreData(body) {
-    const promises = [];
-    for (let i = 0; i < endpoints.length; i++) {
-        const endpointDetails = endpoints[i]
-        const promise = callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint)
-            .then(function (response) {
-                storeResponse(response, endpointDetails.key)
-            })
-        promises.push(promise)
-    }
-    return D.q.all(promises)
+    const promises = endpoints.map(function (endpointDetails) {
+        return callHttpsEndpoint(body.token, "/rest/" + endpointDetails.endpoint);
+    });
+    return Promise.all(promises).then(function (responses) {
+        responses.forEach(function (response, i) {
+            storeResponse(response, endpoints[i].key);
+        });
+    });
 }
 
 /**
@@ -258,32 +255,33 @@ function retrieveAndStoreData(body) {
  * @param {string} key - The key used to identify the response.
  */
 function storeResponse(response, key) {
-    httpResponses.push({response: response, key: key});
+    httpResponses.push({ response: response, key: key });
 }
 
 /**
- * Merges multiple HTTP responses based on a shared key.
+ * Merges the volume analysis into each volume and attaches the volume's copy as "copy" (the primary
+ * one when the volume is mirrored), so that copy fields such as status and type do not overwrite the
+ * volume's own.
  * @returns {Array<Object>} A list of merged response objects.
  */
 function mergeOutputs() {
-    if (!httpResponses || httpResponses.length === 0) return [];
-
-    let baseResponseList = httpResponses[0].response;
-    const baseKey = httpResponses[0].key;
-
-    for (let i = 1; i < httpResponses.length; i++) {
-        const currentResponseList = httpResponses[i].response;
-        const currentKey = httpResponses[i].key;
-        baseResponseList = baseResponseList.map(function (baseObject) {
-            const matchedObject = currentResponseList.find(function (currentObject) {
-                return baseObject[baseKey] === currentObject[currentKey];
-            });
-            return matchedObject ? Object.assign({}, baseObject, matchedObject) : baseObject;
+    if (!httpResponses || httpResponses.length < endpoints.length) return [];
+    const volumes = httpResponses[0];
+    const analyses = httpResponses[1];
+    const copies = httpResponses[2];
+    return volumes.response.map(function (volume) {
+        const analysis = analyses.response.find(function (item) {
+            return item[analyses.key] === volume[volumes.key];
         });
-    }
-    return baseResponseList;
+        const volumeCopies = copies.response.filter(function (item) {
+            return item[copies.key] === volume[volumes.key];
+        });
+        const copy = volumeCopies.find(function (item) {
+            return item.primary === "yes";
+        }) || volumeCopies[0] || {};
+        return Object.assign({}, analysis, volume, { copy: copy });
+    });
 }
-
 
 /**
  * Converts input with units (MB, GB, TB) to gigabytes.
@@ -296,26 +294,32 @@ function convertToGigabytes(inputValue) {
     if (matchedResult) {
         return formatValueToGigabytes(parseFloat(matchedResult[1]), matchedResult[2].trim());
     } else {
-        throw new Error('Invalid input format');
+        throw new Error("Invalid input format");
     }
 }
 
 /**
  * Converts a value to gigabytes based on the unit.
  * @param {number} value - The numeric value.
- * @param {string} unit - The unit (MB, GB, TB).
+ * @param {string} unit - The unit (B, KB, MB, GB, TB, PB).
  * @returns {string} Value in gigabytes.
  */
 function formatValueToGigabytes(value, unit) {
     switch (unit.toLowerCase()) {
-        case 'mb':
+        case "b":
+            return (value / 1073741824).toFixed(4);
+        case "kb":
+            return (value / 1048576).toFixed(4);
+        case "mb":
             return (value / 1024).toFixed(4);
-        case 'gb':
+        case "gb":
             return value.toFixed(2);
-        case 'tb':
+        case "tb":
             return (value * 1024).toFixed(2);
+        case "pb":
+            return (value * 1048576).toFixed(2);
         default:
-            throw new Error('Unknown unit: ' + unit);
+            throw new Error("Unknown unit: " + unit);
     }
 }
 
@@ -325,17 +329,19 @@ function formatValueToGigabytes(value, unit) {
  * @returns {string} The formatted date string.
  */
 function formatDate(timestamp) {
-    if (!timestamp) return 'N/A';
-    const year = parseInt('20' + timestamp.slice(0, 2));
+    if (!timestamp) return "N/A";
+    const year = parseInt("20" + timestamp.slice(0, 2));
     const month = parseInt(timestamp.slice(2, 4)) - 1;
     const day = parseInt(timestamp.slice(4, 6));
     const hour = parseInt(timestamp.slice(6, 8));
     const minute = parseInt(timestamp.slice(8, 10));
     const second = parseInt(timestamp.slice(10, 12));
     const dateTime = new Date(year, month, day, hour, minute, second);
-    return (dateTime.getMonth() + 1) + '-' + dateTime.getDate() + '-' + dateTime.getFullYear() + ' ' + dateTime.getHours() + ':' + dateTime.getMinutes() + ':' + dateTime.getSeconds()
+    const pad = function (number) {
+        return String(number).padStart(2, "0");
+    };
+    return pad(dateTime.getMonth() + 1) + "-" + pad(dateTime.getDate()) + "-" + dateTime.getFullYear() + " " + pad(dateTime.getHours()) + ":" + pad(dateTime.getMinutes()) + ":" + pad(dateTime.getSeconds());
 }
-
 
 /**
  * @remote_procedure
@@ -347,10 +353,10 @@ function validate() {
         .then(retrieveAndStoreData)
         .then(mergeOutputs)
         .then(function () {
-            D.success()
+            D.success();
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }
@@ -365,11 +371,11 @@ function get_status() {
         .then(retrieveAndStoreData)
         .then(mergeOutputs)
         .then(function (managedDisksDetailsList) {
-            populateTable(managedDisksDetailsList)
-            D.success(volumeTable)
+            populateTable(managedDisksDetailsList);
+            D.success(volumeTable);
         })
         .catch(function (error) {
-            console.error('Validation failed: ', error);
+            console.error("Validation failed: ", error);
             D.failure(D.errorType.GENERIC_ERROR);
         });
 }

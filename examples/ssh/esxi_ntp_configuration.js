@@ -11,7 +11,7 @@ var variables;
 
 /**
  * The SSH Command Options
- * @property {string} [prompt]  - The SSH prompt must be set if different than # 
+ * @property {string} [prompt]  - The SSH prompt must be set if different than #
  * @property {int}    [timeout] - The command wait time in miliseconds.
 */
 var sshCommandOptions = {
@@ -59,14 +59,14 @@ function validate() {
 /**
 * @remote_procedure
 * @label Get Device Variables
-* @documentation This procedure is used to collect 
+* @documentation This procedure is used to collect
 * the ntp configuration and store it in a custom driver variable
 */
 function get_status() {
     console.info("Getting NTP Configuration ... ");
     /**
-     * 'cat' outputs ([cat]enates 
-     *  to the standard output) 
+     * 'cat' outputs ([cat]enates
+     *  to the standard output)
      *  the '/etc/ntp.conf' file
     */
     var commandReadNTPConfig = "cat /etc/ntp.conf";

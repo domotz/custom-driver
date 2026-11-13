@@ -1,6 +1,6 @@
 {
     "logo": "linux.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Linux Disk Partitions Usage (df)",
     "description": "Display information about disk partitions on a Linux system",
     "category": "Software Integration",

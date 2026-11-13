@@ -38,16 +38,16 @@
  *
  **/
 // Parameters for Azure authentication
-const tenantId = D.getParameter('tenantId');
-const clientId = D.getParameter('clientId');
-const clientSecret = D.getParameter('clientSecret');
-const subscriptionId = D.getParameter('subscriptionId');
+const tenantId = D.getParameter("tenantId");
+const clientId = D.getParameter("clientId");
+const clientSecret = D.getParameter("clientSecret");
+const subscriptionId = D.getParameter("subscriptionId");
 
-const resourceGroups = D.getParameter('resourceGroups');
-const vmNames = D.getParameter('vmNames');
+const resourceGroups = D.getParameter("resourceGroups");
+const vmNames = D.getParameter("vmNames");
 
-const azureCloudLoginService = D.createExternalDevice('login.microsoftonline.com');
-const azureCloudManagementService = D.createExternalDevice('management.azure.com');
+const azureCloudLoginService = D.createExternalDevice("login.microsoftonline.com");
+const azureCloudManagementService = D.createExternalDevice("management.azure.com");
 
 let accessToken;
 let diskTable;
@@ -59,123 +59,123 @@ let diskTable;
 // This is the list of selected performance metrics retrieved.
 // To exclude a specific metric from this list, move it to the allowedPerformanceMetrics list, and it will no longer appear dynamically in the output table.
 const performanceMetrics = [{
-    label: 'Composite Disk Read', valueType: D.valueType.NUMBER, key: 'Composite Disk Read Bytes/sec', unit: 'bps'
-}, {label: 'Composite Disk Write', valueType: D.valueType.NUMBER, key: 'Composite Disk Write Bytes/sec', unit: 'bps'}, {
-    label: 'Composite Disk Read Ops',
+    label: "Composite Disk Read", valueType: D.valueType.NUMBER, key: "Composite Disk Read Bytes/sec", unit: "bps"
+}, { label: "Composite Disk Write", valueType: D.valueType.NUMBER, key: "Composite Disk Write Bytes/sec", unit: "bps" }, {
+    label: "Composite Disk Read Ops",
     valueType: D.valueType.NUMBER,
-    key: 'Composite Disk Read Operations/sec',
-    unit: 'ops/sec'
+    key: "Composite Disk Read Operations/sec",
+    unit: "ops/sec"
 }, {
-    label: 'Composite Disk Write Ops',
+    label: "Composite Disk Write Ops",
     valueType: D.valueType.NUMBER,
-    key: 'Composite Disk Write Operations/sec',
-    unit: 'ops/sec'
-}, {label: 'Disk On-demand Burst Ops', valueType: D.valueType.NUMBER, key: 'DiskPaidBurstIOPS'}]
+    key: "Composite Disk Write Operations/sec",
+    unit: "ops/sec"
+}, { label: "Disk On-demand Burst Ops", valueType: D.valueType.NUMBER, key: "DiskPaidBurstIOPS" }];
 
 const diskInfoExtractors = [{
     key: "id", extract: function (disk) {
-        return sanitize(disk.properties.uniqueId)
+        return sanitize(disk.properties.uniqueId);
     }
 }, {
-    label: 'Name', valueType: D.valueType.STRING, key: 'name', extract: function (disk) {
+    label: "Name", valueType: D.valueType.STRING, key: "name", extract: function (disk) {
         return disk.name || "N/A";
     }
-}, {label: 'Resource Group', valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup
-}, {label: 'Managed By', valueType: D.valueType.STRING, key: "managedBy", extract: extractManagedBy
+}, { label: "Resource Group", valueType: D.valueType.STRING, key: "resourceGroup", extract: extractResourceGroup
+}, { label: "Managed By", valueType: D.valueType.STRING, key: "managedBy", extract: extractManagedBy
 }, {
-    label: 'Location of the resource', valueType: D.valueType.STRING, key: "location", extract: function (disk) {
+    label: "Location of the resource", valueType: D.valueType.STRING, key: "location", extract: function (disk) {
         return disk.location || "N/A";
     }
 }, {
-    label: 'Availability zone', valueType: D.valueType.STRING, key: "availabilityZone", extract: function (disk) {
+    label: "Availability zone", valueType: D.valueType.STRING, key: "availabilityZone", extract: function (disk) {
         return disk.zones ? disk.zones.join(", ") : "N/A";
     }
 }, {
-    label: 'SKU name', valueType: D.valueType.STRING, key: "skuName", extract: function (disk) {
+    label: "SKU name", valueType: D.valueType.STRING, key: "skuName", extract: function (disk) {
         return disk.sku.name || "N/A";
     }
 }, {
-    label: 'SKU tier', valueType: D.valueType.STRING, key: "skuTier", extract: function (disk) {
+    label: "SKU tier", valueType: D.valueType.STRING, key: "skuTier", extract: function (disk) {
         return disk.sku.tier || "N/A";
     }
 }, {
-    label: 'Os', valueType: D.valueType.STRING, key: "osType", extract: function (disk) {
+    label: "Os", valueType: D.valueType.STRING, key: "osType", extract: function (disk) {
         return disk.properties.osType || "N/A";
     }
 }, {
-    label: 'Hyper-V generation', valueType: D.valueType.STRING, key: "hyperVGeneration", extract: function (disk) {
+    label: "Hyper-V generation", valueType: D.valueType.STRING, key: "hyperVGeneration", extract: function (disk) {
         return disk.properties.hyperVGeneration || "N/A";
     }
 }, {
-    label: 'Supports hibernation', valueType: D.valueType.STRING, key: "supportsHibernation", extract: function (disk) {
+    label: "Supports hibernation", valueType: D.valueType.STRING, key: "supportsHibernation", extract: function (disk) {
         return disk.properties.supportsHibernation ? "Yes" : "No";
     }
 }, {
-    label: 'Accelerated networking support',
+    label: "Accelerated networking support",
     valueType: D.valueType.STRING,
     key: "acceleratedNetworking",
     extract: function (disk) {
         return disk.properties.supportedCapabilities.acceleratedNetwork ? "Supported" : "Not Supported";
     }
 }, {
-    label: 'Architecture', valueType: D.valueType.STRING, key: "architecture", extract: function (disk) {
+    label: "Architecture", valueType: D.valueType.STRING, key: "architecture", extract: function (disk) {
         return disk.properties.supportedCapabilities.architecture || "N/A";
     }
 }, {
-    label: 'Disk creation option', valueType: D.valueType.STRING, key: "createOption", extract: function (disk) {
+    label: "Disk creation option", valueType: D.valueType.STRING, key: "createOption", extract: function (disk) {
         return disk.properties.creationData.createOption || "N/A";
     }
 }, {
-    label: 'Disk size', valueType: D.valueType.NUMBER, key: "diskSizeGB", extract: function (disk) {
+    label: "Disk size", valueType: D.valueType.NUMBER, key: "diskSizeGB", extract: function (disk) {
         return disk.properties.diskSizeGB || 0;
     }
 }, {
-    label: 'Disk IOPS for read/write', valueType: D.valueType.NUMBER, key: "diskIOPS", extract: function (disk) {
+    label: "Disk IOPS for read/write", valueType: D.valueType.NUMBER, key: "diskIOPS", extract: function (disk) {
         return disk.properties.diskIOPSReadWrite || 0;
     }
 }, {
-    label: 'Disk throughput for read/write',
+    label: "Disk throughput for read/write",
     valueType: D.valueType.NUMBER,
     key: "diskThroughput",
     extract: function (disk) {
         return disk.properties.diskMBpsReadWrite || 0;
     }
 }, {
-    label: 'Encryption type', valueType: D.valueType.STRING, key: "encryptionType", extract: function (disk) {
+    label: "Encryption type", valueType: D.valueType.STRING, key: "encryptionType", extract: function (disk) {
         return disk.properties.encryption.type || "N/A";
     }
 }, {
-    label: 'Network access policy',
+    label: "Network access policy",
     valueType: D.valueType.STRING,
     key: "networkAccessPolicy",
     extract: function (disk) {
         return disk.properties.networkAccessPolicy || "N/A";
     }
 }, {
-    label: 'Public network access policy',
+    label: "Public network access policy",
     valueType: D.valueType.STRING,
     key: "publicNetworkAccess",
     extract: function (disk) {
         return disk.properties.publicNetworkAccess || "N/A";
     }
 }, {
-    label: 'Creation time of the disk',
+    label: "Creation time of the disk",
     valueType: D.valueType.STRING,
-    key: 'timeCreated',
+    key: "timeCreated",
     callback: convertToUTC,
     extract: function (disk) {
         return disk.properties.timeCreated || "N/A";
     }
 }, {
-    label: 'Provisioning state', valueType: D.valueType.STRING, key: "provisioningState", extract: function (disk) {
+    label: "Provisioning state", valueType: D.valueType.STRING, key: "provisioningState", extract: function (disk) {
         return disk.properties.provisioningState || "N/A";
     }
 }, {
-    label: 'Disk state', valueType: D.valueType.STRING, key: "diskState", extract: function (disk) {
+    label: "Disk state", valueType: D.valueType.STRING, key: "diskState", extract: function (disk) {
         return disk.properties.diskState || "N/A";
     }
 }, {
-    label: 'Disk tier', valueType: D.valueType.STRING, key: "diskTier", extract: function (disk) {
+    label: "Disk tier", valueType: D.valueType.STRING, key: "diskTier", extract: function (disk) {
         return disk.properties.tier || "N/A";
     }
 }];
@@ -186,7 +186,7 @@ const diskInfoExtractors = [{
  */
 function generateDiskProperties() {
     return diskInfoExtractors.concat(performanceMetrics).filter(function (result) {
-        return result.label
+        return result.label;
     });
 }
 
@@ -195,7 +195,7 @@ function generateDiskProperties() {
  * using the `D.createTable` method with the properties defined in `diskProperties`.
  */
 function createDiskTable(diskProperties) {
-    diskTable = D.createTable('Azure Disks', diskProperties);
+    diskTable = D.createTable("Azure Disks", diskProperties);
 }
 
 /**
@@ -246,21 +246,22 @@ function checkHTTPError(error, response) {
 
 /**
  * Processes the login response from the Azure API and extracts the access token.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processLoginResponse(d) {
+function processLoginResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (bodyAsJSON.access_token) {
             accessToken = bodyAsJSON.access_token;
-            d.resolve();
+            resolve();
         } else {
             console.error("Access token not found in response body");
             D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
-    }
+    };
 }
 
 /**
@@ -270,36 +271,37 @@ function processLoginResponse(d) {
  */
 function filterDiskInfoList(diskInfoList) {
     return diskInfoList.filter(function (diskInfo) {
-        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === 'all') || resourceGroups.some(function (resourceGroup) {
-            return resourceGroup.toLowerCase() === diskInfo.resourceGroup.toLowerCase()
-        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === 'all') || vmNames.some(function (vmName) {
+        return ((resourceGroups.length === 1 && resourceGroups[0].toLowerCase() === "all") || resourceGroups.some(function (resourceGroup) {
+            return resourceGroup.toLowerCase() === diskInfo.resourceGroup.toLowerCase();
+        })) && ((vmNames.length === 1 && vmNames[0].toLowerCase() === "all") || vmNames.some(function (vmName) {
             return vmName.toLowerCase() === diskInfo.name.toLowerCase();
-        }))
+        }));
     });
 }
 
 /**
  * Processes the response from the Disks API call and extracts disk information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDisksResponse(d) {
+function processDisksResponse(resolve, reject) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         const bodyAsJSON = JSON.parse(body);
         if (!bodyAsJSON.value) {
-            D.failure(D.errorType.GENERIC_ERROR)
-            d.reject("No Disks found in the response");
+            D.failure(D.errorType.GENERIC_ERROR);
+            reject("No Disks found in the response");
             return;
         }
         let diskInfoList = bodyAsJSON.value.map(extractDiskInfo);
         if (!diskInfoList.length) {
-            console.info('There is no Virtual machine');
+            console.info("There is no Virtual machine");
         } else {
             diskInfoList = filterDiskInfoList(diskInfoList);
         }
-        d.resolve(diskInfoList);
-    }
+        resolve(diskInfoList);
+    };
 }
 
 /**
@@ -307,10 +309,9 @@ function processDisksResponse(d) {
  * @returns {Promise} A promise that resolves upon successful login.
  */
 function login() {
-    const d = D.q.defer();
     const config = {
         url: "/" + tenantId + "/oauth2/token", protocol: "https", headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded"
         }, form: {
             grant_type: "client_credentials",
             client_id: clientId,
@@ -318,8 +319,9 @@ function login() {
             resource: "https://management.azure.com\/"
         }, rejectUnauthorized: false, jar: true
     };
-    azureCloudLoginService.http.post(config, processLoginResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudLoginService.http.post(config, processLoginResponse(resolve, reject));
+    });
 }
 
 /**
@@ -328,9 +330,9 @@ function login() {
  * @returns {string} The sanitized string.
  */
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitizationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitizationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitizationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -354,7 +356,7 @@ function extractDiskInfo(disk) {
  */
 function insertRecord(disk, diskProperties) {
     const recordValues = diskProperties.map(function (item) {
-        const value = disk[item.key] || 'N/A';
+        const value = disk[item.key] || "N/A";
         return item.callback && value !== "N/A" ? item.callback(value) : value;
     });
     diskTable.insertRecord(disk.id, recordValues);
@@ -368,7 +370,7 @@ function insertRecord(disk, diskProperties) {
 function generateConfig(url) {
     return {
         url: "/subscriptions/" + subscriptionId + url, protocol: "https", headers: {
-            "Authorization": "Bearer " + accessToken,
+            "Authorization": "Bearer " + accessToken
         }, rejectUnauthorized: false, jar: true
     };
 }
@@ -378,10 +380,10 @@ function generateConfig(url) {
  * @returns {Promise} A promise that resolves with the disk data.
  */
 function retrieveDisks() {
-    const d = D.q.defer();
     const config = generateConfig("/providers/Microsoft.Compute/disks?api-version=2021-04-01");
-    azureCloudManagementService.http.get(config, processDisksResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        azureCloudManagementService.http.get(config, processDisksResponse(resolve, reject));
+    });
 }
 
 /**
@@ -413,18 +415,19 @@ function extractDiskPerformance(performanceInfo, diskInfo) {
             const key = getNonTimeSeriesKey(performanceInfo.timeseries[0].data);
             diskInfo[performanceInfo.name.value] = key ? performanceInfo.timeseries[0].data[0][key] : "N/A";
         } else {
-            diskInfo[performanceInfo.name.value] = "N/A"
+            diskInfo[performanceInfo.name.value] = "N/A";
         }
     }
 }
 
 /**
  * Processes the disk performance API response and updates the disk information.
- * @param {Object} d - The deferred promise object.
+ * @param {Function} resolve - Resolves the promise.
+ * @param {Function} reject - Rejects the promise.
  * @param {Object} diskInfo - The disk information to update.
  * @returns {Function} A function to process the HTTP response.
  */
-function processDiskPerformanceResponse(d, diskInfo) {
+function processDiskPerformanceResponse(resolve, reject, diskInfo) {
     return function process(error, response, body) {
         checkHTTPError(error, response);
         if (error || response.statusCode !== 200) {
@@ -433,18 +436,18 @@ function processDiskPerformanceResponse(d, diskInfo) {
         try {
             const bodyAsJSON = JSON.parse(body);
             if (!bodyAsJSON.value) {
-                D.failure(D.errorType.GENERIC_ERROR)
+                D.failure(D.errorType.GENERIC_ERROR);
                 return;
             }
             bodyAsJSON.value.map(function (performanceInfo) {
-                extractDiskPerformance(performanceInfo, diskInfo)
+                extractDiskPerformance(performanceInfo, diskInfo);
             });
-            d.resolve(diskInfo);
+            resolve(diskInfo);
         } catch (parseError) {
             console.error("Error parsing Disks configuration:", parseError);
-            d.reject("Failed to parse response for " + diskInfo.name);
+            reject("Failed to parse response for " + diskInfo.name);
         }
-    }
+    };
 }
 
 /**
@@ -453,14 +456,14 @@ function processDiskPerformanceResponse(d, diskInfo) {
  * @returns {string} The date string in UTC format
  */
 function convertToUTC(dateToConvert) {
-    const date = new Date(dateToConvert)
-    const month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1)
-    const day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate()
-    const year = date.getUTCFullYear()
-    const hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours()
-    const minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes()
-    const seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds()
-    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC"
+    const date = new Date(dateToConvert);
+    const month = (date.getUTCMonth() + 1 < 10 ? "0" : "") + (date.getUTCMonth() + 1);
+    const day = (date.getUTCDate() < 10 ? "0" : "") + date.getUTCDate();
+    const year = date.getUTCFullYear();
+    const hours = (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours();
+    const minutes = (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes();
+    const seconds = (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds();
+    return month + "/" + day + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " UTC";
 }
 
 /**
@@ -470,22 +473,22 @@ function convertToUTC(dateToConvert) {
  */
 function retrieveDisksPerformanceMetrics(diskInfoList) {
     const performanceKeyGroups = [];
-    const promises = []
+    const promises = [];
     const maxGroupSize = 20;
     for (let i = 0; i < performanceMetrics.length; i += maxGroupSize) {
         performanceKeyGroups.push(performanceMetrics.slice(i, i + maxGroupSize).map(function (metric) {
-            return metric.key
-        }).join(','));
+            return metric.key;
+        }).join(","));
     }
-   diskInfoList.forEach(function (diskInfo) {
+    diskInfoList.forEach(function (diskInfo) {
         performanceKeyGroups.forEach(function (group) {
-            const d = D.q.defer();
             const config = generateConfig("/resourceGroups/" + diskInfo.resourceGroup + "/providers/Microsoft.Compute/disks/" + diskInfo.name + "/providers/microsoft.insights/metrics?api-version=2024-02-01&metricnames=" + group + "&timespan=PT1M");
-            azureCloudManagementService.http.get(config, processDiskPerformanceResponse(d, diskInfo));
-            promises.push(d.promise);
+            promises.push(new Promise(function (resolve, reject) {
+                azureCloudManagementService.http.get(config, processDiskPerformanceResponse(resolve, reject, diskInfo));
+            }));
         });
     });
-    return D.q.all(promises);
+    return Promise.all(promises);
 }
 
 /**
@@ -494,8 +497,8 @@ function retrieveDisksPerformanceMetrics(diskInfoList) {
  * @param diskProperties
  */
 function populateTable(diskInfoList, diskProperties) {
-    diskInfoList.map(function(diskInfo) {
-        insertRecord(diskInfo, diskProperties)
+    diskInfoList.map(function (diskInfo) {
+        insertRecord(diskInfo, diskProperties);
     });
 }
 
@@ -527,9 +530,9 @@ function get_status() {
         .then(retrieveDisks)
         .then(retrieveDisksPerformanceMetrics)
         .then(function (virtualMachineScaleSetInfoList) {
-            const diskProperties = generateDiskProperties()
-            createDiskTable(diskProperties)
-            populateTable(virtualMachineScaleSetInfoList, diskProperties)
+            const diskProperties = generateDiskProperties();
+            createDiskTable(diskProperties);
+            populateTable(virtualMachineScaleSetInfoList, diskProperties);
             D.success(diskTable);
         })
         .catch(function (error) {

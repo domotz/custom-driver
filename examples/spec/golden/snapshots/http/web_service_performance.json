@@ -1,0 +1,47 @@
+{
+    "three sites, one unavailable validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three sites, one unavailable get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Server Response Time",
+            "columnHeaders": [
+                {
+                    "label": "Response Status"
+                },
+                {
+                    "label": "Response Time",
+                    "unit": "ms",
+                    "type": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "https://www.example.com/status",
+                    "values": [
+                        200,
+                        183
+                    ]
+                },
+                {
+                    "id": "http://shop.example.org:8080/health",
+                    "values": [
+                        503,
+                        1250
+                    ]
+                },
+                {
+                    "id": "intranet.example.net",
+                    "values": [
+                        200,
+                        42
+                    ]
+                }
+            ]
+        }
+    }
+}

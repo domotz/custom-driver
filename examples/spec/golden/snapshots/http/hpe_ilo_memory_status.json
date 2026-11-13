@@ -1,0 +1,46 @@
+{
+    "dl380 gen10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "dl380 gen10 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Memory Status",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "proc-1-dimm-1",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "proc-1-dimm-2",
+                    "values": [
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "proc-1-dimm-3",
+                    "values": [
+                        "Empty slot"
+                    ]
+                },
+                {
+                    "id": "proc-2-dimm-1",
+                    "values": [
+                        "OK"
+                    ]
+                }
+            ]
+        }
+    }
+}

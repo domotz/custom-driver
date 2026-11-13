@@ -1,0 +1,64 @@
+{
+    "valid, expired and self-signed certificates validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "valid, expired and self-signed certificates get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "SSL Certificates",
+            "columnHeaders": [
+                {
+                    "label": "Issuer"
+                },
+                {
+                    "label": "Expiry"
+                },
+                {
+                    "label": "Remaining days",
+                    "unit": "day"
+                },
+                {
+                    "label": "Is valid"
+                },
+                {
+                    "label": "Auth error"
+                }
+            ],
+            "records": [
+                {
+                    "id": "www.example.com",
+                    "values": [
+                        "DigiCert Inc",
+                        "Mar  5 23:59:59 2027 GMT",
+                        414,
+                        true,
+                        null
+                    ]
+                },
+                {
+                    "id": "old.example.org",
+                    "values": [
+                        "Let's Encrypt",
+                        "Nov 12 08:30:00 2025 GMT",
+                        0,
+                        false,
+                        "CERT_HAS_EXPIRED"
+                    ]
+                },
+                {
+                    "id": "router.lan",
+                    "values": [
+                        "Router CA",
+                        "Jun 30 12:00:00 2026 GMT",
+                        166,
+                        false,
+                        "DEPTH_ZERO_SELF_SIGNED_CERT"
+                    ]
+                }
+            ]
+        }
+    }
+}

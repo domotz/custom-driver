@@ -1,0 +1,69 @@
+{
+    "vcsa 8.0.2 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcsa 8.0.2 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Certificates",
+            "columnHeaders": [
+                {
+                    "label": "Issuer",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Usage",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Expiry",
+                    "valueType": "DATETIME"
+                },
+                {
+                    "label": "Remaining days",
+                    "unit": "days",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Is valid",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "3a:90:c4:11:7d:25:fe:06",
+                    "values": [
+                        "VMware Engineering - vcenter.lab.local",
+                        "Digital Signature, Key Encipherment",
+                        "03/02/2026 10:15:30 UTC",
+                        47,
+                        true
+                    ]
+                },
+                {
+                    "id": "7b:3c:19:4e:aa:51:02:9d:6f:10",
+                    "values": [
+                        "VMware Engineering - vcenter.lab.local",
+                        "critical, Certificate Sign, CRL Sign",
+                        "03/02/2036 10:15:30 UTC",
+                        3700,
+                        true
+                    ]
+                },
+                {
+                    "id": "0f:e4:71:2b:cd:88:13:5a:90:77",
+                    "values": [
+                        "VMware Engineering - vcenter.lab.local",
+                        "critical, Certificate Sign, CRL Sign",
+                        "01/03/2026 08:00:00 UTC",
+                        0,
+                        false
+                    ]
+                }
+            ]
+        }
+    }
+}

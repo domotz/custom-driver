@@ -1,0 +1,48 @@
+{
+    "opnsense 23.7 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "product-version",
+                "name": "Product Version",
+                "value": "23.7.12_5",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmware-updates",
+                "name": "Firmware Updates",
+                "value": "No updates",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-usage",
+                "name": "CPU Usage",
+                "value": "2.40",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "19.64",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "swap-usage",
+                "name": "Swap Usage",
+                "value": "1.12",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,104 @@
+{
+    "busy server validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "busy server get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "server",
+                "name": "Server",
+                "value": "nginx/1.14.0 (Ubuntu)"
+            },
+            {
+                "uid": "active_cnx",
+                "name": "Active connections",
+                "value": "291"
+            },
+            {
+                "uid": "accepted_cnx",
+                "name": "Accepted connections",
+                "value": "16630948"
+            },
+            {
+                "uid": "handled_cnx",
+                "name": "Handled connections",
+                "value": "16630948"
+            },
+            {
+                "uid": "total_req",
+                "name": "Total requests",
+                "value": "31070465"
+            },
+            {
+                "uid": "reading",
+                "name": "Reading",
+                "value": "6"
+            },
+            {
+                "uid": "writing",
+                "name": "Writing",
+                "value": "179"
+            },
+            {
+                "uid": "waiting",
+                "name": "Waiting",
+                "value": "106"
+            }
+        ],
+        "table": null
+    },
+    "quiet server validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "quiet server get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "server",
+                "name": "Server",
+                "value": "nginx/1.14.0 (Ubuntu)"
+            },
+            {
+                "uid": "active_cnx",
+                "name": "Active connections",
+                "value": "2"
+            },
+            {
+                "uid": "accepted_cnx",
+                "name": "Accepted connections",
+                "value": "1200"
+            },
+            {
+                "uid": "handled_cnx",
+                "name": "Handled connections",
+                "value": "1198"
+            },
+            {
+                "uid": "total_req",
+                "name": "Total requests",
+                "value": "3400"
+            },
+            {
+                "uid": "reading",
+                "name": "Reading",
+                "value": "0"
+            },
+            {
+                "uid": "writing",
+                "name": "Writing",
+                "value": "1"
+            },
+            {
+                "uid": "waiting",
+                "name": "Waiting",
+                "value": "1"
+            }
+        ],
+        "table": null
+    }
+}

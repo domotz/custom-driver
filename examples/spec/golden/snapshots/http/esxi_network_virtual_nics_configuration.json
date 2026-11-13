@@ -1,0 +1,75 @@
+{
+    "esxi 8.0.0 three vmkernel nics validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 three vmkernel nics get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Virtual NIC Configuration",
+            "columnHeaders": [
+                {
+                    "label": "Device",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Port Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "DHCP Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IP Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Subnet Mask",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "key-vim.host.VirtualNic-vmk0",
+                    "values": [
+                        "vmk0",
+                        "Management Network",
+                        "No",
+                        "192.168.1.50",
+                        "255.255.255.0",
+                        "00:50:56:6b:ab:cd"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.VirtualNic-vmk1",
+                    "values": [
+                        "vmk1",
+                        "vMotion",
+                        "No",
+                        "10.10.10.50",
+                        "255.255.255.0",
+                        "00:50:56:66:12:34"
+                    ]
+                },
+                {
+                    "id": "key-vim.host.VirtualNic-vmk2",
+                    "values": [
+                        "vmk2",
+                        "Storage",
+                        "Yes",
+                        "172.16.5.23",
+                        "255.255.254.0",
+                        "00:50:56:64:aa:01"
+                    ]
+                }
+            ]
+        }
+    }
+}

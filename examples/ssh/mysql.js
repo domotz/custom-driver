@@ -1,20 +1,20 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Mysql Server Monitoring
- * Description: Monitors Mysql service on Linux. 
- * 
+ * Description: Monitors Mysql service on Linux.
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested on Linux:
  * Ubuntu 22.04
  * Debian 10
  * Centos 7
- * 
+ *
  * Please Note that:
  *      - Your MySQL must run as systemd service for this command to work
  *      - This works in Debian derivatives and Centos, other Linux distributions might different paths
  *      - The username and password for MySQL admin are the same as the SSH host
- * 
+ *
  * The driver will create the following variables:
  *      - Status
  *      - Version
@@ -32,7 +32,7 @@
 // Ssh options and command to be run
 var command = "(service mysql status | grep Active:) || echo 'No service found'; " + // Your MySQL must run as systemd service for this command to work
     "(ls /var/run/mysqld/mysqld.pid && pmap `cat /var/run/mysqld/mysqld.pid` ) | tail -1 2>/dev/null || echo 'No pid found';" +  // This works in Debian and derivatives, other distributions might use another path
-    "(mysqladmin -u "+D.device.username()+" --password='"+D.device.password()+"' -h 127.0.0.1 version) || echo 'Cannot run mysqladmin'";
+    "(mysqladmin -u " + D.device.username() + " --password='" + D.device.password() + "' -h 127.0.0.1 version) || echo 'Cannot run mysqladmin'";
 
 var sshConfig = {
     "command": command,
@@ -46,7 +46,7 @@ function checkSshError(err) {
     if (err.message) console.error(err.message);
     if (err.code == 5) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
-    } else if (err.code == 255){
+    } else if (err.code == 255) {
         D.failure(D.errorType.RESOURCE_UNAVAILABLE);
     } else {
         console.error(err);
@@ -55,18 +55,17 @@ function checkSshError(err) {
 }
 
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            checkSshError(error);
-            d.reject(error);
-        }
-        else{
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                checkSshError(error);
+                reject(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -76,21 +75,21 @@ function executeCommand(command) {
  */
 function validate() {
     executeCommand("service mysql status")
-        .then(function(output) {
+        .then(function (output) {
             if (output && output.indexOf("Active: active") !== -1) {
                 return executeCommand(command);
             } else {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
         })
-        .then(function(output) {
+        .then(function (output) {
             if (output && output.indexOf("Cannot run mysqladmin") === -1) {
                 D.success();
             } else {
                 D.failure(D.errorType.RESOURCE_UNAVAILABLE);
             }
         })
-        .catch(function(error) {
+        .catch(function (error) {
             checkSshError(error);
         });
 }
@@ -118,22 +117,22 @@ function reportData(data) {
     if (data.uptime) {
         variables.push(D.createVariable("uptime", "Uptime", toHours(data.uptime), "hours"));
     }
-    if (data.threads) {
+    if (data.threads !== undefined) {
         variables.push(D.createVariable("threads", "Threads", data.threads));
     }
-    if (data.questions) {
+    if (data.questions !== undefined) {
         variables.push(D.createVariable("questions", "Questions", data.questions));
     }
-    if (data.slowQueries) {
+    if (data.slowQueries !== undefined) {
         variables.push(D.createVariable("slowQueries", "Slow Queries", data.slowQueries));
     }
-    if (data.opens) {
+    if (data.opens !== undefined) {
         variables.push(D.createVariable("opens", "Opens", data.opens));
     }
-    if (data.flushTables) {
+    if (data.flushTables !== undefined) {
         variables.push(D.createVariable("flushTables", "Flush Tables", data.flushTables));
     }
-    if (data.openTables) {
+    if (data.openTables !== undefined) {
         variables.push(D.createVariable("openTables", "Open Tables", data.openTables));
     }
     if (data.queriesS) {
@@ -148,8 +147,10 @@ function isRunning(data) {
 }
 
 function parse(output) {
-    var ret = {errors: ""};
+    var ret = { errors: "" };
     var lines = output.split("\n");
+    // The command prints the service status line first, then the pmap total line, then mysqladmin's output
+    ret["status"] = (lines.shift() || "").trim().replace(/^Active:\s*/, "");
     try {
         ret["usedRam"] = _parseUsedRam(lines.shift());
     } catch (e) {
@@ -217,6 +218,6 @@ function toHours(data) {
     var days = match[2] || 0;
     var hours = match[4] || 0;
     var minutes = match[6] || 0;
-    var totalHours = parseInt(days, 10) * 24 + parseInt(hours, 10) + parseInt(minutes, 10)/60;
+    var totalHours = parseInt(days, 10) * 24 + parseInt(hours, 10) + parseInt(minutes, 10) / 60;
     return (Math.floor(totalHours * 100) / 100) + "";
 }

@@ -33,11 +33,11 @@
  *
  */
 // Specify the communication protocol to be used (SSH or WinRM)
-const protocol = D.getParameter('protocol');
+const protocol = D.getParameter("protocol");
 
 const instance = protocol.toLowerCase() === "ssh" ? new SSHHandler() : new WinRMHandler();
 
-const command = 'Get-CimInstance Win32_DiskDrive | ForEach-Object { $partitions = Get-Partition -DiskNumber $_.index; $totalSize = [math]::Round($_.Size / 1GB, 2); $freeSpace = 0; foreach ($partition in $partitions) { $volume = Get-Volume -Partition $partition; if ($volume) { $freeSpace += $volume.SizeRemaining; } } $freeSpace = [math]::Round($freeSpace / 1GB, 2); $usedSpace = $totalSize - $freeSpace; $usagePercentage = if ($totalSize -ne 0) { [math]::round(($usedSpace / $totalSize) * 100, 2) } else { 0 }; @{ID = $_.DeviceID; Model = $_.Model; Status = $_.Status; Size = $totalSize; MediaType = $_.MediaType; SerialNumber = $_.SerialNumber; PartitionsCount = $partitions.Count; UsagePercentage = $usagePercentage; FreeSpace = $freeSpace;}} | ConvertTo-Json';
+const command = "Get-CimInstance Win32_DiskDrive | ForEach-Object { $partitions = Get-Partition -DiskNumber $_.index; $totalSize = [math]::Round($_.Size / 1GB, 2); $freeSpace = 0; foreach ($partition in $partitions) { $volume = Get-Volume -Partition $partition; if ($volume) { $freeSpace += $volume.SizeRemaining; } } $freeSpace = [math]::Round($freeSpace / 1GB, 2); $usedSpace = $totalSize - $freeSpace; $usagePercentage = if ($totalSize -ne 0) { [math]::round(($usedSpace / $totalSize) * 100, 2) } else { 0 }; @{ID = $_.DeviceID; Model = $_.Model; Status = $_.Status; Size = $totalSize; MediaType = $_.MediaType; SerialNumber = $_.SerialNumber; PartitionsCount = $partitions.Count; UsagePercentage = $usagePercentage; FreeSpace = $freeSpace;}} | ConvertTo-Json";
 
 const config = {
     username: D.device.username(),
@@ -47,23 +47,23 @@ const config = {
     scheme: "http",            // "http" | "https"
     skipVerify: true,          // when scheme="https", skip TLS cert verification
     auth: "auto",              // "basic" | "ntlm" | "auto" (inferred from username)
-    timeout: 30000,            // per-command timeout in milliseconds
-}
+    timeout: 30000            // per-command timeout in milliseconds
+};
 
 // Custom Driver Table to store physical disk information
 const table = D.createTable(
-    'Physical Disks',
+    "Physical Disks",
     [
-        {label: 'Model', valueType: D.valueType.STRING},
-        {label: 'Status', valueType: D.valueType.STRING},
-        {label: 'Size', unit: 'GiB', valueType: D.valueType.NUMBER},
-        {label: 'Free Space', unit: 'GiB', valueType: D.valueType.NUMBER},
-        {label: 'Usage', unit: '%', valueType: D.valueType.NUMBER},
-        {label: 'Media Type', valueType: D.valueType.STRING},
-        {label: 'Serial Number', valueType: D.valueType.STRING},
-        {label: 'Partitions', valueType: D.valueType.NUMBER}
+        { label: "Model", valueType: D.valueType.STRING },
+        { label: "Status", valueType: D.valueType.STRING },
+        { label: "Size", unit: "GiB", valueType: D.valueType.NUMBER },
+        { label: "Free Space", unit: "GiB", valueType: D.valueType.NUMBER },
+        { label: "Usage", unit: "%", valueType: D.valueType.NUMBER },
+        { label: "Media Type", valueType: D.valueType.STRING },
+        { label: "Serial Number", valueType: D.valueType.STRING },
+        { label: "Partitions", valueType: D.valueType.NUMBER }
     ]
-)
+);
 
 function parseValidateOutput(isValidated) {
     if (isValidated) {
@@ -100,26 +100,24 @@ function get_status() {
 }
 
 function sanitize(output) {
-    const recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history']
-    const recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g')
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase()
+    const recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    const recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
-
 
 function populateTable(disk) {
-    const id = disk.ID || 'N/A'
-    const model = disk.Model || 'N/A'
-    const status = disk.Status || 'N/A'
-    const size = disk.Size || 'N/A'
-    const freeSpace = disk.FreeSpace || 'N/A'
-    const usagePercentage = disk.UsagePercentage || 'N/A'
-    const mediaType = disk.MediaType || 'N/A'
-    const serialNumber = disk.SerialNumber || 'N/A'
-    const partitions = disk.PartitionsCount || 'N/A'
-    const recordId = sanitize(id)
-    table.insertRecord(recordId, [model, status, size, freeSpace, usagePercentage, mediaType, serialNumber, partitions])
+    const id = disk.ID || "N/A";
+    const model = disk.Model || "N/A";
+    const status = disk.Status || "N/A";
+    const size = disk.Size || "N/A";
+    const freeSpace = disk.FreeSpace || "N/A";
+    const usagePercentage = disk.UsagePercentage || "N/A";
+    const mediaType = disk.MediaType || "N/A";
+    const serialNumber = disk.SerialNumber || "N/A";
+    const partitions = disk.PartitionsCount || "N/A";
+    const recordId = sanitize(id);
+    table.insertRecord(recordId, [model, status, size, freeSpace, usagePercentage, mediaType, serialNumber, partitions]);
 }
-
 
 // Parse the output of WinRM commands and insert it into the table
 function parseOutput(physicalDisks) {
@@ -128,13 +126,13 @@ function parseOutput(physicalDisks) {
             for (let k = 0; k < physicalDisks.length; k++) {
                 populateTable(physicalDisks[k]);
             }
-        } else if (typeof physicalDisks === 'object') {
+        } else if (typeof physicalDisks === "object") {
             populateTable(physicalDisks);
         }
     } else {
         console.log("There are no Physical Disks rules.");
     }
-    D.success(table)
+    D.success(table);
 }
 
 // WinRM functions
@@ -152,31 +150,32 @@ WinRMHandler.prototype.checkError = function (output) {
         console.error(output);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 // Execute command
 WinRMHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
+    const self = this;
     config.command = command;
-    D.device.sendWinRMCommand(config, function (output) {
-        if (output.error) {
-            self.checkError(output);
-            d.reject(output.error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendWinRMCommand(config, function (output) {
+            if (output.error) {
+                self.checkError(output);
+                reject(output.error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 WinRMHandler.prototype.parseOutputToJson = function (output) {
-    const jsonString = output.outcome.stdout
+    const jsonString = output.outcome.stdout;
     return jsonString ? JSON.parse(jsonString) : null;
-}
+};
 
 WinRMHandler.prototype.checkIfValidated = function (output) {
-    return output.outcome && output.outcome.stdout
-}
+    return output.outcome && output.outcome.stdout;
+};
 
 // SSH functions
 function SSHHandler() {
@@ -191,10 +190,9 @@ SSHHandler.prototype.checkError = function (output, error) {
         console.error(error);
         D.failure(D.errorType.GENERIC_ERROR);
     }
-}
+};
 
 SSHHandler.prototype.executeCommand = function (command) {
-    const d = D.q.defer();
     const self = this;
     // SSH gets its own options: the WinRM port/scheme/auth in config must not reach the SSH client,
     // so the sandbox uses the device SSH port (22 by default).
@@ -204,21 +202,22 @@ SSHHandler.prototype.executeCommand = function (command) {
         timeout: config.timeout,
         command: 'powershell -Command "' + command.replace(/"/g, '\\"') + '"'
     };
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            self.checkError(output, error);
-            d.reject(error);
-        } else {
-            d.resolve(output);
-        }
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                self.checkError(output, error);
+                reject(error);
+            } else {
+                resolve(output);
+            }
+        });
     });
-    return d.promise;
-}
+};
 
 SSHHandler.prototype.parseOutputToJson = function (output) {
     return output ? JSON.parse(output) : null;
-}
+};
 
 SSHHandler.prototype.checkIfValidated = function (output) {
-    return output !== undefined
-}
+    return output !== undefined;
+};

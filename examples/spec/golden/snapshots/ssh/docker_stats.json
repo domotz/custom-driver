@@ -1,0 +1,94 @@
+{
+    "docker 19.03 validate": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Docker List Memory and CPU",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "CPU",
+                    "unit": "%"
+                },
+                {
+                    "label": "MEM",
+                    "unit": "%"
+                }
+            ],
+            "records": [
+                {
+                    "id": "a1b2c3d4e5f6",
+                    "values": [
+                        "web-frontend",
+                        "0.07",
+                        "1.20"
+                    ]
+                },
+                {
+                    "id": "b2c3d4e5f6a1",
+                    "values": [
+                        "postgres-main",
+                        "23.45",
+                        "41.87"
+                    ]
+                },
+                {
+                    "id": "c3d4e5f6a1b2",
+                    "values": [
+                        "redis-cache",
+                        "96.10",
+                        "88.03"
+                    ]
+                }
+            ]
+        }
+    },
+    "docker 19.03 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Docker List Memory and CPU",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "CPU",
+                    "unit": "%"
+                },
+                {
+                    "label": "MEM",
+                    "unit": "%"
+                }
+            ],
+            "records": [
+                {
+                    "id": "a1b2c3d4e5f6",
+                    "values": [
+                        "web-frontend",
+                        "0.07",
+                        "1.20"
+                    ]
+                },
+                {
+                    "id": "b2c3d4e5f6a1",
+                    "values": [
+                        "postgres-main",
+                        "23.45",
+                        "41.87"
+                    ]
+                },
+                {
+                    "id": "c3d4e5f6a1b2",
+                    "values": [
+                        "redis-cache",
+                        "96.10",
+                        "88.03"
+                    ]
+                }
+            ]
+        }
+    }
+}

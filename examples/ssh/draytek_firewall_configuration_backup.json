@@ -1,6 +1,6 @@
 {
     "logo": "draytek.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "DrayTek Firewall Configuration Backup",
     "description": "Backs up the DrayTek firewall configuration over SSH using 'uci export'.",
     "type": "CONFIGURATION_MANAGEMENT",

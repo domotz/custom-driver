@@ -1,0 +1,51 @@
+{
+    "three rooms free, busy and tentative validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three rooms free, busy and tentative get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Microsoft Teams Rooms status",
+            "columnHeaders": [
+                {
+                    "label": "Email Address"
+                },
+                {
+                    "label": "Room Name"
+                },
+                {
+                    "label": "Status"
+                }
+            ],
+            "records": [
+                {
+                    "id": "a1b2c3d4-0001-4000-8000-000000000001",
+                    "values": [
+                        "boardroom@contoso.com",
+                        "Boardroom",
+                        "Free"
+                    ]
+                },
+                {
+                    "id": "a1b2c3d4-0002-4000-8000-000000000002",
+                    "values": [
+                        "huddle7@contoso.com",
+                        "Huddle 7",
+                        "Busy"
+                    ]
+                },
+                {
+                    "id": "a1b2c3d4-0003-4000-8000-000000000003",
+                    "values": [
+                        "training@contoso.com",
+                        "Training Lab",
+                        "Tentative"
+                    ]
+                }
+            ]
+        }
+    }
+}

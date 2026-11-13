@@ -1,0 +1,70 @@
+{
+    "vcsa 8.0.2 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcsa 8.0.2 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "System Health",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "system",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "load",
+                    "values": [
+                        "WARNING"
+                    ]
+                },
+                {
+                    "id": "memory",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "applmgmt-service",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "storage",
+                    "values": [
+                        "NOT OK"
+                    ]
+                },
+                {
+                    "id": "swap",
+                    "values": [
+                        "WARNING"
+                    ]
+                },
+                {
+                    "id": "database-storage",
+                    "values": [
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "software-updates-availability",
+                    "values": [
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

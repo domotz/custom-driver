@@ -1,0 +1,54 @@
+{
+    "ubuntu 20.04 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 20.04 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "SSL Certificates",
+            "columnHeaders": [
+                {
+                    "label": "Issuer"
+                },
+                {
+                    "label": "Expiry"
+                },
+                {
+                    "label": "Remaining days",
+                    "unit": "day"
+                },
+                {
+                    "label": "Is valid"
+                },
+                {
+                    "label": "Authorization error"
+                }
+            ],
+            "records": [
+                {
+                    "id": "www.example.com_443",
+                    "values": [
+                        "Let's Encrypt",
+                        "Jun 12 23:59:59 2026 GMT",
+                        149,
+                        true,
+                        "-"
+                    ]
+                },
+                {
+                    "id": "old.example.org_8443",
+                    "values": [
+                        "DigiCert Inc",
+                        "Nov  3 12:00:00 2025 GMT",
+                        -72,
+                        false,
+                        "-"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,91 @@
+{
+    "server 2019 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "server 2019 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Services List",
+            "columnHeaders": [
+                {
+                    "label": "Service Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Description"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ajrouter",
+                    "values": [
+                        "AJRouter",
+                        "Stopped",
+                        "AllJoyn Router Service"
+                    ]
+                },
+                {
+                    "id": "bits",
+                    "values": [
+                        "BITS",
+                        "Running",
+                        "Background Intelligent Transfer Service"
+                    ]
+                },
+                {
+                    "id": "dhcp",
+                    "values": [
+                        "Dhcp",
+                        "Running",
+                        "DHCP Client"
+                    ]
+                },
+                {
+                    "id": "dnscache",
+                    "values": [
+                        "Dnscache",
+                        "Running",
+                        "DNS Client"
+                    ]
+                },
+                {
+                    "id": "eventlog",
+                    "values": [
+                        "EventLog",
+                        "Running",
+                        "Windows Event Log"
+                    ]
+                },
+                {
+                    "id": "spooler",
+                    "values": [
+                        "Spooler",
+                        "Stopped",
+                        "Print Spooler"
+                    ]
+                },
+                {
+                    "id": "w32time",
+                    "values": [
+                        "W32Time",
+                        "Running",
+                        "Windows Time"
+                    ]
+                },
+                {
+                    "id": "wuauserv",
+                    "values": [
+                        "wuauserv",
+                        "Stopped",
+                        "Windows Update"
+                    ]
+                }
+            ]
+        }
+    }
+}

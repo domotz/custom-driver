@@ -1,0 +1,41 @@
+{
+    "irmc s5 system validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "irmc s5 system get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "system-type",
+                "name": "System Type",
+                "value": "PRIMERGY RX2540 M5",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "bios-version",
+                "name": "BIOS Version",
+                "value": "V5.0.0.14 R1.13.0 for D3384-A1x",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "YMVD000123",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-status",
+                "name": "System Status",
+                "value": "Warning",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

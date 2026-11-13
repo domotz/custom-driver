@@ -1,0 +1,75 @@
+{
+    "debian 10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "debian 10 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Services List",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "apache2",
+                    "values": [
+                        "apache2",
+                        "running"
+                    ]
+                },
+                {
+                    "id": "cron",
+                    "values": [
+                        "cron",
+                        "running"
+                    ]
+                },
+                {
+                    "id": "mariadb",
+                    "values": [
+                        "mariadb",
+                        "running"
+                    ]
+                },
+                {
+                    "id": "snmpd",
+                    "values": [
+                        "snmpd",
+                        "running"
+                    ]
+                },
+                {
+                    "id": "ssh",
+                    "values": [
+                        "ssh",
+                        "running"
+                    ]
+                },
+                {
+                    "id": "zabbix-agent",
+                    "values": [
+                        "zabbix-agent",
+                        "exited"
+                    ]
+                },
+                {
+                    "id": "apache-htcacheclean",
+                    "values": [
+                        "apache-htcacheclean",
+                        "dead"
+                    ]
+                }
+            ]
+        }
+    }
+}

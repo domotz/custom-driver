@@ -1,0 +1,162 @@
+{
+    "apache 2.4.41 event mpm validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "apache 2.4.41 event mpm get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "Apache/2.4.41 (Ubuntu)"
+            },
+            {
+                "uid": "server_mpm",
+                "name": "ServerMPM",
+                "value": "event"
+            },
+            {
+                "uid": "server_built",
+                "name": "Server Built",
+                "value": "2023-10-26T13:44:44"
+            },
+            {
+                "uid": "restart_time",
+                "name": "Restart Time",
+                "value": "Thursday, 15-Jan-2026 08:00:00 UTC"
+            },
+            {
+                "uid": "load1",
+                "name": "CPU Load 1 minute",
+                "value": 0.15
+            },
+            {
+                "uid": "load5",
+                "name": "CPU Load 5 minutes",
+                "value": 0.2
+            },
+            {
+                "uid": "load15",
+                "name": "CPU Load 15 minutes",
+                "value": 0.1
+            },
+            {
+                "uid": "cpu_system",
+                "name": "CPU System",
+                "value": 0.75
+            },
+            {
+                "uid": "cpu_user",
+                "name": "CPU User",
+                "value": 1.5
+            },
+            {
+                "uid": "cpu_children_System",
+                "name": "CPU Children System",
+                "value": 0
+            },
+            {
+                "uid": "cpu_children_user",
+                "name": "CPU Children User",
+                "value": 0
+            },
+            {
+                "uid": "cpu_load",
+                "name": "CPU Load",
+                "value": 0.03125,
+                "unit": "%"
+            },
+            {
+                "uid": "bytes_per_second",
+                "name": "Bytes per second",
+                "value": 4413440,
+                "unit": "Bps"
+            },
+            {
+                "uid": "requests_per_second",
+                "name": "Requests per second",
+                "value": 1523
+            },
+            {
+                "uid": "total_bytes",
+                "name": "Total bytes",
+                "value": 4413440,
+                "unit": "B"
+            },
+            {
+                "uid": "total_requests",
+                "name": "Total requests",
+                "value": 1523
+            },
+            {
+                "uid": "total_duration",
+                "name": "Total Duration",
+                "value": 987
+            },
+            {
+                "uid": "total_workers_busy",
+                "name": "Total workers busy",
+                "value": 3
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": 7200,
+                "unit": "uptime"
+            },
+            {
+                "uid": "workers_closing_connection",
+                "name": "Workers closing connection",
+                "value": 1
+            },
+            {
+                "uid": "workers_dns_lookup",
+                "name": "Workers DNS lookup",
+                "value": 1
+            },
+            {
+                "uid": "workers_idle_cleanup",
+                "name": "Workers idle cleanup",
+                "value": 1
+            },
+            {
+                "uid": "workers_keepalive_read",
+                "name": "Workers keepalive (read)",
+                "value": 1
+            },
+            {
+                "uid": "workers_logging",
+                "name": "Workers logging",
+                "value": 1
+            },
+            {
+                "uid": "workers_reading_request",
+                "name": "Workers reading request",
+                "value": 1
+            },
+            {
+                "uid": "workers_sending_reply",
+                "name": "Workers sending reply",
+                "value": 1
+            },
+            {
+                "uid": "workers_slot_with_no_current_process",
+                "name": "Workers slot with no current process",
+                "value": 67
+            },
+            {
+                "uid": "workers_starting_up",
+                "name": "Workers starting up",
+                "value": 1
+            },
+            {
+                "uid": "workers_waiting_for_connection",
+                "name": "Workers waiting for connection",
+                "value": 23
+            }
+        ],
+        "table": null
+    }
+}

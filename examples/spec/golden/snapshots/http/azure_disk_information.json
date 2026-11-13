@@ -1,0 +1,228 @@
+{
+    "attached os disk and idle unattached data disk validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "attached os disk and idle unattached data disk get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Azure Disks",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING",
+                    "key": "name"
+                },
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING",
+                    "key": "resourceGroup"
+                },
+                {
+                    "label": "Managed By",
+                    "valueType": "STRING",
+                    "key": "managedBy"
+                },
+                {
+                    "label": "Location of the resource",
+                    "valueType": "STRING",
+                    "key": "location"
+                },
+                {
+                    "label": "Availability zone",
+                    "valueType": "STRING",
+                    "key": "availabilityZone"
+                },
+                {
+                    "label": "SKU name",
+                    "valueType": "STRING",
+                    "key": "skuName"
+                },
+                {
+                    "label": "SKU tier",
+                    "valueType": "STRING",
+                    "key": "skuTier"
+                },
+                {
+                    "label": "Os",
+                    "valueType": "STRING",
+                    "key": "osType"
+                },
+                {
+                    "label": "Hyper-V generation",
+                    "valueType": "STRING",
+                    "key": "hyperVGeneration"
+                },
+                {
+                    "label": "Supports hibernation",
+                    "valueType": "STRING",
+                    "key": "supportsHibernation"
+                },
+                {
+                    "label": "Accelerated networking support",
+                    "valueType": "STRING",
+                    "key": "acceleratedNetworking"
+                },
+                {
+                    "label": "Architecture",
+                    "valueType": "STRING",
+                    "key": "architecture"
+                },
+                {
+                    "label": "Disk creation option",
+                    "valueType": "STRING",
+                    "key": "createOption"
+                },
+                {
+                    "label": "Disk size",
+                    "valueType": "NUMBER",
+                    "key": "diskSizeGB"
+                },
+                {
+                    "label": "Disk IOPS for read/write",
+                    "valueType": "NUMBER",
+                    "key": "diskIOPS"
+                },
+                {
+                    "label": "Disk throughput for read/write",
+                    "valueType": "NUMBER",
+                    "key": "diskThroughput"
+                },
+                {
+                    "label": "Encryption type",
+                    "valueType": "STRING",
+                    "key": "encryptionType"
+                },
+                {
+                    "label": "Network access policy",
+                    "valueType": "STRING",
+                    "key": "networkAccessPolicy"
+                },
+                {
+                    "label": "Public network access policy",
+                    "valueType": "STRING",
+                    "key": "publicNetworkAccess"
+                },
+                {
+                    "label": "Creation time of the disk",
+                    "valueType": "STRING",
+                    "key": "timeCreated"
+                },
+                {
+                    "label": "Provisioning state",
+                    "valueType": "STRING",
+                    "key": "provisioningState"
+                },
+                {
+                    "label": "Disk state",
+                    "valueType": "STRING",
+                    "key": "diskState"
+                },
+                {
+                    "label": "Disk tier",
+                    "valueType": "STRING",
+                    "key": "diskTier"
+                },
+                {
+                    "label": "Composite Disk Read",
+                    "valueType": "NUMBER",
+                    "key": "Composite Disk Read Bytes/sec",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Composite Disk Write",
+                    "valueType": "NUMBER",
+                    "key": "Composite Disk Write Bytes/sec",
+                    "unit": "bps"
+                },
+                {
+                    "label": "Composite Disk Read Ops",
+                    "valueType": "NUMBER",
+                    "key": "Composite Disk Read Operations/sec",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Composite Disk Write Ops",
+                    "valueType": "NUMBER",
+                    "key": "Composite Disk Write Operations/sec",
+                    "unit": "ops/sec"
+                },
+                {
+                    "label": "Disk On-demand Burst Ops",
+                    "valueType": "NUMBER",
+                    "key": "DiskPaidBurstIOPS"
+                }
+            ],
+            "records": [
+                {
+                    "id": "11111111-aaaa-bbbb-cccc-000000000001",
+                    "values": [
+                        "web-01_OsDisk_1",
+                        "Prod-RG",
+                        "web-01",
+                        "westeurope",
+                        "1",
+                        "Premium_LRS",
+                        "Premium",
+                        "Linux",
+                        "V2",
+                        "Yes",
+                        "Supported",
+                        "x64",
+                        "FromImage",
+                        30,
+                        120,
+                        25,
+                        "EncryptionAtRestWithPlatformKey",
+                        "AllowAll",
+                        "Enabled",
+                        "12/01/2025 08:30:00 UTC",
+                        "Succeeded",
+                        "Attached",
+                        "P4",
+                        1048576.5,
+                        524288.25,
+                        25.5,
+                        12.75,
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "11111111-aaaa-bbbb-cccc-000000000002",
+                    "values": [
+                        "db-01-data",
+                        "Data-RG",
+                        "N/A",
+                        "northeurope",
+                        "N/A",
+                        "StandardSSD_LRS",
+                        "Standard",
+                        "N/A",
+                        "V1",
+                        "No",
+                        "Not Supported",
+                        "x64",
+                        "Empty",
+                        512,
+                        500,
+                        60,
+                        "EncryptionAtRestWithPlatformKey",
+                        "DenyAll",
+                        "Disabled",
+                        "01/05/2026 17:05:09 UTC",
+                        "Succeeded",
+                        "Unattached",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

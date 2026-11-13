@@ -1,0 +1,126 @@
+{
+    "winrm, ethernet and wi-fi validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, ethernet and wi-fi get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Interfaces",
+            "columnHeaders": [
+                {
+                    "label": "Ip addresses",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Static",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connection State",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ethernet",
+                    "values": [
+                        "192.168.1.20",
+                        "Yes",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "wi-fi",
+                    "values": [
+                        "192.168.1.55, 169.254.12.3",
+                        "No",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one interface is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one interface is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Interfaces",
+            "columnHeaders": [
+                {
+                    "label": "Ip addresses",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Static",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connection State",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ethernet",
+                    "values": [
+                        "192.168.1.20",
+                        "Yes",
+                        "Yes"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, ethernet and wi-fi validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, ethernet and wi-fi get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Network Interfaces",
+            "columnHeaders": [
+                {
+                    "label": "Ip addresses",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Static",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connection State",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ethernet",
+                    "values": [
+                        "192.168.1.20",
+                        "Yes",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "wi-fi",
+                    "values": [
+                        "192.168.1.55, 169.254.12.3",
+                        "No",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}

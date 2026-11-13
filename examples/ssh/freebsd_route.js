@@ -1,12 +1,9 @@
-
 /**
  * This driver extracts information about network routes in freebsd os
  * The communication protocol is SSH
  * This driver create a dynamic monitoring variables for the routes for ip V6 and V4
  * Tested under freebsd 12.3-STABLE
  */
-
-
 
 var validate_cmd = "netstat -r -n";
 var route_v4_cmd = "netstat -4 -r -n | tail -n +5";
@@ -23,7 +20,7 @@ var table = D.createTable("Routing table", [
     { label: "Destination" },
     { label: "Gateway" },
     { label: "Flags" },
-    { label: "Netif Expire" },
+    { label: "Netif Expire" }
 ]);
 
 function exec_command(command, callback) {
@@ -56,7 +53,7 @@ function route(version, cmd) {
 }
 
 /**
- * 
+ *
  * @param {[function]} arrayFn An array of functions that will be executed in the same time, each function should have a callback as parameter
  * @param {function} callback This function is called when all functions in arrayFn are done
  */
@@ -89,7 +86,6 @@ function validate() {
     });
 }
 
-
 /**
 * @remote_procedure
 * @label Get Device Variables
@@ -98,7 +94,7 @@ function validate() {
 function get_status() {
     execute_all([
         route("ip_v4", route_v4_cmd),
-        route("ip_v6", route_v6_cmd),
+        route("ip_v6", route_v6_cmd)
     ], function () {
         D.success(table);
     });
