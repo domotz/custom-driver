@@ -1,6 +1,6 @@
 // Simulated Domotz Box (ubuntu_core_private snap, collector 8.x) replies. Shape follows remote_pawn_ng
 // src/utils/statusGenerator.js (GET /api/v1/status on port 3000: package.full_platform is the platform id
-// that validate checks) and src/commands/systemRestart.js (POST /api/system-restart answers { error: null }).
+// that validate checks) and src/commands/systemRestart.js (POST /api/v1/system-restart answers { error: null }).
 const reply = require("../../replies");
 
 const status = {
