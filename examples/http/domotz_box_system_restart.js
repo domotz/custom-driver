@@ -6,7 +6,7 @@
  * Communication protocol is HTTP
  *
  * Requires Domotz Collector version: 6.8.5 or higher
- * With the Collector local web interface disabled, "Restart Now" requires a Collector version that includes BT-7074
+ * With the Collector local web interface disabled, "Restart Now" requires an up-to-date Collector
  **/
 
 function getStatusApi() {

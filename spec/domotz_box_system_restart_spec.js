@@ -1,7 +1,7 @@
 var harnessLib = require("./helpers/mock-d");
 
 // HTTP exemplar: http/domotz_box_system_restart.js
-// "Restart Now" (custom_1) must report a failure whenever the Collector did not accept the restart (BT-7074).
+// "Restart Now" (custom_1) must report a failure whenever the Collector did not accept the restart.
 
 function runRestart(reply) {
     var harness = harnessLib.createMockD({
