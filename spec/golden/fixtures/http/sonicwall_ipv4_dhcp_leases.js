@@ -3,6 +3,7 @@
 // a flat JSON object of lease counters. The SonicOS schema spells the keys "avaliable_dynamic" and
 // "avaliable_static_" (sic); the driver reads exactly those, the trailing underscore is not confirmed by a capture.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -19,3 +20,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases));

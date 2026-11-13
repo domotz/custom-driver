@@ -3,6 +3,7 @@
 // action, from, to, source: { address, port }, destination: { address, port }, service, ... } }] } where an
 // address is one of { any: true } | { name: "<object>" } | { group: "<group>" } and a port { any: true } | { name }.
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -54,3 +55,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases));
