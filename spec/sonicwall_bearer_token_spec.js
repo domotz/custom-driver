@@ -18,7 +18,7 @@ const { TOKEN, AUTH_WITH_TOKEN, TOKEN_INVALID, UNAUTHORIZED, BEARER, AUTH_PATH, 
 
 process.env.TZ = "UTC";
 
-const EXAMPLES = path.join(__dirname, "..");
+const EXAMPLES = path.join(__dirname, "..", "examples");
 const FIXTURES = path.join(__dirname, "golden", "fixtures", "http");
 
 const drivers = discoverDrivers(EXAMPLES).filter((d) => d.path.startsWith("http/sonicwall_") && d.source.includes(AUTH_PATH));

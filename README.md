@@ -17,6 +17,10 @@ The scripting API is documented at
     requirements (credentials, sandbox version), tags, protocols, tested
     devices, and an optional `compatibility` block describing which devices
     the driver is meant to run against.
+  Only drivers and their companion files may live here: igor publishes every
+  `.js`/`.json` under `examples/<protocol>/` as a driver template.
+- `spec/`, `package.json`, `eslint.config.mjs` — the driver test project
+  (Jasmine specs and lint). See the [spec README](spec/README.md).
 - `logos/` — vendor/product SVG logos referenced by the `logo` field of the
   driver metadata.
 - `compatibility-editor/` — a small browser-based tool for editing the
