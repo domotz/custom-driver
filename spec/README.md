@@ -1,16 +1,19 @@
 # Driver specs
 
-This folder holds four kinds of specs, all run by Jasmine from `examples/`:
+This folder holds four kinds of specs, all run by Jasmine from the repository root:
 
 - the robustness net (`robustness_spec.js` plus `net/`), generated for every catalogue driver;
 - the golden success paths (`golden_spec.js` plus `golden/`), for drivers that have a fixture;
 - the harness specs (`net/*_spec.js`, `golden/harness_spec.js`), which test the two harnesses;
 - hand-written legacy and happy-path specs (`apache2_status_spec.js`, `mysql_spec.js`, ...).
 
+The test project (`package.json`, `eslint.config.mjs`, `spec/`) lives at the repository root, outside
+`examples/`: igor reads every `.js`/`.json` under `examples/<protocol>/` as a driver template, so nothing
+but drivers and their companion files may live under `examples/`.
+
 ## Running
 
 ```
-cd examples
 npm test                      # the net, the harness specs and the legacy specs
 npm run test:net              # only the net (robustness_spec.js)
 NET_DRIVER=apache2 npm run test:net   # only drivers whose path contains "apache2"
