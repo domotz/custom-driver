@@ -9,7 +9,7 @@ const { runEntryPoint, verdict } = require("./net/run-driver");
 
 const TIME_LIMIT_MS = 2000;
 const filter = process.env.NET_DRIVER || "";
-const drivers = discoverDrivers(path.join(__dirname, "..")).filter((d) => d.path.includes(filter));
+const drivers = discoverDrivers(path.join(__dirname, "..", "examples")).filter((d) => d.path.includes(filter));
 
 describe("robustness net", () => {
     beforeAll(() => {

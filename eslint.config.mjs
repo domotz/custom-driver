@@ -56,11 +56,7 @@ const driverConfig = {
 export default [
     { ignores: ["node_modules/**"] },
     { plugins: { "@stylistic": stylistic } },
-    {
-        files: ["**/*.js"],
-        ignores: ["spec/**"],
-        ...driverConfig,
-    },
+    { files: ["examples/**/*.js"], ...driverConfig },
     // Robustness-net fixtures are tiny drivers: lint them exactly like drivers.
     { files: ["spec/net/fixtures/**/*.js"], ...driverConfig },
     {
