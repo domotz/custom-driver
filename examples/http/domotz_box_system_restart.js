@@ -6,6 +6,7 @@
  * Communication protocol is HTTP
  *
  * Requires Domotz Collector version: 6.8.5 or higher
+ * With the Collector local web interface disabled, "Restart Now" requires an up-to-date Collector
  **/
 
 function getStatusApi() {
@@ -72,8 +73,29 @@ function custom_1() {
         if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            var disabledMessage = "System restart not available: update the Collector, or enable the \"Network Collector Local Web Interface\" in the Collector settings";
+            console.error(disabledMessage);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE, disabledMessage);
+        } else if (response.statusCode < 200 || response.statusCode >= 300) {
+            console.error("System restart failed with HTTP status " + response.statusCode);
+            D.failure(D.errorType.GENERIC_ERROR);
         } else {
-            D.success();
+            var result = parseRestartResponse(body);
+            if (result && result.error) {
+                console.error("System restart refused: " + result.error);
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE, result.error);
+            } else {
+                D.success();
+            }
         }
     });
+}
+
+function parseRestartResponse(body) {
+    try {
+        return JSON.parse(body);
+    } catch (e) {
+        return null;
+    }
 }
