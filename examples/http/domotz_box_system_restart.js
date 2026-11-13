@@ -72,8 +72,29 @@ function custom_1() {
         if (error) {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
+        } else if (response.statusCode == 404) {
+            var disabledMessage = "System restart not available: enable the \"Network Collector Local Web Interface\" in the Collector settings";
+            console.error(disabledMessage);
+            D.failure(D.errorType.RESOURCE_UNAVAILABLE, disabledMessage);
+        } else if (response.statusCode < 200 || response.statusCode >= 300) {
+            console.error("System restart failed with HTTP status " + response.statusCode);
+            D.failure(D.errorType.GENERIC_ERROR);
         } else {
-            D.success();
+            var result = parseRestartResponse(body);
+            if (result && result.error) {
+                console.error("System restart refused: " + result.error);
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE, result.error);
+            } else {
+                D.success();
+            }
         }
     });
+}
+
+function parseRestartResponse(body) {
+    try {
+        return JSON.parse(body);
+    } catch (e) {
+        return null;
+    }
 }
