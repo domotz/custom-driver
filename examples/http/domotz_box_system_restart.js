@@ -6,6 +6,7 @@
  * Communication protocol is HTTP
  *
  * Requires Domotz Collector version: 6.8.5 or higher
+ * With the Collector local web interface disabled, "Restart Now" requires a Collector version that includes BT-7074
  **/
 
 function getStatusApi() {
@@ -73,7 +74,7 @@ function custom_1() {
             console.error(error);
             D.failure(D.errorType.GENERIC_ERROR);
         } else if (response.statusCode == 404) {
-            var disabledMessage = "System restart not available: enable the \"Network Collector Local Web Interface\" in the Collector settings";
+            var disabledMessage = "System restart not available: update the Collector, or enable the \"Network Collector Local Web Interface\" in the Collector settings";
             console.error(disabledMessage);
             D.failure(D.errorType.RESOURCE_UNAVAILABLE, disabledMessage);
         } else if (response.statusCode < 200 || response.statusCode >= 300) {
