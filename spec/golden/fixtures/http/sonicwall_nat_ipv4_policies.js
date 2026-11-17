@@ -3,6 +3,7 @@
 // inbound, outbound, source: { original, translated }, destination: { original, translated },
 // service: { original, translated }, ... } }] } with address object names ("any", "original", "X1 IP", ...).
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -54,3 +55,6 @@ module.exports = {
         entryPoints: { validate: { calls }, get_status: { calls } }
     }]
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases));
