@@ -1,0 +1,47 @@
+{
+    "logo": "linux.svg",
+    "version": "1.0.0",
+    "name": "Linux CPU Usage Per Top n process - pidstat",
+    "description": "This script monitors the average CPU utilization of the top N processes using pidstat",
+    "category": "Software Integration",
+    "requirements": {
+        "credentials": true,
+        "sandbox_version": "1.12",
+        "others": [
+            "Linux",
+            "pidstat",
+            "head",
+            "grep"
+        ]
+    },
+    "tags": [
+        "linux",
+        "pidstat",
+        "cpu"
+    ],
+    "sample_period_s": 600,
+    "has_actions": false,
+    "expected_variables": {
+        "independent": "[1,999]"
+    },
+    "protocols": [
+        "SSH"
+    ],
+    "tested_on": [
+        {
+            "name": "Ubuntu",
+            "version": "22.04.1 LTS"
+        },
+        {
+            "name": "bash",
+            "version": "5.1.16"
+        }
+    ],
+    "parameters": [
+        {
+            "value_type": "NUMBER",
+            "name": "topProcesses",
+            "label": "Number Of Top Processes"
+        }
+    ]
+}
