@@ -5,6 +5,7 @@
 // { model, lod, armb, arme, oneyldo, lrmb, lrme, eos, sortid } } } }. The table below is a trimmed copy of the real
 // file, keeping its family and type order (the TZ family lists Firmware before Hardware there).
 const reply = require("../../replies");
+const { bearerCases } = require("../../sonicwall-bearer");
 
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 
@@ -55,3 +56,6 @@ module.exports = {
         entryPoints: { validate: { calls: calls(model) }, get_status: { calls: calls(model) } }
     }))
 };
+
+// The same device with the SonicOS bearer token session check on (see ../../sonicwall-bearer.js).
+module.exports.cases = module.exports.cases.concat(bearerCases(module.exports.cases));
