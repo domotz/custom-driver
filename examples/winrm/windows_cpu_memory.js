@@ -100,23 +100,35 @@ function get_status() {
 // Win32_processor returns one object per physical socket, so ConvertTo-Json gives a bare object on a
 // single-socket machine and an array on a multi-socket one. The variables describe the whole machine:
 // cores and logical processors are summed, the clock speed is the highest, names and statuses list each distinct value.
-// Returns null when the query returned no processor.
+// A value no socket reports stays null instead of becoming a 0 that looks measured.
+// Returns null when the reply carries no processor data at all.
 function summarizeProcessors(cpuInfo) {
-    const processors = [].concat(cpuInfo || []);
-    if (!processors.length) return null;
+    // Some PowerShell serializations wrap an array as { value: [...], Count: n }
+    const list = cpuInfo && Array.isArray(cpuInfo.value) ? cpuInfo.value : cpuInfo;
+    const processors = [].concat(list || []).filter(function (processor) {
+        return processor && typeof processor === "object";
+    });
     const names = [];
     const statuses = [];
-    const summary = { maxClockSpeed: 0, logicalProcessors: 0, cores: 0 };
+    const summary = { maxClockSpeed: null, logicalProcessors: null, cores: null };
+    function number(value) {
+        return value == null || value === "" || !isFinite(Number(value)) ? null : Number(value);
+    }
+    function add(total, value) {
+        return number(value) === null ? total : (total || 0) + number(value);
+    }
     processors.forEach(function (processor) {
         if (processor.name != null && names.indexOf(processor.name) === -1) names.push(processor.name);
         if (processor.Status != null && statuses.indexOf(processor.Status) === -1) statuses.push(processor.Status);
-        summary.maxClockSpeed = Math.max(summary.maxClockSpeed, Number(processor.MaxClockSpeed) || 0);
-        summary.logicalProcessors += Number(processor.NumberOfLogicalProcessors) || 0;
-        summary.cores += Number(processor.NumberOfCores) || 0;
+        const clockSpeed = number(processor.MaxClockSpeed);
+        if (clockSpeed !== null) summary.maxClockSpeed = Math.max(summary.maxClockSpeed || 0, clockSpeed);
+        summary.logicalProcessors = add(summary.logicalProcessors, processor.NumberOfLogicalProcessors);
+        summary.cores = add(summary.cores, processor.NumberOfCores);
     });
     summary.name = names.length ? names.join(", ") : null;
     summary.status = statuses.length ? statuses.join(", ") : null;
-    return summary;
+    const hasData = Object.keys(summary).some(function (key) { return summary[key] !== null; });
+    return hasData ? summary : null;
 }
 
 // Parse the output from WinRM commands and create variables
@@ -131,7 +143,7 @@ function parseOutput(cpuMemoryInfo) {
         return;
     }
     const cpuName = cpu.name;
-    const maxClockSpeed = cpu.maxClockSpeed / 1000;
+    const maxClockSpeed = cpu.maxClockSpeed === null ? null : cpu.maxClockSpeed / 1000;
     const logicalProcessorsNumber = cpu.logicalProcessors;
     const coresNumber = cpu.cores;
     const cpuStatus = cpu.status;

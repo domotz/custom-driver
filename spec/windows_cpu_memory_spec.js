@@ -100,6 +100,35 @@ DRIVERS.forEach(function (driverPath) {
                 expect(harness.calls.createVariable.length).toBe(0);
             });
 
+            it("reads a { value, Count } wrapped array like a plain one", async function () {
+                var values = await parse(driverPath, { value: [socket(), socket()], Count: 2 });
+
+                expect(values["cores-number"]).toEqual(32);
+                expect(values["logical-processors-number"]).toEqual(64);
+                expect(values["cpu-name"]).toEqual(XEON);
+            });
+
+            it("keeps a value no socket reports empty instead of showing 0", async function () {
+                var values = await parse(driverPath, socket({ NumberOfCores: null, MaxClockSpeed: null }));
+
+                expect(values["cores-number"]).toBeNull();
+                expect(values["max-clock-speed"]).toBeNull();
+                expect(values["logical-processors-number"]).toEqual(32);
+            });
+
+            [{}, "System.Object[]", [[]]].forEach(function (unusable) {
+                it("fails on a reply with no processor data: " + JSON.stringify(unusable), async function () {
+                    var harness = winrmHarness();
+                    var driver = harnessLib.loadDriver(driverPath, harness);
+
+                    driver.parseOutput(payload(unusable));
+                    var outcome = await harness.completion;
+
+                    expect(outcome.type).toBe("failure");
+                    expect(harness.calls.createVariable.length).toBe(0);
+                });
+            });
+
             it("leaves the memory variables untouched", async function () {
                 var values = await parse(driverPath, [socket(), socket()]);
 
