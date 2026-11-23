@@ -1,42 +1,46 @@
-// Simulated Windows Server 2019 domain controller / PowerShell 5.1 replies. Shape follows Get-GPO (GroupPolicy module):
-// the list view for validate, and ConvertTo-Json of the PSCustomObjects the script builds for get_status, with
-// GpoStatus written by its name (AllSettingsEnabled, UserSettingsDisabled, ...) and DSVersion/SysvolVersion as numbers.
+// Simulated Windows Server 2019 domain controller / PowerShell 5.1 replies. validate and get_status send the same
+// script: it reads each GPO with Get-GPO (pinned to the host on a DC that is not the PDC emulator), and prints
+// ConvertTo-Json -Compress of @{gpos=...;errors=...}, with GpoStatus written by its name (AllSettingsEnabled,
+// UserSettingsDisabled, ...) and DSVersion/SysvolVersion as numbers. A hashtable has no key order: "errors" comes first
+// here, as PowerShell 5.1 printed it.
 const reply = require("../../replies");
 
-const GET_GPO = [
-    "",
-    "",
-    "DisplayName      : Default Domain Policy",
-    "DomainName       : contoso.local",
-    "Owner            : CONTOSO\\Domain Admins",
-    "Id               : 31b2f340-016d-11d2-945f-00c04fb984f9",
-    "GpoStatus        : AllSettingsEnabled",
-    "Description      : ",
-    "CreationTime     : 3/4/2019 9:15:02 AM",
-    "ModificationTime : 11/20/2025 4:41:37 PM",
-    "UserVersion      : AD Version: 0, SysVol Version: 0",
-    "ComputerVersion  : AD Version: 14, SysVol Version: 14",
-    "WmiFilter        : ",
-    "",
-    "",
-    ""
-].join("\r\n");
+const COMMAND = "$s=@{};$cs=Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue;" +
+    "if($cs.DomainRole -eq 4){$n=$cs.DNSHostName;if(-not $n){$n=$env:COMPUTERNAME};$s.Server=$n};" +
+    "$gpos=@();$errs=@();" +
+    "foreach($p in @('Default Domain Policy','Default Domain Controllers Policy')){" +
+    "try{$g=Get-GPO -Name $p @s -ErrorAction Stop;" +
+    "$gpos+=[PSCustomObject]@{Name=$g.DisplayName;Status=$g.GpoStatus.ToString();" +
+    "UADVersion=$g.User.DSVersion;USVVersion=$g.User.SysvolVersion;" +
+    "CADVersion=$g.Computer.DSVersion;CSVVersion=$g.Computer.SysvolVersion}}" +
+    "catch{$errs+=$p+': '+$_.Exception.Message}};" +
+    "ConvertTo-Json -InputObject @{gpos=$gpos;errors=$errs} -Depth 4 -Compress";
 
-const COMMAND = "$GPOs =@('Default Domain Policy','Default Domain Controllers Policy');$GPOVersions = [System.Collections.ArrayList]::new();foreach ($p in $GPOs) {$GPData = Get-GPO -Name $p;$GPOVersions += [PSCustomObject]@{Name = $GPData.Displayname;Status= $($GPData.GpoStatus).ToString();UADVersion= $GPData.User.DSVersion;USVVersion= $GPData.User.SysvolVersion;CADVersion= $GPData.Computer.DSVersion;CSVVersion= $GPData.Computer.SysvolVersion;}};$GPOVersions | ConvertTo-Json";
+const DDP = { Name: "Default Domain Policy", Status: "AllSettingsEnabled", UADVersion: 0, USVVersion: 0, CADVersion: 14, CSVVersion: 14 };
+const DDCP = { Name: "Default Domain Controllers Policy", Status: "UserSettingsDisabled", UADVersion: 3, USVVersion: 3, CADVersion: 9, CSVVersion: 8 };
+const NOT_FOUND = "Default Domain Controllers Policy: GPO with name Default Domain Controllers Policy was not found in the contoso.local domain.";
 
-const GPOS = [
-    { Name: "Default Domain Policy", Status: "AllSettingsEnabled", UADVersion: 0, USVVersion: 0, CADVersion: 14, CSVVersion: 14 },
-    { Name: "Default Domain Controllers Policy", Status: "UserSettingsDisabled", UADVersion: 3, USVVersion: 3, CADVersion: 9, CSVVersion: 8 }
-];
+const scriptOutput = (gpos, errors) => JSON.stringify({ errors: errors, gpos: gpos }) + "\r\n";
 
-const psJson = (value) => JSON.stringify(value, null, 4).replace(/": /g, '":  ') + "\r\n";
+// Both entry points send the same command and get the same reply.
+const bothEntryPoints = (stdout) => {
+    const calls = [{ kind: "winrm", method: "sendWinRMCommand", target: COMMAND, reply: reply.winrm(stdout) }];
+    return { validate: { calls: calls }, get_status: { calls: calls } };
+};
 
 module.exports = {
-    cases: [{
-        name: "domain controller, two gpos",
-        entryPoints: {
-            validate: { calls: [{ kind: "winrm", method: "sendWinRMCommand", target: 'Get-GPO -Name "Default Domain Policy"', reply: reply.winrm(GET_GPO) }] },
-            get_status: { calls: [{ kind: "winrm", method: "sendWinRMCommand", target: COMMAND, reply: reply.winrm(psJson(GPOS)) }] }
+    cases: [
+        {
+            name: "domain controller, two gpos",
+            entryPoints: bothEntryPoints(scriptOutput([DDP, DDCP], []))
+        },
+        {
+            name: "one gpo not found",
+            entryPoints: bothEntryPoints(scriptOutput([DDP], [NOT_FOUND]))
+        },
+        {
+            name: "powershell 5.1 array wrapper",
+            entryPoints: bothEntryPoints(scriptOutput({ value: [DDP, DDCP], Count: 2 }, []))
         }
-    }]
+    ]
 };
