@@ -99,16 +99,36 @@ function get_status() {
         .catch(instance.checkError);
 }
 
+// Win32_processor returns one object per physical socket, so ConvertTo-Json gives a bare object on a
+// single-socket machine and an array on a multi-socket one. The variables describe the whole machine:
+// cores and logical processors are summed, the clock speed is the highest, names and statuses list each distinct value.
+function summarizeProcessors(cpuInfo) {
+    const processors = [].concat(cpuInfo || []);
+    if (!processors.length) return {};
+    const summary = { names: [], statuses: [], maxClockSpeed: 0, logicalProcessors: 0, cores: 0 };
+    processors.forEach(function (processor) {
+        if (summary.names.indexOf(processor.name) === -1) summary.names.push(processor.name);
+        if (summary.statuses.indexOf(processor.Status) === -1) summary.statuses.push(processor.Status);
+        summary.maxClockSpeed = Math.max(summary.maxClockSpeed, processor.MaxClockSpeed);
+        summary.logicalProcessors += processor.NumberOfLogicalProcessors;
+        summary.cores += processor.NumberOfCores;
+    });
+    summary.name = summary.names.join(", ");
+    summary.status = summary.statuses.join(", ");
+    return summary;
+}
+
 // Parse the output from WinRM commands and create variables
 function parseOutput(cpuMemoryInfo) {
     const totalMemory = cpuMemoryInfo.TotalMemory / (Math.pow(1024, 3));
     const availableMemory = cpuMemoryInfo.AvailableMemory / 1024 / 1024;
     const memoryUsage = ((totalMemory - availableMemory) / totalMemory) * 100;
-    const cpuName = cpuMemoryInfo.CPUInfo.name;
-    const maxClockSpeed = cpuMemoryInfo.CPUInfo.MaxClockSpeed / 1000;
-    const logicalProcessorsNumber = cpuMemoryInfo.CPUInfo.NumberOfLogicalProcessors;
-    const coresNumber = cpuMemoryInfo.CPUInfo.NumberOfCores;
-    const cpuStatus = cpuMemoryInfo.CPUInfo.Status;
+    const cpu = summarizeProcessors(cpuMemoryInfo.CPUInfo);
+    const cpuName = cpu.name;
+    const maxClockSpeed = cpu.maxClockSpeed / 1000;
+    const logicalProcessorsNumber = cpu.logicalProcessors;
+    const coresNumber = cpu.cores;
+    const cpuStatus = cpu.status;
     const cpuAverage = cpuMemoryInfo.Average ? cpuMemoryInfo.Average.toFixed(2) : "N/A";
 
     const variables = [

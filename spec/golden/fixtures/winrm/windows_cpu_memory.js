@@ -1,5 +1,5 @@
 // Simulated Windows 11 / PowerShell 5.1 replies. Shape follows ConvertTo-Json -Compress of a hashtable:
-// compact JSON, a single CPU is a bare object (not an array), Win32_OperatingSystem.FreePhysicalMemory is in KiB,
+// compact JSON, a single CPU is a bare object and several sockets are an array, Win32_OperatingSystem.FreePhysicalMemory is in KiB,
 // Win32_PhysicalMemory capacity in bytes. The SSH mode runs the same script through `powershell -Command`.
 const reply = require("../../replies");
 
@@ -17,6 +17,15 @@ const OUTPUT = JSON.stringify({
     Average: 14.368421052631579
 }) + "\r\n";
 
+// Windows Server with two physical sockets: Win32_processor returns one object per socket, so CPUInfo is an array (BT-6610).
+const XEON = { name: "Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz", MaxClockSpeed: 2900, NumberOfLogicalProcessors: 32, NumberOfCores: 16, Status: "OK" };
+const TWO_SOCKETS_OUTPUT = JSON.stringify({
+    CPUInfo: [XEON, XEON],
+    TotalMemory: 137438953472,
+    AvailableMemory: 67108864,
+    Average: 7.5
+}) + "\r\n";
+
 module.exports = {
     cases: [{
         name: "winrm, windows 11",
@@ -31,6 +40,20 @@ module.exports = {
         entryPoints: {
             validate: { calls: [{ kind: "ssh", method: "sendSSHCommand", target: SSH_COMMAND, reply: reply.ssh(OUTPUT) }] },
             get_status: { calls: [{ kind: "ssh", method: "sendSSHCommand", target: SSH_COMMAND, reply: reply.ssh(OUTPUT) }] }
+        }
+    }, {
+        name: "winrm, windows server with two sockets",
+        parameters: { protocol: "winrm" },
+        entryPoints: {
+            validate: { calls: [{ kind: "winrm", method: "sendWinRMCommand", target: COMMAND, reply: reply.winrm(TWO_SOCKETS_OUTPUT) }] },
+            get_status: { calls: [{ kind: "winrm", method: "sendWinRMCommand", target: COMMAND, reply: reply.winrm(TWO_SOCKETS_OUTPUT) }] }
+        }
+    }, {
+        name: "ssh, windows server with two sockets",
+        parameters: { protocol: "ssh" },
+        entryPoints: {
+            validate: { calls: [{ kind: "ssh", method: "sendSSHCommand", target: SSH_COMMAND, reply: reply.ssh(TWO_SOCKETS_OUTPUT) }] },
+            get_status: { calls: [{ kind: "ssh", method: "sendSSHCommand", target: SSH_COMMAND, reply: reply.ssh(TWO_SOCKETS_OUTPUT) }] }
         }
     }]
 };
