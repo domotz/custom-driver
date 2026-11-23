@@ -65,6 +65,46 @@ describe("SonicWall PLC refresh", function () {
         expect(() => mergeTables(CURRENT, extractTables(page(bad)))).toThrowError(/SWTZ-H-65: last_order_day is not a YYYY-MM-DD date/);
     });
 
+    it("refuses a date that does not exist", function () {
+        ["2026-13-45", "2026-02-30"].forEach((day) => {
+            const bad = [["TZ Series", { Hardware: [hardware("SWTZ-H-65", "TZ470", day, "")] }]];
+            expect(() => mergeTables(CURRENT, extractTables(page(bad)))).toThrowError(/SWTZ-H-65: last_order_day is not a YYYY-MM-DD date/);
+        });
+    });
+
+    it("refuses a row missing a field, instead of reading it as unpublished", function () {
+        const row = hardware("SWTZ-H-20", "TZ 350", "2023-09-30", "2026-10-01");
+        delete row.end_of_support;
+        const live = extractTables(page([["TZ Series", { Hardware: [row] }]]));
+        expect(() => mergeTables(CURRENT, live)).toThrowError(/SWTZ-H-20: the page no longer sends end_of_support/);
+    });
+
+    it("refuses a stored value the page now leaves empty, unless removals are allowed", function () {
+        const live = () => extractTables(page([["TZ Series", { Hardware: [hardware("SWTZ-H-20", "TZ 350", "2023-09-30", "")] }]]));
+        expect(() => mergeTables(JSON.parse(JSON.stringify(CURRENT)), live()))
+            .toThrowError(/leaves empty 1 value\(s\) the file has: SonicWall TZ Series Hardware SWTZ-H-20 eos \(was 2026-04-16\)/);
+        const result = mergeTables(JSON.parse(JSON.stringify(CURRENT)), live(), { allowRemovals: true });
+        expect(Object.values(result.table["SonicWall TZ Series"].Hardware).find((r) => r.sortid === "SWTZ-H-20").eos).toBeNull();
+    });
+
+    it("refuses a new Hardware row repeating the model of a row the page no longer lists", function () {
+        const live = extractTables(page([["TZ Series", {
+            Hardware: [hardware("SWTZ-H-20", "TZ 350", "2023-09-30", "2026-10-01"), hardware("SWTZ-H-121", "TZ 350W", "2023-09-30", "2026-10-01")]
+        }]]));
+        expect(() => mergeTables(JSON.parse(JSON.stringify(CURRENT)), live))
+            .toThrowError(/SWTZ-H-121 TZ 350W is new, but SWTZ-H-21 TZ 350 Wireless is the same model and the page no longer lists it/);
+    });
+
+    it("stores markup in a value as plain text", function () {
+        const status = Object.assign(firmware("SWTZ-F-91", "7.1.2", "2024-06-05"), { status: "Active<br>End of Maintenance" });
+        const live = extractTables(page([["TZ Series", {
+            Firmware: [status], Hardware: [hardware("SWTZ-H-30", "<a href='x'>TZ 400</a>", "2023-09-30", "2026-10-01")]
+        }]]));
+        const table = mergeTables(JSON.parse(JSON.stringify(CURRENT)), live).table["SonicWall TZ Series"];
+        expect(Object.values(table.Hardware).find((r) => r.sortid === "SWTZ-H-30").model).toBe("TZ 400");
+        expect(Object.values(table.Firmware).find((r) => r.sortid === "SWTZ-F-91").status).toBe("Active / End of Maintenance");
+    });
+
     describe("merging into the file", function () {
         let result;
         beforeEach(function () {
@@ -81,6 +121,7 @@ describe("SonicWall PLC refresh", function () {
             });
             expect(result.changes).toContain("SonicWall TZ Series Hardware: added SWTZ-H-65 TZ470");
             expect(result.changes).toContain("SonicWall TZ Series Hardware: updated SWTZ-H-20 TZ 350");
+            expect(result.unlisted).toEqual(["SonicWall TZ Series SWTZ-H-21 TZ 350 Wireless"]);
         });
 
         it("stores Hardware rows shortest model first, renumbered from 0", function () {
@@ -120,7 +161,9 @@ describe("SonicWall PLC refresh", function () {
                 Firmware: { 0: { release: "7.1.1", sortid: "SWTZ-F-90" } }
             },
             "SonicWall NSa Gen 7": { Hardware: { 0: Object.assign({ model: "NSa 2700", sortid: "SWNSA-H-28" }, full("2025-10-31", null, null, null, null)) } },
-            "SonicWall NSM On-Prem": { Software: { 0: { release: "2.3", sortid: "SWNSM-S-1" } } }
+            "SonicWall NSM On-Prem": { Software: { 0: { release: "2.3", sortid: "SWNSM-S-1" } } },
+            "SonicWall E-Class NSA Series": { Firmware: { 0: { release: "5.9.1", sortid: "SWECL-F-1" } } },
+            "SonicWall Capture Client": { Firmware: { 0: { release: "3.7", sortid: "SWCC-F-1" } } }
         };
         let result;
         beforeEach(function () {
@@ -140,6 +183,12 @@ describe("SonicWall PLC refresh", function () {
             expect(Object.keys(result.table["SonicWall TZ Series"])).toEqual(["Hardware", "Firmware"]);
             expect(result.table["SonicWall TZ Series"].Firmware).toEqual(TABLE["SonicWall TZ Series"].Firmware);
             expect(result.table["SonicWall NSM On-Prem"]).toEqual(TABLE["SonicWall NSM On-Prem"]);
+        });
+
+        it("leaves out a series with only Firmware rows, except the one those copies already read", function () {
+            expect(result.table["SonicWall Capture Client"]).toBeUndefined();
+            expect(result.omittedSeries).toEqual(["SonicWall Capture Client"]);
+            expect(result.table["SonicWall E-Class NSA Series"]).toEqual(TABLE["SonicWall E-Class NSA Series"]);
         });
     });
 });

@@ -8,6 +8,9 @@
  * rows first, and SonicWall's long spellings ("SuperMassive 9200", "TZ 350 Wireless"). A firewall model SonicWall
  * has not published reports N/A dates instead of failing; anything else is a parsing error that names the model.
  * Older copies count an unpublished date as 0 days remaining, so their file must never give them one.
+ *
+ * The driver is served a copy of the v2 table in which every Hardware row with a Last Order Day has its own
+ * (2040-01-01, 2040-01-02, ...), so a case passes only on the exact row, not on another row with the same dates.
  */
 const fs = require("fs");
 const path = require("path");
@@ -15,6 +18,7 @@ const { discoverDrivers } = require("./net/catalogue");
 const { runEntryPoint } = require("./net/run-driver");
 const { deterministicGlobals } = require("./golden/clock");
 const reply = require("./golden/replies");
+const { legacyTables } = require("../resources/sonicwall-plc-refresh");
 
 const EXAMPLES = path.join(__dirname, "..", "examples");
 const RESOURCES = path.join(__dirname, "..", "resources");
@@ -23,6 +27,14 @@ const LEGACY_TABLE = JSON.parse(fs.readFileSync(path.join(RESOURCES, "sonicwall-
 const PLC_URL = "/domotz/custom-driver/master/resources/sonicwall-plc-tables-v2.json";
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 const driver = discoverDrivers(EXAMPLES).find((d) => d.path === "http/sonicwall_firewall_product_lifecycle.js");
+
+const MARKED = JSON.parse(JSON.stringify(TABLE));
+let marker = 0;
+Object.keys(MARKED).forEach((family) => {
+    Object.values(MARKED[family].Hardware || {}).filter((row) => row.lod).forEach((row) => {
+        row.lod = new Date(Date.UTC(2040, 0, 1 + marker++)).toISOString().slice(0, 10);
+    });
+});
 
 // Lifecycle phase -> [date variable, remaining-days variable]
 const PHASES = {
@@ -34,8 +46,8 @@ const PHASES = {
 };
 
 function hardwareRow(sortid) {
-    for (const family of Object.keys(TABLE)) {
-        const rows = TABLE[family].Hardware || {};
+    for (const family of Object.keys(MARKED)) {
+        const rows = MARKED[family].Hardware || {};
         const key = Object.keys(rows).find((k) => rows[k].sortid === sortid);
         if (key !== undefined) {
             return rows[key];
@@ -49,7 +61,7 @@ function responder(model) {
     return (call) => {
         const url = call.options && call.options.url;
         if (call.host === "raw.githubusercontent.com" && url === PLC_URL) {
-            return reply.http(200, TABLE);
+            return reply.http(200, MARKED);
         }
         if (!call.host && call.method === "post" && url === "/api/sonicos/auth") {
             return reply.http(200, AUTH);
@@ -150,6 +162,23 @@ describe("SonicWall product lifecycle against the published table", () => {
 
 describe("SonicWall lifecycle table for driver copies before 1.0.4", () => {
     const LEGACY_DATES = ["lod", "armb", "oneyldo", "lrmb", "eos"];
+    // Rows those copies can't reach on their own, whatever the order: they look a model up by its number, the
+    // first row whose model contains it wins.
+    const UNREACHABLE = {
+        "SWNSA-H-21": "250M (Japan Model): same number as the 250M, which must come first",
+        "SWNSA-H-19": "220W (Japan Model): same number as the 220W",
+        "SWTZ-H-9": "105W (Japan Model): same number as the 105W",
+        "SWTZ-H-19": "205W (Japan Model): same number as the 205W",
+        "SWTZ-H-29": "215W (Japan Model): same number as the 215W",
+        "SWSMA-H-3": "SSL-VPN 200: same number as the SMA 200, and not a firewall the driver reads",
+        "SWTZ-H-55": "SOHO: no model number",
+        "SWTZ-H-61": "SOHOW: no model number",
+        "SW-WAP-90": "ACe/ACi: no model number, and not a firewall"
+    };
+
+    it("is generated from this version's table", () => {
+        expect(legacyTables(TABLE).table).toEqual(LEGACY_TABLE);
+    });
 
     it("gives every Hardware row all five dates those copies show", () => {
         const partial = [];
@@ -164,13 +193,31 @@ describe("SonicWall lifecycle table for driver copies before 1.0.4", () => {
         expect(partial).toEqual([]);
     });
 
-    it("lists Hardware first in every family that has it, as those copies read the first table", () => {
+    it("never opens a family with Firmware, as those copies read the first table (except E-Class, as before 1.0.4)", () => {
         Object.keys(LEGACY_TABLE).forEach((family) => {
             const types = Object.keys(LEGACY_TABLE[family]);
             if (types.indexOf("Hardware") !== -1) {
                 expect(types[0]).withContext(family).toBe("Hardware");
+            } else if (family !== "SonicWall E-Class NSA Series") {
+                expect(types[0]).withContext(family).not.toBe("Firmware");
             }
         });
+    });
+
+    it("gives each model number the dates of its own row: the first row containing it is that row or a twin", () => {
+        const shadowed = [];
+        Object.keys(LEGACY_TABLE).forEach((family) => {
+            const table = LEGACY_TABLE[family].Hardware || {};
+            const rows = Object.keys(table).sort((a, b) => a - b).map((k) => table[k]);
+            rows.filter((row) => !UNREACHABLE[row.sortid]).forEach((row) => {
+                const number = row.model.split(/\s+/).find((token) => /\d/.test(token));
+                const first = number && rows.find((r) => r.model.indexOf(number) !== -1);
+                if (!first || (first !== row && LEGACY_DATES.some((field) => first[field] !== row[field]))) {
+                    shadowed.push(family + " " + row.sortid + " " + row.model + " -> " + (first ? first.sortid + " " + first.model : "nothing"));
+                }
+            });
+        });
+        expect(shadowed).toEqual([]);
     });
 
     it("holds every complete row of this version's table, unchanged", () => {

@@ -8,12 +8,15 @@
  *     node resources/sonicwall-plc-refresh.js              # fetch the page, rewrite both files
  *     node resources/sonicwall-plc-refresh.js page.html    # use a saved copy of the page
  *     node resources/sonicwall-plc-refresh.js --check      # print what would change, write nothing
+ *     node resources/sonicwall-plc-refresh.js --allow-removals   # accept values the page now leaves empty
  *
  * Only the Hardware and Firmware tables are refreshed, merged by (series, type, sortid): rows SonicWall lists are
  * updated, new ones added, rows it no longer lists kept. Software tables and the file's schema are left as they are.
  * Hardware rows are stored shortest model name first and before Firmware, which is what older copies of the
  * driver need (they take a family's first table and the first row whose model contains the device's number).
- * Anything unexpected in the page aborts the run before a file is touched.
+ * Anything unexpected aborts the run before a file is touched: a row count mismatch, a field the page no longer
+ * sends, an impossible date, an unknown type, a stored value the page now leaves empty (unless --allow-removals),
+ * or a new Hardware row repeating the model of a row the page no longer lists (a renumbered row).
  */
 const fs = require("fs");
 const path = require("path");
@@ -29,16 +32,28 @@ const LEGACY_DATES = ["lod", "armb", "oneyldo", "lrmb", "eos"];
 const SERIES_OVERRIDES = { "SuperMassive Series": "SonicWall SuperMassive 9000 Series" };
 const REFRESHED_TYPES = ["Hardware", "Firmware"];
 const KNOWN_TYPES = ["Hardware", "Firmware", "Software"];
+// Series with Firmware rows and no Hardware table that older copies already read before 1.0.4. Any other such
+// series is left out of their file: they would show a firmware release's end of support as the device's.
+const LEGACY_FIRMWARE_ONLY = ["SonicWall E-Class NSA Series"];
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-function date(row, field) {
-    const value = row[field];
-    if (value === "" || value === null || value === undefined) {
+// A field the page stops sending must not read as "not published": that would blank every stored date.
+function field(row, name) {
+    if (!Object.prototype.hasOwnProperty.call(row, name)) {
+        throw new Error(row.sorting_id + ": the page no longer sends " + name + ": its format has changed");
+    }
+    return row[name];
+}
+
+function date(row, name) {
+    const value = field(row, name);
+    if (value === "" || value === null) {
         return null;
     }
-    if (!DATE.test(value)) {
-        throw new Error(row.sorting_id + ": " + field + " is not a YYYY-MM-DD date: " + JSON.stringify(value));
+    const parsed = new Date(value + "T00:00:00Z");
+    if (typeof value !== "string" || !DATE.test(value) || isNaN(parsed) || parsed.toISOString().slice(0, 10) !== value) {
+        throw new Error(row.sorting_id + ": " + name + " is not a YYYY-MM-DD date: " + JSON.stringify(value));
     }
     return value;
 }
@@ -49,9 +64,22 @@ function usDate(row, field) {
     return value && value.slice(5, 7) + "/" + value.slice(8, 10) + "/" + value.slice(0, 4);
 }
 
-function text(row, field) {
-    const value = row[field];
-    return value === "" || value === null || value === undefined ? null : String(value).trim();
+// Plain text: markup in a model would also move its row in the shortest-name-first order older copies rely on.
+function text(row, name) {
+    const value = field(row, name);
+    if (value === "" || value === null) {
+        return null;
+    }
+    const raw = String(value);
+    const plain = /<[^>]*>/.test(raw)
+        ? raw.replace(/<br\s*\/?>/gi, " / ").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ")
+        : raw;
+    return plain.trim() || null;
+}
+
+// How driver 1.0.4 compares models: case, spaces and punctuation ignored, "SuperMassive" = "SM", "Wireless" = "W".
+function modelKey(model) {
+    return String(model).toLowerCase().replace(/[^a-z0-9]/g, "").replace(/^supermassive/, "sm").replace(/wireless(ac|n)?$/, "w");
 }
 
 const MAPPERS = {
@@ -160,10 +188,15 @@ function renumber(rows) {
  * Merges the page's tables into the file's.
  * @param {object} current The file's content
  * @param {Array} live The page's tables, as extractTables returns them
- * @returns {{ table: object, changes: string[] }} The new file content and one line per change
+ * @param {object} [options] allowRemovals: accept stored values the page now leaves empty
+ * @returns {{ table: object, changes: string[], unlisted: string[] }} The new file content, one line per change,
+ *     and the Hardware rows kept although the page no longer lists them
  */
-function mergeTables(current, live) {
+function mergeTables(current, live, options) {
+    const allowRemovals = Boolean(options && options.allowRemovals);
     const changes = [];
+    const removals = [];
+    const unlisted = [];
     const merged = {};
     Object.keys(current).forEach((key) => { merged[key] = Object.assign({}, current[key]); });
 
@@ -179,18 +212,39 @@ function mergeTables(current, live) {
             }
             const existing = merged[key][type] || {};
             const rows = Object.keys(existing).map((k) => existing[k]);
+            const stored = rows.slice();
+            const listed = [];
+            const added = [];
             types[type].forEach((liveRow) => {
                 const row = MAPPERS[type](liveRow);
+                listed.push(row.sortid);
                 const at = rows.findIndex((r) => r.sortid === row.sortid);
                 if (at === -1) {
                     rows.push(row);
+                    added.push(row);
                     changes.push(key + " " + type + ": added " + row.sortid + " " + row.model);
                 } else if (JSON.stringify(rows[at]) !== JSON.stringify(row)) {
+                    Object.keys(rows[at]).forEach((name) => {
+                        const was = rows[at][name];
+                        if (was !== null && was !== "" && (row[name] === null || row[name] === undefined)) {
+                            removals.push(key + " " + type + " " + row.sortid + " " + name + " (was " + was + ")");
+                        }
+                    });
                     rows[at] = row;
                     changes.push(key + " " + type + ": updated " + row.sortid + " " + row.model);
                 }
             });
             if (type === "Hardware") {
+                const kept = stored.filter((r) => listed.indexOf(r.sortid) === -1);
+                kept.forEach((r) => unlisted.push(key + " " + r.sortid + " " + r.model));
+                added.forEach((row) => {
+                    const twin = kept.find((r) => modelKey(r.model) === modelKey(row.model));
+                    if (twin) {
+                        throw new Error(key + ": " + row.sortid + " " + row.model + " is new, but " + twin.sortid + " "
+                            + twin.model + " is the same model and the page no longer lists it. If SonicWall renumbered "
+                            + "it, remove " + twin.sortid + " from " + path.basename(TABLE_FILE) + " and run again");
+                    }
+                });
                 rows.sort(byModelLength);
             }
             merged[key][type] = renumber(rows);
@@ -207,22 +261,33 @@ function mergeTables(current, live) {
             merged[key] = reordered;
         }
     });
-    return { table: merged, changes };
+    if (removals.length && !allowRemovals) {
+        throw new Error("The page now leaves empty " + removals.length + " value(s) the file has: " + removals.join(", ")
+            + ". Check them on the page, then run again with --allow-removals to accept");
+    }
+    return { table: merged, changes, unlisted };
 }
 
 /**
  * The tables for driver copies before 1.0.4: Hardware rows missing a date they show are left out, so such a
  * model keeps failing as "not found" instead of reporting 0 days to an unpublished date. A Hardware table left
- * empty stays, so those copies don't fall through to the series' Firmware table.
+ * empty stays, so those copies don't fall through to the series' Firmware table. A series with Firmware rows
+ * and no Hardware table is left out, unless those copies already read it (LEGACY_FIRMWARE_ONLY).
  * @param {object} table The full tables
- * @returns {{ table: object, omitted: string[] }} The tables and the sortid and model of each row left out
+ * @returns {{ table: object, omitted: string[], omittedSeries: string[] }} The tables, the sortid and model of
+ *     each row left out, and the series left out
  */
 function legacyTables(table) {
     const omitted = [];
+    const omittedSeries = [];
     const legacy = {};
     Object.keys(table).forEach((key) => {
-        legacy[key] = Object.assign({}, table[key]);
         const hardware = table[key].Hardware;
+        if (!hardware && table[key].Firmware && LEGACY_FIRMWARE_ONLY.indexOf(key) === -1) {
+            omittedSeries.push(key);
+            return;
+        }
+        legacy[key] = Object.assign({}, table[key]);
         if (hardware) {
             const rows = Object.keys(hardware).map((k) => hardware[k]);
             const complete = rows.filter((row) => LEGACY_DATES.every((field) => row[field]));
@@ -230,7 +295,7 @@ function legacyTables(table) {
             legacy[key].Hardware = renumber(complete);
         }
     });
-    return { table: legacy, omitted };
+    return { table: legacy, omitted, omittedSeries };
 }
 
 // The site is behind a bot filter that answers a script's user agent with a challenge page instead of the data.
@@ -251,15 +316,26 @@ async function fetchPage() {
 
 async function main(args) {
     const check = args.indexOf("--check") !== -1;
-    const file = args.find((a) => a !== "--check");
+    const allowRemovals = args.indexOf("--allow-removals") !== -1;
+    const unknown = args.filter((a) => a.indexOf("--") === 0 && a !== "--check" && a !== "--allow-removals");
+    if (unknown.length) {
+        throw new Error("Unknown option(s): " + unknown.join(" "));
+    }
+    const file = args.find((a) => a.indexOf("--") !== 0);
     const html = file ? fs.readFileSync(file, "utf8") : await fetchPage();
     const current = JSON.parse(fs.readFileSync(TABLE_FILE, "utf8"));
-    const { table, changes } = mergeTables(current, extractTables(html));
+    const { table, changes, unlisted } = mergeTables(current, extractTables(html), { allowRemovals });
     const legacy = legacyTables(table);
     changes.forEach((line) => console.log(line));
     console.log(changes.length + " change(s)");
+    const list = (items) => (items.length ? ": " + items.join(", ") : "");
+    console.log(unlisted.length + " Hardware row(s) kept that the page no longer lists" + list(unlisted));
     console.log(legacy.omitted.length + " Hardware row(s) with unpublished dates left out of "
-        + path.basename(LEGACY_FILE) + ": " + legacy.omitted.join(", "));
+        + path.basename(LEGACY_FILE) + list(legacy.omitted));
+    if (legacy.omittedSeries.length) {
+        console.log(legacy.omittedSeries.length + " Firmware-only series left out of " + path.basename(LEGACY_FILE)
+            + ": " + legacy.omittedSeries.join(", "));
+    }
     if (!check) {
         fs.writeFileSync(TABLE_FILE, JSON.stringify(table, null, 2) + "\n");
         fs.writeFileSync(LEGACY_FILE, JSON.stringify(legacy.table, null, 2) + "\n");
