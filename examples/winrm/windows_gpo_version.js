@@ -21,10 +21,10 @@
  * Required permissions: AD user
  *
  * Notes:
- *  - On a domain controller, Get-GPO is pinned to that DC (-Server <its own name>). Without it Get-GPO contacts
- *    the PDC emulator, and over WinRM the DC cannot pass the credentials on: on a DC that is not the PDC emulator
- *    every call fails with "An operations error occurred (0x80072020)". On a member server with the GroupPolicy
- *    module the call is unchanged.
+ *  - On a domain controller that is not the PDC emulator, Get-GPO is pinned to that DC (-Server <its own DNS host
+ *    name>). Without it Get-GPO contacts the PDC emulator, and over WinRM the DC cannot pass the credentials on:
+ *    every call fails with "An operations error occurred (0x80072020)". On the PDC emulator and on a member server
+ *    with the GroupPolicy module the call is unchanged.
  *  - A GPO that cannot be read is skipped and its PowerShell error is written to the driver log; the driver fails
  *    only when no GPO can be read.
  *  - Use a username in the DOMAIN\user form: with auth "auto", a username without a backslash (user or
@@ -62,21 +62,22 @@ var gpoTable = D.createTable(
     ]
 );
 
-// A PowerShell single-quoted string literal
+// A PowerShell single-quoted string literal: PowerShell also ends one on the typographic quotes U+2018-U+201B
 function psQuote(value) {
-    return "'" + String(value).replace(/'/g, "''") + "'";
+    return "'" + String(value).replace(/['‘-‛]/g, "$&$&") + "'";
 }
 
 /**
  * PowerShell that reads each GPO on its own and prints {"gpos": [...], "errors": ["<GPO name>: <error>", ...]}.
- * On a domain controller (DomainRole 4 = backup DC, read-only DCs included; 5 = primary DC) Get-GPO is pinned
- * to it. The collector runs the command as powershell.exe "<command>", so it uses single quotes only.
+ * On a domain controller that is not the PDC emulator (DomainRole 4: backup DC, read-only DCs included) Get-GPO
+ * is pinned to it by its DNS host name. On the PDC emulator (DomainRole 5) and on a member server the call is
+ * unchanged. The collector runs the command as powershell.exe "<command>", so it uses single quotes only.
  * @param {Array} names The GPO display names
  * @returns {string} The PowerShell command
  */
 function buildCommand(names) {
-    return "$s=@{};" +
-        "if((Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue).DomainRole -ge 4){$s.Server=$env:COMPUTERNAME};" +
+    return "$s=@{};$cs=Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue;" +
+        "if($cs.DomainRole -eq 4){$n=$cs.DNSHostName;if(-not $n){$n=$env:COMPUTERNAME};$s.Server=$n};" +
         "$gpos=@();$errs=@();" +
         "foreach($p in @(" + names.map(psQuote).join(",") + ")){" +
         "try{$g=Get-GPO -Name $p @s -ErrorAction Stop;" +
@@ -151,6 +152,20 @@ function logStderr(output) {
 }
 
 /**
+ * The script prints its JSON on one line (-Compress), last; powershell.exe can write lines before it on stdout
+ * (a "WARNING: ..." from a module load).
+ * @param {Object} output The output of the WinRM command
+ * @returns {string} The last non-empty line of stdout
+ */
+function lastStdoutLine(output) {
+    var stdout = output.outcome && output.outcome.stdout ? String(output.outcome.stdout) : "";
+    var lines = stdout.split(/\r?\n/).filter(function (line) {
+        return line.trim() !== "";
+    });
+    return lines.length > 0 ? lines[lines.length - 1] : "";
+}
+
+/**
  * Reads the output of the command from buildCommand and calls onGpos with the GPOs that could be read.
  * Reports the failure instead when the command failed or no GPO could be read.
  * @param {Object} output The output of the WinRM command, including outcome and error.
@@ -163,7 +178,7 @@ function readGpos(output, onGpos) {
     }
     var result;
     try {
-        result = JSON.parse(output.outcome && output.outcome.stdout ? output.outcome.stdout : "");
+        result = JSON.parse(lastStdoutLine(output));
     } catch (e) {
         console.error("Unable to parse the WinRM output: " + e.message);
         logStderr(output);

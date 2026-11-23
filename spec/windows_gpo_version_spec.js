@@ -155,6 +155,16 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
             expect(table(r.harness).records.map(function (x) { return x.id; })).toEqual(["Default Domain Policy"]);
         });
 
+        it("reads the JSON after a WARNING line on stdout", async function () {
+            var r = await run("get_status", function () {
+                return outcome("WARNING: The names of some imported commands include unapproved verbs.\r\n" +
+                    JSON.stringify({ gpos: [DDP, DDCP], errors: [] }) + "\r\n");
+            });
+
+            expect(r.result.type).toBe("success");
+            expect(table(r.harness).records.length).toBe(2);
+        });
+
         it("reports a parsing error on empty output", async function () {
             var r = await run("get_status", function () { return outcome(""); });
 
@@ -196,12 +206,28 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
             return r.commands[0];
         }
 
-        it("pins Get-GPO to the host only when the host is a domain controller (DomainRole 4 or 5)", async function () {
+        it("pins Get-GPO to the host by its DNS host name only on a DC that is not the PDC emulator (DomainRole 4)", async function () {
             var command = await commandOf("get_status");
 
-            expect(command).toContain("(Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue).DomainRole -ge 4){$s.Server=$env:COMPUTERNAME}");
+            expect(command).toContain("$cs=Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue;");
+            expect(command).toContain("if($cs.DomainRole -eq 4){$n=$cs.DNSHostName;if(-not $n){$n=$env:COMPUTERNAME};$s.Server=$n};");
             expect(command).toMatch(/Get-GPO -Name \$p @s -ErrorAction Stop/);
             expect(command).not.toMatch(/Get-GPO[^;]*-Server/);
+        });
+
+        it("leaves the PDC emulator (DomainRole 5) and member servers unpinned, as before", async function () {
+            var command = await commandOf("get_status");
+
+            expect(command).not.toMatch(/DomainRole -(ge|gt) /);
+            expect(command).not.toMatch(/DomainRole -eq 5/);
+        });
+
+        it("quotes GPO names for PowerShell, typographic apostrophes included", function () {
+            var driver = harnessLib.loadDriver("winrm/windows_gpo_version.js", harnessLib.createMockD({}));
+
+            expect(driver.psQuote("O'Brien Policy")).toBe("'O''Brien Policy'");
+            expect(driver.psQuote("Users’ Drive Mappings")).toBe("'Users’’ Drive Mappings'");
+            expect(driver.psQuote("‘Kiosk‛")).toBe("'‘‘Kiosk‛‛'");
         });
 
         it("is the same script for validate and get_status", async function () {
