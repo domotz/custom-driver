@@ -145,11 +145,12 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
     });
 
     describe("when no GPO can be read", function () {
+        // No GPO was read on the DC itself, so each one tried the default call first and no fallback is reported.
         function everyGetGpoFails() {
             return scriptResult([], [
                 notReadOnThisDc("Default Domain Policy", OPERATIONS_ERROR, ACCESS_DENIED),
-                notReadOnThisDc("Default Domain Controllers Policy", null, ACCESS_DENIED)
-            ], READ_ON_DC02);
+                notReadOnThisDc("Default Domain Controllers Policy", OPERATIONS_ERROR, ACCESS_DENIED)
+            ]);
         }
 
         it("get_status fails and logs the PowerShell error", async function () {
@@ -159,6 +160,7 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
             expect(r.harness.calls.failure.length).toBe(1);
             expect(errorLog(r.harness)).toContain("0x80072020");
             expect(errorLog(r.harness)).toContain("0x80070005");
+            expect(infoLog(r.harness)).toBe("");
         });
 
         it("validate fails and logs the PowerShell error", async function () {
@@ -254,22 +256,25 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
 
             expect(getGpoCalls.length).toBe(2);
             expect(getGpoCalls[0]).toBe("Get-GPO -Name $p -ErrorAction Stop");
-            expect(command).toContain("){$g=$null;$e=$null;if(-not $pin){try{$g=Get-GPO -Name $p -ErrorAction Stop}catch{");
+            expect(command).toContain("){$g=$null;$e=$null;$hop=$false;" +
+                "if(-not $pin){try{$g=Get-GPO -Name $p -ErrorAction Stop}catch{");
         });
 
-        it("switches to the host's DNS host name only on the double-hop error 0x80072020", async function () {
+        it("retries on the host's DNS host name only on the double-hop error 0x80072020, also when wrapped", async function () {
             var command = await commandOf("get_status");
 
             expect(command.indexOf("$h=[System.Net.Dns]::GetHostName();")).toBe(0);
             expect(command).toContain("catch{$e=$_.Exception.Message;" +
-                "if($_.Exception.HResult -eq -2147016672 -or $e -match '0x80072020'){$pin=@{server=$h;reason=$e}}}}");
+                "if($_.Exception.HResult -eq -2147016672 -or $_.Exception.GetBaseException().HResult -eq -2147016672 -or " +
+                "$e -match '0x80072020'){$hop=$true}}}");
             expect(0x80072020 | 0).toBe(-2147016672);
         });
 
-        it("retries that GPO on the host and reads the remaining ones there directly", async function () {
+        it("stays on the host for the remaining GPOs only after a GPO was read there", async function () {
             var command = await commandOf("get_status");
 
-            expect(command).toContain("if($pin -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}");
+            expect(command).toContain("if(($pin -or $hop) -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop;" +
+                "if($g -and -not $pin){$pin=@{server=$h;reason=$e}}}");
         });
 
         it("reports a GPO not read with every error it got, and prints the fallback", async function () {
