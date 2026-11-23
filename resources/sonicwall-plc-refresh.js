@@ -1,23 +1,28 @@
 /**
- * Refreshes sonicwall-plc-tables.json from SonicWall's product lifecycle page
- * (https://www.sonicwall.com/support/product-lifecycle-tables), the table the
- * "Sonicwall firewall - Product lifecycle" driver downloads from master.
+ * Refreshes the tables the "Sonicwall firewall - Product lifecycle" driver downloads from master, from SonicWall's
+ * product lifecycle page (https://www.sonicwall.com/support/product-lifecycle-tables):
+ *  - sonicwall-plc-tables-v2.json, read by the driver from 1.0.4: every row, unpublished dates as null.
+ *  - sonicwall-plc-tables.json, read by older copies: the same without the Hardware rows missing a date those
+ *    copies show. They count an unpublished date as 0 days remaining, which would fire end-of-life alerts.
  *
- *     node resources/sonicwall-plc-refresh.js              # fetch the page, rewrite the file
+ *     node resources/sonicwall-plc-refresh.js              # fetch the page, rewrite both files
  *     node resources/sonicwall-plc-refresh.js page.html    # use a saved copy of the page
  *     node resources/sonicwall-plc-refresh.js --check      # print what would change, write nothing
  *
  * Only the Hardware and Firmware tables are refreshed, merged by (series, type, sortid): rows SonicWall lists are
  * updated, new ones added, rows it no longer lists kept. Software tables and the file's schema are left as they are.
- * Hardware rows are stored shortest model name first and before Firmware, which is what released copies of the
+ * Hardware rows are stored shortest model name first and before Firmware, which is what older copies of the
  * driver need (they take a family's first table and the first row whose model contains the device's number).
- * Anything unexpected in the page aborts the run before the file is touched.
+ * Anything unexpected in the page aborts the run before a file is touched.
  */
 const fs = require("fs");
 const path = require("path");
 
 const PAGE_URL = "https://www.sonicwall.com/support/product-lifecycle-tables";
-const TABLE_FILE = path.join(__dirname, "sonicwall-plc-tables.json");
+const TABLE_FILE = path.join(__dirname, "sonicwall-plc-tables-v2.json");
+const LEGACY_FILE = path.join(__dirname, "sonicwall-plc-tables.json");
+// The Hardware dates driver copies before 1.0.4 show, each with its remaining days.
+const LEGACY_DATES = ["lod", "armb", "oneyldo", "lrmb", "eos"];
 
 // The page's series names drop the "SonicWall " prefix the file uses. The page's SuperMassive Series lists the
 // rows the file keeps under SuperMassive 9000 Series (SWSM-H-5..8); the file's own SuperMassive Series is older.
@@ -101,6 +106,7 @@ function extractTables(html) {
     if (!Array.isArray(tables) || tables.length === 0) {
         throw new Error("The lifecycle data in the page is not a list of series");
     }
+    let rowCount = 0;
     tables.forEach((series) => {
         if (!Array.isArray(series) || typeof series[0] !== "string" || !series[1] || typeof series[1] !== "object") {
             throw new Error("Unexpected series entry: " + JSON.stringify(series).slice(0, 200));
@@ -112,6 +118,7 @@ function extractTables(html) {
             if (!Array.isArray(series[1][type])) {
                 throw new Error(series[0] + " " + type + ": the rows are not a list");
             }
+            rowCount += series[1][type].length;
             series[1][type].forEach((row) => {
                 if (!row || typeof row.sorting_id !== "string" || !row.sorting_id) {
                     throw new Error(series[0] + " " + type + ": a row has no sorting_id");
@@ -122,6 +129,11 @@ function extractTables(html) {
             });
         });
     });
+    // Rows anywhere else in the payload (another flight line, a second list) would be silently left behind.
+    const pageRows = flight.split("\"sorting_id\"").length - 1;
+    if (pageRows !== rowCount) {
+        throw new Error("The page lists " + pageRows + " rows but only " + rowCount + " were read: its format has changed");
+    }
     return tables;
 }
 
@@ -198,6 +210,29 @@ function mergeTables(current, live) {
     return { table: merged, changes };
 }
 
+/**
+ * The tables for driver copies before 1.0.4: Hardware rows missing a date they show are left out, so such a
+ * model keeps failing as "not found" instead of reporting 0 days to an unpublished date. A Hardware table left
+ * empty stays, so those copies don't fall through to the series' Firmware table.
+ * @param {object} table The full tables
+ * @returns {{ table: object, omitted: string[] }} The tables and the sortid and model of each row left out
+ */
+function legacyTables(table) {
+    const omitted = [];
+    const legacy = {};
+    Object.keys(table).forEach((key) => {
+        legacy[key] = Object.assign({}, table[key]);
+        const hardware = table[key].Hardware;
+        if (hardware) {
+            const rows = Object.keys(hardware).map((k) => hardware[k]);
+            const complete = rows.filter((row) => LEGACY_DATES.every((field) => row[field]));
+            rows.filter((row) => complete.indexOf(row) === -1).forEach((row) => omitted.push(row.sortid + " " + row.model));
+            legacy[key].Hardware = renumber(complete);
+        }
+    });
+    return { table: legacy, omitted };
+}
+
 // The site is behind a bot filter that answers a script's user agent with a challenge page instead of the data.
 const BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 
@@ -220,15 +255,19 @@ async function main(args) {
     const html = file ? fs.readFileSync(file, "utf8") : await fetchPage();
     const current = JSON.parse(fs.readFileSync(TABLE_FILE, "utf8"));
     const { table, changes } = mergeTables(current, extractTables(html));
+    const legacy = legacyTables(table);
     changes.forEach((line) => console.log(line));
     console.log(changes.length + " change(s)");
+    console.log(legacy.omitted.length + " Hardware row(s) with unpublished dates left out of "
+        + path.basename(LEGACY_FILE) + ": " + legacy.omitted.join(", "));
     if (!check) {
         fs.writeFileSync(TABLE_FILE, JSON.stringify(table, null, 2) + "\n");
-        console.log("written " + path.relative(process.cwd(), TABLE_FILE));
+        fs.writeFileSync(LEGACY_FILE, JSON.stringify(legacy.table, null, 2) + "\n");
+        console.log("written " + path.relative(process.cwd(), TABLE_FILE) + " and " + path.relative(process.cwd(), LEGACY_FILE));
     }
 }
 
-module.exports = { extractTables, mergeTables };
+module.exports = { extractTables, mergeTables, legacyTables };
 
 if (require.main === module) {
     main(process.argv.slice(2)).catch((e) => {

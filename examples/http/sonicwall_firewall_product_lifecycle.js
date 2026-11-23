@@ -10,9 +10,10 @@
  *
  * Tested on SonicWALL NSv 270 SonicOS version 7.0.1-5145
  *
- * The dates come from resources/sonicwall-plc-tables.json in this repository, refreshed from SonicWall's product
+ * The dates come from resources/sonicwall-plc-tables-v2.json in this repository, refreshed from SonicWall's product
  * lifecycle page with resources/sonicwall-plc-refresh.js. A date SonicWall has not published is reported as N/A
  * and its remaining days have no value; so are all dates of a firewall model SonicWall does not list yet.
+ * (Copies before 1.0.4 read resources/sonicwall-plc-tables.json, which leaves out the rows with unpublished dates.)
  *
  * Creates a Custom Driver variables:
  *      - Last Order Day (LOD): The date when the product's last order day is reached
@@ -93,13 +94,13 @@ function processResponse(resolve, reject) {
             return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            return D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
         if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
+            return D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
         if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         resolve(body);
     };
@@ -156,7 +157,7 @@ var plcDataSource = D.createExternalDevice("raw.githubusercontent.com");
  */
 function getProductLifecycleData() {
     var config = {
-        url: "/domotz/custom-driver/master/resources/sonicwall-plc-tables.json",
+        url: "/domotz/custom-driver/master/resources/sonicwall-plc-tables-v2.json",
         protocol: "https"
     };
     return new Promise(function (resolve) {
@@ -190,17 +191,20 @@ function extractFirewallModel(body) {
 
 /**
  * Reduces a model or series name to what identifies it: no HTML markup, lower case, letters and digits only,
- * so "TZ 470", "TZ470" and "tz-470" compare equal.
+ * so "TZ 470", "TZ470" and "tz-470" compare equal. The lifecycle tables spell SuperMassive "SM" and a wireless
+ * model with a W suffix ("350W"), so "SuperMassive 9200" becomes "sm9200" and "TZ 350 Wireless-AC" "tz350w".
  * @param {string} text The name
  * @returns {string} The normalized name
  */
 function normalize(text) {
-    return String(text || "").replace(/<[^>]*>/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    return String(text || "").replace(/<[^>]*>/g, "").toLowerCase().replace(/[^a-z0-9]/g, "")
+        .replace(/^supermassive/, "sm").replace(/wireless(ac|n)?$/, "w");
 }
 
-// Firewall families the driver runs on. A model of one of these that the lifecycle tables do not list yet
-// (SonicWall publishes a model's dates only once it announces its retirement) is reported with N/A dates.
-var FIREWALL_FAMILY = /^(tz|nsa|nsv|nssp|sm|supermassive)[0-9]|^soho/;
+// A model number of a firewall family the driver runs on, e.g. "tz470", "nsa2700", "nsv270", "sm9200",
+// "soho250w". Such a model that the lifecycle tables do not list yet (SonicWall publishes a model's dates only
+// once it announces its retirement) is reported with N/A dates; anything else is an error naming the model.
+var FIREWALL_MODEL = /^(?:(?:tz|nsa|nsv|nssp|sm)[0-9]+|soho[0-9]*)[wp]?$/;
 
 /**
  * Finds the Hardware row of a model. Most rows name the model without its family ("350" in the TZ Series),
@@ -278,7 +282,7 @@ function filtredData(body) {
     if (row) {
         return extractVariables(row);
     }
-    if (FIREWALL_FAMILY.test(normalize(model))) {
+    if (FIREWALL_MODEL.test(normalize(model))) {
         console.warn("SonicWall has not published lifecycle dates for model \"" + model + "\" yet: reporting N/A");
         return extractVariables({});
     }

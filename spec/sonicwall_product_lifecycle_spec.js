@@ -1,11 +1,13 @@
 /**
- * SonicWall product lifecycle driver (BT-6931), run against the real lifecycle table: the
- * resources/sonicwall-plc-tables.json in this checkout, the file every installed copy downloads from master.
+ * SonicWall product lifecycle driver (BT-6931), run against the real lifecycle tables in this checkout, the files
+ * installed copies download from master: resources/sonicwall-plc-tables-v2.json (this version) and
+ * resources/sonicwall-plc-tables.json (copies before 1.0.4).
  *
  * Each SonicOS model string must resolve to its own Hardware row: Gen 7 models however SonicOS spaces or cases
  * them, a model whose name starts another's ("TZ 400" is not the TZ 400W), a family the table lists with Firmware
- * rows first, and the SuperMassive family. A model of a known firewall family that SonicWall has not published
- * reports N/A dates instead of failing; a model of no known family is a parsing error that names the model.
+ * rows first, and SonicWall's long spellings ("SuperMassive 9200", "TZ 350 Wireless"). A firewall model SonicWall
+ * has not published reports N/A dates instead of failing; anything else is a parsing error that names the model.
+ * Older copies count an unpublished date as 0 days remaining, so their file must never give them one.
  */
 const fs = require("fs");
 const path = require("path");
@@ -14,11 +16,11 @@ const { runEntryPoint } = require("./net/run-driver");
 const { deterministicGlobals } = require("./golden/clock");
 const reply = require("./golden/replies");
 
-process.env.TZ = "UTC";
-
 const EXAMPLES = path.join(__dirname, "..", "examples");
-const TABLE = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "resources", "sonicwall-plc-tables.json"), "utf8"));
-const PLC_URL = "/domotz/custom-driver/master/resources/sonicwall-plc-tables.json";
+const RESOURCES = path.join(__dirname, "..", "resources");
+const TABLE = JSON.parse(fs.readFileSync(path.join(RESOURCES, "sonicwall-plc-tables-v2.json"), "utf8"));
+const LEGACY_TABLE = JSON.parse(fs.readFileSync(path.join(RESOURCES, "sonicwall-plc-tables.json"), "utf8"));
+const PLC_URL = "/domotz/custom-driver/master/resources/sonicwall-plc-tables-v2.json";
 const AUTH = { status: { success: true, info: [{ level: "info", code: "E_OK", message: "Success." }] } };
 const driver = discoverDrivers(EXAMPLES).find((d) => d.path === "http/sonicwall_firewall_product_lifecycle.js");
 
@@ -78,6 +80,20 @@ async function run(model) {
 }
 
 describe("SonicWall product lifecycle against the published table", () => {
+    // Remaining days count from midnight UTC; the driver reads dates in the process's time zone.
+    let savedTz;
+    beforeAll(() => {
+        savedTz = process.env.TZ;
+        process.env.TZ = "UTC";
+    });
+    afterAll(() => {
+        if (savedTz === undefined) {
+            delete process.env.TZ;
+        } else {
+            process.env.TZ = savedTz;
+        }
+    });
+
     [
         { model: "TZ 470", sortid: "SWTZ-H-65", what: "a Gen 7 TZ" },
         { model: "TZ470", sortid: "SWTZ-H-65", what: "a Gen 7 TZ written without a space" },
@@ -86,7 +102,9 @@ describe("SonicWall product lifecycle against the published table", () => {
         { model: "NSa 2650", sortid: "SWNSA-H-37", what: "a Gen 6 NSa in mixed case" },
         { model: "TZ 400", sortid: "SWTZ-H-43", what: "a model whose name starts another's (TZ 400W)" },
         { model: "TZ 350", sortid: "SWTZ-H-39", what: "a TZ, whose family also lists Firmware rows" },
-        { model: "SM 9200", sortid: "SWSM-H-5", what: "a SuperMassive" }
+        { model: "SM 9200", sortid: "SWSM-H-5", what: "a SuperMassive" },
+        { model: "SuperMassive 9200", sortid: "SWSM-H-5", what: "a SuperMassive spelled out" },
+        { model: "TZ 350 Wireless", sortid: "SWTZ-H-41", what: "a wireless TZ spelled out (the table's 350W)" }
     ].forEach(({ model, sortid, what }) => {
         it("reports the lifecycle row of " + what + ' ("' + model + '" -> ' + sortid + ")", async () => {
             const row = hardwareRow(sortid);
@@ -117,10 +135,51 @@ describe("SonicWall product lifecycle against the published table", () => {
         expect(logs.some((line) => /^warn .*TZ 370/.test(line))).withContext(logs.join("\n")).toBe(true);
     });
 
-    it("reports a parsing error naming the model for a model of no known family", async () => {
-        const { report, logs } = await run("XYZ 100");
-        expect(report.type).toBe("failure");
-        expect(report.errorType).toBe("PARSING_ERROR");
-        expect(logs.some((line) => /^error .*XYZ 100/.test(line))).withContext(logs.join("\n")).toBe(true);
+    [
+        { model: "XYZ 100", what: "a model of no known family" },
+        { model: "NSa 2650 HA", what: "a known family's model with words the table doesn't list" }
+    ].forEach(({ model, what }) => {
+        it("reports a parsing error naming the model for " + what + ' ("' + model + '")', async () => {
+            const { report, logs } = await run(model);
+            expect(report.type).withContext(logs.join("\n")).toBe("failure");
+            expect(report.errorType).toBe("PARSING_ERROR");
+            expect(logs.some((line) => line.indexOf("error ") === 0 && line.indexOf(model) !== -1)).withContext(logs.join("\n")).toBe(true);
+        });
+    });
+});
+
+describe("SonicWall lifecycle table for driver copies before 1.0.4", () => {
+    const LEGACY_DATES = ["lod", "armb", "oneyldo", "lrmb", "eos"];
+
+    it("gives every Hardware row all five dates those copies show", () => {
+        const partial = [];
+        Object.keys(LEGACY_TABLE).forEach((family) => {
+            const rows = LEGACY_TABLE[family].Hardware || {};
+            Object.keys(rows).forEach((k) => {
+                if (!LEGACY_DATES.every((field) => rows[k][field])) {
+                    partial.push(family + " " + rows[k].sortid);
+                }
+            });
+        });
+        expect(partial).toEqual([]);
+    });
+
+    it("lists Hardware first in every family that has it, as those copies read the first table", () => {
+        Object.keys(LEGACY_TABLE).forEach((family) => {
+            const types = Object.keys(LEGACY_TABLE[family]);
+            if (types.indexOf("Hardware") !== -1) {
+                expect(types[0]).withContext(family).toBe("Hardware");
+            }
+        });
+    });
+
+    it("holds every complete row of this version's table, unchanged", () => {
+        Object.keys(TABLE).forEach((family) => {
+            const rows = TABLE[family].Hardware || {};
+            const legacyRows = Object.values((LEGACY_TABLE[family] || {}).Hardware || {});
+            Object.values(rows).filter((row) => LEGACY_DATES.every((field) => row[field])).forEach((row) => {
+                expect(legacyRows.find((r) => r.sortid === row.sortid)).withContext(family + " " + row.sortid).toEqual(row);
+            });
+        });
     });
 });

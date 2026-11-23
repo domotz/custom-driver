@@ -1,7 +1,7 @@
 // Simulated SonicWall NSv 25 (SonicOS 7.0.1) replies. Shape follows the SonicOS 7 API: POST /api/sonicos/auth
 // (basic auth), GET /api/sonicos/reporting/status/system ({ model: "NSv 25", firmware_version, serial_number, ... })
 // and the product lifecycle table the driver downloads from raw.githubusercontent.com
-// (domotz/custom-driver resources/sonicwall-plc-tables.json): { "<family>": { "<Hardware|Firmware>": { "<n>":
+// (domotz/custom-driver resources/sonicwall-plc-tables-v2.json): { "<family>": { "<Hardware|Firmware>": { "<n>":
 // { model, lod, armb, arme, oneyldo, lrmb, lrme, eos, sortid } } } }. The table below is a trimmed copy of the real
 // file. Its TZ family lists Firmware before Hardware, as the file did before BT-6931, and its TZ470 row has only
 // the date SonicWall has published (the others are null), as in the file today. TZ 370 is a current model the
@@ -48,7 +48,7 @@ function calls(model) {
     return [
         { kind: "http", method: "post", target: "/api/sonicos/auth", reply: reply.http(200, AUTH) },
         { kind: "http", method: "get", target: "/api/sonicos/reporting/status/system", reply: reply.http(200, system(model), { "content-type": "application/json" }) },
-        { kind: "http", method: "get", host: "raw.githubusercontent.com", target: "/domotz/custom-driver/master/resources/sonicwall-plc-tables.json", reply: reply.http(200, PLC) }
+        { kind: "http", method: "get", host: "raw.githubusercontent.com", target: "/domotz/custom-driver/master/resources/sonicwall-plc-tables-v2.json", reply: reply.http(200, PLC) }
     ];
 }
 

@@ -1,6 +1,6 @@
 // resources/sonicwall-plc-refresh.js against a synthetic copy of SonicWall's lifecycle page: a Next.js page whose
 // data travels in self.__next_f.push([1, "..."]) string chunks, one flight line holding [[series, { type: rows }]].
-const { extractTables, mergeTables } = require("../resources/sonicwall-plc-refresh");
+const { extractTables, mergeTables, legacyTables } = require("../resources/sonicwall-plc-refresh");
 
 const hardware = (sortid, model, lod, eos) => ({
     sorting_id: sortid, model, last_order_day: lod, arm_begin: "", arm_end: "", one_year_ldo: "", lrm_begin: "",
@@ -55,6 +55,11 @@ describe("SonicWall PLC refresh", function () {
         expect(() => extractTables(page([["TZ Series", { Accessory: [{ sorting_id: "X-1" }] }]]))).toThrowError(/unknown table type/);
     });
 
+    it("refuses a page with rows outside the list it reads", function () {
+        const html = page(LIVE) + "<script>self.__next_f.push([1," + JSON.stringify("4:[{\"sorting_id\":\"SWTZ-H-99\"}]\n") + "])</script>";
+        expect(() => extractTables(html)).toThrowError(/The page lists 5 rows but only 4 were read/);
+    });
+
     it("refuses a date that is not YYYY-MM-DD, before writing anything", function () {
         const bad = [["TZ Series", { Hardware: [hardware("SWTZ-H-65", "TZ470", "30/06/2026", "")] }]];
         expect(() => mergeTables(CURRENT, extractTables(page(bad)))).toThrowError(/SWTZ-H-65: last_order_day is not a YYYY-MM-DD date/);
@@ -101,6 +106,40 @@ describe("SonicWall PLC refresh", function () {
 
         it("leaves series and Software tables the page does not refresh as they are", function () {
             expect(result.table["SonicWall NSM On-Prem"]).toEqual(CURRENT["SonicWall NSM On-Prem"]);
+        });
+    });
+
+    describe("the table for driver copies before 1.0.4", function () {
+        const full = (lod, armb, oneyldo, lrmb, eos) => ({ lod, armb, arme: null, oneyldo, lrmb, lrme: null, eos });
+        const TABLE = {
+            "SonicWall TZ Series": {
+                Hardware: {
+                    0: Object.assign({ model: "TZ470", sortid: "SWTZ-H-65" }, full("2026-06-30", null, null, null, null)),
+                    1: Object.assign({ model: "TZ 350", sortid: "SWTZ-H-39" }, full("2022-04-15", "2022-04-16", "2023-04-16", "2023-04-16", "2026-10-01"))
+                },
+                Firmware: { 0: { release: "7.1.1", sortid: "SWTZ-F-90" } }
+            },
+            "SonicWall NSa Gen 7": { Hardware: { 0: Object.assign({ model: "NSa 2700", sortid: "SWNSA-H-28" }, full("2025-10-31", null, null, null, null)) } },
+            "SonicWall NSM On-Prem": { Software: { 0: { release: "2.3", sortid: "SWNSM-S-1" } } }
+        };
+        let result;
+        beforeEach(function () {
+            result = legacyTables(JSON.parse(JSON.stringify(TABLE)));
+        });
+
+        it("leaves out the Hardware rows missing a date those copies show, and names them", function () {
+            expect(result.table["SonicWall TZ Series"].Hardware).toEqual({ 0: TABLE["SonicWall TZ Series"].Hardware[1] });
+            expect(result.omitted).toEqual(["SWTZ-H-65 TZ470", "SWNSA-H-28 NSa 2700"]);
+        });
+
+        it("keeps a Hardware table it empties, so those copies don't read the series' Firmware rows", function () {
+            expect(result.table["SonicWall NSa Gen 7"]).toEqual({ Hardware: {} });
+        });
+
+        it("keeps every other table and the order of the types", function () {
+            expect(Object.keys(result.table["SonicWall TZ Series"])).toEqual(["Hardware", "Firmware"]);
+            expect(result.table["SonicWall TZ Series"].Firmware).toEqual(TABLE["SonicWall TZ Series"].Firmware);
+            expect(result.table["SonicWall NSM On-Prem"]).toEqual(TABLE["SonicWall NSM On-Prem"]);
         });
     });
 });

@@ -255,28 +255,6 @@
         "sortid": "SWNSA-H-1"
       },
       "23": {
-        "model": "NSa 2700",
-        "lod": "2025-10-31",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWNSA-H-28"
-      },
-      "24": {
-        "model": "NSa 3700",
-        "lod": "2025-10-31",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWNSA-H-30"
-      },
-      "25": {
         "model": "250M (Japan Model)",
         "lod": "2016-08-31",
         "armb": "2016-09-01",
@@ -287,7 +265,7 @@
         "eos": "2021-09-01",
         "sortid": "SWNSA-H-21"
       },
-      "26": {
+      "24": {
         "model": "220W  (Japan Model)",
         "lod": "2016-08-31",
         "armb": "2016-09-01",
@@ -298,7 +276,7 @@
         "eos": "2021-09-01",
         "sortid": "SWNSA-H-19"
       },
-      "27": {
+      "25": {
         "model": "E8500  (Japan Model)",
         "lod": "2016-12-31",
         "armb": "2016-01-01",
@@ -1091,28 +1069,6 @@
         "sortid": "SWTZ-H-61"
       },
       "25": {
-        "model": "TZ270",
-        "lod": "2026-06-30",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWTZ-H-63"
-      },
-      "26": {
-        "model": "TZ470",
-        "lod": "2026-06-30",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWTZ-H-65"
-      },
-      "27": {
         "model": "SOHO 250",
         "lod": "2021-07-31",
         "armb": "2021-08-01",
@@ -1123,7 +1079,7 @@
         "eos": "2026-10-01",
         "sortid": "SWTZ-H-57"
       },
-      "28": {
+      "26": {
         "model": "SOHO 250W",
         "lod": "2021-07-31",
         "armb": "2021-08-01",
@@ -1134,7 +1090,7 @@
         "eos": "2026-10-01",
         "sortid": "SWTZ-H-59"
       },
-      "29": {
+      "27": {
         "model": "300W (AC Model)",
         "lod": "2020-01-22",
         "armb": "2020-01-23",
@@ -1145,7 +1101,7 @@
         "eos": "2025-01-23",
         "sortid": "SWTZ-H-37"
       },
-      "30": {
+      "28": {
         "model": "105W (Japan Model)",
         "lod": "2016-08-31",
         "armb": "2016-09-01",
@@ -1156,7 +1112,7 @@
         "eos": "2021-09-01",
         "sortid": "SWTZ-H-9"
       },
-      "31": {
+      "29": {
         "model": "205W (Japan Model)",
         "lod": "2016-08-31",
         "armb": "2016-09-01",
@@ -1167,7 +1123,7 @@
         "eos": "2021-09-01",
         "sortid": "SWTZ-H-19"
       },
-      "32": {
+      "30": {
         "model": "215W (Japan Model)",
         "lod": "2016-08-31",
         "armb": "2016-09-01",
@@ -2142,28 +2098,6 @@
         "sortid": "SWSMA-H-47"
       },
       "7": {
-        "model": "SMA 6210",
-        "lod": null,
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWSMA-H-52"
-      },
-      "8": {
-        "model": "SMA 7210",
-        "lod": null,
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWSMA-H-53"
-      },
-      "9": {
         "model": "E-Class SRA EX6000",
         "lod": "2016-10-31",
         "armb": "2016-11-01",
@@ -2174,7 +2108,7 @@
         "eos": "2019-11-01",
         "sortid": "SWSMA-H-39"
       },
-      "10": {
+      "8": {
         "model": "E-Class SRA EX7000",
         "lod": "2016-10-31",
         "armb": "2016-11-01",
@@ -2374,28 +2308,6 @@
   "SonicWall Email Security": {
     "Hardware": {
       "0": {
-        "model": "200",
-        "lod": null,
-        "armb": null,
-        "arme": null,
-        "oneyldo": "2007-09-30",
-        "lrmb": "2012-10-15",
-        "lrme": "2014-12-31",
-        "eos": "2015-01-01",
-        "sortid": "SWES-H-1"
-      },
-      "1": {
-        "model": "400",
-        "lod": null,
-        "armb": null,
-        "arme": null,
-        "oneyldo": "2007-09-30",
-        "lrmb": "2012-10-15",
-        "lrme": "2014-12-31",
-        "eos": "2015-01-01",
-        "sortid": "SWES-H-2"
-      },
-      "2": {
         "model": "300",
         "lod": "2013-04-30",
         "armb": "2013-05-01",
@@ -2406,7 +2318,7 @@
         "eos": "2017-05-01",
         "sortid": "SWES-H-4"
       },
-      "3": {
+      "1": {
         "model": "500",
         "lod": "2013-04-30",
         "armb": "2013-05-01",
@@ -2417,7 +2329,7 @@
         "eos": "2016-05-01",
         "sortid": "SWES-H-5"
       },
-      "4": {
+      "2": {
         "model": "8000",
         "lod": "2011-04-09",
         "armb": "2011-04-10",
@@ -2428,7 +2340,7 @@
         "eos": "2014-04-10",
         "sortid": "SWES-H-3"
       },
-      "5": {
+      "3": {
         "model": "6000",
         "lod": "2013-04-30",
         "armb": "2013-05-01",
@@ -2439,7 +2351,7 @@
         "eos": "2016-05-01",
         "sortid": "SWES-H-6"
       },
-      "6": {
+      "4": {
         "model": "3300",
         "lod": "2017-03-01",
         "armb": "2017-04-01",
@@ -2450,7 +2362,7 @@
         "eos": "2020-04-01",
         "sortid": "SWES-H-7"
       },
-      "7": {
+      "5": {
         "model": "4300",
         "lod": "2017-03-01",
         "armb": "2017-04-01",
@@ -2461,7 +2373,7 @@
         "eos": "2020-04-01",
         "sortid": "SWES-H-8"
       },
-      "8": {
+      "6": {
         "model": "8300",
         "lod": "2017-03-01",
         "armb": "2017-04-01",
@@ -2472,7 +2384,7 @@
         "eos": "2020-04-01",
         "sortid": "SWES-H-9"
       },
-      "9": {
+      "7": {
         "model": "5000",
         "lod": "2026-04-30",
         "armb": "2026-05-01",
@@ -2483,7 +2395,7 @@
         "eos": "2027-05-01",
         "sortid": "SWES-H-11"
       },
-      "10": {
+      "8": {
         "model": "7000",
         "lod": "2026-04-30",
         "armb": "2026-05-01",
@@ -2494,7 +2406,7 @@
         "eos": "2027-05-01",
         "sortid": "SWES-H-13"
       },
-      "11": {
+      "9": {
         "model": "9000",
         "lod": "2026-04-30",
         "armb": "2026-05-01",
@@ -2505,7 +2417,7 @@
         "eos": "2027-05-01",
         "sortid": "SWES-H-15"
       },
-      "12": {
+      "10": {
         "model": "5050",
         "lod": "2026-04-30",
         "armb": "2026-05-01",
@@ -2516,7 +2428,7 @@
         "eos": "2027-05-01",
         "sortid": "SWES-H-17"
       },
-      "13": {
+      "11": {
         "model": "7050",
         "lod": "2026-04-30",
         "armb": "2026-05-01",
@@ -2748,28 +2660,6 @@
         "sortid": "SWSMA-H-17"
       },
       "2": {
-        "model": "SMA 210",
-        "lod": "2024-09-30",
-        "armb": "2024-10-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": "2025-11-01",
-        "sortid": "SWSMA-H-21"
-      },
-      "3": {
-        "model": "SMA 410",
-        "lod": "2024-09-30",
-        "armb": "2024-10-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": "2025-11-01",
-        "sortid": "SWSMA-H-23"
-      },
-      "4": {
         "model": "SRA 4200",
         "lod": "2012-12-10",
         "armb": "2012-12-11",
@@ -2780,7 +2670,7 @@
         "eos": "2016-04-01",
         "sortid": "SWSMA-H-8"
       },
-      "5": {
+      "3": {
         "model": "SRA 1200",
         "lod": "2013-03-31",
         "armb": "2013-04-01",
@@ -2791,7 +2681,7 @@
         "eos": "2016-04-01",
         "sortid": "SWSMA-H-9"
       },
-      "6": {
+      "4": {
         "model": "SRA 1600",
         "lod": "2016-10-31",
         "armb": "2016-11-01",
@@ -2802,7 +2692,7 @@
         "eos": "2019-11-01",
         "sortid": "SWSMA-H-10"
       },
-      "7": {
+      "5": {
         "model": "SRA 4600",
         "lod": "2016-10-31",
         "armb": "2016-11-01",
@@ -2813,18 +2703,7 @@
         "eos": "2019-11-01",
         "sortid": "SWSMA-H-11"
       },
-      "8": {
-        "model": "SMA 500v",
-        "lod": "2024-09-30",
-        "armb": "2024-10-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": "2025-11-01",
-        "sortid": "SWSMA-H-19"
-      },
-      "9": {
+      "6": {
         "model": "SSL-VPN 200",
         "lod": "2011-02-28",
         "armb": "2011-03-01",
@@ -2835,7 +2714,7 @@
         "eos": "2014-03-01",
         "sortid": "SWSMA-H-3"
       },
-      "10": {
+      "7": {
         "model": "SSL-VPN 2000",
         "lod": "2010-02-28",
         "armb": "2010-03-01",
@@ -2846,7 +2725,7 @@
         "eos": "2013-03-01",
         "sortid": "SWSMA-H-1"
       },
-      "11": {
+      "8": {
         "model": "SSL-VPN 4000",
         "lod": "2010-05-31",
         "armb": "2010-06-01",
@@ -3394,39 +3273,6 @@
         "sortid": "SWNSV-A-21"
       },
       "10": {
-        "model": "270",
-        "lod": "2026-10-30",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWNSV-A-27"
-      },
-      "11": {
-        "model": "470",
-        "lod": "2026-10-30",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWNSV-A-29"
-      },
-      "12": {
-        "model": "870",
-        "lod": "2026-10-30",
-        "armb": null,
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": null,
-        "lrme": null,
-        "eos": null,
-        "sortid": "SWNSV-A-31"
-      },
-      "13": {
         "model": "1600",
         "lod": "2022-04-15",
         "armb": "2022-04-16",
@@ -3537,39 +3383,6 @@
   "Wireless Access Points": {
     "Hardware": {
       "0": {
-        "model": "G",
-        "lod": "2009-09-09",
-        "armb": "2009-09-10",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": "2011-04-01",
-        "lrme": null,
-        "eos": "2012-03-01",
-        "sortid": "SW-WAP-78"
-      },
-      "1": {
-        "model": "Ni",
-        "lod": "2015-02-01",
-        "armb": "2015-03-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": "2017-03-01",
-        "lrme": null,
-        "eos": "2020-03-01",
-        "sortid": "SW-WAP-84"
-      },
-      "2": {
-        "model": "Ne",
-        "lod": "2015-09-30",
-        "armb": "2015-10-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": "2017-10-01",
-        "lrme": null,
-        "eos": "2020-10-01",
-        "sortid": "SW-WAP-86"
-      },
-      "3": {
         "model": "N2",
         "lod": "2019-03-31",
         "armb": "2019-08-01",
@@ -3580,7 +3393,7 @@
         "eos": "2022-07-31",
         "sortid": "SW-WAP-88"
       },
-      "4": {
+      "1": {
         "model": "224w",
         "lod": "2022-07-01",
         "armb": "2022-07-02",
@@ -3591,7 +3404,7 @@
         "eos": "2027-07-02",
         "sortid": "SW-WAP-92"
       },
-      "5": {
+      "2": {
         "model": "231c",
         "lod": "2022-07-01",
         "armb": "2022-07-02",
@@ -3602,7 +3415,7 @@
         "eos": "2027-07-02",
         "sortid": "SW-WAP-94"
       },
-      "6": {
+      "3": {
         "model": "231o",
         "lod": "2022-07-01",
         "armb": "2022-07-02",
@@ -3613,7 +3426,7 @@
         "eos": "2027-07-02",
         "sortid": "SW-WAP-96"
       },
-      "7": {
+      "4": {
         "model": "432e",
         "lod": "2022-04-22",
         "armb": "2022-04-22",
@@ -3624,7 +3437,7 @@
         "eos": "2027-04-23",
         "sortid": "SW-WAP-98"
       },
-      "8": {
+      "5": {
         "model": "432i",
         "lod": "2022-04-22",
         "armb": "2022-04-22",
@@ -3635,18 +3448,7 @@
         "eos": "2027-04-23",
         "sortid": "SW-WAP-100"
       },
-      "9": {
-        "model": "A/B/G",
-        "lod": "2009-03-31",
-        "armb": "2009-04-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": "2011-04-01",
-        "lrme": null,
-        "eos": "2012-03-01",
-        "sortid": "SW-WAP-76"
-      },
-      "10": {
+      "6": {
         "model": "ACe/ACi",
         "lod": "2019-03-31",
         "armb": "2019-08-01",
@@ -3656,34 +3458,12 @@
         "lrme": null,
         "eos": "2022-07-31",
         "sortid": "SW-WAP-90"
-      },
-      "11": {
-        "model": "N Dual-Band",
-        "lod": "2010-07-30",
-        "armb": "2010-09-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": "2012-09-01",
-        "lrme": null,
-        "eos": "2013-09-01",
-        "sortid": "SW-WAP-80"
-      },
-      "12": {
-        "model": "N Dual Radio",
-        "lod": "2014-12-20",
-        "armb": "2015-01-01",
-        "arme": null,
-        "oneyldo": null,
-        "lrmb": "2017-01-01",
-        "lrme": null,
-        "eos": "2020-01-01",
-        "sortid": "SW-WAP-82"
       }
     }
   },
   "SonicWall SuperMassive Series": {
     "Hardware": {
-      "280": {
+      "0": {
         "model": "SM 9800",
         "lod": "2022-02-19",
         "armb": "2022-02-20",
@@ -3694,7 +3474,7 @@
         "eos": "2026-02-20",
         "sortid": "SWSM-H-27"
       },
-      "281": {
+      "1": {
         "model": "SM 9600",
         "lod": "2022-02-19",
         "armb": "2022-02-20",
@@ -3705,7 +3485,7 @@
         "eos": "2026-02-20",
         "sortid": "SWSM-H-25"
       },
-      "282": {
+      "2": {
         "model": "SM 9400",
         "lod": "2022-02-19",
         "armb": "2022-02-20",
@@ -3716,7 +3496,7 @@
         "eos": "2026-02-20",
         "sortid": "SWSM-H-23"
       },
-      "283": {
+      "3": {
         "model": "SM 9200",
         "lod": "2022-02-19",
         "armb": "2022-02-20",
