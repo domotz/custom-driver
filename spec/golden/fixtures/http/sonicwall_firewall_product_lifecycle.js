@@ -1,9 +1,11 @@
 // Simulated SonicWall NSv 25 (SonicOS 7.0.1) replies. Shape follows the SonicOS 7 API: POST /api/sonicos/auth
 // (basic auth), GET /api/sonicos/reporting/status/system ({ model: "NSv 25", firmware_version, serial_number, ... })
 // and the product lifecycle table the driver downloads from raw.githubusercontent.com
-// (domotz/custom-driver resources/sonicwall-plc-tables.json): { "<family>": { "<Hardware|Firmware>": { "<n>":
+// (domotz/custom-driver resources/sonicwall-plc-tables-v2.json): { "<family>": { "<Hardware|Firmware>": { "<n>":
 // { model, lod, armb, arme, oneyldo, lrmb, lrme, eos, sortid } } } }. The table below is a trimmed copy of the real
-// file, keeping its family and type order (the TZ family lists Firmware before Hardware there).
+// file. Its TZ family lists Firmware before Hardware, as the file did before BT-6931, and its TZ470 row has only
+// the date SonicWall has published (the others are null), as in the file today. TZ 370 is a current model the
+// file does not list.
 const reply = require("../../replies");
 const { bearerCases } = require("../../sonicwall-bearer");
 
@@ -29,7 +31,8 @@ const PLC = {
             1: phases("SOHOW, SOHO 250, SOHO 250W, TZ300, TZ300P, TZ300W, TZ350, TZ350W, TZ400, TZ400W, TZ500, TZ500W, TZ600, TZ600P", "SWTZ-F-02", "2023-06-30", "2023-07-01", "2025-06-30", "2027-06-30", "2025-07-01", "2028-06-30", "2028-07-01")
         },
         Hardware: {
-            0: phases("350", "SWTZ-H-20", "2023-09-30", "2023-10-01", "2025-09-30", "2027-09-30", "2025-10-01", "2028-09-30", "2028-10-01")
+            0: phases("350", "SWTZ-H-20", "2023-09-30", "2023-10-01", "2025-09-30", "2027-09-30", "2025-10-01", "2028-09-30", "2028-10-01"),
+            1: phases("TZ470", "SWTZ-H-65", "2026-06-30", null, null, null, null, null, null)
         }
     },
     "SonicWall NSv Series": {
@@ -45,15 +48,29 @@ function calls(model) {
     return [
         { kind: "http", method: "post", target: "/api/sonicos/auth", reply: reply.http(200, AUTH) },
         { kind: "http", method: "get", target: "/api/sonicos/reporting/status/system", reply: reply.http(200, system(model), { "content-type": "application/json" }) },
-        { kind: "http", method: "get", host: "raw.githubusercontent.com", target: "/domotz/custom-driver/master/resources/sonicwall-plc-tables.json", reply: reply.http(200, PLC) }
+        { kind: "http", method: "get", host: "raw.githubusercontent.com", target: "/domotz/custom-driver/master/resources/sonicwall-plc-tables-v2.json", reply: reply.http(200, PLC) }
     ];
 }
 
+// The remaining days of a date SonicWall has not published have no value.
+const UNPUBLISHED = {
+    "TZ470": ["arm-remaining-days", "one-year-lod-remaining-days", "lrm-remaining-days", "eos-remaining-days"],
+    "TZ 370": ["lod-remaining-days", "arm-remaining-days", "one-year-lod-remaining-days", "lrm-remaining-days", "eos-remaining-days"]
+};
+
+function getStatus(model) {
+    const entryPoint = { calls: calls(model) };
+    if (UNPUBLISHED[model]) {
+        entryPoint.expect = { nullValues: UNPUBLISHED[model] };
+    }
+    return entryPoint;
+}
+
 module.exports = {
-    cases: ["NSv 25", "NSv 100", "NSA 3600", "TZ 350"].map((model) => ({
+    cases: ["NSv 25", "NSv 100", "NSA 3600", "TZ 350", "TZ470", "TZ 370"].map((model) => ({
         name: "sonicwall " + model,
         parameters: {},
-        entryPoints: { validate: { calls: calls(model) }, get_status: { calls: calls(model) } }
+        entryPoints: { validate: { calls: calls(model) }, get_status: getStatus(model) }
     }))
 };
 

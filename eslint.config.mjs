@@ -69,4 +69,14 @@ export default [
         },
         rules: { ...js.configs.recommended.rules, ...styleRules },
     },
+    // Maintenance scripts that refresh the data files drivers download; they run on Node, not in the sandbox.
+    {
+        files: ["resources/**/*.js"],
+        languageOptions: {
+            ecmaVersion: 2022,
+            sourceType: "commonjs",
+            globals: globals.node,
+        },
+        rules: { ...js.configs.recommended.rules, ...styleRules },
+    },
 ];
