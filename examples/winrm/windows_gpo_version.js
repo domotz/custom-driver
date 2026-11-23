@@ -23,10 +23,10 @@
  * Notes:
  *  - Each GPO is read with Get-GPO as before, which contacts the PDC emulator. On a domain controller that is not
  *    the PDC emulator, over WinRM with NTLM, the DC cannot pass the credentials on and that call fails with
- *    "An operations error occurred (0x80072020)": only on that error the driver reads the GPOs on this DC itself
- *    (-Server <its own DNS host name>) and says so in the driver log. Wherever the first call works (PDC
- *    emulator, member server with the GroupPolicy module, Basic authentication), and on any other error, nothing
- *    changes.
+ *    "An operations error occurred (0x80072020)": only on that error the driver retries on this DC itself
+ *    (-Server <its own DNS host name>); once a GPO is read there it reads the others there too and says so in
+ *    the driver log. Wherever the first call works (PDC emulator, member server with the GroupPolicy module,
+ *    Basic authentication), and on any other error, nothing changes.
  *  - A GPO that cannot be read is skipped and its PowerShell errors are written to the driver log; the driver fails
  *    only when no GPO can be read.
  *  - Use a username in the DOMAIN\user form: with auth "auto", a username without a backslash (user or
@@ -75,19 +75,23 @@ function psQuote(value) {
  * Each GPO is read exactly as before (Get-GPO without -Server, which contacts the PDC emulator), so every setup
  * that worked keeps the same call, and any other failure (GPO not found, PDC emulator down, no GroupPolicy
  * module) is reported as before. Only the double-hop failure, 0x80072020 (on a domain controller that is not the
- * PDC emulator, reached over WinRM with NTLM), switches the script to this host's own DNS host name
- * (-Server): that GPO is retried there, the remaining ones are read there directly, and "fallback" says so.
+ * PDC emulator, reached over WinRM with NTLM; also when wrapped in another exception), retries that GPO on this
+ * host's own DNS host name (-Server). Once a GPO has been read there, the remaining ones are read there directly
+ * and "fallback" says so; while none has, each GPO tries the default call first again, so a host where -Server
+ * cannot work (a member server) gets the 1.0.3 call for every GPO.
  * The collector runs the command as powershell.exe "<command>", so it uses single quotes only.
  * @param {Array} names The GPO display names
  * @returns {string} The PowerShell command
  */
 function buildCommand(names) {
     return "$h=[System.Net.Dns]::GetHostName();$gpos=@();$errs=@();$pin=$null;" +
-        "foreach($p in @(" + names.map(psQuote).join(",") + ")){$g=$null;$e=$null;" +
+        "foreach($p in @(" + names.map(psQuote).join(",") + ")){$g=$null;$e=$null;$hop=$false;" +
         "if(-not $pin){try{$g=Get-GPO -Name $p -ErrorAction Stop}" +
         "catch{$e=$_.Exception.Message;" +
-        "if($_.Exception.HResult -eq -2147016672 -or $e -match '0x80072020'){$pin=@{server=$h;reason=$e}}}};" +
-        "if($pin -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}" +
+        "if($_.Exception.HResult -eq -2147016672 -or $_.Exception.GetBaseException().HResult -eq -2147016672 -or " +
+        "$e -match '0x80072020'){$hop=$true}}};" +
+        "if(($pin -or $hop) -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop;" +
+        "if($g -and -not $pin){$pin=@{server=$h;reason=$e}}}" +
         "catch{$m='(on '+$h+': '+$_.Exception.Message+')';if($e){$e+=' '+$m}else{$e=$m}}};" +
         "if($g){$gpos+=[PSCustomObject]@{Name=$g.DisplayName;Status=$g.GpoStatus.ToString();" +
         "UADVersion=$g.User.DSVersion;USVVersion=$g.User.SysvolVersion;" +

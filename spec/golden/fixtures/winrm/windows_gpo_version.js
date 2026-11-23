@@ -1,16 +1,18 @@
 // Simulated Windows Server 2019 domain controller / PowerShell 5.1 replies. validate and get_status send the same
-// script: it reads each GPO with Get-GPO (on the host itself after a 0x80072020 double-hop error), and prints
+// script: it reads each GPO with Get-GPO (retried on the host itself after a 0x80072020 double-hop error), and prints
 // ConvertTo-Json -Compress of @{gpos=...;errors=...;fallback=...}, with GpoStatus written by its name (AllSettingsEnabled,
 // UserSettingsDisabled, ...) and DSVersion/SysvolVersion as numbers. A hashtable has no key order: "errors" comes first
 // here, as PowerShell 5.1 printed it.
 const reply = require("../../replies");
 
 const COMMAND = "$h=[System.Net.Dns]::GetHostName();$gpos=@();$errs=@();$pin=$null;" +
-    "foreach($p in @('Default Domain Policy','Default Domain Controllers Policy')){$g=$null;$e=$null;" +
+    "foreach($p in @('Default Domain Policy','Default Domain Controllers Policy')){$g=$null;$e=$null;$hop=$false;" +
     "if(-not $pin){try{$g=Get-GPO -Name $p -ErrorAction Stop}" +
     "catch{$e=$_.Exception.Message;" +
-    "if($_.Exception.HResult -eq -2147016672 -or $e -match '0x80072020'){$pin=@{server=$h;reason=$e}}}};" +
-    "if($pin -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}" +
+    "if($_.Exception.HResult -eq -2147016672 -or $_.Exception.GetBaseException().HResult -eq -2147016672 -or " +
+    "$e -match '0x80072020'){$hop=$true}}};" +
+    "if(($pin -or $hop) -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop;" +
+    "if($g -and -not $pin){$pin=@{server=$h;reason=$e}}}" +
     "catch{$m='(on '+$h+': '+$_.Exception.Message+')';if($e){$e+=' '+$m}else{$e=$m}}};" +
     "if($g){$gpos+=[PSCustomObject]@{Name=$g.DisplayName;Status=$g.GpoStatus.ToString();" +
     "UADVersion=$g.User.DSVersion;USVVersion=$g.User.SysvolVersion;" +
