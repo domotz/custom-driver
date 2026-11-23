@@ -4,9 +4,10 @@ var harnessLib = require("./helpers/mock-d");
 //
 // On a domain controller that is NOT the PDC emulator, reached over WinRM with NTLM, Get-GPO without -Server talks
 // to the PDC emulator; the DC cannot forward NTLM credentials (double hop), so the call fails with 0x80072020.
-// The script reads each GPO unpinned first (as 1.0.3 did) and retries it pinned to the host only when that fails.
+// The script reads each GPO unpinned first (as 1.0.3 did); only that error switches it to the host's own name
+// (-Server) for the failed GPO and the remaining ones, and the driver logs the switch.
 // PowerShell does not run here: the fake device replays what the script prints, and the PowerShell-side fallback
-// is covered by the command checks at the bottom.
+// is covered by the command checks at the bottom (and was run under pwsh with a stubbed Get-GPO, BT-7136 evidence).
 //
 // Error strings follow remote_pawn_ng: commands/device/winrm/cli.js hands the driver JSON.stringify(err), where err
 // is the Go client's error ({code: "EWINRM_AUTH", kind, httpStatus}, winrm/go/runner.js) or the legacy client's
@@ -26,18 +27,34 @@ function winrmError(fields) {
     return { outcome: null, error: JSON.stringify(fields) };
 }
 
-function scriptResult(gpos, errors) {
-    return outcome(JSON.stringify({ gpos: gpos, errors: errors || [] }) + "\r\n");
+function scriptResult(gpos, errors, fallback) {
+    return outcome(JSON.stringify({ gpos: gpos, errors: errors || [], fallback: fallback || null }) + "\r\n");
 }
 
-// Both GPOs read (on a DC that is not the PDC emulator: by the pinned retry).
+// What the script prints once the unpinned call failed with 0x80072020 and it switched to this DC.
+var READ_ON_DC02 = { server: "DC02", reason: OPERATIONS_ERROR };
+
+// Both GPOs read with the unpinned call (PDC emulator, member server, Basic authentication).
 function bothGposRead() {
     return scriptResult([DDP, DDCP]);
 }
 
-// The error the script reports when the unpinned call and the pinned retry both fail.
-function bothCallsFailed(name, unpinned, pinned) {
-    return name + ": " + unpinned + " (on DC02: " + pinned + ")";
+// Both GPOs read on a DC that is not the PDC emulator, after the switch to the DC itself.
+function bothGposReadOnThisDc() {
+    return scriptResult([DDP, DDCP], [], READ_ON_DC02);
+}
+
+// The error the script reports for a GPO not read on this DC: with the unpinned error when that call was made,
+// without it for the GPOs read after the switch.
+function notReadOnThisDc(name, unpinned, pinned) {
+    return name + ": " + (unpinned ? unpinned + " " : "") + "(on DC02: " + pinned + ")";
+}
+
+function infoLog(harness) {
+    return harness.calls.console
+        .filter(function (c) { return c.level === "info"; })
+        .map(function (c) { return c.args.join(" "); })
+        .join("\n");
 }
 
 function run(entryPoint, responder) {
@@ -88,12 +105,37 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
 
             expect(r.result.type).toBe("success");
         });
+
+        it("logs nothing about a fallback when the unpinned call worked", async function () {
+            var r = await run("get_status", bothGposRead);
+
+            expect(infoLog(r.harness)).toBe("");
+        });
+    });
+
+    describe("when the GPOs were read on the DC itself (not the PDC emulator, 0x80072020)", function () {
+        it("get_status lists both GPOs and logs where they were read and why", async function () {
+            var r = await run("get_status", bothGposReadOnThisDc);
+
+            expect(r.result.type).toBe("success");
+            expect(table(r.harness).records.map(function (x) { return x.id; }))
+                .toEqual(["Default Domain Policy", "Default Domain Controllers Policy"]);
+            expect(infoLog(r.harness)).toContain("GPOs read on DC02 (-Server)");
+            expect(infoLog(r.harness)).toContain("0x80072020");
+            expect(errorLog(r.harness)).toBe("");
+        });
+
+        it("validate succeeds", async function () {
+            var r = await run("validate", bothGposReadOnThisDc);
+
+            expect(r.result.type).toBe("success");
+        });
     });
 
     describe("when some GPOs cannot be read", function () {
         it("get_status still lists the readable GPO and logs the missing one", async function () {
             var r = await run("get_status", function () {
-                return scriptResult([DDP], [bothCallsFailed("Default Domain Controllers Policy", NOT_FOUND, NOT_FOUND)]);
+                return scriptResult([DDP], ["Default Domain Controllers Policy: " + NOT_FOUND]);
             });
 
             expect(r.result.type).toBe("success");
@@ -105,9 +147,9 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
     describe("when no GPO can be read", function () {
         function everyGetGpoFails() {
             return scriptResult([], [
-                bothCallsFailed("Default Domain Policy", OPERATIONS_ERROR, ACCESS_DENIED),
-                bothCallsFailed("Default Domain Controllers Policy", OPERATIONS_ERROR, ACCESS_DENIED)
-            ]);
+                notReadOnThisDc("Default Domain Policy", OPERATIONS_ERROR, ACCESS_DENIED),
+                notReadOnThisDc("Default Domain Controllers Policy", null, ACCESS_DENIED)
+            ], READ_ON_DC02);
         }
 
         it("get_status fails and logs the PowerShell error", async function () {
@@ -212,20 +254,30 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
 
             expect(getGpoCalls.length).toBe(2);
             expect(getGpoCalls[0]).toBe("Get-GPO -Name $p -ErrorAction Stop");
-            expect(command).toContain("){$g=$null;try{$g=Get-GPO -Name $p -ErrorAction Stop}catch{");
+            expect(command).toContain("){$g=$null;$e=$null;if(-not $pin){try{$g=Get-GPO -Name $p -ErrorAction Stop}catch{");
         });
 
-        it("retries a GPO pinned to the host's DNS host name only when the unpinned call fails", async function () {
+        it("switches to the host's DNS host name only on the double-hop error 0x80072020", async function () {
             var command = await commandOf("get_status");
 
             expect(command.indexOf("$h=[System.Net.Dns]::GetHostName();")).toBe(0);
-            expect(command).toContain("catch{$e=$_.Exception.Message;try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}");
+            expect(command).toContain("catch{$e=$_.Exception.Message;" +
+                "if($_.Exception.HResult -eq -2147016672 -or $e -match '0x80072020'){$pin=@{server=$h;reason=$e}}}}");
+            expect(0x80072020 | 0).toBe(-2147016672);
         });
 
-        it("reports both errors when the pinned retry fails too, and keeps only GPOs read", async function () {
+        it("retries that GPO on the host and reads the remaining ones there directly", async function () {
             var command = await commandOf("get_status");
 
-            expect(command).toContain("catch{$errs+=$p+': '+$e+' (on '+$h+': '+$_.Exception.Message+')'}};if($g){$gpos+=");
+            expect(command).toContain("if($pin -and -not $g){try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}");
+        });
+
+        it("reports a GPO not read with every error it got, and prints the fallback", async function () {
+            var command = await commandOf("get_status");
+
+            expect(command).toContain("catch{$m='(on '+$h+': '+$_.Exception.Message+')';if($e){$e+=' '+$m}else{$e=$m}}};");
+            expect(command).toContain("else{$errs+=$p+': '+$e}};");
+            expect(command).toContain("@{gpos=$gpos;errors=$errs;fallback=$pin}");
         });
 
         it("does not depend on WMI (no host role lookup before Get-GPO)", async function () {
