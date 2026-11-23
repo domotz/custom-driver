@@ -81,6 +81,25 @@ DRIVERS.forEach(function (driverPath) {
                 expect(values["cpu-status"]).toEqual("OK");
             });
 
+            it("ignores a missing name or status on one socket instead of leaving a dangling separator", async function () {
+                var values = await parse(driverPath, [socket(), socket({ name: null, Status: null })]);
+
+                expect(values["cpu-name"]).toEqual(XEON);
+                expect(values["cpu-status"]).toEqual("OK");
+                expect(values["cores-number"]).toEqual(32);
+            });
+
+            it("fails instead of reporting empty CPU values when no processor comes back", async function () {
+                var harness = winrmHarness();
+                var driver = harnessLib.loadDriver(driverPath, harness);
+
+                driver.parseOutput(payload(null));
+                var outcome = await harness.completion;
+
+                expect(outcome.type).toBe("failure");
+                expect(harness.calls.createVariable.length).toBe(0);
+            });
+
             it("leaves the memory variables untouched", async function () {
                 var values = await parse(driverPath, [socket(), socket()]);
 
