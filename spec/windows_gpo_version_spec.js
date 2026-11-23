@@ -2,11 +2,11 @@ var harnessLib = require("./helpers/mock-d");
 
 // winrm/windows_gpo_version.js (BT-7136).
 //
-// The fake device models a domain controller that is NOT the PDC emulator, reached over WinRM with NTLM. Without
-// -Server, Get-GPO talks to the PDC emulator; the DC cannot forward NTLM credentials (double hop), so every call
-// fails with 0x80072020 and the script prints nothing. Pinned to the DC itself (-Server <its own name>) it works.
-// PowerShell does not run here, so the fake answers by what the command asks for; the PowerShell-side guard (pin
-// only on a DC) is covered by the command checks at the bottom.
+// On a domain controller that is NOT the PDC emulator, reached over WinRM with NTLM, Get-GPO without -Server talks
+// to the PDC emulator; the DC cannot forward NTLM credentials (double hop), so the call fails with 0x80072020.
+// The script reads each GPO unpinned first (as 1.0.3 did) and retries it pinned to the host only when that fails.
+// PowerShell does not run here: the fake device replays what the script prints, and the PowerShell-side fallback
+// is covered by the command checks at the bottom.
 //
 // Error strings follow remote_pawn_ng: commands/device/winrm/cli.js hands the driver JSON.stringify(err), where err
 // is the Go client's error ({code: "EWINRM_AUTH", kind, httpStatus}, winrm/go/runner.js) or the legacy client's
@@ -16,6 +16,7 @@ var DDP = { Name: "Default Domain Policy", Status: "AllSettingsEnabled", UADVers
 var DDCP = { Name: "Default Domain Controllers Policy", Status: "UserSettingsDisabled", UADVersion: 3, USVVersion: 3, CADVersion: 9, CSVVersion: 8 };
 var OPERATIONS_ERROR = "An operations error occurred. (Exception from HRESULT: 0x80072020)";
 var NOT_FOUND = "GPO with name Default Domain Controllers Policy was not found in the contoso.local domain.";
+var ACCESS_DENIED = "Access is denied. (Exception from HRESULT: 0x80070005 (E_ACCESSDENIED))";
 
 function outcome(stdout, stderr) {
     return { outcome: { exitCode: 0, stdout: stdout, stderr: stderr || "", durationMs: 120 }, error: null };
@@ -29,16 +30,14 @@ function scriptResult(gpos, errors) {
     return outcome(JSON.stringify({ gpos: gpos, errors: errors || [] }) + "\r\n");
 }
 
-function pinsToThisDc(command) {
-    return /-Server|\.Server\s*=/.test(command) && command.indexOf("$env:COMPUTERNAME") !== -1;
+// Both GPOs read (on a DC that is not the PDC emulator: by the pinned retry).
+function bothGposRead() {
+    return scriptResult([DDP, DDCP]);
 }
 
-// A DC that is not the PDC emulator: GPOs come back only when Get-GPO is pinned to it.
-function nonPdcDomainController(command) {
-    if (pinsToThisDc(command)) {
-        return scriptResult([DDP, DDCP]);
-    }
-    return outcome("", "Get-GPO : " + OPERATIONS_ERROR + "\r\n");
+// The error the script reports when the unpinned call and the pinned retry both fail.
+function bothCallsFailed(name, unpinned, pinned) {
+    return name + ": " + unpinned + " (on DC02: " + pinned + ")";
 }
 
 function run(entryPoint, responder) {
@@ -73,9 +72,9 @@ function errorLog(harness) {
 }
 
 describe("winrm/windows_gpo_version driver (BT-7136)", function () {
-    describe("on a domain controller that is not the PDC emulator", function () {
+    describe("when both GPOs are read", function () {
         it("get_status lists both GPOs", async function () {
-            var r = await run("get_status", nonPdcDomainController);
+            var r = await run("get_status", bothGposRead);
 
             expect(r.result.type).toBe("success");
             expect(table(r.harness).id).toBe("Group Policy Objects");
@@ -85,7 +84,7 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
         });
 
         it("validate succeeds", async function () {
-            var r = await run("validate", nonPdcDomainController);
+            var r = await run("validate", bothGposRead);
 
             expect(r.result.type).toBe("success");
         });
@@ -94,7 +93,7 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
     describe("when some GPOs cannot be read", function () {
         it("get_status still lists the readable GPO and logs the missing one", async function () {
             var r = await run("get_status", function () {
-                return scriptResult([DDP], ["Default Domain Controllers Policy: " + NOT_FOUND]);
+                return scriptResult([DDP], [bothCallsFailed("Default Domain Controllers Policy", NOT_FOUND, NOT_FOUND)]);
             });
 
             expect(r.result.type).toBe("success");
@@ -106,8 +105,8 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
     describe("when no GPO can be read", function () {
         function everyGetGpoFails() {
             return scriptResult([], [
-                "Default Domain Policy: " + OPERATIONS_ERROR,
-                "Default Domain Controllers Policy: " + OPERATIONS_ERROR
+                bothCallsFailed("Default Domain Policy", OPERATIONS_ERROR, ACCESS_DENIED),
+                bothCallsFailed("Default Domain Controllers Policy", OPERATIONS_ERROR, ACCESS_DENIED)
             ]);
         }
 
@@ -117,6 +116,7 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
             expect(r.result).toEqual({ type: "failure", errorType: "GENERIC_ERROR" });
             expect(r.harness.calls.failure.length).toBe(1);
             expect(errorLog(r.harness)).toContain("0x80072020");
+            expect(errorLog(r.harness)).toContain("0x80070005");
         });
 
         it("validate fails and logs the PowerShell error", async function () {
@@ -202,24 +202,36 @@ describe("winrm/windows_gpo_version driver (BT-7136)", function () {
 
     describe("the PowerShell command", function () {
         async function commandOf(entryPoint) {
-            var r = await run(entryPoint, nonPdcDomainController);
+            var r = await run(entryPoint, bothGposRead);
             return r.commands[0];
         }
 
-        it("pins Get-GPO to the host by its DNS host name only on a DC that is not the PDC emulator (DomainRole 4)", async function () {
+        it("reads each GPO unpinned first, the call 1.0.3 made", async function () {
             var command = await commandOf("get_status");
+            var getGpoCalls = command.match(/Get-GPO [^;}]*/g);
 
-            expect(command).toContain("$cs=Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue;");
-            expect(command).toContain("if($cs.DomainRole -eq 4){$n=$cs.DNSHostName;if(-not $n){$n=$env:COMPUTERNAME};$s.Server=$n};");
-            expect(command).toMatch(/Get-GPO -Name \$p @s -ErrorAction Stop/);
-            expect(command).not.toMatch(/Get-GPO[^;]*-Server/);
+            expect(getGpoCalls.length).toBe(2);
+            expect(getGpoCalls[0]).toBe("Get-GPO -Name $p -ErrorAction Stop");
+            expect(command).toContain("){$g=$null;try{$g=Get-GPO -Name $p -ErrorAction Stop}catch{");
         });
 
-        it("leaves the PDC emulator (DomainRole 5) and member servers unpinned, as before", async function () {
+        it("retries a GPO pinned to the host's DNS host name only when the unpinned call fails", async function () {
             var command = await commandOf("get_status");
 
-            expect(command).not.toMatch(/DomainRole -(ge|gt) /);
-            expect(command).not.toMatch(/DomainRole -eq 5/);
+            expect(command.indexOf("$h=[System.Net.Dns]::GetHostName();")).toBe(0);
+            expect(command).toContain("catch{$e=$_.Exception.Message;try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}");
+        });
+
+        it("reports both errors when the pinned retry fails too, and keeps only GPOs read", async function () {
+            var command = await commandOf("get_status");
+
+            expect(command).toContain("catch{$errs+=$p+': '+$e+' (on '+$h+': '+$_.Exception.Message+')'}};if($g){$gpos+=");
+        });
+
+        it("does not depend on WMI (no host role lookup before Get-GPO)", async function () {
+            var command = await commandOf("get_status");
+
+            expect(command).not.toMatch(/Get-CimInstance|Get-WmiObject|DomainRole/);
         });
 
         it("quotes GPO names for PowerShell, typographic apostrophes included", function () {

@@ -21,11 +21,12 @@
  * Required permissions: AD user
  *
  * Notes:
- *  - On a domain controller that is not the PDC emulator, Get-GPO is pinned to that DC (-Server <its own DNS host
- *    name>). Without it Get-GPO contacts the PDC emulator, and over WinRM the DC cannot pass the credentials on:
- *    every call fails with "An operations error occurred (0x80072020)". On the PDC emulator and on a member server
- *    with the GroupPolicy module the call is unchanged.
- *  - A GPO that cannot be read is skipped and its PowerShell error is written to the driver log; the driver fails
+ *  - Each GPO is read with Get-GPO as before, which contacts the PDC emulator. On a domain controller that is not
+ *    the PDC emulator, over WinRM with NTLM, the DC cannot pass the credentials on and that call fails with
+ *    "An operations error occurred (0x80072020)": the driver then retries the GPO on this DC itself
+ *    (-Server <its own DNS host name>). Wherever the first call works (PDC emulator, member server with the
+ *    GroupPolicy module, Basic authentication) nothing changes.
+ *  - A GPO that cannot be read is skipped and its PowerShell errors are written to the driver log; the driver fails
  *    only when no GPO can be read.
  *  - Use a username in the DOMAIN\user form: with auth "auto", a username without a backslash (user or
  *    user@domain) makes the collector use Basic authentication, which WinRM usually refuses with 401.
@@ -69,22 +70,24 @@ function psQuote(value) {
 
 /**
  * PowerShell that reads each GPO on its own and prints {"gpos": [...], "errors": ["<GPO name>: <error>", ...]}.
- * On a domain controller that is not the PDC emulator (DomainRole 4: backup DC, read-only DCs included) Get-GPO
- * is pinned to it by its DNS host name. On the PDC emulator (DomainRole 5) and on a member server the call is
- * unchanged. The collector runs the command as powershell.exe "<command>", so it uses single quotes only.
+ * Each GPO is read first exactly as before (Get-GPO without -Server, which contacts the PDC emulator), so every
+ * setup that worked keeps the same call. Only when that call fails is it retried pinned to this host by its DNS
+ * host name: on a domain controller that is not the PDC emulator, reached over WinRM with NTLM, the unpinned call
+ * fails with 0x80072020 and the pinned one works. When both fail, both errors are reported.
+ * The collector runs the command as powershell.exe "<command>", so it uses single quotes only.
  * @param {Array} names The GPO display names
  * @returns {string} The PowerShell command
  */
 function buildCommand(names) {
-    return "$s=@{};$cs=Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue;" +
-        "if($cs.DomainRole -eq 4){$n=$cs.DNSHostName;if(-not $n){$n=$env:COMPUTERNAME};$s.Server=$n};" +
-        "$gpos=@();$errs=@();" +
-        "foreach($p in @(" + names.map(psQuote).join(",") + ")){" +
-        "try{$g=Get-GPO -Name $p @s -ErrorAction Stop;" +
-        "$gpos+=[PSCustomObject]@{Name=$g.DisplayName;Status=$g.GpoStatus.ToString();" +
+    return "$h=[System.Net.Dns]::GetHostName();$gpos=@();$errs=@();" +
+        "foreach($p in @(" + names.map(psQuote).join(",") + ")){$g=$null;" +
+        "try{$g=Get-GPO -Name $p -ErrorAction Stop}" +
+        "catch{$e=$_.Exception.Message;" +
+        "try{$g=Get-GPO -Name $p -Server $h -ErrorAction Stop}" +
+        "catch{$errs+=$p+': '+$e+' (on '+$h+': '+$_.Exception.Message+')'}};" +
+        "if($g){$gpos+=[PSCustomObject]@{Name=$g.DisplayName;Status=$g.GpoStatus.ToString();" +
         "UADVersion=$g.User.DSVersion;USVVersion=$g.User.SysvolVersion;" +
-        "CADVersion=$g.Computer.DSVersion;CSVVersion=$g.Computer.SysvolVersion}}" +
-        "catch{$errs+=$p+': '+$_.Exception.Message}};" +
+        "CADVersion=$g.Computer.DSVersion;CSVVersion=$g.Computer.SysvolVersion}}};" +
         "ConvertTo-Json -InputObject @{gpos=$gpos;errors=$errs} -Depth 4 -Compress";
 }
 
