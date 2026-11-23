@@ -10,6 +10,10 @@
  *
  * Tested on SonicWALL NSv 270 SonicOS version 7.0.1-5145
  *
+ * The dates come from resources/sonicwall-plc-tables.json in this repository, refreshed from SonicWall's product
+ * lifecycle page with resources/sonicwall-plc-refresh.js. A date SonicWall has not published is reported as N/A
+ * and its remaining days have no value; so are all dates of a firewall model SonicWall does not list yet.
+ *
  * Creates a Custom Driver variables:
  *      - Last Order Day (LOD): The date when the product's last order day is reached
  *      - Active Retirement (ARM): The date when the product's active retirement period begins
@@ -175,26 +179,63 @@ function getProductLifecycleData() {
 }
 
 /**
- * Extracts the firewall model information
+ * Reads the model the firewall reports, e.g. "TZ 470" or "NSa 2700"
  * @param {object} body The response body
- * @returns {object} The extracted model information
+ * @returns {string} The model, or "" when the firewall did not report one
  */
-function extractFirewallModelInfo(body) {
+function extractFirewallModel(body) {
     var data = JSON.parse(body[0]);
-    var modelParts = data.model.split(" ");
-    var modelName = modelParts.slice(0, -1).join(" ");
-    var modelNumber = modelParts[modelParts.length - 1];
-    return { modelName: modelName, modelNumber: modelNumber };
+    return data && data.model ? String(data.model) : "";
 }
 
 /**
- * Calculates the remaining days until each phase begins
- * @param {Date} phaseDate The date of the phase
- * @returns {number} The remaining days
+ * Reduces a model or series name to what identifies it: no HTML markup, lower case, letters and digits only,
+ * so "TZ 470", "TZ470" and "tz-470" compare equal.
+ * @param {string} text The name
+ * @returns {string} The normalized name
+ */
+function normalize(text) {
+    return String(text || "").replace(/<[^>]*>/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Firewall families the driver runs on. A model of one of these that the lifecycle tables do not list yet
+// (SonicWall publishes a model's dates only once it announces its retirement) is reported with N/A dates.
+var FIREWALL_FAMILY = /^(tz|nsa|nsv|nssp|sm|supermassive)[0-9]|^soho/;
+
+/**
+ * Finds the Hardware row of a model. Most rows name the model without its family ("350" in the TZ Series),
+ * newer ones with it ("TZ470"), so a row matches when the model equals the row's name, with or without the
+ * family name in front.
+ * @param {object} productLifecycle The lifecycle tables, by series
+ * @param {string} model The model the firewall reports
+ * @returns {object|undefined} The row
+ */
+function findHardwareRow(productLifecycle, model) {
+    var wanted = normalize(model);
+    for (var series in productLifecycle) {
+        var rows = productLifecycle[series].Hardware;
+        var family = normalize(series.replace(/^SonicWall /, "").replace(/ Series$/, ""));
+        for (var key in rows) {
+            var name = normalize(rows[key].model);
+            if (name && (wanted === name || wanted === family + name)) {
+                return rows[key];
+            }
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Calculates the remaining days until a phase begins
+ * @param {string} phaseDate The date of the phase, or "N/A" when SonicWall has not published it
+ * @returns {number|null} The remaining days, 0 once the date has passed, null when there is no date
  */
 function calculateRemainingDays(phaseDate) {
-    var currentDate = new Date();
-    var remainingDays = Math.ceil((phaseDate - currentDate) / (1000 * 60 * 60 * 24));
+    var date = new Date(phaseDate);
+    if (isNaN(date.getTime())) {
+        return null;
+    }
+    var remainingDays = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
     return remainingDays >= 0 ? remainingDays : 0;
 }
 
@@ -208,11 +249,11 @@ function extractVariables(info) {
     var oneYearLastOrder = info.oneyldo || "N/A";
     var limitedRetirementMode = info.lrmb || "N/A";
     var endOfSupport = info.eos || "N/A";
-    var lodRemainingDays =  calculateRemainingDays(new Date(lastOrderDay));
-    var armRemainingDays =  calculateRemainingDays(new Date(activeRetirement));
-    var oneyldoRemainingDays =  calculateRemainingDays(new Date(oneYearLastOrder));
-    var lrmRemainingDays =  calculateRemainingDays(new Date(limitedRetirementMode));
-    var eosRemainingDays =  calculateRemainingDays(new Date(endOfSupport));
+    var lodRemainingDays = calculateRemainingDays(lastOrderDay);
+    var armRemainingDays = calculateRemainingDays(activeRetirement);
+    var oneyldoRemainingDays = calculateRemainingDays(oneYearLastOrder);
+    var lrmRemainingDays = calculateRemainingDays(limitedRetirementMode);
+    var eosRemainingDays = calculateRemainingDays(endOfSupport);
 
     var variables = [
         D.createVariable("lod", "Last Order Day (LOD)", lastOrderDay, null, D.valueType.STRING),
@@ -230,48 +271,19 @@ function extractVariables(info) {
     D.success(variables);
 }
 
-// Filters the product lifecycle data to retrieve information for a specific SonicWall firewall model
+// Reports the lifecycle of the firewall's model, from its Hardware row in the product lifecycle data
 function filtredData(body) {
-    var modelData = extractFirewallModelInfo(body);
-    var modelName = modelData.modelName;
-    var modelNumber = modelData.modelNumber;
-    var productLifecycle = body[1];
-    var info;
-
-    for (var key in productLifecycle) {
-        var modelInfo = productLifecycle[key];
-
-        if (key.indexOf(modelName) !== -1) {
-            // a family lists Firmware and Hardware lifecycles: the device model is a Hardware entry
-            if (modelInfo.Hardware) {
-                info = modelInfo.Hardware;
-            } else {
-                for (var type in modelInfo) {
-                    info = modelInfo[type];
-                    break;
-                }
-            }
-            break;
-        }
+    var model = extractFirewallModel(body);
+    var row = findHardwareRow(body[1], model);
+    if (row) {
+        return extractVariables(row);
     }
-
-    if (!info) {
-        console.error("Model Name not found in product lifecycle (PLC) data");
-        D.failure(D.errorType.PARSING_ERROR);
-        return;
+    if (FIREWALL_FAMILY.test(normalize(model))) {
+        console.warn("SonicWall has not published lifecycle dates for model \"" + model + "\" yet: reporting N/A");
+        return extractVariables({});
     }
-    var foundModelNumber = false;
-    for (var subKey in info) {
-        if (info[subKey].model.indexOf(modelNumber) !== -1) {
-            return extractVariables(info[subKey]);
-        }
-    }
-
-    if (!foundModelNumber) {
-        console.error("Model number not found in product lifecycle (PLC) data");
-        D.failure(D.errorType.PARSING_ERROR);
-    }
-
+    console.error("Model \"" + model + "\" not found in the product lifecycle (PLC) data");
+    D.failure(D.errorType.PARSING_ERROR);
 }
 
 // Loads the data
