@@ -146,5 +146,153 @@
             }
         ],
         "table": null
+    },
+    "winrm, windows server with two sockets validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, windows server with two sockets get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-memory",
+                "name": "Total Memory",
+                "value": 128,
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "available-memory",
+                "name": "Available Memory",
+                "value": "64.00",
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "50.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-name",
+                "name": "CPU Name",
+                "value": "Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "max-clock-speed",
+                "name": "Max Clock Speed",
+                "value": 2.9,
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "logical-processors-number",
+                "name": "Logical Processors Number",
+                "value": 64,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores-number",
+                "name": "Cores Number",
+                "value": 32,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-status",
+                "name": "CPU Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-average",
+                "name": "CPU Load Average (10 sec)",
+                "value": "7.50",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "ssh, windows server with two sockets validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, windows server with two sockets get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-memory",
+                "name": "Total Memory",
+                "value": 128,
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "available-memory",
+                "name": "Available Memory",
+                "value": "64.00",
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "50.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-name",
+                "name": "CPU Name",
+                "value": "Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "max-clock-speed",
+                "name": "Max Clock Speed",
+                "value": 2.9,
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "logical-processors-number",
+                "name": "Logical Processors Number",
+                "value": 64,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores-number",
+                "name": "Cores Number",
+                "value": 32,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-status",
+                "name": "CPU Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-average",
+                "name": "CPU Load Average (10 sec)",
+                "value": "7.50",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
     }
 }

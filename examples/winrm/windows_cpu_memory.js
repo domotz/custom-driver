@@ -24,11 +24,11 @@
  *      - Total Memory: Total physical memory of the system
  *      - Available Memory: Amount of memory available for processes
  *      - Memory Usage: Percentage of memory usage
- *      - CPU Name: Name of the CPU
- *      - Max Clock Speed: Maximum clock speed of the CPU
- *      - Logical Processors Number: Number of logical processors
- *      - Cores Number: Number of CPU cores
- *      - CPU Status: Status of the CPU
+ *      - CPU Name: Name of the CPU (each distinct model, comma separated, on a multi-socket machine)
+ *      - Max Clock Speed: Maximum clock speed of the CPU (the highest across sockets)
+ *      - Logical Processors Number: Number of logical processors (sum of all sockets)
+ *      - Cores Number: Number of CPU cores (sum of all sockets)
+ *      - CPU Status: Status of the CPU (each distinct status, comma separated, on a multi-socket machine)
  *      - CPU Load Average (10 sec): Average CPU load over 10 seconds (please note that to retrieve this metric it is necessary to add the WinRM user to the security group "Performance Monitor Users")
  */
 
@@ -97,16 +97,56 @@ function get_status() {
         .catch(instance.checkError);
 }
 
+// Win32_processor returns one object per physical socket, so ConvertTo-Json gives a bare object on a
+// single-socket machine and an array on a multi-socket one. The variables describe the whole machine:
+// cores and logical processors are summed, the clock speed is the highest, names and statuses list each distinct value.
+// A value no socket reports stays null instead of becoming a 0 that looks measured.
+// Returns null when the reply carries no processor data at all.
+function summarizeProcessors(cpuInfo) {
+    // Some PowerShell serializations wrap an array as { value: [...], Count: n }
+    const list = cpuInfo && Array.isArray(cpuInfo.value) ? cpuInfo.value : cpuInfo;
+    const processors = [].concat(list || []).filter(function (processor) {
+        return processor && typeof processor === "object";
+    });
+    const names = [];
+    const statuses = [];
+    const summary = { maxClockSpeed: null, logicalProcessors: null, cores: null };
+    function number(value) {
+        return value == null || value === "" || !isFinite(Number(value)) ? null : Number(value);
+    }
+    function add(total, value) {
+        return number(value) === null ? total : (total || 0) + number(value);
+    }
+    processors.forEach(function (processor) {
+        if (processor.name != null && names.indexOf(processor.name) === -1) names.push(processor.name);
+        if (processor.Status != null && statuses.indexOf(processor.Status) === -1) statuses.push(processor.Status);
+        const clockSpeed = number(processor.MaxClockSpeed);
+        if (clockSpeed !== null) summary.maxClockSpeed = Math.max(summary.maxClockSpeed || 0, clockSpeed);
+        summary.logicalProcessors = add(summary.logicalProcessors, processor.NumberOfLogicalProcessors);
+        summary.cores = add(summary.cores, processor.NumberOfCores);
+    });
+    summary.name = names.length ? names.join(", ") : null;
+    summary.status = statuses.length ? statuses.join(", ") : null;
+    const hasData = Object.keys(summary).some(function (key) { return summary[key] !== null; });
+    return hasData ? summary : null;
+}
+
 // Parse the output from WinRM commands and create variables
 function parseOutput(cpuMemoryInfo) {
     const totalMemory = cpuMemoryInfo.TotalMemory / (Math.pow(1024, 3));
     const availableMemory = cpuMemoryInfo.AvailableMemory / 1024 / 1024;
     const memoryUsage = ((totalMemory - availableMemory) / totalMemory) * 100;
-    const cpuName = cpuMemoryInfo.CPUInfo.name;
-    const maxClockSpeed = cpuMemoryInfo.CPUInfo.MaxClockSpeed / 1000;
-    const logicalProcessorsNumber = cpuMemoryInfo.CPUInfo.NumberOfLogicalProcessors;
-    const coresNumber = cpuMemoryInfo.CPUInfo.NumberOfCores;
-    const cpuStatus = cpuMemoryInfo.CPUInfo.Status;
+    const cpu = summarizeProcessors(cpuMemoryInfo.CPUInfo);
+    if (!cpu) {
+        console.error("The device returned no processor information");
+        D.failure(D.errorType.GENERIC_ERROR);
+        return;
+    }
+    const cpuName = cpu.name;
+    const maxClockSpeed = cpu.maxClockSpeed === null ? null : cpu.maxClockSpeed / 1000;
+    const logicalProcessorsNumber = cpu.logicalProcessors;
+    const coresNumber = cpu.cores;
+    const cpuStatus = cpu.status;
     const cpuAverage = cpuMemoryInfo.Average ? cpuMemoryInfo.Average.toFixed(2) : "N/A";
 
     const variables = [
