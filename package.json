@@ -10,7 +10,7 @@
     "test": "jasmine",
     "test:net": "jasmine spec/robustness_spec.js",
     "test:golden": "jasmine spec/golden_spec.js",
-    "lint": "eslint examples spec"
+    "lint": "eslint examples spec resources"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
