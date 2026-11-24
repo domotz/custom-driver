@@ -1,0 +1,151 @@
+{
+    "transmitter validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "transmitter get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "Name",
+                "name": "Name",
+                "value": "NVX-Lobby-TX"
+            },
+            {
+                "uid": "Model",
+                "name": "Model",
+                "value": "DM-NVX-351"
+            },
+            {
+                "uid": "SerialNumber",
+                "name": "Serial number",
+                "value": "2218UBH00123"
+            },
+            {
+                "uid": "Version",
+                "name": "Version",
+                "value": "6.5001.00019"
+            },
+            {
+                "uid": "DeviceMode",
+                "name": "Device mode",
+                "value": "Transmitter"
+            }
+        ],
+        "table": {
+            "label": "Stream Transmit",
+            "columnHeaders": [
+                {
+                    "label": "MulticastAddress"
+                },
+                {
+                    "label": "StreamLocation"
+                },
+                {
+                    "label": "ActiveBitrate"
+                },
+                {
+                    "label": "HorizontalResolution"
+                },
+                {
+                    "label": "VerticalResolution"
+                }
+            ],
+            "records": [
+                {
+                    "id": "StreamTransmit: 0",
+                    "values": [
+                        "239.8.0.10",
+                        "rtsp://192.168.1.50:554/live/1/stream.sdp",
+                        14,
+                        1920,
+                        1080
+                    ]
+                },
+                {
+                    "id": "StreamTransmit: 1",
+                    "values": [
+                        "239.8.0.11",
+                        "rtsp://192.168.1.50:554/live/2/stream.sdp",
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    "receiver validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "receiver get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "Name",
+                "name": "Name",
+                "value": "NVX-Lobby-RX"
+            },
+            {
+                "uid": "Model",
+                "name": "Model",
+                "value": "DM-NVX-351"
+            },
+            {
+                "uid": "SerialNumber",
+                "name": "Serial number",
+                "value": "2218UBH00456"
+            },
+            {
+                "uid": "Version",
+                "name": "Version",
+                "value": "6.5001.00019"
+            },
+            {
+                "uid": "DeviceMode",
+                "name": "Device mode",
+                "value": "Receiver"
+            }
+        ],
+        "table": {
+            "label": "Stream Receive",
+            "columnHeaders": [
+                {
+                    "label": "MulticastAddress"
+                },
+                {
+                    "label": "InitiatorAddress"
+                },
+                {
+                    "label": "HorizontalResolution"
+                },
+                {
+                    "label": "VerticalResolution"
+                }
+            ],
+            "records": [
+                {
+                    "id": "StreamReceive: 0",
+                    "values": [
+                        "239.8.0.10",
+                        "192.168.1.50",
+                        1920,
+                        1080
+                    ]
+                },
+                {
+                    "id": "StreamReceive: 1",
+                    "values": [
+                        "239.8.0.99",
+                        "",
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    }
+}

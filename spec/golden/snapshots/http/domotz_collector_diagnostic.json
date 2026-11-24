@@ -1,0 +1,67 @@
+{
+    "collector 8.7.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "collector 8.7.0 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "actual_discovery_counter",
+                "name": "Actual Discovery Counter",
+                "value": 1432,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "missed_discovery_counter",
+                "name": "Missed Discovery Counter",
+                "value": 18,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Error Counts",
+            "columnHeaders": [
+                {
+                    "label": "Count",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ENOSPC",
+                    "values": [
+                        0
+                    ]
+                },
+                {
+                    "id": "EROFS",
+                    "values": [
+                        2
+                    ]
+                },
+                {
+                    "id": "EACCES",
+                    "values": [
+                        0
+                    ]
+                },
+                {
+                    "id": "EPERM",
+                    "values": [
+                        5
+                    ]
+                },
+                {
+                    "id": "ECONNRESET",
+                    "values": [
+                        37
+                    ]
+                }
+            ]
+        }
+    }
+}

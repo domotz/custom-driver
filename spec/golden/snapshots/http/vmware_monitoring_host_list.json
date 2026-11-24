@@ -1,0 +1,110 @@
+{
+    "vcenter 8.0.2 all hosts validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 8.0.2 all hosts get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Hosts Info",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Operating System",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CPU Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Processors",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Cores",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Memory",
+                    "unit": "GiB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Memory Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "CPU Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Power State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connection State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Uptime",
+                    "unit": "hours",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "host-12",
+                    "values": [
+                        "esx01.lab.local",
+                        "Dell Inc. PowerEdge R650",
+                        "VMware ESXi 8.0.2 build-22380479 (vmnix-x86)",
+                        "Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz",
+                        2,
+                        64,
+                        "256.00",
+                        "50.00",
+                        "10.00",
+                        "poweredOn",
+                        "connected",
+                        "OK",
+                        336
+                    ]
+                },
+                {
+                    "id": "host-34",
+                    "values": [
+                        "esx02.lab.local",
+                        "HPE ProLiant DL380 Gen10",
+                        "VMware ESXi 8.0.1 build-21813344 (vmnix-x86)",
+                        "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+                        2,
+                        24,
+                        "128.00",
+                        "25.00",
+                        "50.00",
+                        "poweredOff",
+                        "disconnected",
+                        "NOT OK",
+                        2
+                    ]
+                }
+            ]
+        }
+    }
+}

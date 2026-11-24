@@ -1,0 +1,148 @@
+{
+    "winrm, local accounts validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, local accounts get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Host Users",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Description"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        "Administrator",
+                        "True",
+                        "Built-in account for administering the computer/domain"
+                    ]
+                },
+                {
+                    "id": "defaultaccount",
+                    "values": [
+                        "DefaultAccount",
+                        "False",
+                        "A user account managed by the system."
+                    ]
+                },
+                {
+                    "id": "guest",
+                    "values": [
+                        "Guest",
+                        "False",
+                        "Built-in account for guest access to the computer/domain"
+                    ]
+                },
+                {
+                    "id": "john.doe",
+                    "values": [
+                        "john.doe",
+                        "True",
+                        "Marketing manager"
+                    ]
+                },
+                {
+                    "id": "svc_backup",
+                    "values": [
+                        "svc_backup",
+                        "True",
+                        ""
+                    ]
+                },
+                {
+                    "id": "wdagutilityaccount",
+                    "values": [
+                        "WDAGUtilityAccount",
+                        "False",
+                        "A user account managed and used by the system for Windows Defender Applicati..."
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, local accounts validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, local accounts get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Host Users",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Description"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        "Administrator",
+                        "True",
+                        "Built-in account for administering the computer/domain"
+                    ]
+                },
+                {
+                    "id": "defaultaccount",
+                    "values": [
+                        "DefaultAccount",
+                        "False",
+                        "A user account managed by the system."
+                    ]
+                },
+                {
+                    "id": "guest",
+                    "values": [
+                        "Guest",
+                        "False",
+                        "Built-in account for guest access to the computer/domain"
+                    ]
+                },
+                {
+                    "id": "john.doe",
+                    "values": [
+                        "john.doe",
+                        "True",
+                        "Marketing manager"
+                    ]
+                },
+                {
+                    "id": "svc_backup",
+                    "values": [
+                        "svc_backup",
+                        "True",
+                        ""
+                    ]
+                },
+                {
+                    "id": "wdagutilityaccount",
+                    "values": [
+                        "WDAGUtilityAccount",
+                        "False",
+                        "A user account managed and used by the system for Windows Defender Applicati..."
+                    ]
+                }
+            ]
+        }
+    }
+}

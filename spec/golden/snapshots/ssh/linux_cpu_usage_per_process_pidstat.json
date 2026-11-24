@@ -1,0 +1,48 @@
+{
+    "ubuntu 22.04 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 22.04 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "812-sshd",
+                "name": "812-sshd",
+                "value": "0.03",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1190-sshd",
+                "name": "1190-sshd",
+                "value": "0.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1422-nginx",
+                "name": "1422-nginx",
+                "value": "0.55",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1423-nginx",
+                "name": "1423-nginx",
+                "value": "51.90",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "1424-nginx",
+                "name": "1424-nginx",
+                "value": "4.50",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

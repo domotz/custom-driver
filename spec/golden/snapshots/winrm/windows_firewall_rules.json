@@ -1,0 +1,145 @@
+{
+    "winrm, two rules validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, two rules get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "FireWall rules",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Group"
+                },
+                {
+                    "label": "Direction"
+                },
+                {
+                    "label": "Action"
+                },
+                {
+                    "label": "Enabled"
+                }
+            ],
+            "records": [
+                {
+                    "id": "{6f2a9c1b-3d4e-4b7a-8c55-1e0d2a9b7f31}",
+                    "values": [
+                        "Skype",
+                        "N/A",
+                        "Inbound",
+                        "Allow",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "{0b7d52e4-91af-4c0e-a3d8-5c6e7f8a9b10}",
+                    "values": [
+                        "AnyDesk",
+                        "N/A",
+                        "Outbound",
+                        "Block",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, one rule is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, one rule is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "FireWall rules",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Group"
+                },
+                {
+                    "label": "Direction"
+                },
+                {
+                    "label": "Action"
+                },
+                {
+                    "label": "Enabled"
+                }
+            ],
+            "records": [
+                {
+                    "id": "{6f2a9c1b-3d4e-4b7a-8c55-1e0d2a9b7f31}",
+                    "values": [
+                        "Skype",
+                        "N/A",
+                        "Inbound",
+                        "Allow",
+                        "Yes"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, two rules validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, two rules get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "FireWall rules",
+            "columnHeaders": [
+                {
+                    "label": "Name"
+                },
+                {
+                    "label": "Group"
+                },
+                {
+                    "label": "Direction"
+                },
+                {
+                    "label": "Action"
+                },
+                {
+                    "label": "Enabled"
+                }
+            ],
+            "records": [
+                {
+                    "id": "{6f2a9c1b-3d4e-4b7a-8c55-1e0d2a9b7f31}",
+                    "values": [
+                        "Skype",
+                        "N/A",
+                        "Inbound",
+                        "Allow",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "{0b7d52e4-91af-4c0e-a3d8-5c6e7f8a9b10}",
+                    "values": [
+                        "AnyDesk",
+                        "N/A",
+                        "Outbound",
+                        "Block",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}

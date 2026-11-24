@@ -1,0 +1,136 @@
+{
+    "postgres instance, aurora and sql server metrics absent validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "postgres instance, aurora and sql server metrics absent get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "burst_balance",
+                "name": "Burst balance",
+                "value": "88.500",
+                "unit": "%"
+            },
+            {
+                "uid": "database_connections",
+                "name": "Connection",
+                "value": "23.000"
+            },
+            {
+                "uid": "utilization",
+                "name": "CPU: Utilization",
+                "value": "17.813",
+                "unit": "%"
+            },
+            {
+                "uid": "credit_balance",
+                "name": "Credit CPU: Balance",
+                "value": "288.000"
+            },
+            {
+                "uid": "credit_usage",
+                "name": "Credit CPU: Usage",
+                "value": "0.450"
+            },
+            {
+                "uid": "disk_queue_depth",
+                "name": "Disk: Queue depth",
+                "value": "0.003"
+            },
+            {
+                "uid": "read_iops",
+                "name": "Disk: Read IOPS",
+                "value": "12.500",
+                "unit": "Rps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "read_latency",
+                "name": "Disk: Read latency",
+                "value": "0.002",
+                "unit": "S"
+            },
+            {
+                "uid": "read_throughput",
+                "name": "Disk: Read throughput",
+                "value": "204800.000",
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "write_iops",
+                "name": "Disk: Write IOPS",
+                "value": "45.250",
+                "unit": "Rps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "write_latency",
+                "name": "Disk: Write latencys",
+                "value": "0.004",
+                "unit": "s"
+            },
+            {
+                "uid": "write_throughput",
+                "name": "Disk: Write throughput",
+                "value": "819200.000",
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "ebs_byte_balance",
+                "name": "EBS: Byte balance",
+                "value": "99.000",
+                "unit": "%"
+            },
+            {
+                "uid": "ebs_io_balance",
+                "name": "EBS: IO balance",
+                "value": "98.500",
+                "unit": "%"
+            },
+            {
+                "uid": "freeable_memory",
+                "name": "Memory, freeable",
+                "value": "1073741824.000",
+                "unit": "B"
+            },
+            {
+                "uid": "network_receive_throughput",
+                "name": "Network: Receive throughput",
+                "value": "51200.000",
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "network_throughput",
+                "name": "Network: Throughput",
+                "value": "128000.000",
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "network_transmit_throughput",
+                "name": "Network: Transmit throughput",
+                "value": "76800.000",
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "replica_lag",
+                "name": "Replication: Lag",
+                "value": "0.500",
+                "unit": "s"
+            },
+            {
+                "uid": "swap_usage",
+                "name": "Swap usage",
+                "value": "0.000",
+                "unit": "B"
+            }
+        ],
+        "table": null
+    }
+}

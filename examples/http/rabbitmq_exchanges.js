@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver gets exchanges from RabbitMQ management plugin provided an HTTP-based API using HTTP agent.
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
@@ -25,7 +25,7 @@
  * Acknowledged per second: The rate of messages (per second) delivered to clients and acknowledged.
  * Acknowledged: The number of messages delivered to clients and acknowledged.
  * -------------------------------------
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
  */
 
 var port = 15672;
@@ -57,30 +57,30 @@ var table = D.createTable("Exchanges", [
  * @returns promise for http response body
  */
 function httpGet(url) {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: url,
-        port: port,
-        username: D.device.username(),
-        password: D.device.password(),
-        auth: "basic"
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: url,
+            port: port,
+            username: D.device.username(),
+            password: D.device.password(),
+            auth: "basic"
 
-    }, function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(body);
+        }, function (err, response, body) {
+            if (err) {
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -92,6 +92,7 @@ function getExchanges(page) {
     var params = [];
     params.push("page_size=100");
     params.push("page=" + page);
+    // eslint-disable-next-line no-undef -- optional filter, only set if declared in this file
     if (typeof exchangeNameRegex !== "undefined") params.push("name=" + exchangeNameRegex + "&use_regex=true");
     query += "?" + params.join("&");
     return httpGet(query)
@@ -100,19 +101,18 @@ function getExchanges(page) {
             exchanges = exchanges.concat(data.items);
             if (data.page < data.page_count) {
                 return getExchanges(++page);
-            }
-            else {
+            } else {
                 return exchanges;
             }
         });
 }
 
-//fill the dynamic table with data related to exchanges. 
+//fill the dynamic table with data related to exchanges.
 function fillTable(exchanges) {
     exchanges.forEach(function (d) {
         d.forEach(function (item) {
             var recordId = ("[" + item.name + "]" + "[" + item.vhost + "]").substring(0, 50);
-            if (vhost === "/"){
+            if (vhost === "/") {
                 // Igore root level exchanges and only collect vhost child ones.
                 // Remove conditional in case you want to monitor them as well
                 return;
@@ -163,7 +163,7 @@ function fillTable(exchanges) {
 
 // load exchanges informations
 function loadData() {
-    return D.q.all([
+    return Promise.all([
         getExchanges()
     ]);
 }
@@ -177,8 +177,11 @@ function validate() {
     loadData()
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
-
 }
 
 //Indicate the successful execution for variable list and table

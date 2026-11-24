@@ -1,0 +1,150 @@
+{
+    "winrm, windows 11 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, windows 11 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-memory",
+                "name": "Total Memory",
+                "value": 16,
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "available-memory",
+                "name": "Available Memory",
+                "value": "6.50",
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "59.38",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-name",
+                "name": "CPU Name",
+                "value": "12th Gen Intel(R) Core(TM) i7-1255U",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "max-clock-speed",
+                "name": "Max Clock Speed",
+                "value": 1.7,
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "logical-processors-number",
+                "name": "Logical Processors Number",
+                "value": 12,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores-number",
+                "name": "Cores Number",
+                "value": 10,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-status",
+                "name": "CPU Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-average",
+                "name": "CPU Load Average (10 sec)",
+                "value": "14.37",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "ssh, windows 11 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, windows 11 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-memory",
+                "name": "Total Memory",
+                "value": 16,
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "available-memory",
+                "name": "Available Memory",
+                "value": "6.50",
+                "unit": "GiB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "59.38",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-name",
+                "name": "CPU Name",
+                "value": "12th Gen Intel(R) Core(TM) i7-1255U",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "max-clock-speed",
+                "name": "Max Clock Speed",
+                "value": 1.7,
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "logical-processors-number",
+                "name": "Logical Processors Number",
+                "value": 12,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores-number",
+                "name": "Cores Number",
+                "value": 10,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-status",
+                "name": "CPU Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-average",
+                "name": "CPU Load Average (10 sec)",
+                "value": "14.37",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,150 @@
+{
+    "intel MacBook Pro, 38% free memory validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "intel MacBook Pro, 38% free memory get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-memory",
+                "name": "Total Memory",
+                "value": "32",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "available-memory",
+                "name": "Available Memory",
+                "value": 12.16,
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "62.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-name",
+                "name": "CPU Name",
+                "value": "8-Core Intel Core i9",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "processor-speed",
+                "name": "Processor Speed",
+                "value": "2.3",
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "physical-processors-packages",
+                "name": "Physical Processors Packages",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "logical-processors-number",
+                "name": "Logical Processors Number",
+                "value": 16,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores-number",
+                "name": "Cores Number",
+                "value": 8,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-average",
+                "name": "CPU Load Average (1min)",
+                "value": 26.875,
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "apple silicon Mac mini validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "apple silicon Mac mini get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "total-memory",
+                "name": "Total Memory",
+                "value": "16",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "available-memory",
+                "name": "Available Memory",
+                "value": 9.92,
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "38.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-name",
+                "name": "CPU Name",
+                "value": "Apple M2 Pro",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "processor-speed",
+                "name": "Processor Speed",
+                "value": 0,
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "physical-processors-packages",
+                "name": "Physical Processors Packages",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "logical-processors-number",
+                "name": "Logical Processors Number",
+                "value": 10,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cores-number",
+                "name": "Cores Number",
+                "value": 10,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-average",
+                "name": "CPU Load Average (1min)",
+                "value": 12,
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

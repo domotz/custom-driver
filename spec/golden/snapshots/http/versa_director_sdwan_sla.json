@@ -1,0 +1,417 @@
+{
+    "counts only (site walk disabled) validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "counts only (site walk disabled) get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "paths-up",
+                "name": "Paths Up",
+                "value": 112,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-down",
+                "name": "Paths Down",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-suspended",
+                "name": "Paths Suspended",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-active",
+                "name": "Paths Active",
+                "value": 114,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-sampled",
+                "name": "Sites Sampled",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-available",
+                "name": "Sites Monitored",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "worst-latency",
+                "name": "Worst Latency",
+                "value": null,
+                "unit": "ms",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "worst-loss",
+                "name": "Worst Loss",
+                "value": null,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "source-appliance",
+                "name": "Source Appliance",
+                "value": "HUB-Frankfurt",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "SD-WAN SLA",
+            "columnHeaders": [
+                {
+                    "label": "Site",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Forward Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reverse Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Forward Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reverse Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": []
+        }
+    },
+    "site walk of two sites validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "site walk of two sites get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "paths-up",
+                "name": "Paths Up",
+                "value": 112,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-down",
+                "name": "Paths Down",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-suspended",
+                "name": "Paths Suspended",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-active",
+                "name": "Paths Active",
+                "value": 114,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-sampled",
+                "name": "Sites Sampled",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-available",
+                "name": "Sites Monitored",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "worst-latency",
+                "name": "Worst Latency",
+                "value": null,
+                "unit": "ms",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "worst-loss",
+                "name": "Worst Loss",
+                "value": null,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "source-appliance",
+                "name": "Source Appliance",
+                "value": "HUB-Frankfurt",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "SD-WAN SLA",
+            "columnHeaders": [
+                {
+                    "label": "Site",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Forward Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reverse Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Forward Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reverse Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan-n-a-n-a",
+                    "values": [
+                        "branch-milan",
+                        "N/A",
+                        "N/A",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "id": "branch-rome-n-a-n-a",
+                    "values": [
+                        "branch-rome",
+                        "N/A",
+                        "N/A",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+                }
+            ]
+        }
+    },
+    "release with per-path metrics, by hostname validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "release with per-path metrics, by hostname get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "paths-up",
+                "name": "Paths Up",
+                "value": 112,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-down",
+                "name": "Paths Down",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-suspended",
+                "name": "Paths Suspended",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "paths-active",
+                "name": "Paths Active",
+                "value": 114,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-sampled",
+                "name": "Sites Sampled",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "sites-available",
+                "name": "Sites Monitored",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "worst-latency",
+                "name": "Worst Latency",
+                "value": 140,
+                "unit": "ms",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "worst-loss",
+                "name": "Worst Loss",
+                "value": 6.25,
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "source-appliance",
+                "name": "Source Appliance",
+                "value": "HUB-Frankfurt",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "SD-WAN SLA",
+            "columnHeaders": [
+                {
+                    "label": "Site",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Forward Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reverse Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Forward Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Reverse Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan-wan1-wan1",
+                    "values": [
+                        "branch-milan",
+                        "WAN1",
+                        "WAN1",
+                        24,
+                        3,
+                        4,
+                        0.1,
+                        0
+                    ]
+                },
+                {
+                    "id": "branch-rome-wan1-wan2",
+                    "values": [
+                        "branch-rome",
+                        "WAN1",
+                        "WAN2",
+                        88,
+                        21,
+                        19,
+                        4.5,
+                        6.25
+                    ]
+                },
+                {
+                    "id": "branch-rome-lte-wan2",
+                    "values": [
+                        "branch-rome",
+                        "LTE",
+                        "WAN2",
+                        140,
+                        35,
+                        30,
+                        0,
+                        0.5
+                    ]
+                }
+            ]
+        }
+    }
+}

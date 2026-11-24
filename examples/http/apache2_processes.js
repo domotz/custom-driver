@@ -1,28 +1,27 @@
 /**
  * This driver show apache2 status
  * The communication protocol is http
- * 
+ *
  * This driver create a table for apache2 processes with this columns:
  * %Srv: Child Server number - generation
  * %PID: OS process ID
- * %Acc:	Number of accesses this connection / this child / this slot
- * %M:	Mode of operation
- * %CPU:	CPU usage, number of seconds
- * %SS:	Seconds since beginning of most recent request
- * %Req:	Milliseconds required to process most recent request
- * %Dur:	Sum of milliseconds required to process all requests
- * %Conn:	Kilobytes transferred this connection
- * %Child:	Megabytes transferred this child
- * %Slot:	Total megabytes transferred this slot
+ * %Acc:    Number of accesses this connection / this child / this slot
+ * %M:  Mode of operation
+ * %CPU:    CPU usage, number of seconds
+ * %SS: Seconds since beginning of most recent request
+ * %Req:    Milliseconds required to process most recent request
+ * %Dur:    Sum of milliseconds required to process all requests
+ * %Conn:   Kilobytes transferred this connection
+ * %Child:  Megabytes transferred this child
+ * %Slot:   Total megabytes transferred this slot
  * %Client
  * %Protocol
  * %VHost
  * %Request
- * 
+ *
  * This driver is tested with Apache/2.4.41
  * This driver requires to open server-status path in the apache server (https://httpd.apache.org/docs/current/mod/mod_status.html)
  */
-
 
 var apacheHttpParams = {
     // protocol: "https", // To use if the server under https
@@ -65,30 +64,29 @@ var table = D.createTable(
         { label: "Client" },
         { label: "Protocol" },
         { label: "VHost" },
-        { label: "Request" },
+        { label: "Request" }
     ]
 );
 
 /**
- * 
+ *
  * @returns Promise wait for server-status page to be loaded
  */
 function getApache2Status() {
-    var d = D.q.defer();
-    D.device.http.get(apacheHttpParams, function (error, response, body) {
-        if (error) {
-            failure(error);
-        }
-        if(response.statusCode == 401){
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if(response.statusCode == 404){
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get(apacheHttpParams, function (error, response, body) {
+            if (error) {
+                return failure(error);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            resolve(body);
+        });
     });
-
-    return d.promise;
 }
 
 function buildTable(body) {
@@ -99,7 +97,7 @@ function buildTable(body) {
     }).forEach(function (node, index) {
         var row = node.children.map(function (td, index) {
             var text = $(td).text().trim();
-            if(index == 3){
+            if (index == 3) {
                 return scoreboardKey[text];
             }
             return text;
@@ -122,10 +120,9 @@ function failure(err) {
 */
 function validate() {
     getApache2Status()
-        .then(function(){ D.success() ;})
+        .then(function () { D.success();})
         .catch(failure);
 }
-
 
 /**
 * @remote_procedure

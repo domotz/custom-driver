@@ -1,4 +1,3 @@
-
 /**
  * This driver extracts docker images information
  * The communication protocol is SSH
@@ -16,7 +15,6 @@
  * Tested under Docker version 19.03.15, build 99e3ed8919
  */
 
-
 var sshConfig = {
     username: D.device.username(),
     password: D.device.password(),
@@ -32,7 +30,7 @@ var table = D.createTable(
         { label: "Latest Image Created Date" },
         { label: "Latest Image Size", unit: "kB" },
         { label: "Total Images Size", unit: "kB" },
-        { label: "Total number of Images" },
+        { label: "Total number of Images" }
     ]
 );
 
@@ -45,40 +43,42 @@ function checkSshError(err) {
 }
 
 /**
- * 
+ *
  * @returns Promise wait for docker images result
  */
 function getDockerImages() {
-    var d = D.q.defer();
-    D.device.sendSSHCommand(sshConfig, function (out, err) {
-        if (err) checkSshError(err);
-        var images = out.split("\n").map(function (json_string) {
-            return JSON.parse(json_string);
+    return new Promise(function (resolve) {
+        D.device.sendSSHCommand(sshConfig, function (out, err) {
+            if (err) checkSshError(err);
+            var images = out.split("\n").map(function (json_string) {
+                return JSON.parse(json_string);
+            });
+            resolve(images);
         });
-        d.resolve(images);
     });
-
-    return d.promise;
 }
 
 /**
- * 
- * @param {string} value 
+ *
+ * @param {string} value
  * @returns convert value to KB
  */
 function convertToKB(value) {
     if (!value || value === "N/A") return null;
-    var val = value.substring(0, value.length - 2);
-    var unit = value.substring(value.length - 2, value.length);
-    switch (unit.toLowerCase()) {
-    case "mb": return val * 1000;
-    case "gb": return val * 1000000;
-    default: return val;
+    // docker prints decimal units: "800B", "1.84kB", "72.8MB", "1.2GB"
+    var match = /^([\d.]+)\s*([kMG]?B)$/i.exec(value.trim());
+    if (!match) return null;
+    var val = parseFloat(match[1]);
+    switch (match[2].toLowerCase()) {
+        case "b": return val / 1000;
+        case "mb": return val * 1000;
+        case "gb": return val * 1000000;
+        default: return val;
     }
 }
 
 /**
- * 
+ *
  * @param {[object]} jsonImages list of docker images
  * @returns docker images grouped by repository
  */
@@ -88,7 +88,7 @@ function groupImagesByRepository(jsonImages) {
             // parsing creation date
             var dateMatch = image.CreatedAt.match(/^(....)-(..)-(..) (..):(..):(..).*$/);
             var date = new Date();
-            date.setFullYear(dateMatch[1], dateMatch[2], dateMatch[3]);
+            date.setFullYear(dateMatch[1], dateMatch[2] - 1, dateMatch[3]);
             date.setHours(dateMatch[4], dateMatch[5], dateMatch[6]);
             image.createAtTimestamp = date.getTime();
             image.sizeKb = convertToKB(image.Size);
@@ -106,9 +106,8 @@ function groupImagesByRepository(jsonImages) {
 
 }
 
-
 /**
- * fill monitoring table with data related to docker 
+ * fill monitoring table with data related to docker
  * %Id: the repository
  * %Latest Tag
  * %Latest Image ID
@@ -117,7 +116,7 @@ function groupImagesByRepository(jsonImages) {
  * %Latest Image Size
  * %Total Images Size
  * %Total number of Images
- * @param {[string]} images 
+ * @param {[string]} images
  */
 function fillTable(images) {
     Object.keys(images).forEach(function (repository) {
@@ -130,7 +129,7 @@ function fillTable(images) {
             image.CreatedAt,
             image.sizeKb,
             totalSize,
-            images[repository].length,
+            images[repository].length
         ]);
     });
     D.success(table);
@@ -151,7 +150,6 @@ function validate() {
         .then(function () { D.success(); })
         .catch(failure);
 }
-
 
 /**
 * @remote_procedure

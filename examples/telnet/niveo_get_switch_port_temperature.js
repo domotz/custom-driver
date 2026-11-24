@@ -1,5 +1,5 @@
 /**
- * This Driver Extracts temperature readings for the ports of a Niveo Switch 
+ * This Driver Extracts temperature readings for the ports of a Niveo Switch
  * Communication protocol is Telnet with negotiation.
  * Creates multiple custom driver variables for each of the switch's ports.
  */
@@ -20,7 +20,7 @@ var telnetOptions = {
     passwordPrompt: "Password:",
     // Carriage return is needed to indicate the prompt inputs are entered
     username: D.device.username() + "\r",
-    password: D.device.password() + "\r",
+    password: D.device.password() + "\r"
 };
 
 /**
@@ -33,7 +33,6 @@ function validateLoggedIn(output) {
         D.failure(D.errorType.AUTHENTICATION_ERROR);
     }
 }
-
 
 /**
 * @remote_procedure

@@ -1,6 +1,6 @@
 {
     "logo": "redis.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Redis Server Stistics",
     "description": "This script extracts Redis metrics using telnet over redis port (default 6379). Extracted statistics are Client connections metrics, Persistence metrics (RDB and ADF info), and General statistics",
     "category": "Software Integration",

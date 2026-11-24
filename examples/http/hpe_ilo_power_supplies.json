@@ -1,6 +1,6 @@
 {
     "logo": "hpe.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "HPE iLO Power Supplies",
     "description": "Monitors the operational status of power supply units for HPE Integrated Lights-Out (iLO) systems using the Redfish API",
     "category": "Hardware Integration",

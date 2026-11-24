@@ -1,6 +1,6 @@
 {
     "logo": "crestron.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Crestron DM-NVX Properties",
     "description": "This script dynamically creates a variables section that contains the Discovered Streams with the following columns: Session name, Bitrate, Resolution, Multicast Address. Also, it creates a tables section which contain the following properties: ID, Multicast Address, Initiator Address, Horizontal Resolution, Vertical Resolution",
     "category": "Hardware Integration",

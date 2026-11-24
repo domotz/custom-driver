@@ -1,0 +1,197 @@
+{
+    "winrm, three sessions, default count validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three sessions, default count get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Veeam Backup Sessions",
+            "columnHeaders": [
+                {
+                    "label": "VM Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Job Name"
+                },
+                {
+                    "label": "Start Time"
+                },
+                {
+                    "label": "End Time"
+                },
+                {
+                    "label": "Job Duration (min)"
+                },
+                {
+                    "label": "Time from last backup (hours)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "dc-01",
+                        "Success",
+                        "Backup Job dc-01",
+                        "14/01/2026 22:00:04",
+                        "14/01/2026 22:41:19",
+                        "41",
+                        "11"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "dc-01",
+                        "Warning",
+                        "Backup Job dc-01",
+                        "13/01/2026 22:00:03",
+                        "13/01/2026 23:07:44",
+                        "68",
+                        "24"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "dc-01",
+                        "Failed",
+                        "Backup Job dc-01",
+                        "12/01/2026 22:00:05",
+                        "12/01/2026 22:05:12",
+                        "5",
+                        "25"
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, latest session only validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, latest session only get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Veeam Backup Sessions",
+            "columnHeaders": [
+                {
+                    "label": "VM Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Job Name"
+                },
+                {
+                    "label": "Start Time"
+                },
+                {
+                    "label": "End Time"
+                },
+                {
+                    "label": "Job Duration (min)"
+                },
+                {
+                    "label": "Time from last backup (hours)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "dc-01",
+                        "Success",
+                        "Backup Job dc-01",
+                        "14/01/2026 22:00:04",
+                        "14/01/2026 22:41:19",
+                        "41",
+                        "11"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three sessions validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three sessions get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Veeam Backup Sessions",
+            "columnHeaders": [
+                {
+                    "label": "VM Name"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "Job Name"
+                },
+                {
+                    "label": "Start Time"
+                },
+                {
+                    "label": "End Time"
+                },
+                {
+                    "label": "Job Duration (min)"
+                },
+                {
+                    "label": "Time from last backup (hours)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "dc-01",
+                        "Success",
+                        "Backup Job dc-01",
+                        "14/01/2026 22:00:04",
+                        "14/01/2026 22:41:19",
+                        "41",
+                        "11"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "dc-01",
+                        "Warning",
+                        "Backup Job dc-01",
+                        "13/01/2026 22:00:03",
+                        "13/01/2026 23:07:44",
+                        "68",
+                        "24"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "dc-01",
+                        "Failed",
+                        "Backup Job dc-01",
+                        "12/01/2026 22:00:05",
+                        "12/01/2026 22:05:12",
+                        "5",
+                        "25"
+                    ]
+                }
+            ]
+        }
+    }
+}

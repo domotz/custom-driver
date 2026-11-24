@@ -1,0 +1,126 @@
+{
+    "one online controller, one offline computer validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "one online controller, one offline computer get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "List devices",
+            "columnHeaders": [
+                {
+                    "label": "Device Name",
+                    "valueType": "STRING",
+                    "key": "device_name"
+                },
+                {
+                    "label": "Room ID",
+                    "valueType": "STRING",
+                    "key": "room_id"
+                },
+                {
+                    "label": "Room Name",
+                    "valueType": "STRING",
+                    "key": "room_name"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING",
+                    "key": "serial_number"
+                },
+                {
+                    "label": "Vendor",
+                    "valueType": "STRING",
+                    "key": "vendor"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING",
+                    "key": "model"
+                },
+                {
+                    "label": "Platform OS",
+                    "valueType": "STRING",
+                    "key": "platform_os"
+                },
+                {
+                    "label": "App Version",
+                    "valueType": "STRING",
+                    "key": "app_version"
+                },
+                {
+                    "label": "Tag",
+                    "valueType": "STRING",
+                    "key": "tag"
+                },
+                {
+                    "label": "Enrolled in ZDM",
+                    "valueType": "STRING",
+                    "key": "enrolled_in_zdm"
+                },
+                {
+                    "label": "Connected to ZDM",
+                    "valueType": "STRING",
+                    "key": "connected_to_zdm"
+                },
+                {
+                    "label": "Device Type",
+                    "valueType": "STRING",
+                    "key": "device_type"
+                },
+                {
+                    "label": "Device Status",
+                    "valueType": "STRING",
+                    "key": "device_status"
+                },
+                {
+                    "label": "Last Online",
+                    "valueType": "DATETIME",
+                    "key": "last_online"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dev_abc123",
+                    "values": [
+                        "Boardroom Controller",
+                        "room_001",
+                        "Boardroom",
+                        "SN-ZR-0001",
+                        "Logitech",
+                        "Tap IP",
+                        "Linux",
+                        "6.2.0.4118",
+                        "HQ",
+                        "true",
+                        "true",
+                        "Zoom Rooms Controller",
+                        "Online",
+                        "2024-05-07 08:09:10"
+                    ]
+                },
+                {
+                    "id": "dev_def456",
+                    "values": [
+                        "Huddle Computer",
+                        "room_002",
+                        "Huddle 2",
+                        "SN-ZR-0002",
+                        "Dell",
+                        "OptiPlex 7090",
+                        "Windows 11",
+                        "6.1.5.2211",
+                        "Branch",
+                        "false",
+                        "false",
+                        "Zoom Rooms Computer",
+                        "Offline",
+                        "2024-04-30 23:59:01"
+                    ]
+                }
+            ]
+        }
+    }
+}

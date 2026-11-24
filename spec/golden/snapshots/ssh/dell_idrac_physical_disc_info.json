@@ -1,0 +1,138 @@
+{
+    "iDRAC 9 with PERC H730 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 with PERC H730 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Physical Disks Info",
+            "columnHeaders": [
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Description",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Raid Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Raid Types",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Usage",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Used Size",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Free Size",
+                    "unit": "B",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Manufacturer",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Bus Protocol",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "disk.bay.0:enclosure.internal.0-1:raid.integrated.",
+                    "values": [
+                        "PhysicalDisk",
+                        "Disk 0 in Backplane 1 of Integrated RAID Controller 1",
+                        "Ok",
+                        "Online",
+                        "Unknown",
+                        558.375,
+                        "100.00",
+                        558.375,
+                        "0",
+                        "SEAGATE",
+                        "ST600MM0099",
+                        "SAS"
+                    ]
+                },
+                {
+                    "id": "disk.bay.1:enclosure.internal.0-1:raid.integrated.",
+                    "values": [
+                        "PhysicalDisk",
+                        "Disk 1 in Backplane 1 of Integrated RAID Controller 1",
+                        "Warning",
+                        "Degraded",
+                        "Unknown",
+                        558.375,
+                        "50.00",
+                        279.1875,
+                        "299775295488",
+                        "SEAGATE",
+                        "ST600MM0099",
+                        "SAS"
+                    ]
+                },
+                {
+                    "id": "disk.bay.2:enclosure.internal.0-1:raid.integrated.",
+                    "values": [
+                        "PhysicalDisk",
+                        "Disk 2 in Backplane 1 of Integrated RAID Controller 1",
+                        "Ok",
+                        "Ready",
+                        "Unknown",
+                        446.625,
+                        "0.00",
+                        0,
+                        "479559942144",
+                        "INTEL",
+                        "SSDSC2KB480G7R",
+                        "SATA"
+                    ]
+                },
+                {
+                    "id": "disk.virtual.0:raid.integrated.1-1",
+                    "values": [
+                        "VirtualDisk",
+                        "Virtual Disk 0 on Integrated RAID Controller 1",
+                        "Ok",
+                        "-",
+                        "RAID-1",
+                        558.375,
+                        "-",
+                        "-",
+                        "-",
+                        "-",
+                        "-",
+                        "-"
+                    ]
+                }
+            ]
+        }
+    }
+}

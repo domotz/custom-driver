@@ -1,0 +1,38 @@
+{
+    "winrm, server 2019 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, server 2019 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu-load-average",
+                "name": "CPU Load Average",
+                "value": "23",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "ssh, server 2019 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, server 2019 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu-load-average",
+                "name": "CPU Load Average",
+                "value": "23",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "two vms in two resource groups validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two vms in two resource groups get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Azure Virtual Machines",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Resource Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "OS Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Location",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Size",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Image Publisher",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Image",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Image Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Image SKU",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Data Disks",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Provisioning State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hibernation Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Managed Disk",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Computer Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Network Interfaces",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Zone",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0a1b2c3d-1111-2222-3333-444455556666",
+                    "values": [
+                        "web-01",
+                        "Prod-RG",
+                        "Linux",
+                        "westeurope",
+                        "Standard_D2s_v3",
+                        "Canonical",
+                        "0001-com-ubuntu-server-jammy",
+                        "22.04.202310100",
+                        "22_04-lts-gen2",
+                        "N/A",
+                        "Succeeded",
+                        "Yes",
+                        "web-01_OsDisk_1",
+                        "web-01",
+                        "web-01-nic",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "9f8e7d6c-aaaa-bbbb-cccc-ddddeeeeffff",
+                    "values": [
+                        "db-01",
+                        "Data-RG",
+                        "Windows",
+                        "northeurope",
+                        "Standard_E4s_v3",
+                        "MicrosoftWindowsServer",
+                        "WindowsServer",
+                        "17763.4851.2310",
+                        "2019-Datacenter",
+                        "db-01-data",
+                        "Failed",
+                        "No",
+                        "db-01_OsDisk_1",
+                        "DB01",
+                        "db-01-nic, db-01-nic2",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

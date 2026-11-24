@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare vCenter Monitoring Datastore",
     "description": "This script retrieves information about visible datastores in VMware vCenter server",
     "category": "Software Integration",

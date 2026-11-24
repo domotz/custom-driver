@@ -1,0 +1,22 @@
+{
+    "as400 v6r1m1 italian validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "as400 v6r1m1 italian get_status": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "as400 v6r1m1 italian custom_1": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "as400 v6r1m1 italian custom_2": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    }
+}

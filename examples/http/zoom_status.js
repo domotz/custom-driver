@@ -17,7 +17,7 @@ var zoomStatus = D.createExternalDevice(zoomStatusURL);
 * @label Validate Association
 * @documentation This procedure is used to validate if the driver can be applied on a device and we can access the zoom status http resource
 */
-function validate(){
+function validate() {
     function verifyCanAccessResource(error, response, body) {
         if (response.statusCode === 401 || response.statusCode === 403) {
             D.failure(D.errorType.AUTHENTICATION_ERROR);
@@ -28,14 +28,14 @@ function validate(){
         }
     }
     zoomStatus.http.get(httpOptions, verifyCanAccessResource);
-} 
+}
 
 /**
 * @remote_procedure
 * @label Get Device Variables
 * @documentation This procedure is used for updating Zoom Services Status custom driver variables
 */
-function get_status(){
+function get_status() {
     var variables = [];
     // The callback method used for parsing the result from the HTTP call
     function callbackParser(error, response, body) {
@@ -62,8 +62,6 @@ function get_status(){
         var serivceRows = $(dataPath);
         serivceRows.each(serviceParserCb);
         D.success(variables);
-    }    
+    }
     zoomStatus.http.get(httpOptions, callbackParser);
 }
-
-

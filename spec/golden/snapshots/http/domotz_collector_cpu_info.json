@@ -1,0 +1,100 @@
+{
+    "collector 4 cores validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "collector 4 cores get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "CPUs Info",
+            "columnHeaders": [
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Speed",
+                    "unit": "MHz",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "User Time",
+                    "unit": "s",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Nice Time",
+                    "unit": "s",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Sys Time",
+                    "unit": "s",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Idle Time",
+                    "unit": "s",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "IRQ Time",
+                    "unit": "s",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "Intel(R) Celeron(R) N5105 @ 2.00GHz",
+                        2000,
+                        1523,
+                        1,
+                        612,
+                        83420,
+                        0
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "Intel(R) Celeron(R) N5105 @ 2.00GHz",
+                        2900,
+                        1499,
+                        1,
+                        602,
+                        83510,
+                        0
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "Intel(R) Celeron(R) N5105 @ 2.00GHz",
+                        1800,
+                        1610,
+                        0,
+                        700,
+                        83200,
+                        5
+                    ]
+                },
+                {
+                    "id": "4",
+                    "values": [
+                        "Intel(R) Celeron(R) N5105 @ 2.00GHz",
+                        2000,
+                        1475,
+                        0,
+                        590,
+                        83601,
+                        0
+                    ]
+                }
+            ]
+        }
+    }
+}

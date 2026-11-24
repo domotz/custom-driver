@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
- * Name: OPNSense Nat Rules 
+ * Domotz Custom Driver
+ * Name: OPNSense Nat Rules
  * Description: This script retrieves NAT rules data from an OPNsense firewall
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested with FreeBSD OPNsense version: 13.2-RELEASE-p5
  *
  * Creates a Custom Driver Table with the following columns:
@@ -12,7 +12,7 @@
  *      - Bytes: Number of bytes for each NAT rule.
  *      - States: Number of states for each NAT rule.
  *      - States creation: Number of state creations for each NAT rule.
- * 
+ *
  **/
 
 // ruleName: Set it to 'ALL' to retrieve all NAT rules,
@@ -24,38 +24,38 @@ var port = D.getParameter("portNumber");
 
 // Function to make an HTTP GET request to retrieve OPNsense Nat Rules
 function getRules() {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: "/api/diagnostics/firewall/pf_statistics/rules",
-        username: D.device.username(), //api key == username
-        password: D.device.password(), //api secret == password
-        protocol: "https",
-        auth: "basic",
-        jar: true,
-        rejectUnauthorized: false,
-        port: port
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: "/api/diagnostics/firewall/pf_statistics/rules",
+            username: D.device.username(), //api key == username
+            password: D.device.password(), //api secret == password
+            protocol: "https",
+            auth: "basic",
+            jar: true,
+            rejectUnauthorized: false,
+            port: port
 
-    }, function (error, response, body) {
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+        }, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // Custom Driver Table to store nat rules
 var table = D.createTable(
     "Nat Rules",
-    [                                       
+    [
         { label: "Evaluations", valueType: D.valueType.NUMBER },
         { label: "Bytes", unit: "B", valueType: D.valueType.NUMBER },
         { label: "States", valueType: D.valueType.NUMBER },
@@ -63,10 +63,10 @@ var table = D.createTable(
     ]
 );
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // Function to extract and insert NAT rules data into the custom driver table
@@ -74,7 +74,7 @@ function extractData(data) {
     if (data && data.rules && data.rules["nat rules"]) {
         var natRules = data.rules["nat rules"];
         for (var key in natRules) {
-            if (ruleName[0].toLowerCase() === "all" || ruleName.some(function(name) {
+            if (ruleName[0].toLowerCase() === "all" || ruleName.some(function (name) {
                 return (key.toLowerCase().indexOf(name.toLowerCase()) !== -1);
             })) {
                 var evaluations = natRules[key].evaluations;
@@ -102,7 +102,7 @@ function extractData(data) {
  * @label Validate OPNsense Device
  * @documentation This procedure is used to validate if data is accessible
  */
-function validate(){
+function validate() {
     getRules()
         .then(function (response) {
             if (response) {

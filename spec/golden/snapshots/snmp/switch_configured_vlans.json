@@ -1,0 +1,18 @@
+{
+    "five static VLANs validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "five static VLANs get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "vlans",
+                "name": "List of VLAN IDs",
+                "value": "1, 10, 20, 100, 4094"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,243 @@
+{
+    "redis 5.0.7 with password validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "redis 5.0.7 with password get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "clients>connected_clients",
+                "name": "clients>connected clients",
+                "value": "7"
+            },
+            {
+                "uid": "clients>client_recent_max_input_buffer",
+                "name": "clients>client recent max input buffer",
+                "value": "2"
+            },
+            {
+                "uid": "clients>client_recent_max_output_buffer",
+                "name": "clients>client recent max output buffer",
+                "value": "0"
+            },
+            {
+                "uid": "clients>blocked_clients",
+                "name": "clients>blocked clients",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>loading",
+                "name": "persistence>loading",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>rdb_changes_since_last_save",
+                "name": "persistence>rdb changes since last save",
+                "value": "12"
+            },
+            {
+                "uid": "persistence>rdb_bgsave_in_progress",
+                "name": "persistence>rdb bgsave in progress",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>rdb_last_save_time",
+                "name": "persistence>rdb last save time",
+                "value": "1768470000"
+            },
+            {
+                "uid": "persistence>rdb_last_bgsave_status",
+                "name": "persistence>rdb last bgsave status",
+                "value": "ok"
+            },
+            {
+                "uid": "persistence>rdb_last_bgsave_time_sec",
+                "name": "persistence>rdb last bgsave time sec",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>rdb_current_bgsave_time_sec",
+                "name": "persistence>rdb current bgsave time sec",
+                "value": "-1"
+            },
+            {
+                "uid": "persistence>rdb_last_cow_size",
+                "name": "persistence>rdb last cow size",
+                "value": "430080"
+            },
+            {
+                "uid": "persistence>aof_enabled",
+                "name": "persistence>aof enabled",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>aof_rewrite_in_progress",
+                "name": "persistence>aof rewrite in progress",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>aof_rewrite_scheduled",
+                "name": "persistence>aof rewrite scheduled",
+                "value": "0"
+            },
+            {
+                "uid": "persistence>aof_last_rewrite_time_sec",
+                "name": "persistence>aof last rewrite time sec",
+                "value": "-1"
+            },
+            {
+                "uid": "persistence>aof_current_rewrite_time_sec",
+                "name": "persistence>aof current rewrite time sec",
+                "value": "-1"
+            },
+            {
+                "uid": "persistence>aof_last_bgrewrite_status",
+                "name": "persistence>aof last bgrewrite status",
+                "value": "ok"
+            },
+            {
+                "uid": "persistence>aof_last_write_status",
+                "name": "persistence>aof last write status",
+                "value": "ok"
+            },
+            {
+                "uid": "persistence>aof_last_cow_size",
+                "name": "persistence>aof last cow size",
+                "value": "0"
+            },
+            {
+                "uid": "stats>total_connections_received",
+                "name": "stats>total connections received",
+                "value": "4211"
+            },
+            {
+                "uid": "stats>total_commands_processed",
+                "name": "stats>total commands processed",
+                "value": "982734"
+            },
+            {
+                "uid": "stats>instantaneous_ops_per_sec",
+                "name": "stats>instantaneous ops per sec",
+                "value": "3"
+            },
+            {
+                "uid": "stats>total_net_input_bytes",
+                "name": "stats>total net input bytes",
+                "value": "41873622"
+            },
+            {
+                "uid": "stats>total_net_output_bytes",
+                "name": "stats>total net output bytes",
+                "value": "93847211"
+            },
+            {
+                "uid": "stats>instantaneous_input_kbps",
+                "name": "stats>instantaneous input kbps",
+                "value": "0.12"
+            },
+            {
+                "uid": "stats>instantaneous_output_kbps",
+                "name": "stats>instantaneous output kbps",
+                "value": "0.31"
+            },
+            {
+                "uid": "stats>rejected_connections",
+                "name": "stats>rejected connections",
+                "value": "0"
+            },
+            {
+                "uid": "stats>sync_full",
+                "name": "stats>sync full",
+                "value": "0"
+            },
+            {
+                "uid": "stats>sync_partial_ok",
+                "name": "stats>sync partial ok",
+                "value": "0"
+            },
+            {
+                "uid": "stats>sync_partial_err",
+                "name": "stats>sync partial err",
+                "value": "0"
+            },
+            {
+                "uid": "stats>expired_keys",
+                "name": "stats>expired keys",
+                "value": "1532"
+            },
+            {
+                "uid": "stats>expired_stale_perc",
+                "name": "stats>expired stale perc",
+                "value": "0.00"
+            },
+            {
+                "uid": "stats>expired_time_cap_reached_count",
+                "name": "stats>expired time cap reached count",
+                "value": "0"
+            },
+            {
+                "uid": "stats>evicted_keys",
+                "name": "stats>evicted keys",
+                "value": "0"
+            },
+            {
+                "uid": "stats>keyspace_hits",
+                "name": "stats>keyspace hits",
+                "value": "451209"
+            },
+            {
+                "uid": "stats>keyspace_misses",
+                "name": "stats>keyspace misses",
+                "value": "20384"
+            },
+            {
+                "uid": "stats>pubsub_channels",
+                "name": "stats>pubsub channels",
+                "value": "1"
+            },
+            {
+                "uid": "stats>pubsub_patterns",
+                "name": "stats>pubsub patterns",
+                "value": "0"
+            },
+            {
+                "uid": "stats>latest_fork_usec",
+                "name": "stats>latest fork usec",
+                "value": "312"
+            },
+            {
+                "uid": "stats>migrate_cached_sockets",
+                "name": "stats>migrate cached sockets",
+                "value": "0"
+            },
+            {
+                "uid": "stats>slave_expires_tracked_keys",
+                "name": "stats>slave expires tracked keys",
+                "value": "0"
+            },
+            {
+                "uid": "stats>active_defrag_hits",
+                "name": "stats>active defrag hits",
+                "value": "0"
+            },
+            {
+                "uid": "stats>active_defrag_misses",
+                "name": "stats>active defrag misses",
+                "value": "0"
+            },
+            {
+                "uid": "stats>active_defrag_key_hits",
+                "name": "stats>active defrag key hits",
+                "value": "0"
+            },
+            {
+                "uid": "stats>active_defrag_key_misses",
+                "name": "stats>active defrag key misses",
+                "value": "0"
+            }
+        ],
+        "table": null
+    }
+}

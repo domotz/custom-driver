@@ -1,0 +1,16 @@
+{
+    "vigor2960 1.0.9 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vigor2960 1.0.9 backup": {
+        "type": "success",
+        "backup": {
+            "label": "DrayTek Running Config Backup",
+            "running": "package system\n\nconfig system 'main'\n\toption hostname 'Vigor2960'\n\toption timezone 'CET-1CEST,M3.5.0,M10.5.0/3'\n\nconfig check_cfg_upgrade 'cfg_ver'\n\toption version '1'\n\npackage network\n\nconfig interface 'lan1'\n\toption proto 'static'\n\toption ipaddr '192.168.1.1'\n\toption netmask '255.255.255.0'\n\nconfig interface 'wan1'\n\toption proto 'dhcp'\n\npackage firewall\n\nconfig rule 'rule1'\n\toption name 'Block-Telnet'\n\toption src 'wan'\n\toption dest_port '23'\n\toption target 'DROP'",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

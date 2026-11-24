@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "VMWare Monitoring Host List",
     "description": "This script retrieves list of hosts in a VMWare server",
     "category": "Software Integration",

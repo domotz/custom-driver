@@ -1,0 +1,124 @@
+{
+    "control plus degraded expansion validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "control plus degraded expansion get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Enclosure Information",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Managed",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "IO Group ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "IO Group Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Product MTM",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Total Canisters",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Online Canisters",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total PSUs",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Online PSUs",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Drive Slots",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total Fan Modules",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Online Fan Modules",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Total SEMs",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Online SEMs",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "online",
+                        "control",
+                        "yes",
+                        "0",
+                        "io_grp0",
+                        "2072-24C",
+                        "78A1B2C",
+                        "2",
+                        "2",
+                        "2",
+                        "2",
+                        "24",
+                        "0",
+                        "0",
+                        "0",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "degraded",
+                        "expansion",
+                        "yes",
+                        "0",
+                        "io_grp0",
+                        "2072-24E",
+                        "78A1B3D",
+                        "2",
+                        "1",
+                        "2",
+                        "1",
+                        "24",
+                        "0",
+                        "0",
+                        "0",
+                        "0"
+                    ]
+                }
+            ]
+        }
+    }
+}

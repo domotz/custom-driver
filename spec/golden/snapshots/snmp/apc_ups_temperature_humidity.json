@@ -1,0 +1,30 @@
+{
+    "two probes, celsius validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two probes, celsius get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "probe_name",
+                "name": "Probe Name",
+                "value": "Server Room"
+            },
+            {
+                "uid": "probe_temperature",
+                "name": "Probe Temperature",
+                "value": "23",
+                "unit": "C"
+            },
+            {
+                "uid": "probe_humidity",
+                "name": "Probe Humidity",
+                "value": "41",
+                "unit": "%"
+            }
+        ],
+        "table": null
+    }
+}

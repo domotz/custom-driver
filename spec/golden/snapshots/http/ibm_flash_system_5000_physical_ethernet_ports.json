@@ -1,0 +1,143 @@
+{
+    "four ethernet ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four ethernet ports get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Physical Ethernet Ports Details",
+            "columnHeaders": [
+                {
+                    "label": "Node Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Duplex",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Speed",
+                    "valueType": "NUMBER",
+                    "unit": "Gb/s"
+                },
+                {
+                    "label": "Link State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "DCBX State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Adapter Location",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Adapter Port ID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Host",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Storage",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Replication",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Ethernet Clustering",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Management",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1 - 1",
+                    "values": [
+                        "node1",
+                        "40:f2:e9:aa:bb:01",
+                        "Full",
+                        "10.00",
+                        "active",
+                        "disabled",
+                        "0",
+                        "1",
+                        "yes",
+                        "yes",
+                        "yes",
+                        "no",
+                        "yes"
+                    ]
+                },
+                {
+                    "id": "2 - 1",
+                    "values": [
+                        "node1",
+                        "40:f2:e9:aa:bb:02",
+                        "Full",
+                        "1.00",
+                        "active",
+                        "disabled",
+                        "0",
+                        "2",
+                        "yes",
+                        "yes",
+                        "yes",
+                        "no",
+                        "no"
+                    ]
+                },
+                {
+                    "id": "1 - 2",
+                    "values": [
+                        "node2",
+                        "40:f2:e9:aa:bb:11",
+                        "Full",
+                        "0.0977",
+                        "active",
+                        "disabled",
+                        "0",
+                        "1",
+                        "yes",
+                        "yes",
+                        "yes",
+                        "no",
+                        "yes"
+                    ]
+                },
+                {
+                    "id": "2 - 2",
+                    "values": [
+                        "node2",
+                        "40:f2:e9:aa:bb:12",
+                        "N/A",
+                        0,
+                        "inactive",
+                        "disabled",
+                        "0",
+                        "2",
+                        "no",
+                        "no",
+                        "yes",
+                        "no",
+                        "no"
+                    ]
+                }
+            ]
+        }
+    }
+}

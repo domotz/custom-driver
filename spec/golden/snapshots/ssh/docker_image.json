@@ -1,0 +1,101 @@
+{
+    "docker 19.03.15 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "docker 19.03.15 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Docker images",
+            "columnHeaders": [
+                {
+                    "label": "Latest Tag"
+                },
+                {
+                    "label": "Latest Image ID"
+                },
+                {
+                    "label": "Latest Image Created Since"
+                },
+                {
+                    "label": "Latest Image Created Date"
+                },
+                {
+                    "label": "Latest Image Size",
+                    "unit": "kB"
+                },
+                {
+                    "label": "Total Images Size",
+                    "unit": "kB"
+                },
+                {
+                    "label": "Total number of Images"
+                }
+            ],
+            "records": [
+                {
+                    "id": "postgres",
+                    "values": [
+                        "13",
+                        "7a0ff1e1b4c2",
+                        "2 weeks ago",
+                        "2021-02-09 05:30:12 +0000 UTC",
+                        314000,
+                        314000,
+                        1
+                    ]
+                },
+                {
+                    "id": "nginx",
+                    "values": [
+                        "latest",
+                        "f6d0b4767a6c",
+                        "3 weeks ago",
+                        "2021-02-02 21:42:51 +0000 UTC",
+                        133000,
+                        266000,
+                        2
+                    ]
+                },
+                {
+                    "id": "ubuntu",
+                    "values": [
+                        "20.04",
+                        "f63181f19b2f",
+                        "4 weeks ago",
+                        "2021-01-20 01:23:54 +0000 UTC",
+                        72900,
+                        72900,
+                        1
+                    ]
+                },
+                {
+                    "id": "tensorflow/tensorflow",
+                    "values": [
+                        "latest-gpu",
+                        "d1b2a3c4e5f6",
+                        "6 weeks ago",
+                        "2021-01-05 14:01:33 +0000 UTC",
+                        1230000,
+                        1230000,
+                        1
+                    ]
+                },
+                {
+                    "id": "hello-world",
+                    "values": [
+                        "latest",
+                        "bf756fb1ae65",
+                        "14 months ago",
+                        "2019-12-31 18:51:00 +0000 UTC",
+                        1.84,
+                        1.84,
+                        1
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,278 @@
+{
+    "winrm, three event ids seen validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three event ids seen get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Security events",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Last 1 hour(s) occurrences"
+                }
+            ],
+            "records": [
+                {
+                    "id": "4625",
+                    "values": [
+                        "An account failed to log on.",
+                        14
+                    ]
+                },
+                {
+                    "id": "4649",
+                    "values": [
+                        "A replay attack was detected.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4720",
+                    "values": [
+                        "A user account was created.",
+                        1
+                    ]
+                },
+                {
+                    "id": "4722",
+                    "values": [
+                        "A user account was enabled.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4731",
+                    "values": [
+                        "A security-enabled local group was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4732",
+                    "values": [
+                        "A member was added to a security-enabled local group.",
+                        2
+                    ]
+                },
+                {
+                    "id": "4741",
+                    "values": [
+                        "A computer account was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4817",
+                    "values": [
+                        "Auditing settings on object were changed.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4947",
+                    "values": [
+                        "A change has been made to Windows Firewall exception list. A rule was modified.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4948",
+                    "values": [
+                        "A change has been made to Windows Firewall exception list. A rule was deleted.",
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, a single event id is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, a single event id is a bare object get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Security events",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Last 1 hour(s) occurrences"
+                }
+            ],
+            "records": [
+                {
+                    "id": "4625",
+                    "values": [
+                        "An account failed to log on.",
+                        3
+                    ]
+                },
+                {
+                    "id": "4649",
+                    "values": [
+                        "A replay attack was detected.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4720",
+                    "values": [
+                        "A user account was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4722",
+                    "values": [
+                        "A user account was enabled.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4731",
+                    "values": [
+                        "A security-enabled local group was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4732",
+                    "values": [
+                        "A member was added to a security-enabled local group.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4741",
+                    "values": [
+                        "A computer account was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4817",
+                    "values": [
+                        "Auditing settings on object were changed.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4947",
+                    "values": [
+                        "A change has been made to Windows Firewall exception list. A rule was modified.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4948",
+                    "values": [
+                        "A change has been made to Windows Firewall exception list. A rule was deleted.",
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three event ids seen validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three event ids seen get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Security events",
+            "columnHeaders": [
+                {
+                    "label": "Description"
+                },
+                {
+                    "label": "Last 1 hour(s) occurrences"
+                }
+            ],
+            "records": [
+                {
+                    "id": "4625",
+                    "values": [
+                        "An account failed to log on.",
+                        14
+                    ]
+                },
+                {
+                    "id": "4649",
+                    "values": [
+                        "A replay attack was detected.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4720",
+                    "values": [
+                        "A user account was created.",
+                        1
+                    ]
+                },
+                {
+                    "id": "4722",
+                    "values": [
+                        "A user account was enabled.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4731",
+                    "values": [
+                        "A security-enabled local group was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4732",
+                    "values": [
+                        "A member was added to a security-enabled local group.",
+                        2
+                    ]
+                },
+                {
+                    "id": "4741",
+                    "values": [
+                        "A computer account was created.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4817",
+                    "values": [
+                        "Auditing settings on object were changed.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4947",
+                    "values": [
+                        "A change has been made to Windows Firewall exception list. A rule was modified.",
+                        0
+                    ]
+                },
+                {
+                    "id": "4948",
+                    "values": [
+                        "A change has been made to Windows Firewall exception list. A rule was deleted.",
+                        0
+                    ]
+                }
+            ]
+        }
+    }
+}

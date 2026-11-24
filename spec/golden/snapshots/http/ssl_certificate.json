@@ -1,0 +1,39 @@
+{
+    "valid certificate validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "valid certificate get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "issuer",
+                "name": "Issuer",
+                "value": "DigiCert Inc"
+            },
+            {
+                "uid": "expiry",
+                "name": "Expiry",
+                "value": "Mar  5 23:59:59 2027 GMT"
+            },
+            {
+                "uid": "remainingDays",
+                "name": "Remaining days",
+                "value": 414,
+                "unit": "day"
+            },
+            {
+                "uid": "valid",
+                "name": "Is valid",
+                "value": true
+            },
+            {
+                "uid": "certError",
+                "name": "Certificate authorization error",
+                "value": null
+            }
+        ],
+        "table": null
+    }
+}

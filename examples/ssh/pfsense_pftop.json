@@ -1,6 +1,6 @@
 {
     "logo": "pfsense.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "pfSense",
     "description": "Monitor the pfSense process and the processes running on the FreeBSD server",
     "category": "Software Integration",

@@ -1,6 +1,6 @@
 {
     "logo": "nginx.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Nginx Stats",
     "description": "Monitor Nginx statistics",
     "category": "Software Integration",

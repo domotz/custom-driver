@@ -1,0 +1,127 @@
+{
+    "instance with one failed system status check validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "instance with one failed system status check get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu_utilization",
+                "name": "CPU: Utilization",
+                "value": "42.500",
+                "unit": "%"
+            },
+            {
+                "uid": "read_ops_disk",
+                "name": "Disk: Read",
+                "value": 2,
+                "unit": "Ops",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "read_bytes_disk",
+                "name": "Disk: Read bytes",
+                "value": 20480,
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "disk_write_bytes",
+                "name": "Disk: Write bytes",
+                "value": 102400,
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "disk_write_ops",
+                "name": "Disk: Write ops",
+                "value": 5,
+                "unit": "Ops",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "byte_balance",
+                "name": "EBS: Byte balance",
+                "value": "87.250",
+                "unit": "%"
+            },
+            {
+                "uid": "io_balance",
+                "name": "EBS: IO balance",
+                "value": "99.500",
+                "unit": "%"
+            },
+            {
+                "uid": "read_ops",
+                "name": "EBS: Read",
+                "value": 1,
+                "unit": "Ops",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "read_bytes",
+                "name": "EBS: Read bytes",
+                "value": 10240,
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "write_ops",
+                "name": "EBS: Write",
+                "value": 3,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "write_bytes",
+                "name": "EBS: Write bytes",
+                "value": 30720,
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "network_in",
+                "name": "Network: Bytes in",
+                "value": 10000,
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "network_out",
+                "name": "Network: Bytes out",
+                "value": 5000,
+                "unit": "Bps",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "packets_in",
+                "name": "Network: Packets in",
+                "value": 30,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "packets_out",
+                "name": "Network: Packets out",
+                "value": 20,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "status_check_failed",
+                "name": "Status: Check failed",
+                "value": "0.000"
+            },
+            {
+                "uid": "status_check_failed_instance",
+                "name": "Status: Check failed, instance",
+                "value": "0.000"
+            },
+            {
+                "uid": "status_check_failed_system",
+                "name": "Status: Check failed, system",
+                "value": "1.000"
+            }
+        ],
+        "table": null
+    }
+}

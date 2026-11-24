@@ -1,0 +1,70 @@
+{
+    "me5024 drives validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "me5024 drives get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Drives",
+            "columnHeaders": [
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Rack",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Rack Offset",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Health",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "controller-a-disk-0.0",
+                    "values": [
+                        "WFK3A001",
+                        1,
+                        0,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "controller-a-disk-0.1",
+                    "values": [
+                        "WFK3A002",
+                        1,
+                        1,
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "controller-b-disk-0.2",
+                    "values": [
+                        "WFK3B003",
+                        1,
+                        2,
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "controller-b-disk-0.3",
+                    "values": [
+                        "WFK3B004",
+                        1,
+                        3,
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

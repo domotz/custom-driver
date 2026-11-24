@@ -1,0 +1,56 @@
+{
+    "msa 2050 sensor-status validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 sensor-status get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Voltage and Current Sensors",
+            "columnHeaders": [
+                {
+                    "label": "Voltage",
+                    "unit": "V",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Current",
+                    "unit": "A",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "ctrl-a.1",
+                    "values": [
+                        "5.06",
+                        "3.12",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "psu-2.1",
+                    "values": [
+                        "11.35",
+                        "18.40",
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "ctrl-b.1",
+                    "values": [
+                        "3.29",
+                        "",
+                        "OK"
+                    ]
+                }
+            ]
+        }
+    }
+}

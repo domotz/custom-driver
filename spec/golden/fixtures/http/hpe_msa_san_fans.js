@@ -1,0 +1,63 @@
+// Simulated HPE MSA 2050 (VL270P005) replies. Shape follows the MSA CLI/XML API reference: GET /api/login
+// answers with the session key (here in the command-status header, as the driver reads it) and every
+// GET /api/show/<command> returns <RESPONSE VERSION="L100" REQUEST="<command>"> holding one <OBJECT> per
+// row with <PROPERTY name=... type=... display-name=...> children, closed by a basetype="status" object.
+// The exact command-status header text is not published; "1 <key>" is what the driver's parsing expects.
+const reply = require("../../replies");
+
+const KEY = "a7f3c9e1b2d4f60812c3d4e5f6a7b8c9";
+
+function prop(name, value) {
+    return '<PROPERTY name="' + name + '" type="string" size="32" draw="false" sort="string" display-name="' + name + '">' + value + "</PROPERTY>";
+}
+
+function xml(request, objects) {
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<RESPONSE VERSION="L100" REQUEST="' + request + '">\n'
+        + objects.join("\n")
+        + '\n<OBJECT basetype="status" name="status" oid="99">'
+        + prop("response-type", "Success") + prop("response-type-numeric", "0")
+        + prop("response", "Command completed successfully. (2024-05-14 09:12:41)") + prop("return-code", "0")
+        + "</OBJECT>\n</RESPONSE>\n";
+}
+
+function object(basetype, name, oid, props) {
+    return '<OBJECT basetype="' + basetype + '" name="' + name + '" oid="' + oid + '">'
+        + Object.keys(props).map((k) => prop(k, props[k])).join("") + "</OBJECT>";
+}
+
+function calls(command, body) {
+    const loginXml = xml("login", [object("status", "status", "1", { "response-type": "Success", response: KEY })]);
+    return [
+        { kind: "http", method: "get", target: "/api/login", reply: reply.http(200, loginXml, { "command-status": "1 " + KEY }) },
+        { kind: "http", method: "get", target: "/api/show/" + command, headers: { sessionKey: KEY }, reply: reply.http(200, body) }
+    ];
+}
+
+const items = [
+    object("fan", "fan", "1", {
+        name: "Fan Loc:left-PSU 1", location: "Enclosure 1 - Left", status: "Up", "status-numeric": "0",
+        speed: "4980", position: "Left", "serial-number": "", "fw-revision": "", health: "OK", "health-numeric": "0"
+    }),
+    object("fan", "fan", "2", {
+        name: "Fan Loc:right-PSU 2", location: "Enclosure 1 - Right", status: "Up", "status-numeric": "0",
+        speed: "5120", position: "Right", "serial-number": "", "fw-revision": "", health: "OK", "health-numeric": "0"
+    }),
+    object("fan", "fan", "3", {
+        name: "Fan Loc:left-PSU 3", location: "Enclosure 2 - Left", status: "Error", "status-numeric": "1",
+        speed: "0", position: "Left", "serial-number": "", "fw-revision": "", health: "Fault", "health-numeric": "2"
+    })
+];
+
+function replies() {
+    return calls("fans", xml("show fans", items));
+}
+
+module.exports = {
+    cases: [{
+        name: "msa 2050 fans",
+        entryPoints: {
+            validate: { calls: replies() },
+            get_status: { calls: replies() }
+        }
+    }]
+};

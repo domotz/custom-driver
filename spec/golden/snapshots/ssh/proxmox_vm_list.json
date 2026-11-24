@@ -1,0 +1,112 @@
+{
+    "proxmox 8.0.3 three VMs validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "proxmox 8.0.3 three VMs get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual Machines List",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Memory",
+                    "unit": "MB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Boot Disk Size",
+                    "unit": "GB",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "PID",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Processors",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Net0 MAC",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Net0 bridge",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Numa",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Ostype",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Error(s)",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "100",
+                    "values": [
+                        "web01",
+                        "running",
+                        "2048",
+                        "32.00",
+                        "1234",
+                        "2 (1 sockets, 2 cores)",
+                        "BC:24:11:AA:BB:01",
+                        "vmbr0",
+                        "0",
+                        "l26",
+                        "-"
+                    ]
+                },
+                {
+                    "id": "101",
+                    "values": [
+                        "db01",
+                        "stopped",
+                        "4096",
+                        "64.00",
+                        "0",
+                        "8 (2 sockets, 4 cores)",
+                        "BC:24:11:AA:BB:02",
+                        "vmbr1",
+                        "1",
+                        "l26",
+                        "-"
+                    ]
+                },
+                {
+                    "id": "102",
+                    "values": [
+                        "file server",
+                        "running",
+                        "8192",
+                        "500.00",
+                        "5678",
+                        "4 (1 sockets, 4 cores)",
+                        "BC:24:11:AA:BB:03",
+                        "vmbr0",
+                        "0",
+                        "win10",
+                        "-"
+                    ]
+                }
+            ]
+        }
+    }
+}

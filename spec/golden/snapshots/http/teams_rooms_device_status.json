@@ -1,0 +1,343 @@
+{
+    "two devices as a table, one offline validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two devices as a table, one offline get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Microsoft Teams Devices status",
+            "columnHeaders": [
+                {
+                    "label": "Model"
+                },
+                {
+                    "label": "Vendor"
+                },
+                {
+                    "label": "Type"
+                },
+                {
+                    "label": "Used by"
+                },
+                {
+                    "label": "Serial Number"
+                },
+                {
+                    "label": "Health Status"
+                },
+                {
+                    "label": "Activity"
+                },
+                {
+                    "label": "Connection Status"
+                },
+                {
+                    "label": "Exchange Login Status"
+                },
+                {
+                    "label": "Teams Login Status"
+                },
+                {
+                    "label": "Room Camera"
+                },
+                {
+                    "label": "Content Camera"
+                },
+                {
+                    "label": "Speaker"
+                },
+                {
+                    "label": "Communication Speaker"
+                },
+                {
+                    "label": "Microphone"
+                },
+                {
+                    "label": "OS Update Status"
+                },
+                {
+                    "label": "Admin Agent Update Status"
+                },
+                {
+                    "label": "Company Portal Update Status"
+                },
+                {
+                    "label": "Teams Client Update Status"
+                },
+                {
+                    "label": "Firmware Update Status"
+                },
+                {
+                    "label": "Partner Agent Update Status"
+                },
+                {
+                    "label": "Compute Health"
+                },
+                {
+                    "label": "HDMI Ingest"
+                },
+                {
+                    "label": "Display 1 Status"
+                }
+            ],
+            "records": [
+                {
+                    "id": "11111111-aaaa-4bbb-8ccc-000000000001",
+                    "values": [
+                        "Studio X52",
+                        "Poly",
+                        "teamsRoom",
+                        "Boardroom 1",
+                        "SN0001",
+                        "healthy",
+                        "active",
+                        "connected",
+                        "connected",
+                        "connected",
+                        "connected",
+                        "N/A",
+                        "connected",
+                        "N/A",
+                        "connected",
+                        "latest",
+                        "latest",
+                        "latest",
+                        "latest",
+                        "N/A",
+                        "latest",
+                        "connected",
+                        "N/A",
+                        "connected"
+                    ]
+                },
+                {
+                    "id": "22222222-aaaa-4bbb-8ccc-000000000002",
+                    "values": [
+                        "A20",
+                        "Yealink",
+                        "collaborationBar",
+                        "Huddle 7",
+                        "SN0002",
+                        "offline",
+                        "inactive",
+                        "disconnected",
+                        "disconnected",
+                        "disconnected",
+                        "disconnected",
+                        "N/A",
+                        "connected",
+                        "N/A",
+                        "disconnected",
+                        "updateAvailable",
+                        "latest",
+                        "latest",
+                        "updateAvailable",
+                        "N/A",
+                        "latest",
+                        "disconnected",
+                        "N/A",
+                        "disconnected"
+                    ]
+                }
+            ]
+        }
+    },
+    "serial number filter selects one device as variables validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "serial number filter selects one device as variables get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "id",
+                "name": "Device ID",
+                "value": "11111111-aaaa-4bbb-8ccc-000000000001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model",
+                "name": "Model",
+                "value": "Studio X52",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "manufacturer",
+                "name": "Vendor",
+                "value": "Poly",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "deviceType",
+                "name": "Type",
+                "value": "teamsRoom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "displayName",
+                "name": "Used by",
+                "value": "Boardroom 1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serialNumber",
+                "name": "Serial Number",
+                "value": "SN0001",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "healthStatus",
+                "name": "Health Status",
+                "value": "healthy",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "activityState",
+                "name": "Activity",
+                "value": "active",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connectionStatus",
+                "name": "Connection Status",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "exchangeLoginStatus",
+                "name": "Exchange Login Status",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "teamsLoginStatus",
+                "name": "Teams Login Status",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "roomCameraHealth",
+                "name": "Room Camera",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "contentCameraHealth",
+                "name": "Content Camera",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "speakerHealth",
+                "name": "Speaker",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "communicationSpeakerHealth",
+                "name": "Communication Speaker",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "microphoneHealth",
+                "name": "Microphone",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "operatingSystemSoftwareUpdateStatus",
+                "name": "OS Update Status",
+                "value": "latest",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "adminAgentSoftwareUpdateStatus",
+                "name": "Admin Agent Update Status",
+                "value": "latest",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "companyPortalSoftwareUpdateStatus",
+                "name": "Company Portal Update Status",
+                "value": "latest",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "teamsClientSoftwareUpdateStatus",
+                "name": "Teams Client Update Status",
+                "value": "latest",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "firmwareSoftwareUpdateStatus",
+                "name": "Firmware Update Status",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "partnerAgentSoftwareUpdateStatus",
+                "name": "Partner Agent Update Status",
+                "value": "latest",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "computeHealth",
+                "name": "Compute Health",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hdmiIngestHealth",
+                "name": "HDMI Ingest",
+                "value": "N/A",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "display_1_status",
+                "name": "Display 1 Status",
+                "value": "connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "MST-Rooms-url-link",
+                "name": "MST Rooms URL link",
+                "value": "https://admin.teams.microsoft.com/devices/collaborationbars/11111111-aaaa-4bbb-8ccc-000000000001",
+                "metadata": {
+                    "url": "https://admin.teams.microsoft.com/devices/collaborationbars/11111111-aaaa-4bbb-8ccc-000000000001"
+                },
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

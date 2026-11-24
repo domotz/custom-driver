@@ -46,7 +46,7 @@ function handleSshError(error) {
 /**
  * Handles the callback for validating SSH command execution.
  */
-function validateCallback (output, error) {
+function validateCallback(output, error) {
     if (error) {
         handleSshError(error);
     }

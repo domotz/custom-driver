@@ -17,7 +17,7 @@ var options = {
 
 // Helper function to parse the docker stats response and call the success callback
 function successCallback(output) {
-    // Creation of custom driver table 
+    // Creation of custom driver table
     var table = D.createTable(
         "Docker List Memory and CPU",
         [
@@ -69,7 +69,6 @@ function commandExecutionCallback(output, error) {
         }
     }
 }
-
 
 /**
 * @remote_procedure

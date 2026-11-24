@@ -1,0 +1,110 @@
+{
+    "blocking enabled validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "enabled"
+            },
+            {
+                "uid": "blocked_daily_perc",
+                "name": "Blocked Daily %",
+                "value": "21.2",
+                "unit": "%"
+            },
+            {
+                "uid": "blocked_daily",
+                "name": "Blocked Daily",
+                "value": "3245"
+            },
+            {
+                "uid": "daily_total",
+                "name": "Daily Total Queries",
+                "value": "15321"
+            }
+        ],
+        "table": null
+    },
+    "blocking enabled get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "enabled"
+            },
+            {
+                "uid": "blocked_daily_perc",
+                "name": "Blocked Daily %",
+                "value": "21.2",
+                "unit": "%"
+            },
+            {
+                "uid": "blocked_daily",
+                "name": "Blocked Daily",
+                "value": "3245"
+            },
+            {
+                "uid": "daily_total",
+                "name": "Daily Total Queries",
+                "value": "15321"
+            }
+        ],
+        "table": null
+    },
+    "blocking disabled validate": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "disabled"
+            },
+            {
+                "uid": "blocked_daily_perc",
+                "name": "Blocked Daily %",
+                "value": "0",
+                "unit": "%"
+            },
+            {
+                "uid": "blocked_daily",
+                "name": "Blocked Daily",
+                "value": "0"
+            },
+            {
+                "uid": "daily_total",
+                "name": "Daily Total Queries",
+                "value": "1200"
+            }
+        ],
+        "table": null
+    },
+    "blocking disabled get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": "disabled"
+            },
+            {
+                "uid": "blocked_daily_perc",
+                "name": "Blocked Daily %",
+                "value": "0",
+                "unit": "%"
+            },
+            {
+                "uid": "blocked_daily",
+                "name": "Blocked Daily",
+                "value": "0"
+            },
+            {
+                "uid": "daily_total",
+                "name": "Daily Total Queries",
+                "value": "1200"
+            }
+        ],
+        "table": null
+    }
+}

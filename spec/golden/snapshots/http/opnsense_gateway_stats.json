@@ -1,0 +1,63 @@
+{
+    "opnsense 23.7 gateways validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "opnsense 23.7 gateways get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Gateway Statistics",
+            "columnHeaders": [
+                {
+                    "label": "Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "RTTsd",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "wan_gw",
+                    "values": [
+                        "203.0.113.1",
+                        "Online",
+                        "0.3",
+                        "0.0"
+                    ]
+                },
+                {
+                    "id": "backup_lte",
+                    "values": [
+                        "100.64.12.1",
+                        "Offline",
+                        "0.0",
+                        "100.0"
+                    ]
+                },
+                {
+                    "id": "vpn_gw",
+                    "values": [
+                        "10.8.0.1",
+                        "Danger, Packetloss: 12.5%",
+                        "14.8",
+                        "12.5"
+                    ]
+                }
+            ]
+        }
+    }
+}

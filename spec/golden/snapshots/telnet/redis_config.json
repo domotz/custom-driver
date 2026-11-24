@@ -1,0 +1,459 @@
+{
+    "redis 7.0.15 master validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "redis 7.0.15 master get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "redis_version",
+                "name": "redis version",
+                "value": "7.0.15"
+            },
+            {
+                "uid": "redis_git_sha1",
+                "name": "redis git sha1",
+                "value": "00000000"
+            },
+            {
+                "uid": "redis_git_dirty",
+                "name": "redis git dirty",
+                "value": "0"
+            },
+            {
+                "uid": "redis_build_id",
+                "name": "redis build id",
+                "value": "4f2a1c9b8d7e6f50"
+            },
+            {
+                "uid": "redis_mode",
+                "name": "redis mode",
+                "value": "standalone"
+            },
+            {
+                "uid": "os",
+                "name": "os",
+                "value": "Linux 5.15.0-91-generic x86_64"
+            },
+            {
+                "uid": "arch_bits",
+                "name": "arch bits",
+                "value": "64"
+            },
+            {
+                "uid": "monotonic_clock",
+                "name": "monotonic clock",
+                "value": "POSIX clock_gettime"
+            },
+            {
+                "uid": "multiplexing_api",
+                "name": "multiplexing api",
+                "value": "epoll"
+            },
+            {
+                "uid": "atomicvar_api",
+                "name": "atomicvar api",
+                "value": "c11-builtin"
+            },
+            {
+                "uid": "gcc_version",
+                "name": "gcc version",
+                "value": "11.4.0"
+            },
+            {
+                "uid": "process_id",
+                "name": "process id",
+                "value": "1"
+            },
+            {
+                "uid": "process_supervised",
+                "name": "process supervised",
+                "value": "no"
+            },
+            {
+                "uid": "run_id",
+                "name": "run id",
+                "value": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+            },
+            {
+                "uid": "tcp_port",
+                "name": "tcp port",
+                "value": "6379"
+            },
+            {
+                "uid": "server_time_usec",
+                "name": "server time usec",
+                "value": "1768471200123456"
+            },
+            {
+                "uid": "uptime_in_seconds",
+                "name": "uptime in seconds",
+                "value": "864000"
+            },
+            {
+                "uid": "uptime_in_days",
+                "name": "uptime in days",
+                "value": "10"
+            },
+            {
+                "uid": "hz",
+                "name": "hz",
+                "value": "10"
+            },
+            {
+                "uid": "configured_hz",
+                "name": "configured hz",
+                "value": "10"
+            },
+            {
+                "uid": "lru_clock",
+                "name": "lru clock",
+                "value": "6272000"
+            },
+            {
+                "uid": "executable",
+                "name": "executable",
+                "value": "/data/redis-server"
+            },
+            {
+                "uid": "config_file",
+                "name": "config file",
+                "value": ""
+            },
+            {
+                "uid": "io_threads_active",
+                "name": "io threads active",
+                "value": "0"
+            },
+            {
+                "uid": "role",
+                "name": "role",
+                "value": "master"
+            },
+            {
+                "uid": "connected_slaves",
+                "name": "connected slaves",
+                "value": "1"
+            },
+            {
+                "uid": "slave0",
+                "name": "slave0",
+                "value": "ip=10.0.0.6,port=6379,state=online,offset=70001234,lag=0"
+            },
+            {
+                "uid": "master_failover_state",
+                "name": "master failover state",
+                "value": "no-failover"
+            },
+            {
+                "uid": "master_replid",
+                "name": "master replid",
+                "value": "8a1c3e5f7b9d0f2a4c6e8b0d2f4a6c8e0b2d4f6a"
+            },
+            {
+                "uid": "master_replid2",
+                "name": "master replid2",
+                "value": "0000000000000000000000000000000000000000"
+            },
+            {
+                "uid": "master_repl_offset",
+                "name": "master repl offset",
+                "value": "70001234"
+            },
+            {
+                "uid": "second_repl_offset",
+                "name": "second repl offset",
+                "value": "-1"
+            },
+            {
+                "uid": "repl_backlog_active",
+                "name": "repl backlog active",
+                "value": "1"
+            },
+            {
+                "uid": "repl_backlog_size",
+                "name": "repl backlog size",
+                "value": "1048576"
+            },
+            {
+                "uid": "repl_backlog_first_byte_offset",
+                "name": "repl backlog first byte offset",
+                "value": "69000000"
+            },
+            {
+                "uid": "repl_backlog_histlen",
+                "name": "repl backlog histlen",
+                "value": "1001235"
+            },
+            {
+                "uid": "cluster_enabled",
+                "name": "cluster enabled",
+                "value": "0"
+            },
+            {
+                "uid": "db0",
+                "name": "db0",
+                "value": "keys=204011,expires=87012,avg_ttl=3412290"
+            },
+            {
+                "uid": "db1",
+                "name": "db1",
+                "value": "keys=12,expires=0,avg_ttl=0"
+            }
+        ],
+        "table": null
+    },
+    "redis 6.2.14 replica validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "redis 6.2.14 replica get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "redis_version",
+                "name": "redis version",
+                "value": "6.2.14"
+            },
+            {
+                "uid": "redis_git_sha1",
+                "name": "redis git sha1",
+                "value": "00000000"
+            },
+            {
+                "uid": "redis_git_dirty",
+                "name": "redis git dirty",
+                "value": "0"
+            },
+            {
+                "uid": "redis_build_id",
+                "name": "redis build id",
+                "value": "4f2a1c9b8d7e6f50"
+            },
+            {
+                "uid": "redis_mode",
+                "name": "redis mode",
+                "value": "standalone"
+            },
+            {
+                "uid": "os",
+                "name": "os",
+                "value": "Linux 5.15.0-91-generic x86_64"
+            },
+            {
+                "uid": "arch_bits",
+                "name": "arch bits",
+                "value": "64"
+            },
+            {
+                "uid": "monotonic_clock",
+                "name": "monotonic clock",
+                "value": "POSIX clock_gettime"
+            },
+            {
+                "uid": "multiplexing_api",
+                "name": "multiplexing api",
+                "value": "epoll"
+            },
+            {
+                "uid": "atomicvar_api",
+                "name": "atomicvar api",
+                "value": "c11-builtin"
+            },
+            {
+                "uid": "gcc_version",
+                "name": "gcc version",
+                "value": "11.4.0"
+            },
+            {
+                "uid": "process_id",
+                "name": "process id",
+                "value": "1"
+            },
+            {
+                "uid": "process_supervised",
+                "name": "process supervised",
+                "value": "systemd"
+            },
+            {
+                "uid": "run_id",
+                "name": "run id",
+                "value": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+            },
+            {
+                "uid": "tcp_port",
+                "name": "tcp port",
+                "value": "6379"
+            },
+            {
+                "uid": "server_time_usec",
+                "name": "server time usec",
+                "value": "1768471200123456"
+            },
+            {
+                "uid": "uptime_in_seconds",
+                "name": "uptime in seconds",
+                "value": "864000"
+            },
+            {
+                "uid": "uptime_in_days",
+                "name": "uptime in days",
+                "value": "10"
+            },
+            {
+                "uid": "hz",
+                "name": "hz",
+                "value": "10"
+            },
+            {
+                "uid": "configured_hz",
+                "name": "configured hz",
+                "value": "10"
+            },
+            {
+                "uid": "lru_clock",
+                "name": "lru clock",
+                "value": "6272000"
+            },
+            {
+                "uid": "executable",
+                "name": "executable",
+                "value": "/data/redis-server"
+            },
+            {
+                "uid": "config_file",
+                "name": "config file",
+                "value": ""
+            },
+            {
+                "uid": "io_threads_active",
+                "name": "io threads active",
+                "value": "0"
+            },
+            {
+                "uid": "role",
+                "name": "role",
+                "value": "slave"
+            },
+            {
+                "uid": "master_host",
+                "name": "master host",
+                "value": "10.0.0.5"
+            },
+            {
+                "uid": "master_port",
+                "name": "master port",
+                "value": "6379"
+            },
+            {
+                "uid": "master_link_status",
+                "name": "master link status",
+                "value": "up"
+            },
+            {
+                "uid": "master_last_io_seconds_ago",
+                "name": "master last io seconds ago",
+                "value": "1"
+            },
+            {
+                "uid": "master_sync_in_progress",
+                "name": "master sync in progress",
+                "value": "0"
+            },
+            {
+                "uid": "slave_read_repl_offset",
+                "name": "slave read repl offset",
+                "value": "70001200"
+            },
+            {
+                "uid": "slave_repl_offset",
+                "name": "slave repl offset",
+                "value": "70001200"
+            },
+            {
+                "uid": "slave_priority",
+                "name": "slave priority",
+                "value": "100"
+            },
+            {
+                "uid": "slave_read_only",
+                "name": "slave read only",
+                "value": "1"
+            },
+            {
+                "uid": "replica_announced",
+                "name": "replica announced",
+                "value": "1"
+            },
+            {
+                "uid": "connected_slaves",
+                "name": "connected slaves",
+                "value": "0"
+            },
+            {
+                "uid": "master_failover_state",
+                "name": "master failover state",
+                "value": "no-failover"
+            },
+            {
+                "uid": "master_replid",
+                "name": "master replid",
+                "value": "8a1c3e5f7b9d0f2a4c6e8b0d2f4a6c8e0b2d4f6a"
+            },
+            {
+                "uid": "master_replid2",
+                "name": "master replid2",
+                "value": "0000000000000000000000000000000000000000"
+            },
+            {
+                "uid": "master_repl_offset",
+                "name": "master repl offset",
+                "value": "70001200"
+            },
+            {
+                "uid": "second_repl_offset",
+                "name": "second repl offset",
+                "value": "-1"
+            },
+            {
+                "uid": "repl_backlog_active",
+                "name": "repl backlog active",
+                "value": "1"
+            },
+            {
+                "uid": "repl_backlog_size",
+                "name": "repl backlog size",
+                "value": "1048576"
+            },
+            {
+                "uid": "repl_backlog_first_byte_offset",
+                "name": "repl backlog first byte offset",
+                "value": "69000000"
+            },
+            {
+                "uid": "repl_backlog_histlen",
+                "name": "repl backlog histlen",
+                "value": "1001201"
+            },
+            {
+                "uid": "cluster_enabled",
+                "name": "cluster enabled",
+                "value": "0"
+            },
+            {
+                "uid": "db0",
+                "name": "db0",
+                "value": "keys=204011,expires=87012,avg_ttl=3412290"
+            },
+            {
+                "uid": "db1",
+                "name": "db1",
+                "value": "keys=12,expires=0,avg_ttl=0"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,7 +1,7 @@
 /**
  * The driver uses the AWS CloudWatch API to monitor the CloudWatch metrics for an AWS billing.
  * Is retrieving billing metrics from AWS to monitor AWS cost and usage to ensure that the cost of AWS usage does not exceed the allocated budget.
- * 
+ *
  * Communication protocol is https.
  */
 
@@ -61,7 +61,7 @@ var body = JSON.stringify({
                         ]
                     }
                 }
-            ],
+            ]
         }
     },
 
@@ -85,7 +85,6 @@ var body = JSON.stringify({
  * @returns an HTTP POST request to an Amazon Web Services (AWS) endpoint.
  */
 function httpPost() {
-    var d = D.q.defer();
     var service = "ce";
     var method = "POST";
     var amzdate = (new Date()).toISOString().replace(/\.\d+Z/, "Z").replace(/[-:]/g, ""),
@@ -103,39 +102,40 @@ function httpPost() {
     key = sign(key, service);
     key = sign(key, "aws4_request");
     var auth = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope + ", " + "SignedHeaders=" + signedHeaders + ", " + "Signature=" + hmac("sha256", key, requestString);
-    device.http.post({
-        url: canonicalUri,
-        protocol: "https",
-        headers: {
-            "x-amz-date": amzdate,
-            "X-Amz-Target": "AWSInsightsIndexService.GetCostAndUsage",
-            "Content-Type": "application/x-amz-json-1.0",
-            "Authorization": auth,
-            "Host": host,
+    return new Promise(function (resolve) {
+        device.http.post({
+            url: canonicalUri,
+            protocol: "https",
+            headers: {
+                "x-amz-date": amzdate,
+                "X-Amz-Target": "AWSInsightsIndexService.GetCostAndUsage",
+                "Content-Type": "application/x-amz-json-1.0",
+                "Authorization": auth,
+                "Host": host
+            },
+            body: body
         },
-        body: body
-    },
-    function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode === 401 || response.statusCode === 403) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            console.error(body);
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(JSON.parse(body));
+        function (err, response, body) {
+            if (err) {
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode === 401 || response.statusCode === 403) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                console.error(body);
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 /**
- * @returns promise for http response containing billing metrics 
+ * @returns promise for http response containing billing metrics
  */
 function getBillingMetrics() {
     var payload = {};
@@ -166,7 +166,7 @@ function fillConfig() {
             unit: "USD"
         },
         {
-            //The total cost of your usage, including any discounts or credits that have been applied. 
+            //The total cost of your usage, including any discounts or credits that have been applied.
             uid: "BlendedCost",
             label: "BlendedCost",
             execute: getBilling("BlendedCost"),
@@ -187,14 +187,14 @@ function fillConfig() {
             unit: "USD"
         },
         {
-            //The normalized usage amount for a specific resource, factoring in any differences in resource usage across different instance sizes, regions, or other dimensions. 
+            //The normalized usage amount for a specific resource, factoring in any differences in resource usage across different instance sizes, regions, or other dimensions.
             uid: "NormalizedUsageAmount",
             label: "NormalizedUsageAmount",
             execute: getBilling("NormalizedUsageAmount"),
             unit: "N/A"
         },
         {
-            //The total cost of your usage, without blending across usage types or operations. 
+            //The total cost of your usage, without blending across usage types or operations.
             uid: "UnblendedCost",
             label: "UnblendedCost",
             execute: getBilling("UnblendedCost"),
@@ -206,12 +206,12 @@ function fillConfig() {
             label: "UsageQuantity",
             execute: getBilling("UsageQuantity"),
             unit: "N/A"
-        },
+        }
     ];
 }
 
 /**
-* @param {[object]} data array of objects 
+* @param {[object]} data array of objects
 * @returns list of domotz variables
 */
 function extract(data) {

@@ -1,0 +1,80 @@
+{
+    "exchange synchronised validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange synchronised get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "calendar_sync_status",
+                "name": "CalendarSyncStatus",
+                "value": "Synced",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection_status",
+                "name": "ConnectionStatus",
+                "value": "Connected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection_status_message",
+                "name": "ConnectionStatusMessage",
+                "value": "Connected to Exchange",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "exchange_registration_status",
+                "name": "ExchangeRegistrationStatus",
+                "value": "Registered",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "exchange unreachable validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "exchange unreachable get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "calendar_sync_status",
+                "name": "CalendarSyncStatus",
+                "value": "Not Synced",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection_status",
+                "name": "ConnectionStatus",
+                "value": "Disconnected",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "connection_status_message",
+                "name": "ConnectionStatusMessage",
+                "value": "Waiting for connection",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "exchange_registration_status",
+                "name": "ExchangeRegistrationStatus",
+                "value": "Not Registered",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

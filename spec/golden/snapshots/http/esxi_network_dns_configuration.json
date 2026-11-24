@@ -1,0 +1,34 @@
+{
+    "esxi 8.0.0 static dns validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 static dns get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "dhcp",
+                "name": "DHCP Enabled",
+                "value": "false",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "host-name",
+                "name": "Host Name",
+                "value": "esxi01",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "domain-name",
+                "name": "Domain Name",
+                "value": "lab.local",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

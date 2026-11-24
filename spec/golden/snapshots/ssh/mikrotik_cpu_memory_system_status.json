@@ -1,0 +1,150 @@
+{
+    "ccr2004, sizes in MiB validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ccr2004, sizes in MiB get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu-usage",
+                "name": "CPU Usage",
+                "value": "7",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "12.49",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": "17.2",
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "7.11.2 (stable)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu",
+                "name": "CPU Description",
+                "value": "ARM64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-frequency",
+                "name": "CPU Frequency",
+                "value": "1700",
+                "unit": "MHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-count",
+                "name": "CPU Count",
+                "value": "4",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "board-name",
+                "name": "Board Name",
+                "value": "CCR2004-1G-12S+2XS",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hd-usage",
+                "name": "HD Usage",
+                "value": "23.12",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "ccr2116, sizes in GiB validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ccr2116, sizes in GiB get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "cpu-usage",
+                "name": "CPU Usage",
+                "value": "21",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-usage",
+                "name": "Memory Usage",
+                "value": "78.11",
+                "unit": "%",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": "5.5",
+                "unit": "days",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "firmware-version",
+                "name": "Firmware Version",
+                "value": "7.14.1 (stable)",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu",
+                "name": "CPU Description",
+                "value": "ARM64",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "cpu-frequency",
+                "name": "CPU Frequency",
+                "value": "2000",
+                "unit": "MHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-count",
+                "name": "CPU Count",
+                "value": "16",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "board-name",
+                "name": "Board Name",
+                "value": "CCR2116-12G-4S+",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hd-usage",
+                "name": "HD Usage",
+                "value": "20.00",
+                "unit": "%",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

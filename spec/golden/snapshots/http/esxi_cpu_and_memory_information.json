@@ -1,0 +1,62 @@
+{
+    "esxi 8.0.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "overall-memory-usage",
+                "name": "Memory Usage",
+                "value": "20.00",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "memory-size",
+                "name": "Memory Size",
+                "value": "63.81",
+                "unit": "GB",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "overall-cpu-usage",
+                "name": "CPU Usage",
+                "value": "3.45",
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-mhz",
+                "name": "CPU Speed",
+                "value": "2.10",
+                "unit": "GHz",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "cpu-model",
+                "name": "CPU Model",
+                "value": "Intel(R) Xeon(R) Silver 4116 CPU @ 2.10GHz",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "num-cpu-cores",
+                "name": "Number of CPU Cores",
+                "value": "24",
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "num-cpu-threads",
+                "name": "Number of CPU Threads",
+                "value": "48",
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

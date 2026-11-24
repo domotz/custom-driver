@@ -1,0 +1,192 @@
+{
+    "esxi 8.0.0 all vms validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 all vms get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Virtual Machines",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Power State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Overall Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Number MKS Connections",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Guest Full Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Guest State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Guest OS ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Number of CPUs",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Memory Usage",
+                    "valueType": "NUMBER",
+                    "unit": "%"
+                },
+                {
+                    "label": "Free Memory",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Memory",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "VMware Tools Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VMware Tools Version Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VMware Tools Running Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "VM Path Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Host",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connection State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Maximum Memory Usage",
+                    "valueType": "NUMBER",
+                    "unit": "GB"
+                },
+                {
+                    "label": "Maximum CPU Usage",
+                    "valueType": "NUMBER",
+                    "unit": "MHz"
+                },
+                {
+                    "label": "Template",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Number Ethernet Cards",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Number Virtual Disks",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "web-01",
+                        "poweredOn",
+                        "green",
+                        "0",
+                        "Ubuntu Linux (64-bit)",
+                        "running",
+                        "ubuntu64Guest",
+                        "2",
+                        "25.00",
+                        "3.00",
+                        "4.00",
+                        "toolsOk",
+                        "guestToolsCurrent",
+                        "guestToolsRunning",
+                        "[datastore1] web-01/web-01.vmx",
+                        "ha-host",
+                        "connected",
+                        "4.00",
+                        "4200",
+                        "false",
+                        "1",
+                        "1"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "db-01",
+                        "poweredOn",
+                        "yellow",
+                        "0",
+                        "Microsoft Windows Server 2022 (64-bit)",
+                        "running",
+                        "windows2019srvNext_64Guest",
+                        "4",
+                        "75.00",
+                        "2.00",
+                        "8.00",
+                        "toolsOld",
+                        "guestToolsNeedUpgrade",
+                        "guestToolsRunning",
+                        "[datastore1] db-01/db-01.vmx",
+                        "ha-host",
+                        "connected",
+                        "8.00",
+                        "8400",
+                        "false",
+                        "2",
+                        "3"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "old-app",
+                        "poweredOff",
+                        "gray",
+                        "0",
+                        "CentOS 7 (64-bit)",
+                        "notRunning",
+                        "centos7_64Guest",
+                        "1",
+                        "0.00",
+                        "2.00",
+                        "2.00",
+                        "toolsNotRunning",
+                        "guestToolsUnmanaged",
+                        "guestToolsNotRunning",
+                        "[ssd-fast] old-app/old-app.vmx",
+                        "ha-host",
+                        "connected",
+                        "2.00",
+                        "2100",
+                        "false",
+                        "1",
+                        "1"
+                    ]
+                }
+            ]
+        }
+    }
+}

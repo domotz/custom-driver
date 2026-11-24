@@ -1,18 +1,18 @@
 /**
  * Name: Linux CPU Usage - Iostat
  * Description: This script monitor the average CPU usage of a linux server using the iostat package
- * 
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested on Linux Distributions:
  *     - Ubuntu 22.04.1 LTS
  * Shell Version:
  *     - Bash 5.1.16
- * 
+ *
  * 'iostat' should be installed on the remote device (using this command "sudo apt install sysstat")
- * 
+ *
  * Creates a Custom Driver Variable for total used CPU usage
- *      
+ *
  */
 
 // Define a command to start the 'iostat' utility in the background,
@@ -39,23 +39,23 @@ function checkSshError(err) {
 // Executes an SSH command on the remote device.
 /**
  * @param {*} command contains the command to execute
- * @param {*} ignoreTimeout ignore ssh timeout error code this is needed to run nohup process without waiting it to finish 
+ * @param {*} ignoreTimeout ignore ssh timeout error code this is needed to run nohup process without waiting it to finish
  */
 function executeCommand(command, ignoreTimeout) {
     return function () {
-        var d = D.q.defer();
         sshConfig.command = command;
-        D.device.sendSSHCommand(sshConfig, function (output, error) {
-            if (error) {
-                if(error.message == "Timeout of " + commandTimeout + "ms expired" && ignoreTimeout){
-                    return d.resolve();
+        return new Promise(function (resolve, reject) {
+            D.device.sendSSHCommand(sshConfig, function (output, error) {
+                if (error) {
+                    if (error.message == "Timeout of " + commandTimeout + "ms expired" && ignoreTimeout) {
+                        return resolve();
+                    }
+                    checkSshError(error);
+                    return reject(error);
                 }
-                checkSshError(error);
-                return d.reject(error);
-            }
-            d.resolve(output);
+                resolve(output);
+            });
         });
-        return d.promise;
     };
 }
 
@@ -99,16 +99,16 @@ function readfile() {
 }
 
 // This function truncates the content of the file '/tmp/domotz_iostat_cpus.output' to zero bytes.
-function truncate(){
+function truncate() {
     return executeCommand("truncate -s 0 /tmp/domotz_iostat_cpus.output")()
-        .catch(function(){
+        .catch(function () {
             console.warn("/tmp/domotz_iostat_cpus.output doesn't exists");
         });
 }
 
 // Calculates the average CPU utilization from 'iostat' data
 function calculateAverage(data) {
-    var lines = data.split('\n');
+    var lines = data.split("\n");
     var sumUser = 0;
     var sumNice = 0;
     var sumSystem = 0;
@@ -116,8 +116,8 @@ function calculateAverage(data) {
     var count = 0;
     for (var i = 2; i < lines.length; i++) {
         var line = lines[i];
-        if (line.indexOf('avg-cpu:') >= 0) {
-            var parts = lines[i+1].split(/\s+/);
+        if (line.indexOf("avg-cpu:") >= 0) {
+            var parts = lines[i + 1].split(/\s+/);
             var user = parseFloat(parts[1]);
             var nice = parseFloat(parts[2]);
             var system = parseFloat(parts[3]);

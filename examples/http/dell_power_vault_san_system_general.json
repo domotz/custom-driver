@@ -1,6 +1,6 @@
 {
     "logo": "dell.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Dell PowerVault SAN System General",
     "description": "Monitors the general information of a Dell PowerVault SAN system",
     "category": "Hardware Integration",

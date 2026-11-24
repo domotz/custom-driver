@@ -1,0 +1,244 @@
+{
+    "two appliances, all uplinks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two appliances, all uplinks get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Meraki Uplink Statuses",
+            "columnHeaders": [
+                {
+                    "label": "Alias"
+                },
+                {
+                    "label": "Serial"
+                },
+                {
+                    "label": "Model"
+                },
+                {
+                    "label": "Last Reported At"
+                },
+                {
+                    "label": "HA Role"
+                },
+                {
+                    "label": "Interface"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "IP"
+                },
+                {
+                    "label": "Gateway"
+                },
+                {
+                    "label": "Public IP"
+                },
+                {
+                    "label": "Primary DNS"
+                },
+                {
+                    "label": "Secondary DNS"
+                },
+                {
+                    "label": "IP Assigned By"
+                },
+                {
+                    "label": "Tags"
+                },
+                {
+                    "label": "Description"
+                }
+            ],
+            "records": [
+                {
+                    "id": "E0553DAABB01-wan1",
+                    "values": [
+                        "HQ-MX-1",
+                        "Q2KD-AAAA-0001",
+                        "MX85",
+                        "2026-01-15T09:58:12.000000Z",
+                        "primary",
+                        "wan1",
+                        "active",
+                        "203.0.113.10",
+                        "203.0.113.1",
+                        "203.0.113.10",
+                        "9.9.9.9",
+                        "149.112.112.112",
+                        "static",
+                        "hq, primary",
+                        "WAN1: Fiber 1G ISP-A"
+                    ]
+                },
+                {
+                    "id": "E0553DAABB01-wan2",
+                    "values": [
+                        "HQ-MX-1",
+                        "Q2KD-AAAA-0001",
+                        "MX85",
+                        "2026-01-15T09:58:12.000000Z",
+                        "primary",
+                        "wan2",
+                        "failed",
+                        "198.51.100.20",
+                        "198.51.100.1",
+                        "198.51.100.20",
+                        "198.51.100.1",
+                        "",
+                        "dhcp",
+                        "hq, primary",
+                        "WAN2: DSL backup ISP-B"
+                    ]
+                },
+                {
+                    "id": "E0553DAABB02-wan1",
+                    "values": [
+                        "MX68CW",
+                        "Q2KD-BBBB-0002",
+                        "MX68CW",
+                        "2026-01-15T09:57:40.000000Z",
+                        "",
+                        "wan1",
+                        "ready",
+                        "192.0.2.50",
+                        "192.0.2.1",
+                        "192.0.2.50",
+                        "8.8.8.8",
+                        "8.8.4.4",
+                        "dhcp",
+                        "",
+                        "Branch spare unit"
+                    ]
+                },
+                {
+                    "id": "E0553DAABB02-cellular",
+                    "values": [
+                        "MX68CW",
+                        "Q2KD-BBBB-0002",
+                        "MX68CW",
+                        "2026-01-15T09:57:40.000000Z",
+                        "",
+                        "cellular",
+                        "not connected",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "Branch spare unit"
+                    ]
+                }
+            ]
+        }
+    },
+    "filtered by management MAC validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "filtered by management MAC get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Meraki Uplink Statuses",
+            "columnHeaders": [
+                {
+                    "label": "Alias"
+                },
+                {
+                    "label": "Serial"
+                },
+                {
+                    "label": "Model"
+                },
+                {
+                    "label": "Last Reported At"
+                },
+                {
+                    "label": "HA Role"
+                },
+                {
+                    "label": "Interface"
+                },
+                {
+                    "label": "Status"
+                },
+                {
+                    "label": "IP"
+                },
+                {
+                    "label": "Gateway"
+                },
+                {
+                    "label": "Public IP"
+                },
+                {
+                    "label": "Primary DNS"
+                },
+                {
+                    "label": "Secondary DNS"
+                },
+                {
+                    "label": "IP Assigned By"
+                },
+                {
+                    "label": "Tags"
+                },
+                {
+                    "label": "Description"
+                }
+            ],
+            "records": [
+                {
+                    "id": "E0553DAABB01-wan1",
+                    "values": [
+                        "HQ-MX-1",
+                        "Q2KD-AAAA-0001",
+                        "MX85",
+                        "2026-01-15T09:58:12.000000Z",
+                        "primary",
+                        "wan1",
+                        "active",
+                        "203.0.113.10",
+                        "203.0.113.1",
+                        "203.0.113.10",
+                        "9.9.9.9",
+                        "149.112.112.112",
+                        "static",
+                        "hq, primary",
+                        "WAN1: Fiber 1G ISP-A"
+                    ]
+                },
+                {
+                    "id": "E0553DAABB01-wan2",
+                    "values": [
+                        "HQ-MX-1",
+                        "Q2KD-AAAA-0001",
+                        "MX85",
+                        "2026-01-15T09:58:12.000000Z",
+                        "primary",
+                        "wan2",
+                        "failed",
+                        "198.51.100.20",
+                        "198.51.100.1",
+                        "198.51.100.20",
+                        "198.51.100.1",
+                        "",
+                        "dhcp",
+                        "hq, primary",
+                        "WAN2: DSL backup ISP-B"
+                    ]
+                }
+            ]
+        }
+    }
+}

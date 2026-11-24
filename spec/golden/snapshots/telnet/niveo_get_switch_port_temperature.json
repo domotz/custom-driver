@@ -1,0 +1,43 @@
+{
+    "niveo five ports validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "niveo five ports get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "1",
+                "name": "Port 1",
+                "value": "41",
+                "unit": "C"
+            },
+            {
+                "uid": "2",
+                "name": "Port 2",
+                "value": "43",
+                "unit": "C"
+            },
+            {
+                "uid": "5",
+                "name": "Port 5",
+                "value": "78",
+                "unit": "C"
+            },
+            {
+                "uid": "9",
+                "name": "Port 9",
+                "value": "109",
+                "unit": "F"
+            },
+            {
+                "uid": "10",
+                "name": "Port 10",
+                "value": "0",
+                "unit": "C"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "xcc 8.42 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "xcc 8.42 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Power Supply Health Info",
+            "columnHeaders": [
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Rated Power",
+                    "unit": "W",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "power-supply1",
+                    "values": [
+                        "Normal",
+                        "750"
+                    ]
+                },
+                {
+                    "id": "power-supply2",
+                    "values": [
+                        "Critical",
+                        "750"
+                    ]
+                },
+                {
+                    "id": "power-supply3",
+                    "values": [
+                        "Normal",
+                        "1100"
+                    ]
+                }
+            ]
+        }
+    }
+}

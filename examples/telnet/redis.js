@@ -28,30 +28,29 @@ var redisTelnetParams = {
 };
 
 /**
- * 
+ *
  * @returns Promise wait for redis information
  */
 function getRedisInfo() {
-    var d = D.q.defer();
-    telnet(redisTelnetParams, function (out, err) {
-        if (err) {
-            console.error("error while executing command: " + redisTelnetParams.command);
-            failure(err);
-        }
-        if (!out) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (out.indexOf("-NOAUTH") >= 0) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        d.resolve(out.split("\n"));
+    return new Promise(function (resolve) {
+        telnet(redisTelnetParams, function (out, err) {
+            if (err) {
+                console.error("error while executing command: " + redisTelnetParams.command);
+                return failure(err);
+            }
+            if (!out) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (out.indexOf("-NOAUTH") >= 0) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            resolve(out.split("\n"));
+        });
     });
-
-    return d.promise;
 }
 
 /**
- * 
+ *
  * @param {[string]} results list of information returned by redis server
  * @returns monitoring variables
  */
@@ -69,7 +68,6 @@ function parseInfo(results) {
     });
 }
 
-
 function failure(err) {
     console.error(err);
     D.failure(D.errorType.GENERIC_ERROR);
@@ -86,7 +84,6 @@ function validate() {
         .catch(failure);
 
 }
-
 
 /**
 * @remote_procedure

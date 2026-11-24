@@ -1,6 +1,6 @@
 {
     "logo": "ibm.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "IBM FlashSystem5000 SAS Ports",
     "description": "Retrieves information about the SAS ports in the IBM FlashSystem 5000",
     "category": "Hardware Integration",

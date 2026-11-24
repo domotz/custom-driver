@@ -1,6 +1,6 @@
 {
     "logo": "vmware-vsphere.svg",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "VMWare vCenter Monitoring Services Health",
     "description": "Monitors the health status of services on a VMware vCenter server",
     "category": "Software Integration",

@@ -1,0 +1,188 @@
+{
+    "rally bar collabos 1.15.3 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "rally bar collabos 1.15.3 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "collab-os-version",
+                "name": "CollabOS Version",
+                "value": "1.15.3",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-configuration",
+                "name": "Device Configuration",
+                "value": "RallyBar",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "ethernet-mac",
+                "name": "Ethernet MAC",
+                "value": "00:1F:C6:AA:10:01",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "hw-version",
+                "name": "Hardware Version",
+                "value": "A.1",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "model-name",
+                "name": "Model Name",
+                "value": "Rally Bar",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "serial-number",
+                "name": "Serial Number",
+                "value": "2214LZ0A1B2C",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "system-name",
+                "name": "System Name",
+                "value": "Boardroom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "wifi-mac",
+                "name": "WiFi MAC",
+                "value": "00:1F:C6:AA:10:02",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-name",
+                "name": "Device Name",
+                "value": "rallybar-boardroom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "service-provider",
+                "name": "Service Provider",
+                "value": "Zoom",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "device-state",
+                "name": "Device State",
+                "value": "InCall",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "mic-state",
+                "name": "Microphone State",
+                "value": "Unmuted",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "speaker-state",
+                "name": "Speaker State",
+                "value": "Unmuted",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "speaker-max-volume",
+                "name": "Speaker Max Volume",
+                "value": 100,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "speaker-volume",
+                "name": "Speaker Volume",
+                "value": 42,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "peripherals-cameras-0-name",
+                "name": "Peripherals - Cameras - Name",
+                "value": "Rally Camera",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "peripherals-cameras-0-connected",
+                "name": "Peripherals - Cameras - Connected",
+                "value": "true",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "peripherals-cameras-0-firmware",
+                "name": "Peripherals - Cameras - Firmware",
+                "value": "1.4.2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "peripherals-cameras-1-name",
+                "name": "Peripherals - Cameras - Name",
+                "value": "Rally Camera 2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "peripherals-cameras-1-connected",
+                "name": "Peripherals - Cameras - Connected",
+                "value": "false",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "peripherals-cameras-1-firmware",
+                "name": "Peripherals - Cameras - Firmware",
+                "value": "1.4.2",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "peoplecount",
+                "name": "People Count",
+                "value": 6,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "occupancy-detected",
+                "name": "Occupancy Detected",
+                "value": "true",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "occupancy-confidence",
+                "name": "Occupancy Confidence",
+                "value": 0.92,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "temperature",
+                "name": "Temperature",
+                "value": 22.5,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

@@ -1,17 +1,17 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare vCenter Monitoring Services Health
  * Description: Monitors the health status of services on a VMware vCenter server.
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver Table with the following columns:
  *      - Startup Type: Defines valid Startup Type for vCenter Server services
  *      - State: Defines valid Run State for services
  *      - Status: Defines the health of a service
- * 
+ *
  **/
 
 // Create a Custom Driver table to store health status of vCenter services
@@ -26,7 +26,6 @@ var table = D.createTable(
 
 // Logs in to the VMWare device using basic authentication.
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/session",
         username: D.device.username(),
@@ -36,55 +35,56 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 201) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // This function retrieves the list of services from the VMWare API
 function getServices(sessionId) {
-    var d = D.q.defer();
     var config = {
         url: "/api/vcenter/services",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": sessionId 
+            "vmware-api-session-id": sessionId
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
-// This function extracts data from the response body and populates the custom table 
+// This function extracts data from the response body and populates the custom table
 function extractData(data) {
     if (data) {
         var healthStatus = {
@@ -115,10 +115,10 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare device
  */
-function validate(){
+function validate() {
     login()
         .then(getServices)
         .then(function (response) {

@@ -1,0 +1,228 @@
+{
+    "winrm, eleven monitored subcategories validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, eleven monitored subcategories get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Audit Settings",
+            "columnHeaders": [
+                {
+                    "label": "Category"
+                },
+                {
+                    "label": "Subcategory"
+                },
+                {
+                    "label": "Setting"
+                }
+            ],
+            "records": [
+                {
+                    "id": "system-security-system-extension",
+                    "values": [
+                        "System",
+                        "Security System Extension",
+                        "No Auditing"
+                    ]
+                },
+                {
+                    "id": "logon/logoff-logon",
+                    "values": [
+                        "Logon/Logoff",
+                        "Logon",
+                        "Success and Failure"
+                    ]
+                },
+                {
+                    "id": "object-access-sam",
+                    "values": [
+                        "Object Access",
+                        "SAM",
+                        "No Auditing"
+                    ]
+                },
+                {
+                    "id": "policy-change-audit-policy-change",
+                    "values": [
+                        "Policy Change",
+                        "Audit Policy Change",
+                        "Success"
+                    ]
+                },
+                {
+                    "id": "policy-change-authentication-policy-change",
+                    "values": [
+                        "Policy Change",
+                        "Authentication Policy Change",
+                        "Success"
+                    ]
+                },
+                {
+                    "id": "policy-change-mpssvc-rule-level-policy-change",
+                    "values": [
+                        "Policy Change",
+                        "MPSSVC Rule-Level Policy Change",
+                        "No Auditing"
+                    ]
+                },
+                {
+                    "id": "account-management-computer-account-management",
+                    "values": [
+                        "Account Management",
+                        "Computer Account Management",
+                        "Success"
+                    ]
+                },
+                {
+                    "id": "account-management-security-group-management",
+                    "values": [
+                        "Account Management",
+                        "Security Group Management",
+                        "Success and Failure"
+                    ]
+                },
+                {
+                    "id": "account-management-user-account-management",
+                    "values": [
+                        "Account Management",
+                        "User Account Management",
+                        "Success and Failure"
+                    ]
+                },
+                {
+                    "id": "ds-access-directory-service-changes",
+                    "values": [
+                        "DS Access",
+                        "Directory Service Changes",
+                        "Failure"
+                    ]
+                },
+                {
+                    "id": "ds-access-directory-service-replication",
+                    "values": [
+                        "DS Access",
+                        "Directory Service Replication",
+                        "No Auditing"
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, eleven monitored subcategories validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, eleven monitored subcategories get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Audit Settings",
+            "columnHeaders": [
+                {
+                    "label": "Category"
+                },
+                {
+                    "label": "Subcategory"
+                },
+                {
+                    "label": "Setting"
+                }
+            ],
+            "records": [
+                {
+                    "id": "system-security-system-extension",
+                    "values": [
+                        "System",
+                        "Security System Extension",
+                        "No Auditing"
+                    ]
+                },
+                {
+                    "id": "logon/logoff-logon",
+                    "values": [
+                        "Logon/Logoff",
+                        "Logon",
+                        "Success and Failure"
+                    ]
+                },
+                {
+                    "id": "object-access-sam",
+                    "values": [
+                        "Object Access",
+                        "SAM",
+                        "No Auditing"
+                    ]
+                },
+                {
+                    "id": "policy-change-audit-policy-change",
+                    "values": [
+                        "Policy Change",
+                        "Audit Policy Change",
+                        "Success"
+                    ]
+                },
+                {
+                    "id": "policy-change-authentication-policy-change",
+                    "values": [
+                        "Policy Change",
+                        "Authentication Policy Change",
+                        "Success"
+                    ]
+                },
+                {
+                    "id": "policy-change-mpssvc-rule-level-policy-change",
+                    "values": [
+                        "Policy Change",
+                        "MPSSVC Rule-Level Policy Change",
+                        "No Auditing"
+                    ]
+                },
+                {
+                    "id": "account-management-computer-account-management",
+                    "values": [
+                        "Account Management",
+                        "Computer Account Management",
+                        "Success"
+                    ]
+                },
+                {
+                    "id": "account-management-security-group-management",
+                    "values": [
+                        "Account Management",
+                        "Security Group Management",
+                        "Success and Failure"
+                    ]
+                },
+                {
+                    "id": "account-management-user-account-management",
+                    "values": [
+                        "Account Management",
+                        "User Account Management",
+                        "Success and Failure"
+                    ]
+                },
+                {
+                    "id": "ds-access-directory-service-changes",
+                    "values": [
+                        "DS Access",
+                        "Directory Service Changes",
+                        "Failure"
+                    ]
+                },
+                {
+                    "id": "ds-access-directory-service-replication",
+                    "values": [
+                        "DS Access",
+                        "Directory Service Replication",
+                        "No Auditing"
+                    ]
+                }
+            ]
+        }
+    }
+}

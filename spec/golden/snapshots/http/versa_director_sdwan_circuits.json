@@ -1,0 +1,296 @@
+{
+    "hub auto-selected by name validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "hub auto-selected by name get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "circuit-count",
+                "name": "Circuits",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "site-count",
+                "name": "Sites Reached",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "source-appliance",
+                "name": "Source Appliance",
+                "value": "HUB-Frankfurt",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "SD-WAN Circuits",
+            "columnHeaders": [
+                {
+                    "label": "Site",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encapsulation",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local IP",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote IP",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "RX Packets",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "RX Bytes",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "TX Packets",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "TX Bytes",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Packet Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan-wan1-wan1-plaintext-203-0-113-yeu684",
+                    "values": [
+                        "branch-milan",
+                        "WAN1",
+                        "WAN1",
+                        "plaintext",
+                        "203.0.113.10",
+                        "198.51.100.21",
+                        1200,
+                        96000,
+                        1100,
+                        88000,
+                        null,
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "id": "branch-milan-wan1-wan1-encrypted-203-0-113-lgsgh1",
+                    "values": [
+                        "branch-milan",
+                        "WAN1",
+                        "WAN1",
+                        "encrypted",
+                        "203.0.113.10",
+                        "198.51.100.21",
+                        98765432,
+                        74123456789,
+                        87654321,
+                        65432109876,
+                        null,
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "id": "branch-rome-wan2-wan1-encrypted-192-0-2-14-un9b3u",
+                    "values": [
+                        "branch-rome",
+                        "WAN2",
+                        "WAN1",
+                        "encrypted",
+                        "192.0.2.14",
+                        "198.51.100.21",
+                        5500,
+                        4400000,
+                        0,
+                        0,
+                        null,
+                        null,
+                        null
+                    ]
+                }
+            ]
+        }
+    },
+    "director by hostname validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "director by hostname get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "circuit-count",
+                "name": "Circuits",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "site-count",
+                "name": "Sites Reached",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "source-appliance",
+                "name": "Source Appliance",
+                "value": "HUB-Frankfurt",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": {
+            "label": "SD-WAN Circuits",
+            "columnHeaders": [
+                {
+                    "label": "Site",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote Circuit",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Encapsulation",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Local IP",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Remote IP",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "RX Packets",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "RX Bytes",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "TX Packets",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "TX Bytes",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Latency",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Jitter",
+                    "unit": "ms",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Packet Loss",
+                    "unit": "%",
+                    "valueType": "NUMBER"
+                }
+            ],
+            "records": [
+                {
+                    "id": "branch-milan-wan1-wan1-plaintext-203-0-113-yeu684",
+                    "values": [
+                        "branch-milan",
+                        "WAN1",
+                        "WAN1",
+                        "plaintext",
+                        "203.0.113.10",
+                        "198.51.100.21",
+                        1200,
+                        96000,
+                        1100,
+                        88000,
+                        null,
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "id": "branch-milan-wan1-wan1-encrypted-203-0-113-lgsgh1",
+                    "values": [
+                        "branch-milan",
+                        "WAN1",
+                        "WAN1",
+                        "encrypted",
+                        "203.0.113.10",
+                        "198.51.100.21",
+                        98765432,
+                        74123456789,
+                        87654321,
+                        65432109876,
+                        null,
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "id": "branch-rome-wan2-wan1-encrypted-192-0-2-14-un9b3u",
+                    "values": [
+                        "branch-rome",
+                        "WAN2",
+                        "WAN1",
+                        "encrypted",
+                        "192.0.2.14",
+                        "198.51.100.21",
+                        5500,
+                        4400000,
+                        0,
+                        0,
+                        null,
+                        null,
+                        null
+                    ]
+                }
+            ]
+        }
+    }
+}

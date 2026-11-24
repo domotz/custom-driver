@@ -1,0 +1,125 @@
+{
+    "winrm, three accounts with failed logons validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, three accounts with failed logons get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "FailedLogonAttempts",
+                "name": "Total failed attempts",
+                "value": 24,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Failed logon attempts by account",
+            "columnHeaders": [
+                {
+                    "label": "last 24 hour(s)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        17
+                    ]
+                },
+                {
+                    "id": "jsmith",
+                    "values": [
+                        5
+                    ]
+                },
+                {
+                    "id": "guest",
+                    "values": [
+                        2
+                    ]
+                }
+            ]
+        }
+    },
+    "winrm, a single account is a bare object validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "winrm, a single account is a bare object get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "FailedLogonAttempts",
+                "name": "Total failed attempts",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Failed logon attempts by account",
+            "columnHeaders": [
+                {
+                    "label": "last 24 hour(s)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "guest",
+                    "values": [
+                        3
+                    ]
+                }
+            ]
+        }
+    },
+    "ssh, three accounts with failed logons validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ssh, three accounts with failed logons get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "FailedLogonAttempts",
+                "name": "Total failed attempts",
+                "value": 24,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": {
+            "label": "Failed logon attempts by account",
+            "columnHeaders": [
+                {
+                    "label": "last 24 hour(s)"
+                }
+            ],
+            "records": [
+                {
+                    "id": "administrator",
+                    "values": [
+                        17
+                    ]
+                },
+                {
+                    "id": "jsmith",
+                    "values": [
+                        5
+                    ]
+                },
+                {
+                    "id": "guest",
+                    "values": [
+                        2
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "ubuntu 20.04 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 20.04 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "IP Latency",
+            "columnHeaders": [
+                {
+                    "label": "Latency",
+                    "unit": "ms"
+                },
+                {
+                    "label": "Packet Loss",
+                    "unit": "%"
+                }
+            ],
+            "records": [
+                {
+                    "id": "8.8.8.8",
+                    "values": [
+                        "12.100",
+                        "0"
+                    ]
+                },
+                {
+                    "id": "10.255.255.1",
+                    "values": [
+                        "45.250",
+                        "50"
+                    ]
+                },
+                {
+                    "id": "192.168.77.9",
+                    "values": [
+                        "-1",
+                        "100"
+                    ]
+                }
+            ]
+        }
+    }
+}

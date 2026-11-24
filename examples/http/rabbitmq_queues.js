@@ -1,4 +1,4 @@
-/** 
+/**
  * This driver gets queues from RabbitMQ management plugin provided an HTTP-based API using HTTP agent
  * Communication protocol is http
  * Communicate with http api using USERNAME and PASSWORD
@@ -27,8 +27,8 @@
  * Memory: The bytes of memory consumed by the Erlang process associated with the queue, including stack, heap and internal structures.
  * Consumers: The number of consumers.
  * -----------------------------------------
- * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS 
- * 
+ * Tested with RabbitMQ version: 3.11.5 under Ubuntu 22.04.1 LTS
+ *
  */
 
 var port = 15672;
@@ -61,29 +61,29 @@ var table = D.createTable("Queues", [
  * @returns promise for http response body
  */
 function httpGet(url) {
-    var d = D.q.defer();
-    D.device.http.get({
-        url: url,
-        port: port,
-        username: D.device.username(),
-        password: D.device.password(),
-        auth: "basic"
-    }, function (err, response, body) {
-        if (err) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        }
-        if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        }
-        if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        }
-        d.resolve(body);
+    return new Promise(function (resolve) {
+        D.device.http.get({
+            url: url,
+            port: port,
+            username: D.device.username(),
+            password: D.device.password(),
+            auth: "basic"
+        }, function (err, response, body) {
+            if (err) {
+                return D.failure(D.errorType.GENERIC_ERROR);
+            }
+            if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            }
+            if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            }
+            if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(body);
+        });
     });
-    return d.promise;
 }
 
 /**
@@ -95,6 +95,7 @@ function getQueues(page) {
     var params = [];
     params.push("page_size=100");
     params.push("page=" + page);
+    // eslint-disable-next-line no-undef -- optional filter, only set if declared in this file
     if (typeof queueNameRegex !== "undefined") params.push("name=" + queueNameRegex + "&use_regex=true");
     query += "?" + params.join("&");
     return httpGet(query)
@@ -103,14 +104,13 @@ function getQueues(page) {
             queues = queues.concat(data.items);
             if (data.page < data.page_count) {
                 return getQueues(++page);
-            }
-            else {
+            } else {
                 return queues;
             }
         });
 }
 
-//fill the dynamic table with data related to queues  
+//fill the dynamic table with data related to queues
 function fillTable(queues) {
     queues.forEach(function (d) {
         d.forEach(function (item) {
@@ -128,9 +128,9 @@ function fillTable(queues) {
             var publishDetails = item.message_stats && item.message_stats.publish_details && item.message_stats.publish_details.rate || 0;
             var published = item.message_stats && item.message_stats.publish || 0;
             var messagesDetails = item.messages_details && item.messages_details.rate || 0;
-            var deliverDetails = item.message_stats && item.message_stats.deliver_details && message_stats.deliver_details.rate || 0;
+            var deliverDetails = item.message_stats && item.message_stats.deliver_details && item.message_stats.deliver_details.rate || 0;
             var delivered = item.message_stats && item.message_stats.deliver || 0;
-            var ackDetails = item.message_stats && item.message_stats.ack_details && message_stats.ack_details.rate || 0;
+            var ackDetails = item.message_stats && item.message_stats.ack_details && item.message_stats.ack_details.rate || 0;
             var acknowledged = item.message_stats && item.message_stats.ack || 0;
             var queueMessages = item.messages || 0;
             var queueMemory = item.memory || 0;
@@ -163,7 +163,7 @@ function fillTable(queues) {
 
 // load queues informations
 function loadData() {
-    return D.q.all([
+    return Promise.all([
         getQueues()
     ]);
 }
@@ -177,8 +177,11 @@ function validate() {
     loadData()
         .then(function () {
             D.success();
+        })
+        .catch(function (err) {
+            console.error(err);
+            D.failure(D.errorType.GENERIC_ERROR);
         });
-
 }
 
 //Indicate the successful execution for variable list and table
@@ -190,7 +193,7 @@ function success() {
  * @remote_procedure
  * @label Get Device Variables
  * @documentation This procedure is used to extract monitoring parameters from RabbitMQ queues.
- * 
+ *
  */
 function get_status() {
     loadData()

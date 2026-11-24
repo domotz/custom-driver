@@ -1,0 +1,55 @@
+{
+    "vcsa 8.0.2 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcsa 8.0.2 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "product-name",
+                "name": "Product Name",
+                "value": "VMware vCenter Server",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "type",
+                "name": "Product Type",
+                "value": "vCenter Server with an embedded Platform Services Controller",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "8.0.2.00100",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "build-number",
+                "name": "Build Number",
+                "value": "22617221",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "release-date",
+                "name": "Release Date",
+                "value": "September 28, 2023",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "install-time",
+                "name": "Install Time",
+                "value": "05:01:2024 08:07:09 UTC",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

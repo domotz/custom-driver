@@ -1,0 +1,66 @@
+{
+    "volume with a short history on two metrics validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "volume with a short history on two metrics get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "burst_balance",
+                "name": "Burst balance",
+                "value": "99.500",
+                "unit": "%"
+            },
+            {
+                "uid": "read_ops",
+                "name": "Read, ops",
+                "value": "1250.000",
+                "unit": "Ops"
+            },
+            {
+                "uid": "write_ops",
+                "name": "Write, ops",
+                "value": "4800.250",
+                "unit": "Ops"
+            },
+            {
+                "uid": "total_read_time",
+                "name": "Read time, total",
+                "value": "3.125",
+                "unit": "s"
+            },
+            {
+                "uid": "queue_length",
+                "name": "Queue length",
+                "value": "0.012"
+            },
+            {
+                "uid": "write_bytes",
+                "name": "Write, bytes",
+                "value": "52428800.000",
+                "unit": "Bps"
+            },
+            {
+                "uid": "total_write_time",
+                "name": "Write time, total",
+                "value": "12.500",
+                "unit": "s"
+            },
+            {
+                "uid": "read_bytes",
+                "name": "Read, bytes",
+                "value": "10485760.000",
+                "unit": "Bps"
+            },
+            {
+                "uid": "idle_time",
+                "name": "Idle time",
+                "value": "540.500",
+                "unit": "s"
+            }
+        ],
+        "table": null
+    }
+}

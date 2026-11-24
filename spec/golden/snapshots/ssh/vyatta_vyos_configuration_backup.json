@@ -1,0 +1,16 @@
+{
+    "vyos 1.4 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vyos 1.4 backup": {
+        "type": "success",
+        "backup": {
+            "label": "VyOS Configuration (JSON)",
+            "running": "{\n  \"interfaces\": {\n    \"ethernet\": {\n      \"eth0\": {\n        \"address\": \"dhcp\",\n        \"hw-id\": \"52:54:00:12:34:56\"\n      },\n      \"eth1\": {\n        \"address\": \"192.168.10.1/24\",\n        \"description\": \"LAN\",\n        \"hw-id\": \"52:54:00:12:34:57\"\n      }\n    },\n    \"loopback\": {\n      \"lo\": {}\n    }\n  },\n  \"nat\": {\n    \"source\": {\n      \"rule\": {\n        \"100\": {\n          \"outbound_interface\": \"eth0\",\n          \"source\": {\n            \"address\": \"192.168.10.0/24\"\n          },\n          \"translation\": {\n            \"address\": \"masquerade\"\n          }\n        }\n      }\n    }\n  },\n  \"service\": {\n    \"ssh\": {\n      \"port\": \"22\"\n    }\n  },\n  \"system\": {\n    \"host-name\": \"vyos\",\n    \"login\": {\n      \"user\": {\n        \"vyos\": {\n          \"authentication\": {\n            \"encrypted-password\": \"$6$rounds=656000$abc$XyZ\",\n            \"plaintext-password\": \"\"\n          }\n        }\n      }\n    },\n    \"name-server\": [\n      \"1.1.1.1\",\n      \"9.9.9.9\"\n    ]\n  }\n}",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

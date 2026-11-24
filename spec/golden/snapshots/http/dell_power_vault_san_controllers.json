@@ -1,0 +1,40 @@
+{
+    "me5024 controllers validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "me5024 controllers get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Controllers",
+            "columnHeaders": [
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Health",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "controller-a",
+                    "values": [
+                        "7T2LQ93-A",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "controller-b",
+                    "values": [
+                        "7T2LQ93-B",
+                        "Critical"
+                    ]
+                }
+            ]
+        }
+    }
+}

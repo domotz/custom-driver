@@ -1,0 +1,52 @@
+{
+    "vcenter 7.0.3 vm nics validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 7.0.3 vm nics get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Disks",
+            "columnHeaders": [
+                {
+                    "label": "Network",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Network name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "MAC",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "State",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "network-adapter-1",
+                    "values": [
+                        "network-12",
+                        "VM Network",
+                        "00:50:56:a1:b2:c3",
+                        "CONNECTED"
+                    ]
+                },
+                {
+                    "id": "network-adapter-2",
+                    "values": [
+                        "dvportgroup-48",
+                        "DPG-Backup",
+                        "00:50:56:01:02:03",
+                        "NOT_CONNECTED"
+                    ]
+                }
+            ]
+        }
+    }
+}

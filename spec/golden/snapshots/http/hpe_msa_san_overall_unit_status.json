@@ -1,0 +1,45 @@
+{
+    "msa 2050 sensors validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 sensors get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "overall-unit-status",
+                "name": "Overall Unit Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    },
+    "msa 2050 with an expansion enclosure validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 with an expansion enclosure get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "overall-unit-status",
+                "name": "Overall Unit Status",
+                "value": "OK",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "overall-unit-status-2",
+                "name": "Overall Unit Status (Enclosure 2)",
+                "value": "Warning",
+                "unit": null,
+                "valueType": "STRING"
+            }
+        ],
+        "table": null
+    }
+}

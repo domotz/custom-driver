@@ -1,0 +1,84 @@
+{
+    "iDRAC 9 dual socket validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "iDRAC 9 dual socket get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "CPU Info",
+            "columnHeaders": [
+                {
+                    "label": "Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Description",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Primary Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CPU Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Max Clock Speed",
+                    "unit": "MHZ",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Current Clock Speed",
+                    "unit": "MHZ",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Virt Tech Enabled",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Hyper Threading Enabled",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "cpu.socket.1",
+                    "values": [
+                        "CPU",
+                        "CPU 1",
+                        "Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz",
+                        "Ok",
+                        "CPU Enabled",
+                        4000,
+                        2100,
+                        "Yes",
+                        "Yes"
+                    ]
+                },
+                {
+                    "id": "cpu.socket.2",
+                    "values": [
+                        "CPU",
+                        "CPU 2",
+                        "Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz",
+                        "Warning",
+                        "CPU Disabled By BIOS",
+                        4000,
+                        2100,
+                        "No",
+                        "No"
+                    ]
+                }
+            ]
+        }
+    }
+}

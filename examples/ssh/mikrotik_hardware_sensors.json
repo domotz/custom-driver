@@ -1,6 +1,6 @@
 {
     "logo": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "MikroTik Hardware Sensors",
     "description": "This script retrieves hardware sensor data from MikroTik devices ",
     "category": "Hardware Integration",

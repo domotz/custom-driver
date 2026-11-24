@@ -1,0 +1,37 @@
+{
+    "four sensors, one in alarm validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four sensors, one in alarm get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "1",
+                "name": "Room temperature",
+                "value": "21.5",
+                "unit": "°C"
+            },
+            {
+                "uid": "2",
+                "name": "Supply humidity",
+                "value": "47",
+                "unit": "%"
+            },
+            {
+                "uid": "3",
+                "name": "Boiler enable",
+                "value": "Off",
+                "unit": ""
+            },
+            {
+                "uid": "4",
+                "name": "Fire alarm",
+                "value": "Alarm",
+                "unit": ""
+            }
+        ],
+        "table": null
+    }
+}

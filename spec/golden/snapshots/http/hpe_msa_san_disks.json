@@ -1,0 +1,82 @@
+{
+    "msa 2050 disks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "msa 2050 disks get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Disks",
+            "columnHeaders": [
+                {
+                    "label": "Serial Number",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Usage",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Disk Group",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Pool",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Tier",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Health",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1.1",
+                    "values": [
+                        "WBN0A1B2",
+                        "VIRTUAL POOL",
+                        "dgA01",
+                        "A",
+                        "Standard",
+                        "Up",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "1.2",
+                    "values": [
+                        "WBN0C3D4",
+                        "GLOBAL SPARE",
+                        "",
+                        "",
+                        "N/A",
+                        "Up",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "1.3",
+                    "values": [
+                        "WBN0E5F6",
+                        "FAILED",
+                        "dgA01",
+                        "A",
+                        "Standard",
+                        "Warning",
+                        "Degraded"
+                    ]
+                }
+            ]
+        }
+    }
+}

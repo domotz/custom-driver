@@ -1,10 +1,10 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare Monitoring VM Network adapters
- * Description: This script retrieves information about each network adapter connected to a Virtual Machine on VMware server 
- * 
+ * Description: This script retrieves information about each network adapter connected to a Virtual Machine on VMware server
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 7.0.3
  *
  * Creates a Custom Driver variables:
@@ -12,7 +12,7 @@
  *      - Network name: Network name
  *      - MAC: MAC address
  *      - State: Network adapter state
- * 
+ *
  **/
 
 // The ID of the virtual machine
@@ -20,7 +20,7 @@ var vmId = D.getParameter("vmId");
 
 // Create a Custom Driver table to store network adapter information
 var table = D.createTable(
-    "Disks",[
+    "Disks", [
         { label: "Network", valueType: D.valueType.STRING },
         { label: "Network name", valueType: D.valueType.STRING },
         { label: "MAC", valueType: D.valueType.STRING },
@@ -30,7 +30,6 @@ var table = D.createTable(
 
 // Logs in to the VMWare device using basic authentication.
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/session",
         username: D.device.username(),
@@ -40,53 +39,54 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 201) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // This function retrieves information about network adapetrs attached to a specific virtual machine
 function getNetworkAdapters(sessionId) {
-    var d = D.q.defer();
     var config = {
         url: "/api/vcenter/vm/" + vmId,
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": sessionId 
+            "vmware-api-session-id": sessionId
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // Sanitize label to create a recordId
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 // This function extracts relevant data from the API response response
@@ -94,11 +94,11 @@ function extractData(body) {
     if (body && body.nics) {
         for (var nicId in body.nics) {
             var nic = body.nics[nicId];
-            if (nic.label || (nic.backing && nic.backing.network) || nic.backing.network_name || nic.mac_address || nic.state ) {
+            if (nic.label || (nic.backing && nic.backing.network) || nic.backing.network_name || nic.mac_address || nic.state) {
                 var label = nic.label;
                 var network = nic.backing.network;
                 var networkName = nic.backing.network_name;
-                var macAddress = nic.mac_address; 
+                var macAddress = nic.mac_address;
                 var state = nic.state;
                 var recordId = sanitize(label);
                 table.insertRecord(recordId, [
@@ -121,10 +121,10 @@ function extractData(body) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare device
  */
-function validate(){
+function validate() {
     login()
         .then(getNetworkAdapters)
         .then(function (response) {

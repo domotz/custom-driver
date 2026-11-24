@@ -1,0 +1,51 @@
+{
+    "three connected devices, one offline validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "three connected devices, one offline get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Connected Devices",
+            "columnHeaders": [
+                {
+                    "label": "Address"
+                },
+                {
+                    "label": "Model"
+                },
+                {
+                    "label": "Status"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0x03",
+                    "values": [
+                        "192.168.1.20",
+                        "TSW-760",
+                        "ONLINE"
+                    ]
+                },
+                {
+                    "id": "0x04",
+                    "values": [
+                        "192.168.1.21",
+                        "DM-NVX-351",
+                        "ONLINE"
+                    ]
+                },
+                {
+                    "id": "0x05",
+                    "values": [
+                        "control.lan",
+                        "CP4-R",
+                        "OFFLINE"
+                    ]
+                }
+            ]
+        }
+    }
+}

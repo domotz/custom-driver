@@ -1,20 +1,20 @@
 /**
  * Name: Linux CPU Usage Per process - pidstat
  * Description: This script retrieves CPU usage for chosen processes on Linux using 'pidstat'
- * 
+ *
  * Communication protocol is SSH.
- * 
+ *
  * Tested on Linux Distributions:
  *     - Ubuntu 22.04.1 LTS
  * Shell Version:
  *     - Bash 5.1.16
- * 
+ *
  * 'pidstat' should be installed on the remote device (using this command "sudo apt install sysstat")
- * 
+ *
  * Creates a Custom Driver Variables for CPU Usage(%)
  */
 
-var processList = D.getParameter('processList');
+var processList = D.getParameter("processList");
 var variables = [];
 
 // Define SSH configuration
@@ -31,16 +31,16 @@ function checkSshError(err) {
 }
 
 function executeCommand(command) {
-    var d = D.q.defer();
     sshConfig.command = command;
-    D.device.sendSSHCommand(sshConfig, function (output, error) {
-        if (error) {
-            checkSshError(error);
-            d.reject(error);
-        }
-        d.resolve(output);
+    return new Promise(function (resolve, reject) {
+        D.device.sendSSHCommand(sshConfig, function (output, error) {
+            if (error) {
+                checkSshError(error);
+                return reject(error);
+            }
+            resolve(output);
+        });
     });
-    return d.promise;
 }
 
 // Checks if 'pidstat' is installed on the remote device based on the provided output.
@@ -62,10 +62,10 @@ function checkIfPidstatInstalled() {
         });
 }
 
-function sanitize(output){
-    var recordIdReservedWords = ['\\?', '\\*', '\\%', 'table', 'column', 'history'];
-    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join('|'), 'g');
-    return output.replace(recordIdSanitisationRegex, '').slice(0, 50).replace(/\s+/g, '-').toLowerCase();
+function sanitize(output) {
+    var recordIdReservedWords = ["\\?", "\\*", "\\%", "table", "column", "history"];
+    var recordIdSanitisationRegex = new RegExp(recordIdReservedWords.join("|"), "g");
+    return output.replace(recordIdSanitisationRegex, "").slice(0, 50).replace(/\s+/g, "-").toLowerCase();
 }
 
 /**
@@ -91,7 +91,7 @@ function parsePidstatOutput(data) {
         var pid = line[pidIndex];
         var cpuUsage = line[cpuUsageIndex];
         var command = line[commandIndex];
-        var processName = pid + "-" + sanitize(command);     
+        var processName = pid + "-" + sanitize(command);
         var uid = sanitize(processName);
         variables.push(D.createVariable(uid, processName, cpuUsage, "%", D.valueType.NUMBER));
     }

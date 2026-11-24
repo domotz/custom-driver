@@ -1,0 +1,80 @@
+{
+    "patched 23.9.10.8817 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "patched 23.9.10.8817 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "screen-connect-installed",
+                "name": "ScreenConnect Server Installed",
+                "value": "Yes"
+            },
+            {
+                "uid": "screen-connect-version",
+                "name": "ScreenConnect Server Version",
+                "value": "23.9.10.8817"
+            },
+            {
+                "uid": "screen-connect-vulnerable",
+                "name": "ScreenConnect Server Vulnerable",
+                "value": "No"
+            }
+        ],
+        "table": null
+    },
+    "old 22.8.1.8000 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "old 22.8.1.8000 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "screen-connect-installed",
+                "name": "ScreenConnect Server Installed",
+                "value": "Yes"
+            },
+            {
+                "uid": "screen-connect-version",
+                "name": "ScreenConnect Server Version",
+                "value": "22.8.1.8000"
+            },
+            {
+                "uid": "screen-connect-vulnerable",
+                "name": "ScreenConnect Server Vulnerable",
+                "value": "Yes"
+            }
+        ],
+        "table": null
+    },
+    "vulnerable 23.9.7.8804 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vulnerable 23.9.7.8804 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "screen-connect-installed",
+                "name": "ScreenConnect Server Installed",
+                "value": "Yes"
+            },
+            {
+                "uid": "screen-connect-version",
+                "name": "ScreenConnect Server Version",
+                "value": "23.9.7.8804"
+            },
+            {
+                "uid": "screen-connect-vulnerable",
+                "name": "ScreenConnect Server Vulnerable",
+                "value": "Yes"
+            }
+        ],
+        "table": null
+    }
+}

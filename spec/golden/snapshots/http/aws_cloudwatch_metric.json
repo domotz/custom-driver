@@ -1,0 +1,87 @@
+{
+    "four metrics, the last one without datapoints validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "four metrics, the last one without datapoints get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Cloud Watch",
+            "columnHeaders": [
+                {
+                    "label": "Namespace"
+                },
+                {
+                    "label": "Dimension"
+                },
+                {
+                    "label": "Dimension Value"
+                },
+                {
+                    "label": "Metric Name"
+                },
+                {
+                    "label": "Period"
+                },
+                {
+                    "label": "Statistic"
+                },
+                {
+                    "label": "Value"
+                }
+            ],
+            "records": [
+                {
+                    "id": "server1NetworkIn",
+                    "values": [
+                        "AWS/EC2",
+                        "InstanceId",
+                        "i-12345678",
+                        "NetworkIn",
+                        300,
+                        "Average",
+                        1843200.5
+                    ]
+                },
+                {
+                    "id": "myDatabaseFreeStorage",
+                    "values": [
+                        "AWS/RDS",
+                        "DBInstanceIdentifier",
+                        "db-name",
+                        "FreeStorageSpace",
+                        300,
+                        "Average",
+                        21474836480
+                    ]
+                },
+                {
+                    "id": "myDatabaseCPUUsage",
+                    "values": [
+                        "AWS/RDS",
+                        "DBInstanceIdentifier",
+                        "db-name",
+                        "CPUUtilization",
+                        300,
+                        "Average",
+                        37.25
+                    ]
+                },
+                {
+                    "id": "volume1BurstBalance",
+                    "values": [
+                        "AWS/EBS",
+                        "VolumeId",
+                        "vol-12345678",
+                        "BurstBalance",
+                        300,
+                        "Average",
+                        ""
+                    ]
+                }
+            ]
+        }
+    }
+}

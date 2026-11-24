@@ -2,29 +2,29 @@
  * Domotz Custom Driver
  * Name: IPerf3 Speed Test
  * Description: This script is designed to retrieve network speed data using iPerf3.
- * 
+ *
  * Communication protocol is SSH.
- * 
- * This driver create a dynamic monitoring variables 
+ *
+ * This driver create a dynamic monitoring variables
  *      Download speed: test for download speed.
  *      Upload speed: test for upload speed.
  *      Download speed UDP: test for UDP download speed.
- *      Upload speed UDP: test for UDP upload speed. 
- * 
+ *      Upload speed UDP: test for UDP upload speed.
+ *
  * Tested on:
  * - Ubuntu 22.04.1 LTS
  * - with iperf3 version: v3.7
- * 
+ *
  * The driver is currently using a public iPerf3 server which might stop working in the future.
- * If that is the case, you might try with another server which you might find at this URL: https://iperf.fr/iperf-servers.php 
- * or instead, you might setup your own iPerf3 server. 
- * 
- * You can edit the targetServer object to configure the iPerf3 server to be used. 
- * 
+ * If that is the case, you might try with another server which you might find at this URL: https://iperf.fr/iperf-servers.php
+ * or instead, you might setup your own iPerf3 server.
+ *
+ * You can edit the targetServer object to configure the iPerf3 server to be used.
+ *
  * Parameters:
  *   - targetServer: The URL of the iPerf3 server to be used
- *   - defaultIperfPort: The default port of the iPerf3 server if not specified in the targetServer  
- * 
+ *   - defaultIperfPort: The default port of the iPerf3 server if not specified in the targetServer
+ *
  */
 
 // Define SSH configuration
@@ -90,36 +90,33 @@ function checkSshError(err) {
     D.failure(D.errorType.GENERIC_ERROR);
 }
 
-// Function for executing SSH command 
+// Function for executing SSH command
 function executeCommand(commandTemplate, serverIndex, extractorFn) {
     return function (result) {
-        var d = D.q.defer();
         var command = commandTemplate;
 
-        if (serverIndex !== null) {
-            if (serverIndex < targetServerUrl.length) {
-                var server = targetServerUrl[serverIndex];
-                var hostPort = server.split(":");
-
-                command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
-                sshConfig.command = command;
-                D.device.sendSSHCommand(sshConfig, function (out, err) {
-
-                    if (err) {
-                        return d.reject(err);
-                    }
-                    if (extractorFn)
-                        result.push(extractorFn(out));
-                    d.resolve(result);
-                });
-            } else {
-                console.error("no more server to test with");
-                result.push(null);
-                d.resolve(result);
-            }
+        if (serverIndex >= targetServerUrl.length) {
+            console.error("no more server to test with");
+            result.push(null);
+            return Promise.resolve(result);
         }
 
-        return d.promise.catch(function (err) {
+        var server = targetServerUrl[serverIndex];
+        var hostPort = server.split(":");
+
+        command = command.replace("{url}", hostPort[0]).replace("{port}", hostPort.length == 2 ? hostPort[1] : defaultIperfPort);
+        sshConfig.command = command;
+        return new Promise(function (resolve, reject) {
+            D.device.sendSSHCommand(sshConfig, function (out, err) {
+
+                if (err) {
+                    return reject(err);
+                }
+                if (extractorFn)
+                    result.push(extractorFn(out));
+                resolve(result);
+            });
+        }).catch(function (err) {
             console.error(err.message);
             return executeCommand(commandTemplate, serverIndex + 1, extractorFn)(result);
         });
@@ -135,10 +132,12 @@ function execute() {
         executeCommand(execConfig[3].command, 0, udpExtractor)
     ];
 
-    return commands.reduce(D.q.when, D.q([]))
+    return commands.reduce(function (promise, command) {
+        return promise.then(command);
+    }, Promise.resolve([]))
         .then(function (result) {
             return result.map(function (res, index) {
-                if (res == null){
+                if (res == null) {
                     res = -1;
                 }
                 return D.device.createVariable(execConfig[index].id, execConfig[index].label, res, "Mb/s");
@@ -150,7 +149,7 @@ function execute() {
         });
 }
 
-//This function is a failure handler for SSH command execution. 
+//This function is a failure handler for SSH command execution.
 function failure(error) {
     console.error("Received Error: " + error);
     D.failure(D.errorType.GENERIC_ERROR);

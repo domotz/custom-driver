@@ -1,0 +1,191 @@
+{
+    "apiserver with 4xx and 5xx responses validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "apiserver with 4xx and 5xx responses get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "apiserver_request_total_0",
+                "name": "API server requests: 0, rate",
+                "value": 3,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "apiserver_request_total_200",
+                "name": "API server requests: 2xx",
+                "value": 1600,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "apiserver_request_total_300",
+                "name": "API server requests: 3xx",
+                "value": 4,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "apiserver_request_total_400",
+                "name": "API server requests: 4xx",
+                "value": 30,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "apiserver_request_total_500",
+                "name": "API server requests: 5xx",
+                "value": 3,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "rest_client_requests_total_200",
+                "name": "HTTP requests: 2xx",
+                "value": 720,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "rest_client_requests_total_400",
+                "name": "HTTP requests: 4xx",
+                "value": 9,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "rest_client_requests_total_500",
+                "name": "HTTP requests: 5xx",
+                "value": 1,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "cpu",
+                "name": "CPU",
+                "value": 123456,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "max_fds",
+                "name": "Fds max",
+                "value": 1048576,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "open_fds",
+                "name": "Fds open",
+                "value": 180,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "go_goroutines",
+                "name": "Goroutines",
+                "value": 215,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "go_threads",
+                "name": "Go threads",
+                "value": 28,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "grpc_client_started",
+                "name": "gRPCs client started",
+                "value": 830,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "grpc_client_msg_received",
+                "name": "gRPCs messages ressived",
+                "value": 950,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "grpc_client_msg_sent",
+                "name": "gRPCs messages sent",
+                "value": 890,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "apiserver_request_terminations",
+                "name": "Request terminations",
+                "value": 0,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "process_resident_memory_bytes",
+                "name": "Resident memory",
+                "value": 456785920,
+                "unit": "B",
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "apiserver_tls_handshake_errors_total",
+                "name": "TLS handshake errors",
+                "value": 6,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "process_virtual_memory_bytes",
+                "name": "Virtual memory,",
+                "value": 1400000000,
+                "unit": "B",
+                "valueType": "RATE"
+            },
+            {
+                "uid": "authenticated_user_requests_system:kube-scheduler",
+                "name": "Authenticated requests: system:kube-scheduler",
+                "value": 5400,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "authenticated_user_requests_other",
+                "name": "Authenticated requests: other",
+                "value": 120,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "authentication_attemptserror",
+                "name": "Authentication attempts: error",
+                "value": 3,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "authentication_attemptssuccess",
+                "name": "Authentication attempts: success",
+                "value": 9876,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "current_inflight_requests_mutating",
+                "name": "Requests current: mutating",
+                "value": 2
+            },
+            {
+                "uid": "current_inflight_requests_readOnly",
+                "name": "Requests current: readOnly",
+                "value": 7
+            },
+            {
+                "uid": "workqueue_adds_total_DynamicCABundle-client-ca-bun",
+                "name": "DynamicCABundle-client-ca-bundle Workqueue adds total",
+                "value": 4,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "workqueue_depth_DynamicCABundle-client-ca-bundle",
+                "name": "DynamicCABundle-client-ca-bundle Workqueue depth",
+                "value": 0
+            },
+            {
+                "uid": "workqueue_adds_total_APIServiceRegistrationControl",
+                "name": "APIServiceRegistrationController Workqueue adds total",
+                "value": 1520,
+                "valueType": "RATE"
+            },
+            {
+                "uid": "workqueue_depth_APIServiceRegistrationController",
+                "name": "APIServiceRegistrationController Workqueue depth",
+                "value": 3
+            }
+        ],
+        "table": null
+    }
+}

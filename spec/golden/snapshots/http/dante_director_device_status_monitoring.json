@@ -1,0 +1,124 @@
+{
+    "domain with two devices, one degraded validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "domain with two devices, one degraded get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Devices",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Manufacturer Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Product Model",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Dante Version",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Address",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Clocking Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Latency Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Connectivity Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Subscription Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "RX Channels",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "TX Channels",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Alert Message Clocking",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Alert Message Connectivity",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Alert Message Latency",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Alert Message Subscriptions",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "dev-0001",
+                    "values": [
+                        "Stage-Box-A",
+                        "Audinate",
+                        "AVIO-AES3",
+                        "4.2.1",
+                        "192.168.10.21, 192.168.20.21",
+                        "OK",
+                        "OK",
+                        "OK",
+                        "OK",
+                        "OK",
+                        "In 1 (SUBSCRIBED), In 2 (SUBSCRIBED)",
+                        "Out 1, Out 2",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "dev-0002",
+                    "values": [
+                        "Mixer-FOH",
+                        "Yamaha",
+                        "CL5",
+                        "4.0.9",
+                        "192.168.10.30",
+                        "WARNING",
+                        "OK",
+                        "WARNING",
+                        "OK",
+                        "ERROR",
+                        "Ch 1 (SUBSCRIBED), Ch 2 (UNRESOLVED)",
+                        "Main L",
+                        "N/A",
+                        "N/A",
+                        "Latency is below the recommended value",
+                        "1 subscription is unresolved"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{
+    "ubuntu 22.04 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 22.04 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "openssl",
+                "name": "openssl",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "libssl3",
+                "name": "libssl3",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "curl",
+                "name": "curl",
+                "value": 1,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "linux-image",
+                "name": "linux-image",
+                "value": 2,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "ubuntu 22.04, up to date validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "ubuntu 22.04, up to date get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "openssl",
+                "name": "openssl",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "libssl3",
+                "name": "libssl3",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "curl",
+                "name": "curl",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "linux-image",
+                "name": "linux-image",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

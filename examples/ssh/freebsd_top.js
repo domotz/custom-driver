@@ -1,12 +1,9 @@
-
-
 /**
  * This driver extracts information about top processes running under freebsd os
  * The communication protocol is SSH
  * This driver create a dynamic monitoring variables for the system statistics and top 10 processes
  * Tested under freebsd 12.3-STABLE
  */
-
 
 var _var = D.device.createVariable;
 // top rows to show
@@ -53,9 +50,9 @@ function exec_command(command, callback) {
 
 function convertToK(count, unit) {
     switch (unit) {
-    case "K": return count;
-    case "M": return count * 1000;
-    case "G": return count * 1000000;
+        case "K": return count;
+        case "M": return count * 1000;
+        case "G": return count * 1000000;
     }
 }
 
@@ -69,8 +66,6 @@ function validate() {
         D.success();
     });
 }
-
-
 
 /**
 * @remote_procedure
@@ -91,7 +86,7 @@ function get_status() {
             _var("last_pid", "Last pid", line0_data[1]),
             _var("load_avg_1m", "Load average 1m", line0_data[2]),
             _var("load_avg_5m", "Load average 5m", line0_data[3]),
-            _var("load_avg_15m", "Load average 15m", line0_data[4]),
+            _var("load_avg_15m", "Load average 15m", line0_data[4].trim()),
             _var("processes", "Processes", line1_data[1]),
             _var("processes_running", "Running processes", line1_data[2]),
             _var("processes_sleeping", "Sleeping processes", line1_data[3]),
@@ -105,15 +100,15 @@ function get_status() {
             _var("mem_wired", "Mem wired", convertToK(line3_data[5], line3_data[6]), "K"),
             _var("mem_free", "Mem free", convertToK(line3_data[7], line3_data[8]), "K"),
             _var("arc_total", "ARC total", convertToK(line4_data[1], line4_data[2]), "K"),
-            _var("arc_mfu", "ARC MFU", convertToK(line4_data[1], line4_data[2]), "K"),
-            _var("arc_mru", "ARC MRU", convertToK(line4_data[3], line4_data[4]), "K"),
-            _var("arc_anon", "ARC Anon", convertToK(line4_data[5], line4_data[6]), "K"),
-            _var("arc_header", "ARC Header", convertToK(line4_data[7], line4_data[8]), "K"),
-            _var("arc_other", "ARC Other", convertToK(line4_data[9], line4_data[10]), "K"),
+            _var("arc_mfu", "ARC MFU", convertToK(line4_data[3], line4_data[4]), "K"),
+            _var("arc_mru", "ARC MRU", convertToK(line4_data[5], line4_data[6]), "K"),
+            _var("arc_anon", "ARC Anon", convertToK(line4_data[7], line4_data[8]), "K"),
+            _var("arc_header", "ARC Header", convertToK(line4_data[9], line4_data[10]), "K"),
+            _var("arc_other", "ARC Other", convertToK(line4_data[11], line4_data[12]), "K"),
             _var("arc_compressed", "ARC Compressed", convertToK(line5_data[1], line5_data[2]), "K"),
             _var("arc_uncompressed", "ARC Uncompressed", convertToK(line5_data[3], line5_data[4]), "K"),
             _var("swap_total", "SWAP Total", convertToK(line6_data[1], line6_data[2]), "K"),
-            _var("swap_free", "SWAP Free", convertToK(line6_data[3], line6_data[4]), "K"),
+            _var("swap_free", "SWAP Free", convertToK(line6_data[3], line6_data[4]), "K")
 
         ];
 

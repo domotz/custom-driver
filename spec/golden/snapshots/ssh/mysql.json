@@ -1,0 +1,140 @@
+{
+    "mysql 5.5 with a slow query validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "mysql 5.5 with a slow query get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "5.5.62-0+deb8u1"
+            },
+            {
+                "uid": "usedRam",
+                "name": "Used Ram",
+                "value": 681660,
+                "unit": "KB"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": "28.31",
+                "unit": "hours"
+            },
+            {
+                "uid": "threads",
+                "name": "Threads",
+                "value": 3
+            },
+            {
+                "uid": "questions",
+                "name": "Questions",
+                "value": 1150
+            },
+            {
+                "uid": "slowQueries",
+                "name": "Slow Queries",
+                "value": 1
+            },
+            {
+                "uid": "opens",
+                "name": "Opens",
+                "value": 113
+            },
+            {
+                "uid": "flushTables",
+                "name": "Flush Tables",
+                "value": 1
+            },
+            {
+                "uid": "openTables",
+                "name": "Open Tables",
+                "value": 106
+            },
+            {
+                "uid": "queriesS",
+                "name": "Average Queries",
+                "value": "3.605",
+                "unit": "query/s"
+            },
+            {
+                "uid": "errors",
+                "name": "Errors",
+                "value": " "
+            }
+        ],
+        "table": null
+    },
+    "mysql 5.5 without slow queries validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "mysql 5.5 without slow queries get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "version",
+                "name": "Version",
+                "value": "5.5.62-0+deb8u1"
+            },
+            {
+                "uid": "usedRam",
+                "name": "Used Ram",
+                "value": 681660,
+                "unit": "KB"
+            },
+            {
+                "uid": "uptime",
+                "name": "Uptime",
+                "value": "28.31",
+                "unit": "hours"
+            },
+            {
+                "uid": "threads",
+                "name": "Threads",
+                "value": 3
+            },
+            {
+                "uid": "questions",
+                "name": "Questions",
+                "value": 1150
+            },
+            {
+                "uid": "slowQueries",
+                "name": "Slow Queries",
+                "value": 0
+            },
+            {
+                "uid": "opens",
+                "name": "Opens",
+                "value": 113
+            },
+            {
+                "uid": "flushTables",
+                "name": "Flush Tables",
+                "value": 1
+            },
+            {
+                "uid": "openTables",
+                "name": "Open Tables",
+                "value": 106
+            },
+            {
+                "uid": "queriesS",
+                "name": "Average Queries",
+                "value": "3.605",
+                "unit": "query/s"
+            },
+            {
+                "uid": "errors",
+                "name": "Errors",
+                "value": " "
+            }
+        ],
+        "table": null
+    }
+}

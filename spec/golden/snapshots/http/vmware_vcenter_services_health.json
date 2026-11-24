@@ -1,0 +1,62 @@
+{
+    "vcsa 7.0.3 services validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcsa 7.0.3 services get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "vCenter Services Health",
+            "columnHeaders": [
+                {
+                    "label": "Startup Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "State",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "vpxd",
+                    "values": [
+                        "AUTOMATIC",
+                        "STARTED",
+                        "OK"
+                    ]
+                },
+                {
+                    "id": "vsphere-ui",
+                    "values": [
+                        "AUTOMATIC",
+                        "STARTED",
+                        "WARNING"
+                    ]
+                },
+                {
+                    "id": "vmware_vsan_health",
+                    "values": [
+                        "AUTOMATIC",
+                        "STARTED",
+                        "NOT OK"
+                    ]
+                },
+                {
+                    "id": "vmware-vmon",
+                    "values": [
+                        "MANUAL",
+                        "STOPPED",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

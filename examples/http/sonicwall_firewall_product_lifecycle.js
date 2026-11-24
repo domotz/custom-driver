@@ -1,14 +1,19 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: Sonicwall firewall - Product lifecycle
- * Description: Extracts the product lifecycle information for a SonicWall device. The product lifecycle includes five phases: Last Day Order (LDO), Active Retirement (ARM), One-Year Support Last Day Order, Limited Retirement Mode (LRM), and End of Support (EOS). 
+ * Description: Extracts the product lifecycle information for a SonicWall device. The product lifecycle includes five phases: Last Day Order (LDO), Active Retirement (ARM), One-Year Support Last Day Order, Limited Retirement Mode (LRM), and End of Support (EOS).
  * This information is used to monitor the product lifecycle and check when a product is approaching end of support
- * 
+ *
  * Specify which interfaces to monitor based on the provided interfaceName parameter.
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on SonicWALL NSv 270 SonicOS version 7.0.1-5145
+ *
+ * The dates come from resources/sonicwall-plc-tables-v2.json in this repository, refreshed from SonicWall's product
+ * lifecycle page with resources/sonicwall-plc-refresh.js. A date SonicWall has not published is reported as N/A
+ * and its remaining days have no value; so are all dates of a firewall model SonicWall does not list yet.
+ * (Copies before 1.0.4 read resources/sonicwall-plc-tables.json, which leaves out the rows with unpublished dates.)
  *
  * Creates a Custom Driver variables:
  *      - Last Order Day (LOD): The date when the product's last order day is reached
@@ -21,26 +26,83 @@
  *      - One-Year Support LOD - Remaining Days: The number of days remaining until the product's one-year support period ends
  *      - LRM - Remaining Days: The number of days remaining until the product enters limited retirement mode
  *      - EOS - Remaining Days: The number of days remaining until the product's support ends
- * 
+ *
  **/
 
+// SonicOS can require a bearer token on every API request after login ("Non-GUI Management Login Bearer
+// Token Session Check", on by default from SonicOS 7.3.4-7015). When it does, the login reply carries the
+// token in status.info[].bearer_token; a firewall with the check off returns none.
+var bearerToken = null;
+
+/**
+ * Reads the bearer token from the login reply.
+ * @param {string|object} body The login reply
+ * @returns {string|null} The token, or null when the firewall did not return one
+ */
+function readBearerToken(body) {
+    try {
+        var reply = typeof body === "string" ? JSON.parse(body) : body;
+        var info = reply && reply.status && reply.status.info;
+        for (var i = 0; info && i < info.length; i++) {
+            if (info[i] && info[i].bearer_token) {
+                return info[i].bearer_token;
+            }
+        }
+    } catch (e) {
+        console.warn("The login reply is not JSON, no bearer token read");
+    }
+    return null;
+}
+
+/**
+ * Sends a GET to the SonicOS API. When the login returned a bearer token the request carries it instead of
+ * the session cookie; if the firewall refuses the token (401) the request is sent once more with the cookie.
+ * @param {object} config The HTTP configuration
+ * @param {function} callback Called with (error, response, body)
+ */
+function authenticatedGet(config, callback) {
+    if (!bearerToken) {
+        D.device.http.get(config, callback);
+        return;
+    }
+    var withToken = {};
+    for (var key in config) {
+        if (key !== "jar") {
+            withToken[key] = config[key];
+        }
+    }
+    withToken.headers = {};
+    for (var name in config.headers) {
+        withToken.headers[name] = config.headers[name];
+    }
+    withToken.headers.Authorization = "Bearer " + bearerToken;
+    D.device.http.get(withToken, function (error, response, body) {
+        if (!error && response && response.statusCode == 401) {
+            console.warn("The firewall refused the bearer token (401), retrying with the session cookie");
+            D.device.http.get(config, callback);
+            return;
+        }
+        callback(error, response, body);
+    });
+}
+
 //Processes the HTTP response and handles errors
-function processResponse(d) {
+function processResponse(resolve, reject) {
     return function process(error, response, body) {
         if (error) {
             console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
         if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            return D.failure(D.errorType.RESOURCE_UNAVAILABLE);
         }
         if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
+            return D.failure(D.errorType.AUTHENTICATION_ERROR);
         }
         if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
+            return D.failure(D.errorType.GENERIC_ERROR);
         }
-        d.resolve(body);
+        resolve(body);
     };
 }
 
@@ -63,13 +125,16 @@ function generateConfig(url) {
  * @returns {promise} The promise for the login operation.
  */
 function login() {
-    var d = D.q.defer();
     var config = generateConfig("/api/sonicos/auth");
     config.auth = "basic";
     config.username = D.device.username();
     config.password = D.device.password();
-    D.device.http.post(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        D.device.http.post(config, processResponse(function (body) {
+            bearerToken = readBearerToken(body);
+            resolve(body);
+        }, reject));
+    });
 }
 
 /**
@@ -77,67 +142,106 @@ function login() {
  * @returns {promise} The promise for the firewall model
  */
 function getFirewallModel() {
-    var d = D.q.defer();
     var config = generateConfig("/api/sonicos/reporting/status/system");
-    D.device.http.get(config, processResponse(d));
-    return d.promise;
+    return new Promise(function (resolve, reject) {
+        authenticatedGet(config, processResponse(resolve, reject));
+    });
 }
 
 // Create an external device for accessing data from a specific URL
-var plcDataSource = D.createExternalDevice("raw.githubusercontent.com"); 
+var plcDataSource = D.createExternalDevice("raw.githubusercontent.com");
 
 /**
  * Retrieves the product lifecycle data
  * @returns {promise} The promise for the product lifecycle data
  */
 function getProductLifecycleData() {
-    var d = D.q.defer();
     var config = {
-        url: "/domotz/custom-driver/master/resources/sonicwall-plc-tables.json",
+        url: "/domotz/custom-driver/master/resources/sonicwall-plc-tables-v2.json",
         protocol: "https"
     };
-    plcDataSource.http.get(config, function(error, response, body) {   
-        if (error) {
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);  
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode === 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 200) {
-            console.error(body);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else {
-            d.resolve(JSON.parse(body));
-        }
+    return new Promise(function (resolve) {
+        plcDataSource.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode === 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 200) {
+                console.error(body);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
     });
-    return d.promise;
 }
 
 /**
- * Extracts the firewall model information
+ * Reads the model the firewall reports, e.g. "TZ 470" or "NSa 2700"
  * @param {object} body The response body
- * @returns {object} The extracted model information
+ * @returns {string} The model, or "" when the firewall did not report one
  */
-function extractFirewallModelInfo(body) {
+function extractFirewallModel(body) {
     var data = JSON.parse(body[0]);
-    var modelParts = data.model.split(' ');
-    var modelName = modelParts.slice(0, -1).join(' ');
-    var modelNumber = modelParts[modelParts.length - 1];
-    return { modelName: modelName, modelNumber: modelNumber };
+    return data && data.model ? String(data.model) : "";
 }
 
 /**
- * Calculates the remaining days until each phase begins
- * @param {Date} phaseDate The date of the phase
- * @returns {number} The remaining days
+ * Reduces a model or series name to what identifies it: no HTML markup, lower case, letters and digits only,
+ * so "TZ 470", "TZ470" and "tz-470" compare equal. The lifecycle tables spell SuperMassive "SM" and a wireless
+ * model with a W suffix ("350W"), so "SuperMassive 9200" becomes "sm9200" and "TZ 350 Wireless-AC" "tz350w".
+ * @param {string} text The name
+ * @returns {string} The normalized name
+ */
+function normalize(text) {
+    return String(text || "").replace(/<[^>]*>/g, "").toLowerCase().replace(/[^a-z0-9]/g, "")
+        .replace(/^supermassive/, "sm").replace(/wireless(ac|n)?$/, "w");
+}
+
+// A model number of a firewall family the driver runs on, e.g. "tz470", "nsa2700", "nsv270", "sm9200",
+// "soho250w". Such a model that the lifecycle tables do not list yet (SonicWall publishes a model's dates only
+// once it announces its retirement) is reported with N/A dates; anything else is an error naming the model.
+var FIREWALL_MODEL = /^(?:(?:tz|nsa|nsv|nssp|sm)[0-9]+|soho[0-9]*)[wp]?$/;
+
+/**
+ * Finds the Hardware row of a model. Most rows name the model without its family ("350" in the TZ Series),
+ * newer ones with it ("TZ470"), so a row matches when the model equals the row's name, with or without the
+ * family name in front.
+ * @param {object} productLifecycle The lifecycle tables, by series
+ * @param {string} model The model the firewall reports
+ * @returns {object|undefined} The row
+ */
+function findHardwareRow(productLifecycle, model) {
+    var wanted = normalize(model);
+    for (var series in productLifecycle) {
+        var rows = productLifecycle[series].Hardware;
+        var family = normalize(series.replace(/^SonicWall /, "").replace(/ Series$/, ""));
+        for (var key in rows) {
+            var name = normalize(rows[key].model);
+            if (name && (wanted === name || wanted === family + name)) {
+                return rows[key];
+            }
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Calculates the remaining days until a phase begins
+ * @param {string} phaseDate The date of the phase, or "N/A" when SonicWall has not published it
+ * @returns {number|null} The remaining days, 0 once the date has passed, null when there is no date
  */
 function calculateRemainingDays(phaseDate) {
-    var currentDate = new Date();
-    var remainingDays = Math.ceil((phaseDate - currentDate) / (1000 * 60 * 60 * 24));
+    var date = new Date(phaseDate);
+    if (isNaN(date.getTime())) {
+        return null;
+    }
+    var remainingDays = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
     return remainingDays >= 0 ? remainingDays : 0;
 }
-
 
 /**
  * Extracts the variables from the product lifecycle data
@@ -149,11 +253,11 @@ function extractVariables(info) {
     var oneYearLastOrder = info.oneyldo || "N/A";
     var limitedRetirementMode = info.lrmb || "N/A";
     var endOfSupport = info.eos || "N/A";
-    var lodRemainingDays =  calculateRemainingDays(new Date(lastOrderDay));
-    var armRemainingDays =  calculateRemainingDays(new Date(activeRetirement));
-    var oneyldoRemainingDays =  calculateRemainingDays(new Date(oneYearLastOrder));
-    var lrmRemainingDays =  calculateRemainingDays(new Date(limitedRetirementMode));
-    var eosRemainingDays =  calculateRemainingDays(new Date(endOfSupport));
+    var lodRemainingDays = calculateRemainingDays(lastOrderDay);
+    var armRemainingDays = calculateRemainingDays(activeRetirement);
+    var oneyldoRemainingDays = calculateRemainingDays(oneYearLastOrder);
+    var lrmRemainingDays = calculateRemainingDays(limitedRetirementMode);
+    var eosRemainingDays = calculateRemainingDays(endOfSupport);
 
     var variables = [
         D.createVariable("lod", "Last Order Day (LOD)", lastOrderDay, null, D.valueType.STRING),
@@ -171,47 +275,24 @@ function extractVariables(info) {
     D.success(variables);
 }
 
-// Filters the product lifecycle data to retrieve information for a specific SonicWall firewall model
+// Reports the lifecycle of the firewall's model, from its Hardware row in the product lifecycle data
 function filtredData(body) {
-    var modelData = extractFirewallModelInfo(body);
-    var modelName = modelData.modelName;
-    var modelNumber = modelData.modelNumber;
-    var productLifecycle = body[1];
-    var info;
-
-    for (var key in productLifecycle) {
-        var modelInfo = productLifecycle[key];
-
-        if (key.indexOf(modelName) !== -1) {
-            for (var type in modelInfo) {
-                info = modelInfo[type];
-                break;
-            }
-            break;
-        }
+    var model = extractFirewallModel(body);
+    var row = findHardwareRow(body[1], model);
+    if (row) {
+        return extractVariables(row);
     }
-
-    if (!info) {
-        console.error("Model Name not found in product lifecycle (PLC) data");
-        D.failure(D.errorType.PARSING_ERROR);
+    if (FIREWALL_MODEL.test(normalize(model))) {
+        console.warn("SonicWall has not published lifecycle dates for model \"" + model + "\" yet: reporting N/A");
+        return extractVariables({});
     }
-    var foundModelNumber = false;
-    for (var subKey in info) {
-        if (info[subKey].model.indexOf(modelNumber) !== -1) {
-            return extractVariables(info[subKey]); 
-        }
-    }
-
-    if (!foundModelNumber) {
-        console.error("Model number not found in product lifecycle (PLC) data");
-        D.failure(D.errorType.PARSING_ERROR);
-    }
-    
+    console.error("Model \"" + model + "\" not found in the product lifecycle (PLC) data");
+    D.failure(D.errorType.PARSING_ERROR);
 }
 
 // Loads the data
-function loadData(){
-    return D.q.all([
+function loadData() {
+    return Promise.all([
         getFirewallModel(),
         getProductLifecycleData()
     ]);
@@ -219,10 +300,10 @@ function loadData(){
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the SonicWALL device.
  */
-function validate(){
+function validate() {
     login()
         .then(loadData)
         .then(function (response) {
@@ -243,7 +324,7 @@ function validate(){
 /**
  * @remote_procedure
  * @label Get Sonicwall Product lifecycle
- * @documentation This procedure is used to retrieve the product lifecycle information for a SonicWall device. The product lifecycle includes five phases: Last Day Order (LDO), Active Retirement (ARM), One-Year Support Last Day Order, Limited Retirement Mode (LRM), and End of Support (EOS). 
+ * @documentation This procedure is used to retrieve the product lifecycle information for a SonicWall device. The product lifecycle includes five phases: Last Day Order (LDO), Active Retirement (ARM), One-Year Support Last Day Order, Limited Retirement Mode (LRM), and End of Support (EOS).
  * This information is used to monitor the product lifecycle and check when a product is approaching end of support
  */
 function get_status() {

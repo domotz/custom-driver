@@ -1,0 +1,68 @@
+{
+    "irmc s5 component status validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "irmc s5 component status get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Component Status",
+            "columnHeaders": [
+                {
+                    "label": "Category",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "fan1-sys-fans",
+                    "values": [
+                        "Fan",
+                        "Ok"
+                    ]
+                },
+                {
+                    "id": "fan3-sys-fans",
+                    "values": [
+                        "Fan",
+                        "Critical"
+                    ]
+                },
+                {
+                    "id": "ambient-temperaturesensors",
+                    "values": [
+                        "Temperature",
+                        "Ok"
+                    ]
+                },
+                {
+                    "id": "cpu1-temperaturesensors",
+                    "values": [
+                        "Temperature",
+                        "Warning"
+                    ]
+                },
+                {
+                    "id": "psu1-powersupplies",
+                    "values": [
+                        "PowerSupply",
+                        "Ok"
+                    ]
+                },
+                {
+                    "id": "psu2-powersupplies",
+                    "values": [
+                        "PowerSupply",
+                        "Empty Or Not Installed"
+                    ]
+                }
+            ]
+        }
+    }
+}

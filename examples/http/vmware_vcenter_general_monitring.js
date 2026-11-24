@@ -1,25 +1,24 @@
 /**
- * Domotz Custom Driver 
+ * Domotz Custom Driver
  * Name: VMWare vCenter Monitoring General Info
  * Description: Monitors the general information for VMWare vCenter systems
- * 
+ *
  * Communication protocol is HTTPS
- * 
+ *
  * Tested on VMWare vCenter version 8.0.2
  *
  * Creates Custom Driver variables:
- *      - Product Name: The name of the VMWare 
- *      - Product Type: The type of VMWare 
- *      - Version: The version of the VMWare 
- *      - Build Number: The build number of the VMWare 
- *      - Release Date: The release date of the VMWare 
- *      - Install Time: The installation time of the VMWare 
+ *      - Product Name: The name of the VMWare
+ *      - Product Type: The type of VMWare
+ *      - Version: The version of the VMWare
+ *      - Build Number: The build number of the VMWare
+ *      - Release Date: The release date of the VMWare
+ *      - Install Time: The installation time of the VMWare
  *
  **/
 
 // Logs in to the VMWare device using basic authentication.
 function login() {
-    var d = D.q.defer();
     var config = {
         url: "/api/session",
         username: D.device.username(),
@@ -29,52 +28,53 @@ function login() {
         jar: true,
         rejectUnauthorized: false
     };
-    D.device.http.post(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode == 401) {
-            D.failure(D.errorType.AUTHENTICATION_ERROR);
-        } else if (response.statusCode != 201) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.post(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode == 401) {
+                D.failure(D.errorType.AUTHENTICATION_ERROR);
+            } else if (response.statusCode != 201) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // This function retrieves VMware vCenter information
 function getVmwareVcenterInfo(sessionId) {
-    var d = D.q.defer();
     var config = {
         url: "/api/appliance/system/version",
         protocol: "https",
         jar: true,
         rejectUnauthorized: false,
         headers: {
-            "vmware-api-session-id": sessionId 
+            "vmware-api-session-id": sessionId
         }
     };
-    D.device.http.get(config, function(error, response, body){
-        if (error) {          
-            console.error(error);
-            D.failure(D.errorType.GENERIC_ERROR);
-        } else if (response.statusCode == 404) {
-            D.failure(D.errorType.RESOURCE_UNAVAILABLE);
-        } else if (response.statusCode != 200) {
-            D.failure(D.errorType.GENERIC_ERROR);
-        } 
-        d.resolve(JSON.parse(body));
+    return new Promise(function (resolve) {
+        D.device.http.get(config, function (error, response, body) {
+            if (error) {
+                console.error(error);
+                D.failure(D.errorType.GENERIC_ERROR);
+            } else if (response.statusCode == 404) {
+                D.failure(D.errorType.RESOURCE_UNAVAILABLE);
+            } else if (response.statusCode != 200) {
+                D.failure(D.errorType.GENERIC_ERROR);
+            }
+            resolve(JSON.parse(body));
+        });
     });
-    return d.promise;
 }
 
 // Extracts relevant data from the API response
 function extractData(data) {
     if (!data) {
-        console.error("No data available");        
+        console.error("No data available");
         D.failure(D.errorType.GENERIC_ERROR);
     }
     if (data.product || data.type || data.version || data.build || data.releasedate || data.install_time) {
@@ -93,7 +93,7 @@ function extractData(data) {
             (date.getUTCHours() < 10 ? "0" : "") + date.getUTCHours() + ":" +
             (date.getUTCMinutes() < 10 ? "0" : "") + date.getUTCMinutes() + ":" +
             (date.getUTCSeconds() < 10 ? "0" : "") + date.getUTCSeconds() + " UTC";
-      
+
         var variables = [
             D.createVariable("product-name", "Product Name", productName, null, D.valueType.STRING),
             D.createVariable("type", "Product Type", type, null, D.valueType.STRING),
@@ -112,10 +112,10 @@ function extractData(data) {
 
 /**
  * @remote_procedure
- * @label Validate Connection 
+ * @label Validate Connection
  * @documentation This procedure is used to validate the connection and data retrieval from the VMWare device
  */
-function validate(){
+function validate() {
     login()
         .then(getVmwareVcenterInfo)
         .then(function (response) {

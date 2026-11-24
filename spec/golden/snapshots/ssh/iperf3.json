@@ -1,0 +1,72 @@
+{
+    "first server with its own port validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "first server with its own port get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "download_speed",
+                "name": "Download speed",
+                "value": "918",
+                "unit": "Mb/s"
+            },
+            {
+                "uid": "upload_speed",
+                "name": "Upload speed",
+                "value": "94",
+                "unit": "Mb/s"
+            },
+            {
+                "uid": "download_speed_udp",
+                "name": "Download speed UDP",
+                "value": "1.05",
+                "unit": "Mb/s"
+            },
+            {
+                "uid": "upload_speed_udp",
+                "name": "Upload speed UDP",
+                "value": "1.04",
+                "unit": "Mb/s"
+            }
+        ],
+        "table": null
+    },
+    "server without port uses the default validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "server without port uses the default get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "download_speed",
+                "name": "Download speed",
+                "value": "918",
+                "unit": "Mb/s"
+            },
+            {
+                "uid": "upload_speed",
+                "name": "Upload speed",
+                "value": "94",
+                "unit": "Mb/s"
+            },
+            {
+                "uid": "download_speed_udp",
+                "name": "Download speed UDP",
+                "value": "1.05",
+                "unit": "Mb/s"
+            },
+            {
+                "uid": "upload_speed_udp",
+                "name": "Upload speed UDP",
+                "value": "1.04",
+                "unit": "Mb/s"
+            }
+        ],
+        "table": null
+    }
+}

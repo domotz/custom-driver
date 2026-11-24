@@ -1,0 +1,48 @@
+{
+    "vcenter 8.0.2 snapshot tree validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "vcenter 8.0.2 snapshot tree get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "id",
+                "name": "ID",
+                "value": "snapshot-23",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "name",
+                "name": "Name",
+                "value": "VM Snapshot 1/13/2026 23:15:08",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "description",
+                "name": "Description",
+                "value": "Nightly snapshot",
+                "unit": null,
+                "valueType": "STRING"
+            },
+            {
+                "uid": "creation-time",
+                "name": "Creation Time",
+                "value": "01/13/2026 22:15:08 UTC",
+                "unit": null,
+                "valueType": "DATETIME"
+            },
+            {
+                "uid": "age",
+                "name": "Age",
+                "value": 1,
+                "unit": "Days",
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

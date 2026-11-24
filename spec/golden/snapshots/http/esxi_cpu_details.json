@@ -1,0 +1,54 @@
+{
+    "esxi 8.0.0 two sockets validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 two sockets get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "CPU Details",
+            "columnHeaders": [
+                {
+                    "label": "CPU Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "CPU Vendor",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Speed",
+                    "valueType": "NUMBER",
+                    "unit": "MHz"
+                },
+                {
+                    "label": "Bus Speed",
+                    "valueType": "NUMBER",
+                    "unit": "MHz"
+                }
+            ],
+            "records": [
+                {
+                    "id": "0",
+                    "values": [
+                        "Intel(R) Xeon(R) Silver 4116 CPU @ 2.10GHz",
+                        "intel",
+                        "2100.00",
+                        "100.00"
+                    ]
+                },
+                {
+                    "id": "1",
+                    "values": [
+                        "Intel(R) Xeon(R) Silver 4116 CPU @ 2.10GHz",
+                        "intel",
+                        "2100.00",
+                        "100.00"
+                    ]
+                }
+            ]
+        }
+    }
+}

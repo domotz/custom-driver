@@ -75,7 +75,7 @@ function get_status() {
         },
         rejectUnauthorized: false
     };
-    externalDevice.http.get(options, function(error, response, body) {
+    externalDevice.http.get(options, function (error, response, body) {
         if (error) {
             console.error("HTTP GET error:", error);
             D.failure(D.errorType.GENERIC_ERROR);

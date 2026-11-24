@@ -1,0 +1,108 @@
+{
+    "milan office with free desks validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "milan office with free desks get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "workspace-in-use",
+                "name": "Workspace In Use",
+                "value": 15,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "workspace-not-in-use",
+                "name": "Workspace Not In Use",
+                "value": 33,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "desk-in-use",
+                "name": "Desk In Use",
+                "value": 12,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "desk-not-in-use",
+                "name": "Desk Not In Use",
+                "value": 28,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "room-in-use",
+                "name": "Room In Use",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "room-not-in-use",
+                "name": "Room Not In Use",
+                "value": 5,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    },
+    "london office with no free room validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "london office with no free room get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "workspace-in-use",
+                "name": "Workspace In Use",
+                "value": 11,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "workspace-not-in-use",
+                "name": "Workspace Not In Use",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "desk-in-use",
+                "name": "Desk In Use",
+                "value": 7,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "desk-not-in-use",
+                "name": "Desk Not In Use",
+                "value": 3,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "room-in-use",
+                "name": "Room In Use",
+                "value": 4,
+                "unit": null,
+                "valueType": "NUMBER"
+            },
+            {
+                "uid": "room-not-in-use",
+                "name": "Room Not In Use",
+                "value": 0,
+                "unit": null,
+                "valueType": "NUMBER"
+            }
+        ],
+        "table": null
+    }
+}

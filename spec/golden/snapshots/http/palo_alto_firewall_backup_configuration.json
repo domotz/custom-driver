@@ -1,0 +1,16 @@
+{
+    "PA-440 10.1.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "PA-440 10.1.0 backup": {
+        "type": "success",
+        "backup": {
+            "label": "Device Configuration",
+            "running": "<config version=\"10.1.0\" urldb=\"paloaltonetworks\" detail-version=\"10.1.0\">\r\n  <mgt-config>\r\n    <users>\r\n      <entry name=\"admin\">\r\n        <phash>$5$abcdefgh$IjKlMnOpQrStUvWxYz0123456789abcdefghijklmn</phash>\r\n        <permissions>\r\n          <role-based>\r\n            <superuser>yes</superuser>\r\n          </role-based>\r\n        </permissions>\r\n      </entry>\r\n    </users>\r\n  </mgt-config>\r\n  <devices>\r\n    <entry name=\"localhost.localdomain\">\r\n      <deviceconfig>\r\n        <system>\r\n          <hostname>PA-440-HQ</hostname>\r\n          <ip-address>192.168.1.10</ip-address>\r\n          <dns-setting>\r\n            <servers>\r\n              <primary>9.9.9.9</primary>\r\n            </servers>\r\n          </dns-setting>\r\n        </system>\r\n      </deviceconfig>\r\n      <vsys>\r\n        <entry name=\"vsys1\">\r\n          <zone>\r\n            <entry name=\"trust\"/>\r\n            <entry name=\"untrust\"/>\r\n          </zone>\r\n        </entry>\r\n      </vsys>\r\n    </entry>\r\n  </devices>\r\n</config>",
+            "startup": null,
+            "ignoredLines": null
+        }
+    }
+}

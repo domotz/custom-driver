@@ -1,0 +1,142 @@
+{
+    "esxi 8.0.0 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "esxi 8.0.0 get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Firewall Details",
+            "columnHeaders": [
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is Required",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Port",
+                    "valueType": "NUMBER"
+                },
+                {
+                    "label": "Direction",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Protocol",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Associated Service",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Is Enabled",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "CIMHttpServer",
+                    "values": [
+                        "CIM Server",
+                        "false",
+                        "5988",
+                        "inbound",
+                        "tcp",
+                        "sfcbd-watchdog",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "sshServer",
+                    "values": [
+                        "SSH Server",
+                        "false",
+                        "22",
+                        "inbound",
+                        "tcp",
+                        "N/A",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "dhcp - 1",
+                    "values": [
+                        "DHCP Client",
+                        "true",
+                        "68",
+                        "outbound",
+                        "udp",
+                        "N/A",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "dhcp - 2",
+                    "values": [
+                        "DHCP Client",
+                        "true",
+                        "68",
+                        "inbound",
+                        "udp",
+                        "N/A",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "ntpClient",
+                    "values": [
+                        "NTP Client",
+                        "false",
+                        "123",
+                        "outbound",
+                        "udp",
+                        "ntpd",
+                        "false"
+                    ]
+                },
+                {
+                    "id": "vSphereClient - 1",
+                    "values": [
+                        "vSphere Web Access",
+                        "true",
+                        "902",
+                        "inbound",
+                        "tcp",
+                        "N/A",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "vSphereClient - 2",
+                    "values": [
+                        "vSphere Web Access",
+                        "true",
+                        "443",
+                        "inbound",
+                        "tcp",
+                        "N/A",
+                        "true"
+                    ]
+                },
+                {
+                    "id": "vSphereClient - 3",
+                    "values": [
+                        "vSphere Web Access",
+                        "true",
+                        "80",
+                        "inbound",
+                        "tcp",
+                        "N/A",
+                        "true"
+                    ]
+                }
+            ]
+        }
+    }
+}

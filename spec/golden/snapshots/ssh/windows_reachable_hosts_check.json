@@ -1,0 +1,28 @@
+{
+    "windows 10 validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "windows 10 get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "id-0-reachable",
+                "name": "10.0.0.1",
+                "value": true
+            },
+            {
+                "uid": "id-1-reachable",
+                "name": "vpn-server.corp.local",
+                "value": false
+            },
+            {
+                "uid": "id-2-reachable",
+                "name": "8.8.8.8",
+                "value": true
+            }
+        ],
+        "table": null
+    }
+}

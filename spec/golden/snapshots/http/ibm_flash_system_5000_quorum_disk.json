@@ -1,0 +1,103 @@
+{
+    "two drives and one missing validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two drives and one missing get_status": {
+        "type": "success",
+        "variables": null,
+        "table": {
+            "label": "Quorum Information Details",
+            "columnHeaders": [
+                {
+                    "label": "Quorum Index",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Status",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Controller ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Controller Name",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Active",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Object Type",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Override",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Site ID",
+                    "valueType": "STRING"
+                },
+                {
+                    "label": "Site Name",
+                    "valueType": "STRING"
+                }
+            ],
+            "records": [
+                {
+                    "id": "1",
+                    "values": [
+                        "0",
+                        "online",
+                        "drive4",
+                        "N/A",
+                        "N/A",
+                        "yes",
+                        "drive",
+                        "no",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "2",
+                    "values": [
+                        "1",
+                        "online",
+                        "drive7",
+                        "N/A",
+                        "N/A",
+                        "no",
+                        "drive",
+                        "no",
+                        "N/A",
+                        "N/A"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "values": [
+                        "2",
+                        "offline",
+                        "N/A",
+                        "N/A",
+                        "N/A",
+                        "no",
+                        "device",
+                        "no",
+                        "N/A",
+                        "N/A"
+                    ]
+                }
+            ]
+        }
+    }
+}

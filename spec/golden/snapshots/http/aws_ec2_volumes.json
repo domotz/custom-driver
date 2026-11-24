@@ -1,0 +1,53 @@
+{
+    "two volumes attached to the instance validate": {
+        "type": "success",
+        "variables": null,
+        "table": null
+    },
+    "two volumes attached to the instance get_status": {
+        "type": "success",
+        "variables": [
+            {
+                "uid": "status",
+                "name": "Status",
+                "value": [
+                    "in-use",
+                    "error"
+                ]
+            },
+            {
+                "uid": "device",
+                "name": "Device",
+                "value": [
+                    "/dev/xvda",
+                    "/dev/sdf"
+                ]
+            },
+            {
+                "uid": "create_time",
+                "name": "Create time",
+                "value": [
+                    "2025-11-03T09:15:42.000Z",
+                    "2025-12-20T17:45:10.000Z"
+                ]
+            },
+            {
+                "uid": "attachment_time",
+                "name": "Attachment time",
+                "value": [
+                    "2025-11-03T09:15:43.000Z",
+                    "2025-12-20T17:46:00.000Z"
+                ]
+            },
+            {
+                "uid": "attachment_status",
+                "name": "Attachment state",
+                "value": [
+                    "attached",
+                    "attaching"
+                ]
+            }
+        ],
+        "table": null
+    }
+}
